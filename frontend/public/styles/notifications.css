@@ -1,0 +1,147 @@
+.notifications {
+  position: fixed;
+  top: 1%;
+  right: 2%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 48rem;
+
+  z-index: 100;
+
+  gap: 1.2rem;
+}
+
+.notification {
+  position: relative;
+  width: 100%;
+
+  background: var(--background-primary-color);
+  border-radius: 0.4rem;
+  box-shadow: 0.1rem 0.2rem 0.5rem rgba(0, 0, 0, 0.15);
+
+  opacity: 0.95;
+  transition: transform 0.3s;
+  overflow: hidden;
+}
+
+.notification-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: inherit;
+  gap: 1.2rem;
+  padding: 1.2rem;
+}
+
+.notification .icons {
+  width: 3.6rem;
+  height: 3.6rem;
+  flex-shrink: 0;
+  fill: inherit;
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  color: var(--on-background-content);
+  z-index: 100;
+  font-size: 1.8rem;
+  background-color: inherit;
+}
+
+.message .header {
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--on-background-header);
+}
+
+.notification.error {
+  color: var(--attention-on-background);
+  fill: var(--attention-on-background);
+  border-left: solid 1.2rem var(--attention-on-background);
+}
+
+.notification.warning {
+  color: var(--warning-on-background-alt);
+  fill: var(--warning-on-background-alt);
+  border-left: solid 1.2rem var(--warning-on-background-alt);
+}
+
+.notification.success {
+  color: var(--good-on-background);
+  fill: var(--good-on-background);
+  border-left: solid 1.2rem var(--good-on-background);
+}
+
+.notification.info {
+  color: var(--primary-color);
+  fill: var(--primary-color);
+  border-left: solid 1.2rem var(--primary-color);
+}
+
+.progress {
+  opacity: 0.25;
+  height: 100%;
+}
+
+.notification .progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: inherit;
+  opacity: 0.25;
+}
+
+.notification .progress:before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  background-color: inherit;
+  animation: progress 0s linear forwards;
+  animation-duration: var(--timeout);
+}
+
+.notification.error .progress:before {
+  background-color: var(--attention-on-background);
+}
+
+.notification.warning .progress:before {
+  background-color: var(--warning-on-background-alt);
+}
+
+.notification.success .progress:before {
+  background-color: var(--good-on-background);
+}
+
+.notification.info .progress:before {
+  background-color: var(--primary-color);
+}
+
+@keyframes progress {
+  100% {
+    right: 100%;
+  }
+}
+
+.notification .close-btn {
+  position: absolute;
+  top: 5%;
+  right: 1%;
+  padding: 0 0.8rem;
+  cursor: pointer;
+  background-color: inherit;
+  font-size: 2.4rem;
+  z-index: 100;
+}
+
+.notification .close-btn:hover {
+  background-color: var(--buttons-hover-color);
+}

@@ -1,0 +1,316 @@
+@media (max-width: 156rem) {
+  .tab-btn {
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 136rem) {
+  body {
+    font-size: 1.6rem;
+  }
+
+  input[class="time"]::-webkit-calendar-picker-indicator {
+    transform: translateX(-650%);
+  }
+
+  .columns-75-25 {
+    grid-template-columns: 1fr 0.25fr;
+    gap: 3.2rem;
+  }
+
+  .cols-10 {
+    column-gap: 0.8rem;
+  }
+
+  .now-btn .form-now-btn {
+    position: absolute;
+    right: 1%;
+    bottom: 5%;
+  }
+
+  .form-now-btn {
+    width: 12.8rem;
+    height: 3.6rem;
+  }
+
+  .switch {
+    width: 12.8rem;
+    height: 4.1rem;
+  }
+  .slider:before {
+    width: 3.2rem;
+    height: 2.8rem;
+  }
+
+  .table-wrapper {
+    max-height: 193rem;
+  }
+
+  .table-row {
+    padding: 0.8rem;
+  }
+
+  .table-row-buttons {
+    gap: 0.4rem;
+  }
+
+  .icons {
+    width: 2.8rem;
+    height: 2.8rem;
+  }
+}
+
+@media (max-width: 116rem) {
+  body {
+    font-size: 1.4rem;
+  }
+
+  body .table-ctn {
+    font-size: 1.4rem;
+  }
+
+  .tab-btn {
+    font-size: 1.2rem;
+  }
+
+  .columns-75-25 {
+    grid-template-columns: 0.81fr 0.25fr;
+    gap: 3.2rem;
+    justify-content: space-between;
+  }
+
+  .section-col {
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .table-content td:nth-child(3) {
+    min-width: 12.8rem;
+  }
+
+  .table-content td > div {
+    height: 4.8rem;
+  }
+
+  .table-row button {
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+
+  .table-row {
+    padding: 0.8rem;
+  }
+
+  .form-now-btn {
+    width: 12rem;
+    height: 3.6rem;
+  }
+
+  .now-btn .form-now-btn {
+    right: 0.5%;
+    bottom: 2.5%;
+  }
+
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 12rem;
+    height: 4.4rem;
+  }
+
+  .slider:before {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .icons {
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+}
+
+@media (max-width: 68rem) {
+  label {
+    font-size: 1.2rem;
+    text-wrap: wrap;
+  }
+
+  .form-meta-data {
+    flex-direction: column;
+    gap: 3.6rem;
+  }
+
+  .form-paste-btn,
+  .form-copy-btn,
+  .form-new-btn,
+  .form-now-btn {
+    padding: 1rem;
+  }
+
+  .form-action-btns {
+    gap: 0.8rem;
+  }
+
+  .table-content th {
+    display: none;
+  }
+
+  .table-filter {
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .table-filter .table-filter-search-ctn {
+    width: 100%;
+  }
+
+  .table-content td {
+    display: grid;
+    height: 100%;
+    grid-template-columns: 10ch auto;
+    gap: 0.4rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .table-content td:first-child {
+    border-top: 1.2rem solid var(--primary-color);
+    padding-top: 1.2rem;
+  }
+
+  .table-content td:last-child {
+    /* height: 1.2rem; */
+    padding-top: 1.2rem;
+    padding-bottom: 1.2rem;
+  }
+
+  .table-content td::before {
+    content: attr(data-cell) ": ";
+    font-weight: 700;
+  }
+
+  .table-content td a {
+    position: unset;
+    padding: 1.2rem 0;
+    line-height: 3.2rem;
+  }
+
+  .table-content td > div {
+    height: 100%;
+  }
+
+  .table-content td div {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .columns-50-50 {
+    grid-template-columns: 1fr;
+  }
+
+  .columns-37-37-25,
+  .columns-25-75 {
+    grid-template-columns: 1fr;
+    gap: 3.2rem;
+  }
+
+  .columns-75-25 {
+    /* grid-template-columns: 1fr 1fr;*/
+    gap: 3.2rem;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 9.8rem;
+    height: 3.6rem;
+  }
+
+  .slider:before {
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+
+  .table-content td {
+    max-width: 100%;
+  }
+
+  p.good,
+  p.warning,
+  p.attention {
+    justify-self: start;
+  }
+
+  .table-row p.table-row-cell-pp {
+    justify-self: start;
+  }
+
+  .table-content td:nth-child(3) {
+    width: 100%;
+  }
+
+  td.table-row-buttons {
+    display: grid;
+    grid-template-columns: 10ch 1fr 1fr;
+    justify-content: start;
+  }
+
+  td.table-row-buttons .table-row-teams-btn,
+  td.table-row-buttons .table-row-delete-btn {
+    width: 70%;
+  }
+
+  td.table-row-buttons .table-row-teams-btn::before,
+  td.table-row-buttons .table-row-delete-btn::before {
+    content: attr(data-action);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--on-primary);
+  }
+
+  button.table-row-teams-btn::after,
+  button.table-row-delete-btn::after {
+    opacity: 1;
+    padding: 0.4rem 0.8rem;
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: var(--on-primary);
+    background-color: inherit;
+    border-radius: 0.4rem;
+
+    transition: opacity 0.4s ease;
+    opacity: 1;
+  }
+
+  button.table-row-teams-btn::after,
+  button.table-row-delete-btn::after {
+    position: unset;
+    opacity: 1;
+  }
+
+  button.table-row-teams-btn:hover::after,
+  button.table-row-delete-btn:hover::after {
+    position: unset;
+    opacity: 1;
+  }
+
+  button.table-row-teams-btn::after {
+    content: "Teams";
+  }
+
+  button.table-row-delete-btn::after {
+    content: "Delete";
+  }
+
+  button.table-row-teams-btn:disabled:after {
+    color: var(--buttons-disabled-on-background);
+    content: "Teams";
+  }
+
+  button.table-row-delete-btn:disabled:after {
+    color: var(--buttons-disabled-on-background);
+    content: "Delete";
+  }
+}

@@ -1,0 +1,391 @@
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.2rem;
+  padding-bottom: 1.6rem;
+}
+
+.table-filter {
+  width: 50%;
+  display: flex;
+  gap: 1.2rem;
+}
+
+.table-filter div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.table-filter-search-ctn {
+  width: 75%;
+}
+
+.table-view {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.8rem;
+}
+
+.table-meta-data,
+.table-pagination {
+  align-self: end;
+}
+
+.table-pagination div {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1.6rem;
+}
+
+.table-pagination-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem;
+  background-color: var(--background-primary-color);
+  color: var(--on-background-content);
+  border: 0.1rem solid var(--buttons-border-color-alt);
+}
+
+.table-pagination-btn:hover {
+  background-color: var(--primary-color);
+  color: var(--on-primary);
+}
+
+.table-pagination-btn:active {
+  transform: scale(0.95);
+}
+
+.table-pagination-btn:disabled {
+  color: var(--buttons-disabled-on-background-alt);
+  background-color: var(--buttons-disabled-background-color-alt);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.table-pagination-btn:disabled:active {
+  transform: scale(1);
+}
+
+.table-pagination-btn:disabled:hover {
+  color: var(--on-background-content);
+}
+
+.table-pagination-text {
+  font-size: 1.8rem;
+  /* font-weight: 700; */
+  color: var(--on-background-content);
+  text-decoration: underline;
+}
+
+.table-rows div {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.table-rows-per-page {
+  border: 0.1rem solid transparent;
+}
+
+.table-rows-per-page:hover {
+  border: 0.1rem solid var(--fields-hover-color);
+}
+
+.table-footer {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 0.8rem;
+
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  background-color: var(--background-primary-color);
+  border-top: 0.1rem solid var(--buttons-border-color-alt);
+}
+
+.table-wrapper {
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 202rem;
+}
+
+.table-content {
+  width: 100%;
+  font-size: 1.2rem;
+
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table-content thead tr {
+  color: var(--on-primary);
+  background-color: var(--primary-color);
+}
+
+.table-content thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.table-content tbody .table-row:nth-of-type(even) {
+  /* border-radius: inherit; */
+  background-color: var(--table-row-background-color-even);
+}
+
+.table-content tbody .table-row:nth-of-type(even):hover,
+.table-content tbody .table-row:hover {
+  color: var(--on-primary);
+  background-color: var(--primary-color);
+  transition: all 0.15s;
+}
+
+.table-content caption,
+.table-content th {
+  text-align: left;
+}
+
+.table-content caption,
+.table-content th,
+.table-content td {
+  padding: 1.2rem;
+}
+
+.table-content td,
+.table-content th {
+  position: relative;
+  overflow: hidden;
+}
+
+.table-content td div {
+  display: flex;
+  align-items: center;
+}
+
+.table-content td:last-child div {
+  gap: 0.4rem;
+}
+
+.table-content td:nth-child(3),
+.table-content th:nth-child(3) {
+  width: 16rem;
+}
+
+.table-content td:nth-child(4),
+.table-content th:nth-child(4) {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.table-content td > div {
+  height: 4.8rem;
+}
+
+.table-content td a {
+  position: absolute;
+  vertical-align: middle;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  padding: 1.2rem;
+}
+
+.table-content td a:hover {
+  transition: all 0.1s;
+  background-color: var(--table-row-link-hover-background-color);
+  color: var(--table-row-link-hover-on-background);
+}
+
+.table-content td a:link,
+.table-content td a:visited {
+  cursor: pointer;
+}
+
+.table-content td a:hover,
+.table-content td a:visited {
+  cursor: pointer;
+  text-decoration: underline;
+  /* box-shadow: 0rem 0.2rem 1.6rem 0.4rem rgba(3, 39, 138, 0.1); */
+}
+
+.table-caption {
+  font-size: 2.4rem;
+  font-weight: 700;
+}
+
+.table-row {
+  padding: 1.2rem;
+  /* border-radius: 0.8rem; */
+
+  border: 0.1rem solid transparent;
+  /* box-shadow: 0rem 0.1rem 0.8rem rgba(3, 39, 138, 0.1); */
+  transition: box-shadow 0.2s, border 0.2s;
+}
+
+.table-row p {
+  /* display: flex; */
+  padding: 0.4rem;
+  border-radius: 0.2rem;
+}
+
+.table-row p.table-row-cell-pp {
+  position: relative;
+  align-self: center;
+  color: var(--on-primary);
+  font-weight: 700;
+  background-color: #7a7a7a;
+}
+
+.table-row p.table-row-cell-pp.on-call::after {
+  position: absolute;
+  content: "ON-CALL";
+  white-space: nowrap;
+  top: 0%;
+  left: 100%;
+  padding: 0.2rem;
+
+  font-size: 0.8rem;
+  font-weight: 700;
+
+  color: var(--info-on-background);
+  background-color: var(--info-background-color);
+  border-radius: 0.1rem;
+
+  transform: translate(-25%, -75%);
+}
+
+.table-row-buttons {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.icons svg {
+  width: inherit;
+  height: inherit;
+  fill: inherit;
+}
+
+.table-row-buttons button {
+  display: flex;
+  width: 2.8rem;
+  height: 2.8rem;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem;
+  font-size: 2.4rem;
+
+  background-color: var(--primary-color);
+  color: var(--on-primary);
+
+  box-shadow: 0rem 0.1rem 0.4rem rgba(3, 39, 138, 0.75);
+  border-radius: 0.3rem;
+  border: 0.1rem solid var(--buttons-border-color);
+  transition: transform 0.2s;
+
+  flex-shrink: 0;
+}
+
+.table-row-buttons button:active {
+  transform: scale(0.95);
+}
+
+.table-row-buttons button.table-row-delete-btn {
+  background-color: var(--attention-background-color-alt);
+  box-shadow: 0rem 0.1rem 0.4rem #d1000080;
+}
+
+button.table-row-teams-btn:disabled,
+button.table-row-teams-btn:disabled .icons {
+  cursor: not-allowed;
+  background-color: var(--buttons-disabled-background-color);
+  color: var(--buttons-disabled-on-background);
+  fill: var(--buttons-disabled-on-background);
+  scale: 1;
+}
+
+button.table-row-teams-btn::after,
+button.table-row-delete-btn::after {
+  padding: 0.4rem 0.8rem;
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: var(--tooltip-on-background);
+  background-color: var(--tooltip-background-color);
+  border-radius: 0.4rem;
+
+  transition: opacity 0.4s ease;
+  opacity: 0;
+}
+
+button.table-row-teams-btn:hover:after,
+button.table-row-delete-btn:hover::after {
+  position: absolute;
+  z-index: 5;
+  top: -95%;
+  opacity: 1;
+}
+
+button.table-row-teams-btn:hover::after {
+  content: "Teams";
+  opacity: 1;
+}
+
+button.table-row-delete-btn:hover::after {
+  content: "Delete";
+  opacity: 1;
+}
+
+button.table-row-teams-btn .icons.status-success,
+button.table-row-teams-btn .icons.status-error {
+  position: absolute;
+  top: 0%;
+  left: 0%;
+
+  width: 1.2rem;
+  height: 1.2rem;
+
+  color: var(--on-primary);
+  border-radius: 10rem;
+
+  transform: translate(-50%, -50%);
+  z-index: 5;
+}
+
+button.table-row-teams-btn:disabled .icons.status-success {
+  background-color: var(--good-on-background);
+}
+
+button.table-row-teams-btn .icons.status-error {
+  background-color: var(--attention-background-color-alt);
+}
+
+p.good {
+  display: inline-block;
+  color: var(--good-on-background);
+  background-color: var(--good-background-color);
+  border-radius: 0.2rem;
+  font-weight: 700;
+}
+
+p.warning {
+  display: inline-block;
+  color: var(--warning-on-background);
+  background-color: var(--warning-background-color);
+  border-radius: 0.2rem;
+  font-weight: 700;
+}
+
+p.attention {
+  display: inline-block;
+  color: var(--attention-background-color-alt);
+  background-color: var(--attention-background-color);
+  border-radius: 0.2rem;
+  font-weight: 700;
+}

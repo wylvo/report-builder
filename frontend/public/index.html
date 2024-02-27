@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles/general.css" />
+    <link rel="stylesheet" href="styles/icons.css" />
+    <link rel="stylesheet" href="styles/notifications.css" />
+    <link rel="stylesheet" href="styles/modal.css" />
+    <link rel="stylesheet" href="styles/tabs.css" />
+    <link rel="stylesheet" href="styles/form.css" />
+    <link rel="stylesheet" href="styles/table.css" />
+    <link rel="stylesheet" href="styles/queries.css" />
+    <link rel="shortcut icon" href="img/jj-icon.jpg" type="image/x-icon" />
+    <!-- <script type="module" src="js/_controller.js"></script> -->
+    <script type="module" src="js/controller.js"></script>
+    <title>J&J - Support Call Reports</title>
+  </head>
+  <body>
+    <div class="scroll-btns">
+      <button id="theme" class="theme tooltip">
+        <svg class="icons">
+          <use></use>
+        </svg>
+        <span class="tooltiptext">Theme</span>
+      </button>
+      <button class="scroll-top-btn tooltip">
+        <svg class="icons">
+          <use href="/img/icons.svg#icon-chevron-up"></use>
+        </svg>
+        <span class="tooltiptext">Top</span>
+      </button>
+      <button class="scroll-bottom-btn tooltip">
+        <svg class="icons">
+          <use href="/img/icons.svg#icon-chevron-down"></use>
+        </svg>
+        <span class="tooltiptext">Bottom</span>
+      </button>
+    </div>
+
+    <!-- <img src="img/jj-logo.jpg" class="jj-logo" alt="Jack & Jones brand name" /> -->
+    <main class="main">
+      <!-- NOTIFICATIONS -->
+      <div class="notifications"></div>
+
+      <!-- MODAL -->
+      <div class="modal-ctn"></div>
+      <div class="overlay hidden"></div>
+
+      <section class="section-col">
+        <!-- FORM -->
+        <div class="container tab-form-ctn">
+          <div class="tabs-ctn">
+            <ul class="tab-list" role="tablist">
+              <!-- <li><a class="tab-btn" id="tab_0" href="#">Form 0</a></li> -->
+            </ul>
+          </div>
+          <div class="tabs-forms"></div>
+        </div>
+
+        <!-- TABLE -->
+        <div class="container table-ctn">
+          <div class="table-header">
+            <form class="table-filter">
+              <div>
+                <label for="table-filter-by">Filter By:</label>
+                <select
+                  id="table-filter-by"
+                  name="table-filter-by"
+                  class="table-filter-by"
+                >
+                  <option value="tech">TECH</option>
+                  <option value="call.dateTime">Date</option>
+                  <option value="incident.title">Title</option>
+                  <option value="call.status">Status</option>
+                  <option value="call.phone">Phone</option>
+                  <option value="store.number">Num</option>
+                  <option value="incident.type">Type</option>
+                  <option value="incident.isProcedural">Procedural</option>
+                  <option value="store.employee.name">Emp</option>
+                  <option value="store.districtManager">DM</option>
+                  <option value="tech.isOnCall">On-call</option>
+                </select>
+              </div>
+              <div class="table-filter-search-ctn">
+                <label for="table-filter-search">Filter: </label>
+                <input
+                  type="search"
+                  name="table-filter-search"
+                  id="table-filter-search"
+                  class="table-filter-search"
+                  placeholder="Search..."
+                />
+              </div>
+            </form>
+            <div class="table-view">
+              <div class="table-meta-data">
+                <p>
+                  Total Reports:
+                  <strong><span class="total-reports">0</span></strong>
+                </p>
+              </div>
+              <div class="table-pagination">
+                <!-- <button disabled class="table-pagination-btn">
+                  <svg class="icons">
+                    <use href="/img/icons.svg#icon-chevron-left"></use>
+                  </svg>
+                </button>
+                <span data-page="1" class="table-pagination-text">1</span>
+                <button class="table-pagination-btn">
+                  <svg class="icons">
+                    <use href="/img/icons.svg#icon-chevron-right"></use>
+                  </svg>
+                </button> -->
+              </div>
+            </div>
+          </div>
+          <div class="table-wrapper">
+            <table class="table-content">
+              <thead>
+                <tr>
+                  <th>TECH</th>
+                  <th>Date</th>
+                  <th>Title</th>
+                  <th>Status</th>
+                  <th>Store</th>
+                  <th>Emp</th>
+                  <th>DM</th>
+                  <th>Type</th>
+                  <th>Procedural</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="table-footer">
+            <div class="table-rows">
+              <div>
+                <label for="table-rows-per-page">Rows per page:</label>
+                <select
+                  id="table-rows-per-page"
+                  name="table-rows-per-page"
+                  class="table-rows-per-page"
+                >
+                  <option selected value="50">50</option>
+                  <option value="100">100</option>
+                  <option value="250">250</option>
+                  <option value="500">500</option>
+                  <option value="1000">1000</option>
+                </select>
+              </div>
+            </div>
+            <div class="table-pagination">
+              <!-- <button data-page="" class="table-pagination-btn">
+                <svg class="icons">
+                  <use href="/img/icons.svg#icon-chevron-left"></use>
+                </svg>
+              </button>
+              <span class="table-pagination-text">1</span>
+              <button data-page="" class="table-pagination-btn">
+                <svg class="icons">
+                  <use href="/img/icons.svg#icon-chevron-right"></use>
+                </svg>
+              </button> -->
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="footer">
+      <p>v<span id="app-version">#.#.#</span></p>
+      <span>Made by William Evora :)</span>
+    </footer>
+  </body>
+</html>

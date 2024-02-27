@@ -1,0 +1,53 @@
+.icons {
+  width: 3.2rem;
+  height: 3.2rem;
+  fill: var(--on-primary);
+}
+
+.icon-chevron {
+  margin: 0.8rem;
+  transition: transform 0.4s;
+}
+
+.icon-spinner {
+  display: flex;
+  align-items: center;
+}
+
+.icon-spinner svg {
+  width: 3.2rem;
+  height: 3.2rem;
+  stroke: var(--on-primary);
+}
+
+.spinner {
+  transform-origin: center;
+  animation: spinner_zKoa 2s linear infinite;
+}
+
+.spinner use {
+  stroke-linecap: round;
+  animation: spinner_YpZS 1.5s ease-in-out infinite;
+}
+
+@keyframes spinner_zKoa {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinner_YpZS {
+  0% {
+    stroke-dasharray: 0 150;
+    stroke-dashoffset: 0;
+  }
+  47.5% {
+    stroke-dasharray: 42 150;
+    stroke-dashoffset: -16;
+  }
+  95%,
+  100% {
+    stroke-dasharray: 42 150;
+    stroke-dashoffset: -59;
+  }
+}
