@@ -1,12 +1,35 @@
-export const getAllUsers = async (req, res, next) => {};
+import { signIn } from "./signIn/signIn.js";
+import { signOut } from "./signOut/signOut.js";
 
-export const createUser = async (req, res, next) => {};
+export const getAllUsers = async (req, res, next) => {
+  res.status(200).json({
+    route: "/getAllUsers",
+  });
+};
 
-export const getUser = async (req, res, next) => {};
+export const createUser = async (req, res, next) => {
+  res.status(200).json({
+    route: "/createUser",
+  });
+};
 
-export const updateUser = async (req, res, next) => {};
+export const getUser = async (req, res, next) => {
+  res.status(200).json({
+    route: "/getUser",
+  });
+};
 
-export const deleteUser = async (req, res, next) => {};
+export const updateUser = async (req, res, next) => {
+  res.status(200).json({
+    route: "/updateUser",
+  });
+};
 
-// export { signIn as signIn };
-// export { signOut as signOut };
+export const deleteUser = async (req, res, next) => {
+  res.status(200).json({
+    route: "/deleteUser",
+  });
+};
+
+export { signIn as signIn };
+export { signOut as signOut };

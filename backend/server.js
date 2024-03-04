@@ -3,8 +3,9 @@ import "dotenv/config";
 import config from "./config/config.js";
 
 process.on("uncaughtException", (err) => {
-  console.log("UNHANDLED EXCEPTION...");
-  console.log(err.name, err.message);
+  console.error("UNHANDLED EXCEPTION...");
+  console.error(err.name, err.message);
+  console.error(err.stack);
   process.exit(1);
 });
 
@@ -17,8 +18,9 @@ const server = app.listen(config.port, () =>
 );
 
 process.on("unhandledRejection", (err) => {
-  console.log("UNHANDLED REJECTION...");
-  console.log(err.name, err.message);
+  console.error("UNHANDLED REJECTION...");
+  console.error(err.name, err.message);
+  console.error(err.stack);
 
   server.close(() => {
     process.exit(1);

@@ -1,9 +1,38 @@
-export const getAllReports = async (req, res, next) => {};
+import { readFile } from "fs/promises";
 
-export const createReport = async (req, res, next) => {};
+import config from "../../../config/config.js";
 
-export const getReport = async (req, res, next) => {};
+export const getAllReports = async (req, res, next) => {
+  const backupFile = await readFile(config.backup.file.path, "utf-8");
+  const reports = JSON.parse(backupFile)["reportsList"];
 
-export const updateReport = async (req, res, next) => {};
+  res.status(200).json({
+    status: "success",
+    results: reports.length,
+    data: { ...reports },
+  });
+};
 
-export const deleteReport = async (req, res, next) => {};
+export const createReport = async (req, res, next) => {
+  res.status(200).json({
+    route: "/createReport",
+  });
+};
+
+export const getReport = async (req, res, next) => {
+  res.status(200).json({
+    route: "/getReport",
+  });
+};
+
+export const updateReport = async (req, res, next) => {
+  res.status(200).json({
+    route: "/updateReport",
+  });
+};
+
+export const deleteReport = async (req, res, next) => {
+  res.status(200).json({
+    route: "/deleteReport",
+  });
+};

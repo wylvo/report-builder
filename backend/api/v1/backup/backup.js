@@ -25,7 +25,13 @@ backupFileExists();
 // Get Backup File Data
 export const getBackup = async (_, res) => {
   const backupFile = await backupFileExists();
-  res.json(JSON.parse(backupFile)["reportsList"]);
+  const reports = JSON.parse(backupFile)["reportsList"];
+
+  res.status(200).json({
+    status: "success",
+    results: reports.length,
+    data: { ...reports },
+  });
 };
 
 // Read & Write Report Data To `./frontend/backup_${port}.json`
