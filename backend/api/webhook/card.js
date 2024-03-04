@@ -1,4 +1,4 @@
-import { pjsonVersion } from "../server.js";
+import config from "../../config/config.js";
 
 // Check if object is empty
 const isEmptyObject = (object) => {
@@ -23,7 +23,7 @@ export const setAdaptiveCard = (report) => {
     if (techName.includes("Lar")) return process.env.TECH_PP4;
     if (techName.includes("Mal")) return process.env.TECH_PP5;
   };
-  const appVersion = `v${pjsonVersion}`;
+  const appVersion = `v${CONFIG.version}`;
 
   // Call
   const callDate = new Date(report.call.date).toDateString();
