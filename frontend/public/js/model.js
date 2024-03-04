@@ -72,7 +72,7 @@ const fetchJSON = async (url, jsonData = undefined) => {
 
 // Get app version from package.json
 export const appVersion = async function () {
-  return (state.version = (await fetchJSON("/api/version")).data.version);
+  return (state.version = (await fetchJSON("/api/v1/version")).data.version);
 };
 
 // Send Teams webhook data to local server. Local server will send webhook & handle webhook response

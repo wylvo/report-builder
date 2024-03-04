@@ -285,7 +285,7 @@ const init = async function () {
     notificationView.success(`Reports successfully migrated to v1.0.0-beta`, 60);
     model.saveReportsInLocalStorage();
   }
-  model.sendBackupReports(model.state.reports);
+  // model.sendBackupReports(model.state.reports);
 
   // Initialize all tabs
   tabsView.renderAll(model.initNumberOfTabs(5));

@@ -1,11 +1,16 @@
 import { Router } from "express";
-import { getVersion } from "./api/version/version.js";
-import { getBackup, updateBackup } from "./api/backup/backup.js";
+import { getVersion } from "./api/v1/version/version.js";
+import { getBackup, updateBackup } from "./api/v1/backup/backup.js";
 
 const router = Router();
 
 /**
- * Report
+ * Users
+ */
+router.post("/signin");
+
+/**
+ * Reports
  */
 router.get("/report", (req, res) => {
   res.json({ message: "success" });
