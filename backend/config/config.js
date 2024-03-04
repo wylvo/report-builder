@@ -1,11 +1,12 @@
-// Node Modules
 import path from "path";
 import { readFile, writeFile } from "fs/promises";
 
-// Dependencies
 import "dotenv/config";
 
-const port = process.env.SERVER_PORT || 5050;
+let port = process.env.SERVER_PORT;
+
+// Instanciating Express' Server & Server Port
+if (process.env.NODE_ENV === "development") port = 5049;
 
 // Read package.json File
 const pjsonFile = async () =>
@@ -18,7 +19,7 @@ const backupFileName = `backup_${port}_v${pjsonVersion}.json`;
 const backupFilePath = path.join(__dirname, `/frontend/${backupFileName}`);
 
 const config = {
-  port: port,
+  port,
   version: pjsonVersion,
   backup: {
     file: {

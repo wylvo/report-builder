@@ -1,5 +1,7 @@
 import "dotenv/config";
 
+import config from "./config/config.js";
+
 process.on("uncaughtException", (err) => {
   console.log("UNHANDLED EXCEPTION...");
   console.log(err.name, err.message);
@@ -8,10 +10,10 @@ process.on("uncaughtException", (err) => {
 
 import app from "./app.js";
 
-// Instanciating Express' Server & Server Port
-const port = process.env.SERVER_PORT || 5050;
-const server = app.listen(port, () =>
-  console.log(`Server listening on port ${port} at: http://localhost:${port}`)
+const server = app.listen(config.port, () =>
+  console.log(
+    `Server listening on port ${config.port} at: http://localhost:${config.port}`
+  )
 );
 
 process.on("unhandledRejection", (err) => {
