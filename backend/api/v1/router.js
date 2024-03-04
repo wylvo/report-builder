@@ -1,33 +1,37 @@
 import { Router } from "express";
 import { getVersion } from "./version/version.js";
-import { getBackup, updateBackup } from "./backup/backup.js";
+import * as backup from "./backup/backup.js";
+import * as report from "./reports/reportController.js";
+import * as user from "./users/userController.js";
 
 const router = Router();
 
 /**
  * Users
  */
-router.get("/users");
-router.post("/users");
+router.get("/users", user.getAllUsers);
+router.post("/users", user.createUser);
+router.get("/users/:id", user.getUser);
+router.put("/users/:id", user.updateUser);
+router.delete("/users/:id", user.deleteUser);
+
 router.post("/users/signin");
 router.post("/users/signout");
 
 /**
  * Reports
  */
-router.get("/reports", (req, res) => {
-  res.json({ message: "success" });
-});
-router.get("/reports/:id");
-router.post("/reports");
-router.put("/reports");
-router.delete("/reports");
+router.get("/reports", report.getAllReports);
+router.post("/reports", report.createReport);
+router.get("/reports/:id", report.getReport);
+router.put("/reports/:id", report.updateReport);
+router.delete("/reports/:id", report.deleteReport);
 
 /**
  * Backup
  */
-router.get("/backup", getBackup);
-router.post("/backup", updateBackup);
+router.get("/backup", backup.getBackup);
+router.post("/backup", backup.updateBackup);
 
 /**
  * Webhook
