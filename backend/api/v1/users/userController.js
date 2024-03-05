@@ -1,4 +1,3 @@
-import { signIn } from "../../../signin.js";
 import { signOut } from "./signOut/signOut.js";
 
 export const getAllUsers = async (req, res, next) => {
@@ -31,5 +30,4 @@ export const deleteUser = async (req, res, next) => {
   });
 };
 
-export { signIn as signIn };
 export { signOut as signOut };

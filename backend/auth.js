@@ -18,12 +18,19 @@ export const signJWT = (id) => {
   });
 };
 
-export const createJWT = (user) => {
+export const createJWT = (user, res, statusCode) => {
   const token = signJWT(user._id);
+  res.status(statusCode).json({
+    status: "success",
+    token,
+    data: {
+      user,
+    },
+  });
 };
 
 export const proctect = async (req, res, next) => {
-  // Check if has bearer
+  // Check if has bearer in header value
   let bearer;
   if (req.headers?.authorization.startsWith("Bearer"))
     bearer = req.headers.authorization;
@@ -35,7 +42,7 @@ export const proctect = async (req, res, next) => {
     return;
   }
 
-  // Check if has token
+  // Check if has token in header value
   const [, token] = bearer.split(" ");
 
   if (!token) {
@@ -48,9 +55,12 @@ export const proctect = async (req, res, next) => {
   // Verify token
   const decoded = await promisify(jwt.verify)(token, config.jwt.secret);
 
+  // Check if user exists in DB
+  // TO DO (query user unique id from DB)
   const currentUser = decoded.id;
 
   // Check if user changed password after the token was issued
+  // TO DO (once DB is setup, and route to reset password)
 
   // GRANT ACCESS TO PROTECTED ROUTE
   req.user = decoded;
