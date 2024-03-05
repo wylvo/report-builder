@@ -15,7 +15,6 @@ router.get("/users/:id", user.getUser);
 router.put("/users/:id", user.updateUser);
 router.delete("/users/:id", user.deleteUser);
 
-router.post("/users/signin", user.signIn);
 router.post("/users/signout", user.signOut);
 
 /**

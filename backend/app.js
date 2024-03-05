@@ -8,6 +8,7 @@ import compression from "compression";
 import rateLimit from "express-rate-limit";
 
 import routerV1 from "./api/v1/router.js";
+import { signIn } from "./signin.js";
 
 const app = express();
 const __dirname = path.resolve();
@@ -35,6 +36,7 @@ if (process.env.NODE_ENV === "development") {
 app.set("json spaces", 2);
 
 app.use("/api/v1", routerV1);
+app.post("/signin", signIn);
 
 // Static Files
 app.use(express.static(path.join(__dirname, "/frontend/public")));

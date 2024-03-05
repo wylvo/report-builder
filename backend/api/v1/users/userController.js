@@ -1,4 +1,4 @@
-import { signIn } from "./signIn/signIn.js";
+import { signIn } from "../../../signin.js";
 import { signOut } from "./signOut/signOut.js";
 
 export const getAllUsers = async (req, res, next) => {
