@@ -1,3 +1,4 @@
+import { readFile } from "fs/promises";
 import { comparePasswords, createJWT } from "./auth.js";
 
 export const signIn = async (req, res, next) => {
@@ -13,15 +14,19 @@ export const signIn = async (req, res, next) => {
 
   // Check if user exists && password is correct
   // TO DO (query user email from DB)
-  const user = { password: "password" };
+  const users = JSON.parse(
+    await readFile("./backend/data/users.json", "utf-8")
+  );
+  const user = users.find((user) => user.email === email);
 
-  if (!user || !comparePasswords(password, user.password)) {
+  if (!user || !(await comparePasswords(password, user.password))) {
     res.status(401).json({
       status: "failed",
       message: "Incorrect email or password",
     });
+  } else {
+    // If everything is ok, send the token to client
+    console.log(password, user.password);
+    createJWT(user, res, 200);
   }
-
-  // If everything is ok, send the token to client
-  createJWT(user, res, 200);
 };

@@ -19,7 +19,7 @@ export const signJWT = (id) => {
 };
 
 export const createJWT = (user, res, statusCode) => {
-  const token = signJWT(user._id);
+  const token = signJWT(user.password);
   res.status(statusCode).json({
     status: "success",
     token,
