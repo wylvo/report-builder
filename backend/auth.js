@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import { promisify } from "util";
 import jwt from "jsonwebtoken";
-import config from "./config/config.js";
+import config from "./config/app.config.js";
 import bcrypt from "bcrypt";
 
 export const comparePasswords = (password, hash) => {

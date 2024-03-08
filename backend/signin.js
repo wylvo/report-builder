@@ -8,15 +8,13 @@ export const signIn = async (req, res, next) => {
   if (!email || !password) {
     res.status(400).json({
       status: "failed",
-      message: "Please sign in with both email and password",
+      message: "Please sign in by providing both email and password.",
     });
   }
 
   // Check if user exists && password is correct
   // TO DO (query user email from DB)
-  const users = JSON.parse(
-    await readFile("./backend/data/users.json", "utf-8")
-  );
+  // const users =
   const user = users.find((user) => user.email === email);
 
   if (!user || !(await comparePasswords(password, user.password))) {

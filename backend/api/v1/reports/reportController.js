@@ -1,6 +1,6 @@
 import { readFile } from "fs/promises";
 
-import config from "../../../config/config.js";
+import config from "../../../config/app.config.js";
 
 export const getAllReports = async (req, res, next) => {
   const backupFile = await readFile(config.backup.file.path, "utf-8");

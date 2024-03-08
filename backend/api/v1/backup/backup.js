@@ -1,6 +1,6 @@
 import { readFile, writeFile } from "fs/promises";
 
-import config from "../../../config/config.js";
+import config from "../../../config/app.config.js";
 
 // If backup file not existent, create/write a new empty backup file
 const backupFileExists = async () => {

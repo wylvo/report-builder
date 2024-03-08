@@ -1,6 +1,7 @@
 import "dotenv/config";
 
-import config from "./config/config.js";
+import config from "./config/app.config.js";
+import pool from "./config/db.config.js";
 
 process.on("uncaughtException", (err) => {
   console.error("UNHANDLED EXCEPTION...");
@@ -10,6 +11,10 @@ process.on("uncaughtException", (err) => {
 });
 
 import app from "./app.js";
+
+pool.connect((err) => {
+  if (err) console.error(err);
+});
 
 const server = app.listen(config.port, () =>
   console.log(
