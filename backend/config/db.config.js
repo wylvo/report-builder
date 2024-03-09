@@ -1,6 +1,4 @@
-import sql from "mssql";
-
-const pool = new sql.ConnectionPool({
+const dbConfig = {
   server: process.env.DB_SERVER,
   database: process.env.DB_NAME,
   user: process.env.DB_USERNAME,
@@ -10,6 +8,6 @@ const pool = new sql.ConnectionPool({
   //   encrypt: true, // for azure
   //   trustServerCertificate: false, // change to true for local dev / self-signed certs
   // },
-});
+};
 
-export default pool;
+export default dbConfig;

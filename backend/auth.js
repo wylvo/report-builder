@@ -3,6 +3,7 @@ import { promisify } from "util";
 import jwt from "jsonwebtoken";
 import config from "./config/app.config.js";
 import bcrypt from "bcrypt";
+import catchAsync from "./errors/catchAsync.js";
 
 export const comparePasswords = (password, hash) => {
   return bcrypt.compare(password, hash);
@@ -19,7 +20,7 @@ export const signJWT = (id) => {
 };
 
 export const createJWT = (user, res, statusCode) => {
-  const token = signJWT(user.password);
+  const token = signJWT(user.id);
   res.status(statusCode).json({
     status: "success",
     token,
@@ -29,14 +30,18 @@ export const createJWT = (user, res, statusCode) => {
   });
 };
 
-export const proctect = async (req, res, next) => {
+export const protect = catchAsync(async (req, res, next) => {
   // Check if has bearer in header value
   let bearer;
-  if (req.headers?.authorization.startsWith("Bearer"))
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  )
     bearer = req.headers.authorization;
 
   if (!bearer) {
     res.status(401).json({
+      status: "failed",
       message: "Unauthorized. Please sign in to get access.",
     });
     return;
@@ -47,6 +52,7 @@ export const proctect = async (req, res, next) => {
 
   if (!token) {
     res.status(401).json({
+      status: "failed",
       message: "Invalid token. Please sign in to get access.",
     });
     return;
@@ -56,13 +62,23 @@ export const proctect = async (req, res, next) => {
   const decoded = await promisify(jwt.verify)(token, config.jwt.secret);
 
   // Check if user exists in DB
-  // TO DO (query user unique id from DB)
-  const currentUser = decoded.id;
+  const mssql = req.app.locals.mssql;
+  const {
+    recordset: [currentUser],
+  } = await mssql.query(`SELECT * FROM users WHERE id = '${decoded.id}'`);
+
+  if (!currentUser) {
+    res.status(401).json({
+      status: "failed",
+      message: "Unable to verify the identity of the provided access token.",
+    });
+    return;
+  }
 
   // Check if user changed password after the token was issued
-  // TO DO (once DB is setup, and route to reset password)
+  // TO DO (once route to reset password is setup)
 
   // GRANT ACCESS TO PROTECTED ROUTE
   req.user = decoded;
   next();
-};
+});

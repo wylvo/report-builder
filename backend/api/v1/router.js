@@ -3,13 +3,14 @@ import { getVersion } from "./version/version.js";
 import * as backup from "./backup/backup.js";
 import * as report from "./reports/reportController.js";
 import * as user from "./users/userController.js";
+import * as auth from "../../auth.js";
 
 const router = Router();
 
 /**
  * Users
  */
-router.get("/users", user.getAllUsers);
+router.get("/users", auth.protect, user.getAllUsers);
 router.post("/users", user.createUser);
 router.get("/users/:id", user.getUser);
 router.put("/users/:id", user.updateUser);

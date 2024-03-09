@@ -1,8 +1,6 @@
 import path from "path";
 import { readFile, writeFile } from "fs/promises";
 
-import "dotenv/config";
-
 let port = process.env.SERVER_PORT;
 
 // Instanciating Express' Server & Server Port

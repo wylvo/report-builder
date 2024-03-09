@@ -1,7 +1,7 @@
-import { readFile } from "fs/promises";
 import { comparePasswords, createJWT } from "./auth.js";
+import catchAsync from "./errors/catchAsync.js";
 
-export const signIn = async (req, res, next) => {
+export const signIn = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
   // Check if email & password exist
@@ -13,9 +13,10 @@ export const signIn = async (req, res, next) => {
   }
 
   // Check if user exists && password is correct
-  // TO DO (query user email from DB)
-  // const users =
-  const user = users.find((user) => user.email === email);
+  const mssql = req.app.locals.mssql;
+  const {
+    recordset: [user],
+  } = await mssql.query(`SELECT * FROM users WHERE email = '${email}'`);
 
   if (!user || !(await comparePasswords(password, user.password))) {
     res.status(401).json({
@@ -24,7 +25,6 @@ export const signIn = async (req, res, next) => {
     });
   } else {
     // If everything is ok, send the token to client
-    console.log(password, user.password);
     createJWT(user, res, 200);
   }
-};
+});

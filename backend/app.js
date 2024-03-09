@@ -8,6 +8,7 @@ import compression from "compression";
 import rateLimit from "express-rate-limit";
 
 import routerV1 from "./api/v1/router.js";
+import globalErrorHandler from "./errors/errorController.js";
 import { signIn } from "./signin.js";
 
 const app = express();
@@ -35,10 +36,19 @@ if (process.env.NODE_ENV === "development") {
 // Format Json Responses As Text With Spaces
 app.set("json spaces", 2);
 
+// Static Files
+app.use(express.static(path.join(__dirname, "/frontend/public")));
+
 app.use("/api/v1", routerV1);
 app.post("/signin", signIn);
 
-// Static Files
-app.use(express.static(path.join(__dirname, "/frontend/public")));
+app.all("*", (req, res, next) => {
+  res.status(404).json({
+    status: "fail",
+    message: `Can't find ${req.originalUrl} on this server!`,
+  });
+});
+
+app.use(globalErrorHandler);
 
 export default app;
