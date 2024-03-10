@@ -18,7 +18,7 @@ const router = Router();
 /**
  * Users
  */
-router.get("/users", auth.protect, user.getAllUsers);
+router.get("/users", user.getAllUsers);
 router.post("/users", user.createUser);
 router.get("/users/:id", user.getUser);
 router.put("/users/:id", user.updateUser);

@@ -2,12 +2,7 @@ import { signOut } from "./signOut/signOut.js";
 import { hashPassword } from "../../../auth.js";
 import { generateUUID } from "../router.js";
 import catchAsync from "../../../errors/catchAsync.js";
-import {
-  createUserQuery,
-  deleteUserQuery,
-  getAllUsersQuery,
-  getUserQuery,
-} from "./userQueries.js";
+import usersSQL from "./userQueries.js";
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -20,7 +15,7 @@ const filterObj = (obj, ...allowedFields) => {
 export const getAllUsers = catchAsync(async (req, res, next) => {
   const mssql = req.app.locals.mssql;
 
-  const { recordset: users } = await mssql.query(getAllUsersQuery);
+  const { recordset: users } = await mssql.query(usersSQL.getAll);
 
   res.status(200).json({
     status: "success",
@@ -39,7 +34,7 @@ export const createUser = catchAsync(async (req, res, next) => {
     .input("email", email)
     .input("password", await hashPassword(password))
     .input("role", role)
-    .query(createUserQuery);
+    .query(usersSQL.create);
 
   res.status(201).json({
     status: "success",
@@ -54,7 +49,7 @@ export const getUser = async (req, res, next) => {
 
   const {
     recordset: [user],
-  } = await mssql.request().input("id", id).query(getUserQuery);
+  } = await mssql.request().input("id", id).query(usersSQL.get);
 
   if (!user) {
     res.status(404).json({
@@ -82,7 +77,7 @@ export const deleteUser = catchAsync(async (req, res, next) => {
 
   const {
     recordset: [user],
-  } = await mssql.request().input("id", id).query(getUserQuery);
+  } = await mssql.request().input("id", id).query(usersSQL.get);
 
   if (!user) {
     res.status(404).json({
@@ -91,7 +86,7 @@ export const deleteUser = catchAsync(async (req, res, next) => {
     });
     return;
   }
-  await mssql.request().input("id", user.id).query(deleteUserQuery);
+  await mssql.request().input("id", user.id).query(usersSQL.delete);
 
   res.status(204).json({
     status: "success",
