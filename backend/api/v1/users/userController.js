@@ -26,24 +26,41 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
 
 export const createUser = catchAsync(async (req, res, next) => {
   const mssql = req.app.locals.mssql;
-  const { role, email, password } = req.body;
+  const { NVarChar } = req.app.locals.mssqlDataTypes;
+  const { fullName, username, initials, email, password, role } = req.body;
+  const rawJSON = JSON.stringify(req.body);
 
-  const result = await mssql
+  let {
+    output: { user },
+  } = await mssql
     .request()
     .input("id", generateUUID())
+    .input("fullName", fullName)
+    .input("username", username)
+    .input("initials", initials)
     .input("email", email)
     .input("password", await hashPassword(password))
     .input("role", role)
+    .output("user", NVarChar, rawJSON)
     .query(usersSQL.create);
+
+  user = filterObj(
+    JSON.parse(user),
+    "id",
+    "fullName",
+    "username",
+    "email",
+    "role"
+  );
 
   res.status(201).json({
     status: "success",
     message: "User created.",
-    result,
+    user,
   });
 });
 
-export const getUser = async (req, res, next) => {
+export const getUser = catchAsync(async (req, res, next) => {
   const mssql = req.app.locals.mssql;
   const id = req.params.id;
 
@@ -63,13 +80,44 @@ export const getUser = async (req, res, next) => {
     status: "success",
     data: user,
   });
-};
+});
 
-export const updateUser = async (req, res, next) => {
-  res.status(200).json({
-    route: "/updateUser",
+export const updateUser = catchAsync(async (req, res, next) => {
+  const mssql = req.app.locals.mssql;
+  const { NVarChar } = req.app.locals.mssqlDataTypes;
+  const id = req.params.id;
+
+  const {
+    recordset: [hasUser],
+  } = await mssql.request().input("id", id).query(usersSQL.get);
+
+  if (!hasUser) {
+    res.status(404).json({
+      status: "failed",
+      message: "User not found.",
+    });
+    return;
+  }
+
+  const rawJSON = JSON.stringify(req.body);
+
+  let {
+    output: { user },
+  } = await mssql
+    .request()
+    .input("id", hasUser.id)
+    .input("rawJSON", NVarChar, rawJSON)
+    .output("user", NVarChar, rawJSON)
+    .query(usersSQL.update);
+
+  [user] = JSON.parse(user);
+
+  res.status(201).json({
+    status: "success",
+    message: "User updated.",
+    user,
   });
-};
+});
 
 export const deleteUser = catchAsync(async (req, res, next) => {
   const mssql = req.app.locals.mssql;
