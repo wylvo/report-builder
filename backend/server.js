@@ -19,7 +19,7 @@ export const pool = new sql.ConnectionPool(dbConfig)
     if (pool.connected) {
       console.log("MS SQL Server connection successful!");
       app.locals.mssql = pool;
-      app.locals.types = {
+      app.locals.mssqlDataTypes = {
         NVarChar: sql.NVarChar,
         Int: sql.Int,
         Boolean: sql.Bit,

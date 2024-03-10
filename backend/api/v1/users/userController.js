@@ -1,14 +1,13 @@
 import { signOut } from "./signOut/signOut.js";
 import { hashPassword } from "../../../auth.js";
+import { generateUUID } from "../router.js";
 import catchAsync from "../../../errors/catchAsync.js";
-
-const generateUUID = () => {
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0,
-      v = c == "x" ? r : (r & 0x3) | 0x8;
-    return v.toString(16).toLowerCase();
-  });
-};
+import {
+  createUserQuery,
+  deleteUserQuery,
+  getAllUsersQuery,
+  getUserQuery,
+} from "./userQueries.js";
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -21,7 +20,7 @@ const filterObj = (obj, ...allowedFields) => {
 export const getAllUsers = catchAsync(async (req, res, next) => {
   const mssql = req.app.locals.mssql;
 
-  const { recordset: users } = await mssql.query("SELECT * FROM users");
+  const { recordset: users } = await mssql.query(getAllUsersQuery);
 
   res.status(200).json({
     status: "success",
@@ -40,9 +39,7 @@ export const createUser = catchAsync(async (req, res, next) => {
     .input("email", email)
     .input("password", await hashPassword(password))
     .input("role", role)
-    .query(
-      "INSERT INTO users (id, email, password, role) VALUES (@id, @email, @password, @role);"
-    );
+    .query(createUserQuery);
 
   res.status(201).json({
     status: "success",
@@ -57,10 +54,7 @@ export const getUser = async (req, res, next) => {
 
   const {
     recordset: [user],
-  } = await mssql
-    .request()
-    .input("id", id)
-    .query("SELECT * FROM users WHERE id = @id");
+  } = await mssql.request().input("id", id).query(getUserQuery);
 
   if (!user) {
     res.status(404).json({
@@ -88,10 +82,7 @@ export const deleteUser = catchAsync(async (req, res, next) => {
 
   const {
     recordset: [user],
-  } = await mssql
-    .request()
-    .input("id", id)
-    .query("SELECT id FROM users WHERE id = @id");
+  } = await mssql.request().input("id", id).query(getUserQuery);
 
   if (!user) {
     res.status(404).json({
@@ -100,10 +91,7 @@ export const deleteUser = catchAsync(async (req, res, next) => {
     });
     return;
   }
-  await mssql
-    .request()
-    .input("id", user.id)
-    .query("DELETE FROM users WHERE id = @id");
+  await mssql.request().input("id", user.id).query(deleteUserQuery);
 
   res.status(204).json({
     status: "success",

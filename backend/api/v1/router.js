@@ -5,6 +5,14 @@ import * as report from "./reports/reportController.js";
 import * as user from "./users/userController.js";
 import * as auth from "../../auth.js";
 
+export const generateUUID = () => {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0,
+      v = c == "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16).toLowerCase();
+  });
+};
+
 const router = Router();
 
 /**
