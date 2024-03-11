@@ -1,8 +1,7 @@
-import sql from "mssql";
 import "dotenv/config";
 
 import config from "./config/app.config.js";
-import dbConfig from "./config/db.config.js";
+import * as dbConfig from "./config/db.config.js";
 
 process.on("uncaughtException", (err) => {
   console.error("UNHANDLED EXCEPTION...");
@@ -13,23 +12,7 @@ process.on("uncaughtException", (err) => {
 
 import app from "./app.js";
 
-export const pool = new sql.ConnectionPool(dbConfig)
-  .connect()
-  .then((pool) => {
-    if (pool.connected) {
-      console.log("MS SQL Server connection successful!");
-      app.locals.mssql = pool;
-      app.locals.mssqlDataTypes = {
-        NVarChar: sql.NVarChar,
-        Int: sql.Int,
-        Boolean: sql.Bit,
-        DateTime: sql.DateTime,
-      };
-    }
-  })
-  .catch((err) => {
-    console.error(err);
-  });
+dbConfig.connectToDB();
 
 const server = app.listen(config.port, () =>
   console.log(

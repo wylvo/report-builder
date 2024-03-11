@@ -1,12 +1,13 @@
+import { mssqlRequest } from "../../../config/db.config.js";
 import catchAsync from "../../../errors/catchAsync.js";
 import reportsSQL from "./reportQueries.js";
 
 export const getAllReports = catchAsync(async (req, res, next) => {
-  const mssql = req.app.locals.mssql;
+  const request = mssqlRequest();
 
   const {
     recordset: [reports],
-  } = await mssql.query(reportsSQL.getAll);
+  } = await request.query(reportsSQL.getAll);
 
   res.status(200).json({
     status: "success",
@@ -16,15 +17,14 @@ export const getAllReports = catchAsync(async (req, res, next) => {
 });
 
 export const createReport = catchAsync(async (req, res, next) => {
-  const mssql = req.app.locals.mssql;
+  const request = mssqlRequest();
   const { NVarChar } = req.app.locals.mssqlDataTypes;
 
   const rawJSON = JSON.stringify(req.body);
 
   let {
     output: { report },
-  } = await mssql
-    .request()
+  } = await request
     .input("rawJSON", NVarChar, rawJSON)
     .output("report", NVarChar, rawJSON)
     .query(reportsSQL.create);
@@ -39,12 +39,12 @@ export const createReport = catchAsync(async (req, res, next) => {
 });
 
 export const getReport = catchAsync(async (req, res, next) => {
-  const mssql = req.app.locals.mssql;
+  const request = mssqlRequest();
   const id = req.params.id;
 
   const {
     recordset: [report],
-  } = await mssql.request().input("id", id).query(reportsSQL.get);
+  } = await request.input("id", id).query(reportsSQL.get);
 
   if (!report) {
     res.status(404).json({
@@ -61,13 +61,13 @@ export const getReport = catchAsync(async (req, res, next) => {
 });
 
 export const updateReport = catchAsync(async (req, res, next) => {
-  const mssql = req.app.locals.mssql;
+  const request = mssqlRequest();
   const { NVarChar } = req.app.locals.mssqlDataTypes;
   const id = req.params.id;
 
   const {
     recordset: [hasReport],
-  } = await mssql.request().input("id", id).query(reportsSQL.get);
+  } = await request.input("id", id).query(reportsSQL.get);
 
   if (!hasReport) {
     res.status(404).json({
@@ -80,8 +80,7 @@ export const updateReport = catchAsync(async (req, res, next) => {
 
   let {
     output: { report },
-  } = await mssql
-    .request()
+  } = await request
     .input("id", hasReport[0].id)
     .input("rawJSON", NVarChar, rawJSON)
     .output("report", NVarChar, rawJSON)
@@ -97,12 +96,12 @@ export const updateReport = catchAsync(async (req, res, next) => {
 });
 
 export const deleteReport = catchAsync(async (req, res, next) => {
-  const mssql = req.app.locals.mssql;
+  const request = mssqlRequest();
   const id = req.params.id;
 
   const {
     recordset: [report],
-  } = await mssql.request().input("id", id).query(reportsSQL.get);
+  } = await request.input("id", id).query(reportsSQL.get);
 
   if (!report) {
     res.status(404).json({
@@ -111,7 +110,7 @@ export const deleteReport = catchAsync(async (req, res, next) => {
     });
     return;
   }
-  await mssql.request().input("id", report[0].id).query(reportsSQL.delete);
+  await request.input("id", report[0].id).query(reportsSQL.delete);
 
   res.status(204).json({
     status: "success",

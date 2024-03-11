@@ -1,5 +1,5 @@
 export default {
-  getAll: "SELECT * FROM users;",
+  getAll: "SELECT id, fullName, username, initials, email, role FROM users;",
   get: "SELECT * FROM users WHERE id = @id;",
   create: `INSERT INTO users (id, fullName, username, initials, email, password, role)
   VALUES (@id, @fullName, @username, @initials, @email, @password, @role);`,

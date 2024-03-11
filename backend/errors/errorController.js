@@ -1,3 +1,5 @@
+// https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-tds/9805e9fa-1f8b-4cf8-8f78-8d2602228635?redirectedfrom=MSDN
+
 export default (err, req, res, next) => {
   // console.log(err.stack);
   console.log(err);
