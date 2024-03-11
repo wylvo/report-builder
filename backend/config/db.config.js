@@ -42,7 +42,7 @@ export const mssqlRequest = (res) => {
 export const mssqlDataTypes = {
   NVarChar: sql.NVarChar,
   Int: sql.Int,
-  Boolean: sql.Bit,
+  Bit: sql.Bit,
   DateTime: sql.DateTime,
 };
 

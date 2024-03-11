@@ -97,6 +97,7 @@ export const updateUser = catchAsync(async (req, res, next) => {
     });
     return;
   }
+  console.log(user);
 
   await request2
     .input("id", user.id)
@@ -125,6 +126,7 @@ export const deleteUser = catchAsync(async (req, res, next) => {
     });
     return;
   }
+
   await request2.input("id", user.id).query(usersSQL.delete);
 
   res.status(204).json({
