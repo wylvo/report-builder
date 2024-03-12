@@ -1,6 +1,15 @@
 import { mssqlRequest, mssqlDataTypes } from "../../../config/db.config.js";
+import GlobalError from "../../../errors/globalError.js";
 import catchAsync from "../../../errors/catchAsync.js";
 import reportsSQL from "./reportQueries.js";
+
+export const findReportByIdQuery = async (request, id) => {
+  const {
+    recordset: [report],
+  } = await request.input("id", id).query(reportsSQL.get);
+
+  return report;
+};
 
 export const getAllReports = catchAsync(async (req, res, next) => {
   const request = mssqlRequest();
@@ -34,17 +43,10 @@ export const getReport = catchAsync(async (req, res, next) => {
   const request = mssqlRequest();
   const id = req.params.id;
 
-  const {
-    recordset: [report],
-  } = await request.input("id", id).query(reportsSQL.get);
+  const report = await findReportByIdQuery(request, id);
 
-  if (!report) {
-    res.status(404).json({
-      status: "failed",
-      message: "Report not found.",
-    });
-    return;
-  }
+  if (!report)
+    return next(new GlobalError(`Report not found with id: ${id}.`, 404));
 
   res.status(200).json({
     status: "success",
@@ -60,17 +62,10 @@ export const updateReport = catchAsync(async (req, res, next) => {
   const id = req.params.id;
   const rawJSON = JSON.stringify(req.body);
 
-  const {
-    recordset: [report],
-  } = await request1.input("id", id).query(reportsSQL.get);
+  const report = await findReportByIdQuery(request1, id);
 
-  if (!report) {
-    res.status(404).json({
-      status: "failed",
-      message: "Report not found.",
-    });
-    return;
-  }
+  if (!report)
+    return next(new GlobalError(`Report not found with id: ${id}.`, 404));
 
   await request2
     .input("id", report[0].id)
@@ -88,17 +83,10 @@ export const deleteReport = catchAsync(async (req, res, next) => {
   const request2 = mssqlRequest();
   const id = req.params.id;
 
-  const {
-    recordset: [report],
-  } = await request1.input("id", id).query(reportsSQL.get);
+  const report = await findReportByIdQuery(request1, id);
 
-  if (!report) {
-    res.status(404).json({
-      status: "failed",
-      message: "Report not found.",
-    });
-    return;
-  }
+  if (!report)
+    return next(new GlobalError(`Report not found with id: ${id}.`, 404));
 
   await request2.input("id", report[0].id).query(reportsSQL.delete);
 

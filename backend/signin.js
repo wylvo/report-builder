@@ -1,4 +1,6 @@
 import { comparePasswords, createJWT } from "./auth.js";
+import { mssqlRequest } from "./config/db.config.js";
+import GlobalError from "./errors/globalError.js";
 import catchAsync from "./errors/catchAsync.js";
 
 export const signIn = catchAsync(async (req, res, next) => {
@@ -6,25 +8,25 @@ export const signIn = catchAsync(async (req, res, next) => {
 
   // Check if email & password exist
   if (!email || !password) {
-    res.status(400).json({
-      status: "failed",
-      message: "Please sign in by providing both email and password.",
-    });
+    return next(
+      new GlobalError(
+        "Please sign in by providing both email and password.",
+        400
+      )
+    );
   }
 
   // Check if user exists && password is correct
-  const mssql = req.app.locals.mssql;
+  const request = mssqlRequest();
   const {
     recordset: [user],
-  } = await mssql.query(`SELECT * FROM users WHERE email = '${email}'`);
+  } = await request
+    .input("email", email)
+    .query("SELECT * FROM users WHERE email = @email");
 
-  if (!user || !(await comparePasswords(password, user.password))) {
-    res.status(401).json({
-      status: "failed",
-      message: "Incorrect email or password",
-    });
-  } else {
-    // If everything is ok, send the token to client
-    createJWT(user, res, 200);
-  }
+  if (!user || !(await comparePasswords(password, user.password)))
+    return next(new GlobalError("Incorrect email or password", 401));
+
+  // If everything is ok, send the token to client
+  createJWT(user, res, 200);
 });

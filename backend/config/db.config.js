@@ -29,13 +29,6 @@ export const mssqlRequest = (res) => {
   const request = new sql.Request(pool);
 
   // request.stream = true;
-  // request.on("error", (err) => {
-  //   res.status(400).json({
-  //     status: "fail",
-  //     message: err,
-  //   });
-  // });
-
   return request;
 };
 

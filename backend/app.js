@@ -9,6 +9,7 @@ import rateLimit from "express-rate-limit";
 
 import routerV1 from "./api/v1/router.js";
 import globalErrorHandler from "./errors/errorController.js";
+import GlobalError from "./errors/globalError.js";
 import { signIn } from "./signin.js";
 
 const app = express();
@@ -43,10 +44,7 @@ app.use("/api/v1", routerV1);
 app.post("/signin", signIn);
 
 app.all("*", (req, res, next) => {
-  res.status(404).json({
-    status: "fail",
-    message: `Can't find ${req.originalUrl} on this server!`,
-  });
+  next(new GlobalError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
 app.use(globalErrorHandler);

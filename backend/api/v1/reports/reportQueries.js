@@ -41,6 +41,7 @@ export default {
       techInitials AS [tech.initials],
       techIsOnCall AS [tech.isOnCall]
     FROM reports
+    ORDER BY createdDateTime DESC
     FOR JSON PATH;
   `,
   get: `

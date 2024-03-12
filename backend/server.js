@@ -20,12 +20,12 @@ const server = app.listen(config.port, () =>
   )
 );
 
-// process.on("unhandledRejection", (err) => {
-//   console.error("UNHANDLED REJECTION...");
-//   console.error(err.name, err.message);
-//   console.error(err.stack);
+process.on("unhandledRejection", (err) => {
+  console.error("UNHANDLED REJECTION...");
+  console.error(err.name, err.message);
+  console.error(err.stack);
 
-//   server.close(() => {
-//     process.exit(1);
-//   });
-// });
+  server.close(() => {
+    process.exit(1);
+  });
+});

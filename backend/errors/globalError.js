@@ -1,13 +1,13 @@
-class AppError extends Error {
+class GlobalError extends Error {
   constructor(message, statusCode) {
     super(message);
 
     this.statusCode = statusCode;
     this.status = `${statusCode}`.startsWith("4") ? "failed" : "error";
-    this.isOperational = true;
+    this.isTrusted = true;
 
     Error.captureStackTrace(this, this.contructor);
   }
 }
 
-export default AppError;
+export default GlobalError;

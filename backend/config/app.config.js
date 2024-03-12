@@ -24,6 +24,7 @@ const config = {
   jwt: {
     secret: process.env.JWT_SECRET,
     expiresIn: process.env.JWT_EXPIRES_IN,
+    cookie: { expiresIn: process.env.JWT_COOKIE_EXPIRES_IN },
   },
   backup: {
     file: {

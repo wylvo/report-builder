@@ -1,8 +1,9 @@
 import { Router } from "express";
 import { getVersion } from "./version/version.js";
-import * as backup from "./backup/backup.js";
 import * as report from "./reports/reportController.js";
 import * as user from "./users/userController.js";
+import * as webhook from "./webhook/webhookController.js";
+import * as backup from "./backup/backup.js";
 import * as auth from "../../auth.js";
 
 export const generateUUID = () => {
@@ -44,7 +45,7 @@ router.post("/backup", backup.updateBackup);
 /**
  * Webhook
  */
-router.post("/webhook/:id");
+router.post("/webhook/:id", webhook.sendReportToWebhook);
 
 /**
  * Version

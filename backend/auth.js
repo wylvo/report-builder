@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import config from "./config/app.config.js";
 import bcrypt from "bcrypt";
 import catchAsync from "./errors/catchAsync.js";
+import GlobalError from "./errors/globalError.js";
 
 export const comparePasswords = (password, hash) => {
   return bcrypt.compare(password, hash);
@@ -21,6 +22,18 @@ export const signJWT = (id) => {
 
 export const createJWT = (user, res, statusCode) => {
   const token = signJWT(user.id);
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + config.jwt.cookie.expiresIn * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+
+  if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
+  res.cookie("jwt", token, cookieOptions);
+
+  user.password = undefined;
+
   res.status(statusCode).json({
     status: "success",
     token,
@@ -40,22 +53,18 @@ export const protect = catchAsync(async (req, res, next) => {
     bearer = req.headers.authorization;
 
   if (!bearer) {
-    res.status(401).json({
-      status: "failed",
-      message: "Unauthorized. Please sign in to get access.",
-    });
-    return;
+    return next(
+      new GlobalError("Unauthorized. Please sign in to get access.", 401)
+    );
   }
 
   // Check if has token in header value
   const [, token] = bearer.split(" ");
 
   if (!token) {
-    res.status(401).json({
-      status: "failed",
-      message: "Invalid token. Please sign in to get access.",
-    });
-    return;
+    return next(
+      new GlobalError("Invalid token. Please sign in to get access.", 401)
+    );
   }
 
   // Verify token
@@ -68,11 +77,12 @@ export const protect = catchAsync(async (req, res, next) => {
   } = await mssql.query(`SELECT * FROM users WHERE id = '${decoded.id}'`);
 
   if (!currentUser) {
-    res.status(401).json({
-      status: "failed",
-      message: "Unable to verify the identity of the provided access token.",
-    });
-    return;
+    return next(
+      new GlobalError(
+        "Unable to verify the identity of the provided access token.",
+        401
+      )
+    );
   }
 
   // Check if user changed password after the token was issued

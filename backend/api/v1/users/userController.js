@@ -3,6 +3,7 @@ import { hashPassword } from "../../../auth.js";
 import { generateUUID } from "../router.js";
 import { mssqlRequest, mssqlDataTypes } from "../../../config/db.config.js";
 import catchAsync from "../../../errors/catchAsync.js";
+import GlobalError from "../../../errors/globalError.js";
 import usersSQL from "./userQueries.js";
 
 const filterObject = (obj, ...allowedFields) => {
@@ -20,6 +21,14 @@ const mergeUserData = (id, obj) => {
       ...filterObject(obj, "fullName", "username", "email", "initials", "role"),
     },
   ];
+};
+
+const findUserByIdQuery = async (request, id) => {
+  const {
+    recordset: [user],
+  } = await request.input("id", id).query(usersSQL.get);
+
+  return user;
 };
 
 export const getAllUsers = catchAsync(async (req, res, next) => {
@@ -60,17 +69,10 @@ export const getUser = catchAsync(async (req, res, next) => {
   const request = mssqlRequest();
   const id = req.params.id;
 
-  let {
-    recordset: [user],
-  } = await request.input("id", id).query(usersSQL.get);
+  const user = await findUserByIdQuery(request, id);
 
-  if (!user) {
-    res.status(404).json({
-      status: "failed",
-      message: "User not found.",
-    });
-    return;
-  }
+  if (!user)
+    return next(new GlobalError(`User not found with id: ${id}.`, 404));
 
   res.status(200).json({
     status: "success",
@@ -86,18 +88,10 @@ export const updateUser = catchAsync(async (req, res, next) => {
   const id = req.params.id;
   const rawJSON = JSON.stringify(req.body);
 
-  const {
-    recordset: [user],
-  } = await request1.input("id", id).query(usersSQL.get);
+  const user = await findUserByIdQuery(request1, id);
 
-  if (!user) {
-    res.status(404).json({
-      status: "failed",
-      message: "User not found.",
-    });
-    return;
-  }
-  console.log(user);
+  if (!user)
+    return next(new GlobalError(`User not found with id: ${id}.`, 404));
 
   await request2
     .input("id", user.id)
@@ -115,17 +109,10 @@ export const deleteUser = catchAsync(async (req, res, next) => {
   const request2 = mssqlRequest();
   const id = req.params.id;
 
-  const {
-    recordset: [user],
-  } = await request1.input("id", id).query(usersSQL.get);
+  const user = await findUserByIdQuery(request1, id);
 
-  if (!user) {
-    res.status(404).json({
-      status: "failed",
-      message: "User not found.",
-    });
-    return;
-  }
+  if (!user)
+    return next(new GlobalError(`User not found with id: ${id}.`, 404));
 
   await request2.input("id", user.id).query(usersSQL.delete);
 
