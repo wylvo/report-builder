@@ -72,7 +72,6 @@ export const signIn = catchAsync(async (req, res, next) => {
   }
 
   // Check if user exists && password is correct
-  const request = mssql();
   const {
     recordset: [user],
   } = await mssql()
@@ -114,7 +113,7 @@ export const protect = catchAsync(async (req, res, next) => {
   const decoded = await promisify(jwt.verify)(token, config.jwt.secret);
 
   // Check if user exists in DB
-  const request = mssql();
+
   const {
     recordset: [currentUser],
   } = await mssql()

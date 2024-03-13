@@ -12,8 +12,6 @@ export const findReportByIdQuery = async (id) => {
 };
 
 export const getAllReports = catchAsync(async (req, res, next) => {
-  const request = mssql();
-
   const {
     recordset: [reports],
   } = await mssql().query(reportsSQL.getAll);
@@ -26,7 +24,6 @@ export const getAllReports = catchAsync(async (req, res, next) => {
 });
 
 export const createReport = catchAsync(async (req, res, next) => {
-  const request = mssql();
   const { NVarChar } = mssqlDataTypes;
 
   const rawJSON = JSON.stringify(req.body);
@@ -40,7 +37,6 @@ export const createReport = catchAsync(async (req, res, next) => {
 });
 
 export const getReport = catchAsync(async (req, res, next) => {
-  const request = mssql();
   const id = req.params.id;
 
   const report = await findReportByIdQuery(id);

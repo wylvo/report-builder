@@ -18,7 +18,6 @@ const send = async (card) => {
 };
 
 export const sendReportToWebhook = catchAsync(async (req, res, next) => {
-  const request = mssql();
   const id = req.params.id;
 
   const report = await findReportByIdQuery(id);

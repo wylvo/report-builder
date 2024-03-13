@@ -33,8 +33,6 @@ export const findUserByIdQuery = async (id) => {
 };
 
 export const getAllUsers = catchAsync(async (req, res, next) => {
-  const request = mssql();
-
   const { recordset: users } = await mssql().query(usersSQL.getAll);
 
   res.status(200).json({
@@ -45,8 +43,6 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
 });
 
 export const createUser = catchAsync(async (req, res, next) => {
-  const request = mssql();
-
   const [
     { fullName, username, initials, email, password, passwordConfirm, role },
   ] = req.body;
@@ -77,7 +73,6 @@ export const createUser = catchAsync(async (req, res, next) => {
 });
 
 export const getUser = catchAsync(async (req, res, next) => {
-  const request = mssql();
   const id = req.params.id;
 
   const user = await findUserByIdQuery(id);
