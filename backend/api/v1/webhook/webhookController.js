@@ -1,7 +1,7 @@
 import { mssqlRequest } from "../../../config/db.config.js";
 import { findReportByIdQuery } from "../reports/reportController.js";
-import catchAsync from "../../../errors/catchAsync.js";
-import GlobalError from "../../../errors/globalError.js";
+import catchAsync from "../../errors/catchAsync.js";
+import GlobalError from "../../errors/globalError.js";
 import { setAdaptiveCard } from "./card.js";
 
 // Send AJAX Request To Microsoft Teams Webhook URL Endpoint With (Adaptive) Card JSON In Body

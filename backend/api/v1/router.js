@@ -19,13 +19,19 @@ const router = Router();
 /**
  * Users
  */
-router.get("/users", user.getAllUsers);
+router.get("/users", auth.protect, user.getAllUsers);
 router.post("/users", user.createUser);
 router.get("/users/:id", user.getUser);
 router.put("/users/:id", user.updateUser);
-router.delete("/users/:id", user.deleteUser);
+router.delete(
+  "/users/:id",
+  auth.protect,
+  auth.restrictTo(["admin"]),
+  user.deleteUser
+);
 
-router.post("/users/signout", user.signOut);
+router.post("/users/:id/resetPassword", user.resetUserPassword);
+router.post("/users/:id/signout", user.signOut);
 
 /**
  * Reports
@@ -34,7 +40,12 @@ router.get("/reports", report.getAllReports);
 router.post("/reports", report.createReport);
 router.get("/reports/:id", report.getReport);
 router.put("/reports/:id", report.updateReport);
-router.delete("/reports/:id", report.deleteReport);
+router.delete(
+  "/reports/:id",
+  auth.protect,
+  auth.restrictTo(["admin"]),
+  report.deleteReport
+);
 
 /**
  * Backup

@@ -1,26 +1,41 @@
 import crypto from "crypto";
 import { promisify } from "util";
 import jwt from "jsonwebtoken";
-import config from "./config/app.config.js";
 import bcrypt from "bcrypt";
-import catchAsync from "./errors/catchAsync.js";
-import GlobalError from "./errors/globalError.js";
-
-export const comparePasswords = (password, hash) => {
-  return bcrypt.compare(password, hash);
-};
+import config from "./config/app.config.js";
+import catchAsync from "./api/errors/catchAsync.js";
+import GlobalError from "./api/errors/globalError.js";
+import { mssqlRequest } from "./config/db.config.js";
 
 export const hashPassword = (password) => {
   return bcrypt.hash(password, 12);
 };
 
-export const signJWT = (id) => {
+const comparePasswords = (password, hash) => {
+  return bcrypt.compare(password, hash);
+};
+
+const hasResetPassword = function (user, JWTTimestamp) {
+  if (user.passwordResetAt) {
+    const changedTimestamp = parseInt(
+      new Date(+user.passwordResetAt).getTime() / 1000,
+      10
+    );
+
+    return JWTTimestamp < changedTimestamp;
+  }
+
+  // False means NOT changed
+  return false;
+};
+
+const signJWT = (id) => {
   return jwt.sign({ id }, config.jwt.secret, {
     expiresIn: config.jwt.expiresIn,
   });
 };
 
-export const createJWT = (user, res, statusCode) => {
+const createJWT = (user, res, statusCode) => {
   const token = signJWT(user.id);
   const cookieOptions = {
     expires: new Date(
@@ -42,6 +57,34 @@ export const createJWT = (user, res, statusCode) => {
     },
   });
 };
+
+export const signIn = catchAsync(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  // Check if email & password exist
+  if (!email || !password) {
+    return next(
+      new GlobalError(
+        "Please sign in by providing both email and password.",
+        400
+      )
+    );
+  }
+
+  // Check if user exists && password is correct
+  const request = mssqlRequest();
+  const {
+    recordset: [user],
+  } = await request
+    .input("email", email)
+    .query("SELECT * FROM users WHERE email = @email");
+
+  if (!user || !(await comparePasswords(password, user.password)))
+    return next(new GlobalError("Incorrect email or password", 401));
+
+  // If everything is ok, send the token to client
+  createJWT(user, res, 200);
+});
 
 export const protect = catchAsync(async (req, res, next) => {
   // Check if has bearer in header value
@@ -71,24 +114,49 @@ export const protect = catchAsync(async (req, res, next) => {
   const decoded = await promisify(jwt.verify)(token, config.jwt.secret);
 
   // Check if user exists in DB
-  const mssql = req.app.locals.mssql;
+  const request = mssqlRequest();
   const {
     recordset: [currentUser],
-  } = await mssql.query(`SELECT * FROM users WHERE id = '${decoded.id}'`);
+  } = await request
+    .input("id", decoded.id)
+    .query("SELECT * FROM users WHERE id = @id");
 
   if (!currentUser) {
     return next(
       new GlobalError(
-        "Unable to verify the identity of the provided access token.",
+        "Unable to verify the identity of the provided access token. Please sign in to get access.",
         401
       )
     );
   }
 
   // Check if user changed password after the token was issued
-  // TO DO (once route to reset password is setup)
+  if (hasResetPassword(currentUser, decoded.iat)) {
+    return next(
+      new GlobalError(
+        "User password was reset recently. Please sign in again.",
+        401
+      )
+    );
+  }
 
   // GRANT ACCESS TO PROTECTED ROUTE
-  req.user = decoded;
+  req.user = currentUser;
   next();
 });
+
+export const restrictTo = (...roles) => {
+  return (req, res, next) => {
+    console.log(req.user.role);
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new GlobalError(
+          "You do not have permission to perform this operation.",
+          403
+        )
+      );
+    }
+
+    next();
+  };
+};

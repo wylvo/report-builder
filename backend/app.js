@@ -8,9 +8,9 @@ import compression from "compression";
 import rateLimit from "express-rate-limit";
 
 import routerV1 from "./api/v1/router.js";
-import globalErrorHandler from "./errors/errorController.js";
-import GlobalError from "./errors/globalError.js";
-import { signIn } from "./signin.js";
+import globalErrorHandler from "./api//errors/errorController.js";
+import GlobalError from "./api/errors/globalError.js";
+import { signIn } from "./auth.js";
 
 const app = express();
 const __dirname = path.resolve();

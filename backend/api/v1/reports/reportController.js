@@ -1,6 +1,6 @@
 import { mssqlRequest, mssqlDataTypes } from "../../../config/db.config.js";
-import GlobalError from "../../../errors/globalError.js";
-import catchAsync from "../../../errors/catchAsync.js";
+import GlobalError from "../../errors/globalError.js";
+import catchAsync from "../../errors/catchAsync.js";
 import reportsSQL from "./reportQueries.js";
 
 export const findReportByIdQuery = async (request, id) => {

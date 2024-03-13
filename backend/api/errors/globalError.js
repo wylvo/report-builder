@@ -5,6 +5,7 @@ class GlobalError extends Error {
     this.statusCode = statusCode;
     this.status = `${statusCode}`.startsWith("4") ? "failed" : "error";
     this.isTrusted = true;
+    this.trustedMessage = message;
 
     Error.captureStackTrace(this, this.contructor);
   }

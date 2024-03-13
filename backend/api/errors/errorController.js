@@ -4,15 +4,21 @@
 import GlobalError from "./globalError.js";
 
 const handleDuplicateFieldsDB = (error) => {
-  const value = error.originalError.info.message.split(".")[3].slice(1);
-  return new GlobalError(`${value}. Please use another value.`, 400);
+  let value = error.originalError.info.message;
+  if (
+    value.startsWith(
+      "Violation of UNIQUE KEY constraint 'UQ__users__AB6E616412575E78'. Cannot insert duplicate key in object 'dbo.users'. "
+    )
+  )
+    value = value.slice(117);
+  return new GlobalError(`${value} Please use another value.`, 400);
 };
 
 const handleJWTError = () =>
-  new AppError("Invalid token. Please log in again!", 401);
+  new GlobalError("Invalid token. Please log in again!", 401);
 
 const handleTokenExpiredError = () =>
-  new AppError("Your token has expired please log in again.", 401);
+  new GlobalError("Your token has expired please log in again.", 401);
 
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
@@ -28,7 +34,7 @@ const sendErrorProd = (err, res) => {
   if (err.isTrusted) {
     res.status(err.statusCode).json({
       status: err.status,
-      message: err.message,
+      message: err.message || err.trustedMessage,
     });
 
     // Programming or other unknown error: don't leak error details
@@ -52,9 +58,7 @@ export default (err, req, res, next) => {
     sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === "production") {
     let error = { ...err };
-    // console.log("HERE IS PROD ERROR", err.number);
-    // if (err.name === "CastError") error = handleCastErrorDB(error);
-    // if (err.name === "ValidationError") error = handleValidationErrorDB(error);
+
     if (err.number === 2627) error = handleDuplicateFieldsDB(error);
     if (err.name === "JsonWebTokenError") error = handleJWTError();
     if (err.name === "TokenExpiredError") error = handleTokenExpiredError();

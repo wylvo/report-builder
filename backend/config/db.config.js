@@ -1,5 +1,6 @@
 import sql from "mssql";
-import catchAsync from "../errors/catchAsync.js";
+import catchAsync from "../api/errors/catchAsync.js";
+import GlobalError from "../api/errors/globalError.js";
 
 const dbConfig = {
   server: process.env.DB_SERVER,
@@ -24,8 +25,14 @@ export const connectToDB = catchAsync(async () => {
 
 export const mssql = [];
 
-export const mssqlRequest = (res) => {
+export const mssqlRequest = () => {
   const [pool] = mssql;
+
+  if (pool.length === 0)
+    new GlobalError(
+      "Connection pool is not ready. Please try again later.",
+      500
+    );
   const request = new sql.Request(pool);
 
   // request.stream = true;

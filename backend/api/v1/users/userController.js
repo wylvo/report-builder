@@ -1,12 +1,13 @@
+import { resetUserPassword } from "./resetPassword/resetPasswordController.js";
 import { signOut } from "./signOut/signOut.js";
 import { hashPassword } from "../../../auth.js";
 import { generateUUID } from "../router.js";
 import { mssqlRequest, mssqlDataTypes } from "../../../config/db.config.js";
-import catchAsync from "../../../errors/catchAsync.js";
-import GlobalError from "../../../errors/globalError.js";
+import catchAsync from "../../errors/catchAsync.js";
+import GlobalError from "../../errors/globalError.js";
 import usersSQL from "./userQueries.js";
 
-const filterObject = (obj, ...allowedFields) => {
+export const filterObject = (obj, ...allowedFields) => {
   const newObj = {};
   Object.keys(obj).forEach((el) => {
     if (allowedFields.includes(el)) newObj[el] = obj[el];
@@ -23,7 +24,7 @@ const mergeUserData = (id, obj) => {
   ];
 };
 
-const findUserByIdQuery = async (request, id) => {
+export const findUserByIdQuery = async (request, id) => {
   const {
     recordset: [user],
   } = await request.input("id", id).query(usersSQL.get);
@@ -46,8 +47,18 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
 export const createUser = catchAsync(async (req, res, next) => {
   const request = mssqlRequest();
 
-  const [{ fullName, username, initials, email, password, role }] = req.body;
+  const [
+    { fullName, username, initials, email, password, passwordConfirm, role },
+  ] = req.body;
   const id = generateUUID();
+
+  if (!username || !email || !role)
+    return next(
+      new GlobalError("Please provide username, email, and role.", 400)
+    );
+
+  if (password !== passwordConfirm)
+    return next(new GlobalError("Passwords do not match.", 400));
 
   await request
     .input("id", id)
@@ -123,3 +134,4 @@ export const deleteUser = catchAsync(async (req, res, next) => {
 });
 
 export { signOut as signOut };
+export { resetUserPassword as resetUserPassword };
