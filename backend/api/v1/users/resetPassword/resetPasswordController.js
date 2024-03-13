@@ -1,16 +1,14 @@
 import { filterObject, findUserByIdQuery } from "../userController.js";
-import { mssqlRequest, mssqlDataTypes } from "../../../../config/db.config.js";
+import { mssql, mssqlDataTypes } from "../../../../config/db.config.js";
 import { hashPassword } from "../../../../auth.js";
 import GlobalError from "../../../errors/globalError.js";
 import catchAsync from "../../../errors/catchAsync.js";
 import resetUserPasswordSQL from "./resetPasswordQueries.js";
 
 export const resetUserPassword = catchAsync(async (req, res, next) => {
-  const request1 = mssqlRequest();
-  const request2 = mssqlRequest();
   const { NVarChar } = mssqlDataTypes;
   const id = req.params.id;
-  const user = await findUserByIdQuery(request1, id);
+  const user = await findUserByIdQuery(id);
 
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
@@ -30,7 +28,7 @@ export const resetUserPassword = catchAsync(async (req, res, next) => {
 
   const rawJSON = JSON.stringify(user);
 
-  await request2
+  await mssql()
     .input("id", user.id)
     .input("rawJSON", NVarChar, rawJSON)
     .query(resetUserPasswordSQL.update);

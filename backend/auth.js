@@ -5,7 +5,7 @@ import bcrypt from "bcrypt";
 import config from "./config/app.config.js";
 import catchAsync from "./api/errors/catchAsync.js";
 import GlobalError from "./api/errors/globalError.js";
-import { mssqlRequest } from "./config/db.config.js";
+import { mssql } from "./config/db.config.js";
 
 export const hashPassword = (password) => {
   return bcrypt.hash(password, 12);
@@ -72,10 +72,10 @@ export const signIn = catchAsync(async (req, res, next) => {
   }
 
   // Check if user exists && password is correct
-  const request = mssqlRequest();
+  const request = mssql();
   const {
     recordset: [user],
-  } = await request
+  } = await mssql()
     .input("email", email)
     .query("SELECT * FROM users WHERE email = @email");
 
@@ -114,10 +114,10 @@ export const protect = catchAsync(async (req, res, next) => {
   const decoded = await promisify(jwt.verify)(token, config.jwt.secret);
 
   // Check if user exists in DB
-  const request = mssqlRequest();
+  const request = mssql();
   const {
     recordset: [currentUser],
-  } = await request
+  } = await mssql()
     .input("id", decoded.id)
     .query("SELECT * FROM users WHERE id = @id");
 

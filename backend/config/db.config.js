@@ -19,24 +19,22 @@ export const connectToDB = catchAsync(async () => {
   const pool = await new sql.ConnectionPool(dbConfig).connect();
   if (pool.connected) {
     console.log("MS SQL Server connection successful!");
-    mssql.push(pool);
+    mssqlPool.push(pool);
   }
 });
 
-export const mssql = [];
+export const mssqlPool = [];
 
-export const mssqlRequest = () => {
-  const [pool] = mssql;
+export const mssql = () => {
+  const [pool] = mssqlPool;
 
-  if (pool.length === 0)
+  if (mssqlPool.length === 0)
     new GlobalError(
       "Connection pool is not ready. Please try again later.",
       500
     );
-  const request = new sql.Request(pool);
 
-  // request.stream = true;
-  return request;
+  return new sql.Request(pool);
 };
 
 export const mssqlDataTypes = {

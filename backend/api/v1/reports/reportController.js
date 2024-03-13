@@ -1,22 +1,22 @@
-import { mssqlRequest, mssqlDataTypes } from "../../../config/db.config.js";
+import { mssql, mssqlDataTypes } from "../../../config/db.config.js";
 import GlobalError from "../../errors/globalError.js";
 import catchAsync from "../../errors/catchAsync.js";
 import reportsSQL from "./reportQueries.js";
 
-export const findReportByIdQuery = async (request, id) => {
+export const findReportByIdQuery = async (id) => {
   const {
     recordset: [report],
-  } = await request.input("id", id).query(reportsSQL.get);
+  } = await mssql().input("id", id).query(reportsSQL.get);
 
   return report;
 };
 
 export const getAllReports = catchAsync(async (req, res, next) => {
-  const request = mssqlRequest();
+  const request = mssql();
 
   const {
     recordset: [reports],
-  } = await request.query(reportsSQL.getAll);
+  } = await mssql().query(reportsSQL.getAll);
 
   res.status(200).json({
     status: "success",
@@ -26,12 +26,12 @@ export const getAllReports = catchAsync(async (req, res, next) => {
 });
 
 export const createReport = catchAsync(async (req, res, next) => {
-  const request = mssqlRequest();
+  const request = mssql();
   const { NVarChar } = mssqlDataTypes;
 
   const rawJSON = JSON.stringify(req.body);
 
-  await request.input("rawJSON", NVarChar, rawJSON).query(reportsSQL.create);
+  await mssql().input("rawJSON", NVarChar, rawJSON).query(reportsSQL.create);
 
   res.status(201).json({
     status: "success",
@@ -40,10 +40,10 @@ export const createReport = catchAsync(async (req, res, next) => {
 });
 
 export const getReport = catchAsync(async (req, res, next) => {
-  const request = mssqlRequest();
+  const request = mssql();
   const id = req.params.id;
 
-  const report = await findReportByIdQuery(request, id);
+  const report = await findReportByIdQuery(id);
 
   if (!report)
     return next(new GlobalError(`Report not found with id: ${id}.`, 404));
@@ -55,19 +55,17 @@ export const getReport = catchAsync(async (req, res, next) => {
 });
 
 export const updateReport = catchAsync(async (req, res, next) => {
-  const request1 = mssqlRequest();
-  const request2 = mssqlRequest();
   const { NVarChar } = mssqlDataTypes;
 
   const id = req.params.id;
   const rawJSON = JSON.stringify(req.body);
 
-  const report = await findReportByIdQuery(request1, id);
+  const report = await findReportByIdQuery(id);
 
   if (!report)
     return next(new GlobalError(`Report not found with id: ${id}.`, 404));
 
-  await request2
+  await mssql()
     .input("id", report[0].id)
     .input("rawJSON", NVarChar, rawJSON)
     .query(reportsSQL.update);
@@ -79,16 +77,14 @@ export const updateReport = catchAsync(async (req, res, next) => {
 });
 
 export const deleteReport = catchAsync(async (req, res, next) => {
-  const request1 = mssqlRequest();
-  const request2 = mssqlRequest();
   const id = req.params.id;
 
-  const report = await findReportByIdQuery(request1, id);
+  const report = await findReportByIdQuery(id);
 
   if (!report)
     return next(new GlobalError(`Report not found with id: ${id}.`, 404));
 
-  await request2.input("id", report[0].id).query(reportsSQL.delete);
+  await mssql().input("id", report[0].id).query(reportsSQL.delete);
 
   res.status(204).json({
     status: "success",

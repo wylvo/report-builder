@@ -2,7 +2,7 @@ import { resetUserPassword } from "./resetPassword/resetPasswordController.js";
 import { signOut } from "./signOut/signOut.js";
 import { hashPassword } from "../../../auth.js";
 import { generateUUID } from "../router.js";
-import { mssqlRequest, mssqlDataTypes } from "../../../config/db.config.js";
+import { mssql, mssqlDataTypes } from "../../../config/db.config.js";
 import catchAsync from "../../errors/catchAsync.js";
 import GlobalError from "../../errors/globalError.js";
 import usersSQL from "./userQueries.js";
@@ -24,18 +24,18 @@ const mergeUserData = (id, obj) => {
   ];
 };
 
-export const findUserByIdQuery = async (request, id) => {
+export const findUserByIdQuery = async (id) => {
   const {
     recordset: [user],
-  } = await request.input("id", id).query(usersSQL.get);
+  } = await mssql().input("id", id).query(usersSQL.get);
 
   return user;
 };
 
 export const getAllUsers = catchAsync(async (req, res, next) => {
-  const request = mssqlRequest();
+  const request = mssql();
 
-  const { recordset: users } = await request.query(usersSQL.getAll);
+  const { recordset: users } = await mssql().query(usersSQL.getAll);
 
   res.status(200).json({
     status: "success",
@@ -45,7 +45,7 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
 });
 
 export const createUser = catchAsync(async (req, res, next) => {
-  const request = mssqlRequest();
+  const request = mssql();
 
   const [
     { fullName, username, initials, email, password, passwordConfirm, role },
@@ -60,7 +60,7 @@ export const createUser = catchAsync(async (req, res, next) => {
   if (password !== passwordConfirm)
     return next(new GlobalError("Passwords do not match.", 400));
 
-  await request
+  await mssql()
     .input("id", id)
     .input("fullName", fullName)
     .input("username", username)
@@ -77,10 +77,10 @@ export const createUser = catchAsync(async (req, res, next) => {
 });
 
 export const getUser = catchAsync(async (req, res, next) => {
-  const request = mssqlRequest();
+  const request = mssql();
   const id = req.params.id;
 
-  const user = await findUserByIdQuery(request, id);
+  const user = await findUserByIdQuery(id);
 
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
@@ -92,19 +92,17 @@ export const getUser = catchAsync(async (req, res, next) => {
 });
 
 export const updateUser = catchAsync(async (req, res, next) => {
-  const request1 = mssqlRequest();
-  const request2 = mssqlRequest();
   const { NVarChar } = mssqlDataTypes;
 
   const id = req.params.id;
   const rawJSON = JSON.stringify(req.body);
 
-  const user = await findUserByIdQuery(request1, id);
+  const user = await findUserByIdQuery(id);
 
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
 
-  await request2
+  await mssql()
     .input("id", user.id)
     .input("rawJSON", NVarChar, rawJSON)
     .query(usersSQL.update);
@@ -116,16 +114,14 @@ export const updateUser = catchAsync(async (req, res, next) => {
 });
 
 export const deleteUser = catchAsync(async (req, res, next) => {
-  const request1 = mssqlRequest();
-  const request2 = mssqlRequest();
   const id = req.params.id;
 
-  const user = await findUserByIdQuery(request1, id);
+  const user = await findUserByIdQuery(id);
 
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
 
-  await request2.input("id", user.id).query(usersSQL.delete);
+  await mssql().input("id", user.id).query(usersSQL.delete);
 
   res.status(204).json({
     status: "success",
