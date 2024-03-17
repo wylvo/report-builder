@@ -5,7 +5,7 @@ import { generateUUID } from "../router.js";
 import { mssql, mssqlDataTypes } from "../../../config/db.config.js";
 import catchAsync from "../../errors/catchAsync.js";
 import GlobalError from "../../errors/globalError.js";
-import usersSQL from "./userQueries.js";
+import usersSQL from "./userModel.js";
 
 export const filterObject = (obj, ...allowedFields) => {
   const newObj = {};
