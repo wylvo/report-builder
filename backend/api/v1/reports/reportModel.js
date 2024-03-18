@@ -224,5 +224,15 @@ export default {
     ) AS json
     WHERE reports.id = @id;
   `,
+  softDelete: `
+    UPDATE reports
+    SET isDeleted = 1
+    WHERE id = @id;
+  `,
+  undoSoftDelete: `
+  UPDATE reports
+  SET isDeleted = 0
+  WHERE id = @id;
+`,
   delete: "DELETE FROM reports WHERE id = @id;",
 };

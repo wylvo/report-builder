@@ -7,13 +7,13 @@ import * as auth from "../../../auth.js";
 
 const router = express.Router();
 
-// Restrict all routes to admin role after this middleware
+// Restrict the following routes to admin role after this middleware
 router.use(auth.restrictTo("admin"));
 
 /** ROUTES
- * /api/v1/users/:id/resetPassword
- * /api/v1/users/
- * /api/v1/users/:id
+ * /api/v1/users/:id/resetPassword  (POST)
+ * /api/v1/users                    (GET & POST)
+ * /api/v1/users/:id                (GET, PUT & DELETE)
  */
 router.use("/:id/resetPassword", getUserId, resetPasswordRouter);
 router.route("/").get(user.getAllUsers).post(user.createUser);

@@ -72,6 +72,36 @@ export const updateReport = catchAsync(async (req, res, next) => {
   });
 });
 
+const hardDeleteReport = async (report) => {
+  await mssql().input("id", report[0].id).query(reportsSQL.delete);
+};
+
+const softDeleteReport = async (report) => {
+  await mssql().input("id", report[0].id).query(reportsSQL.softDelete);
+};
+
+export const undoSoftDeleteReport = async (req, res, next) => {
+  const id = req.params.id;
+
+  const report = await findReportByIdQuery(id);
+
+  if (!report)
+    return next(new GlobalError(`Report not found with id: ${id}.`, 404));
+
+  if (report[0].isDeleted === false)
+    return next(
+      new GlobalError(`Report is not marked as deleted with id: ${id}.`, 400)
+    );
+
+  await mssql().input("id", report[0].id).query(reportsSQL.undoSoftDelete);
+  report[0].isDeleted = false;
+
+  res.status(200).json({
+    status: "success",
+    data: report,
+  });
+};
+
 export const deleteReport = catchAsync(async (req, res, next) => {
   const id = req.params.id;
 
@@ -80,7 +110,9 @@ export const deleteReport = catchAsync(async (req, res, next) => {
   if (!report)
     return next(new GlobalError(`Report not found with id: ${id}.`, 404));
 
-  await mssql().input("id", report[0].id).query(reportsSQL.delete);
+  if (req.user.role === "user") softDeleteReport(report);
+  if (req.user.role === "admin")
+    req.body.isSoftDelete ? softDeleteReport(report) : hardDeleteReport(report);
 
   res.status(204).json({
     status: "success",

@@ -5,15 +5,19 @@ import * as auth from "../../../auth.js";
 
 const router = express.Router();
 
-router.get("/", report.getAllReports);
-router.post("/", report.createReport);
-router.get("/:id", report.getReport);
-router.put("/:id", report.updateReport);
-router.delete(
-  "/:id",
-  auth.protect,
-  auth.restrictTo(["admin"]),
-  report.deleteReport
-);
+/** ROUTE
+ * /api/v1/reports/:id                (DELETE)
+ * /api/v1/reports/:id/undoSoftDelete (PUT)
+ */
+router.delete("/:id", report.deleteReport);
+router.put("/:id/undoSoftDelete", report.undoSoftDeleteReport);
+
+/** ROUTES restricted to "user" role
+ * /api/v1/reports      (GET & POST)
+ * /api/v1/reports/:id  (GET & PUT)
+ */
+router.use(auth.restrictTo("user"));
+router.route("/").get(report.getAllReports).post(report.createReport);
+router.route("/:id").get(report.getReport).put(report.updateReport);
 
 export { router as reportRouter };
