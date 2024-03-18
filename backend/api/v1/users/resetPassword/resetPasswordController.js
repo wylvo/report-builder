@@ -5,23 +5,31 @@ import GlobalError from "../../../errors/globalError.js";
 import catchAsync from "../../../errors/catchAsync.js";
 import resetUserPasswordSQL from "./resetPasswordModel.js";
 
+export const getUserId = (req, res, next) => {
+  req.resetPasswordUserId = req.params.id;
+  next();
+};
+
 export const resetUserPassword = catchAsync(async (req, res, next) => {
   const { NVarChar } = mssqlDataTypes;
-  const id = req.params.id;
+  const id = req.resetPasswordUserId;
+  req.resetPasswordUserId = undefined;
   const user = await findUserByIdQuery(id);
+
+  console.log(id);
 
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
 
-  let { password, passwordConfirm } = req.body;
+  let { password, passwordConfirmation } = req.body;
 
-  if (password !== passwordConfirm)
+  if (password !== passwordConfirmation)
     return next(new GlobalError("Passwords do not match.", 400));
 
   // Set new password
   const newPassword = await hashPassword(password);
   password = undefined;
-  passwordConfirm = undefined;
+  passwordConfirmation = undefined;
 
   user.password = newPassword;
   user.passwordResetAt = Date.now() - 1000;

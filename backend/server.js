@@ -12,7 +12,7 @@ process.on("uncaughtException", (err) => {
 
 import app from "./app.js";
 
-// dbConfig.connectToDB();
+dbConfig.connectToDB();
 
 const server = app.listen(config.port, () =>
   console.log(

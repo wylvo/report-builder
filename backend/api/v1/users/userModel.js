@@ -9,11 +9,11 @@ export default {
     DECLARE @json NVARCHAR(MAX) = @rawJSON;
 
     UPDATE users
-    SET fullName = json.fullName,
-      username = json.username,
-      initials = json.initials,
-      email = json.email,
-      role = json.role
+    SET fullName = ISNULL(json.fullName, users.fullName),
+      username = ISNULL(json.username, users.username),
+      initials = ISNULL(json.initials, users.initials),
+      email = ISNULL(json.email, users.email),
+      role = ISNULL(json.role, users.role)
     FROM OPENJSON(@json)
     WITH (
       id VARCHAR(36),

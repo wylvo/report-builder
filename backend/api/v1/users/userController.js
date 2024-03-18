@@ -1,5 +1,4 @@
 import { resetUserPassword } from "./resetPassword/resetPasswordController.js";
-import { signOut } from "./signOut/signOut.js";
 import { hashPassword } from "../../../auth.js";
 import { generateUUID } from "../router.js";
 import { mssql, mssqlDataTypes } from "../../../config/db.config.js";
@@ -44,7 +43,15 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
 
 export const createUser = catchAsync(async (req, res, next) => {
   const [
-    { fullName, username, initials, email, password, passwordConfirm, role },
+    {
+      fullName,
+      username,
+      initials,
+      email,
+      password,
+      passwordConfirmation,
+      role,
+    },
   ] = req.body;
   const id = generateUUID();
 
@@ -53,7 +60,7 @@ export const createUser = catchAsync(async (req, res, next) => {
       new GlobalError("Please provide username, email, and role.", 400)
     );
 
-  if (password !== passwordConfirm)
+  if (password !== passwordConfirmation)
     return next(new GlobalError("Passwords do not match.", 400));
 
   await mssql()
@@ -124,5 +131,4 @@ export const deleteUser = catchAsync(async (req, res, next) => {
   });
 });
 
-export { signOut as signOut };
 export { resetUserPassword as resetUserPassword };

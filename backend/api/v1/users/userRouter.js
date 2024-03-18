@@ -1,0 +1,26 @@
+import express from "express";
+
+import { getUserId } from "./resetPassword/resetPasswordController.js";
+import { resetPasswordRouter } from "./resetPassword/resetPasswordRouter.js";
+import * as user from "./userController.js";
+import * as auth from "../../../auth.js";
+
+const router = express.Router();
+
+// Restrict all routes to admin role after this middleware
+router.use(auth.restrictTo("admin"));
+
+/** ROUTES
+ * /api/v1/users/:id/resetPassword
+ * /api/v1/users/
+ * /api/v1/users/:id
+ */
+router.use("/:id/resetPassword", getUserId, resetPasswordRouter);
+router.route("/").get(user.getAllUsers).post(user.createUser);
+router
+  .route("/:id")
+  .get(user.getUser)
+  .put(user.updateUser)
+  .delete(user.deleteUser);
+
+export { router as userRouter };

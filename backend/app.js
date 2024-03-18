@@ -8,17 +8,17 @@ import compression from "compression";
 import rateLimit from "express-rate-limit";
 
 import routerV1 from "./api/v1/router.js";
-import globalErrorHandler from "./api//errors/errorController.js";
+import globalErrorHandler from "./api/errors/errorController.js";
 import GlobalError from "./api/errors/globalError.js";
 import { signIn } from "./auth.js";
 
 const app = express();
 const __dirname = path.resolve();
 
-// Set Security HTTP headers
+// Set security HTTP headers
 app.use(helmet());
 
-// Limit requests to the api
+// Limit requests to the API
 const limiter = rateLimit({
   max: 100,
   windowMs: 15000,
@@ -34,10 +34,11 @@ app.use(express.json({ limit: "50mb" }));
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
-// Format Json Responses As Text With Spaces
+
+// Format JSON responses as text with 2 indented spaces
 app.set("json spaces", 2);
 
-// Static Files
+// Static files
 app.use(express.static(path.join(__dirname, "/frontend/public")));
 
 app.use("/api/v1", routerV1);
