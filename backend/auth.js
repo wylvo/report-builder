@@ -85,9 +85,9 @@ export const signIn = catchAsync(async (req, res, next) => {
   createJWT(user, res, 200);
 });
 
-export const logout = (req, res) => {
-  res.cookie("jwt", "logged out", {
-    expires: new Date(Date.now() + 10 * 1000),
+export const signOut = (req, res) => {
+  res.cookie("jwt", "", {
+    maxAge: 1,
     httpOnly: true,
   });
   res.status(200).json({

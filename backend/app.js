@@ -6,11 +6,12 @@ import cors from "cors";
 import morgan from "morgan";
 import compression from "compression";
 import rateLimit from "express-rate-limit";
+import cookieParser from "cookie-parser";
 
 import routerV1 from "./api/v1/router.js";
 import globalErrorHandler from "./api/errors/errorController.js";
 import GlobalError from "./api/errors/globalError.js";
-import { signIn } from "./auth.js";
+import { signIn, signOut } from "./auth.js";
 
 const app = express();
 const __dirname = path.resolve();
@@ -21,14 +22,15 @@ app.use(helmet());
 // Limit requests to the API
 const limiter = rateLimit({
   max: 100,
-  windowMs: 15000,
-  message: "Too many request from this IP, please try again in 15 seconds!",
+  windowMs: 30000,
+  message: "Too many request from this IP, please try again in 30 seconds!",
 });
 app.use("/api", limiter);
 
 app.use(cors());
 app.use(compression());
 app.use(express.json({ limit: "50mb" }));
+app.use(cookieParser());
 
 // Development logging
 if (process.env.NODE_ENV === "development") {
@@ -43,6 +45,7 @@ app.use(express.static(path.join(__dirname, "/frontend/public")));
 
 app.use("/api/v1", routerV1);
 app.post("/signin", signIn);
+app.post("/signout", signOut);
 
 app.all("*", (req, res, next) => {
   next(new GlobalError(`Can't find ${req.originalUrl} on this server!`, 404));
