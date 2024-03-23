@@ -1,0 +1,132 @@
+.content {
+  position: relative;
+  left: 24rem;
+  width: calc(100% - 24rem);
+
+  background: var(--on-background-low-contrast);
+  transition: all 0.3s ease;
+}
+
+.content nav {
+  height: 5.6rem;
+  background-color: var(--background-primary-color);
+  padding: 0 2.4rem 0 0;
+  display: flex;
+  align-items: center;
+  gap: 2.4rem;
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+.content nav a {
+  color: var(--on-background-header);
+}
+
+.content nav .menu-btn {
+  margin-right: auto;
+}
+
+.content nav .menu-btn .bx.bx-menu {
+  width: 3.2rem;
+  height: 3.2rem;
+  /* border-radius: 0.8rem; */
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--on-background-header);
+  background-color: var(--background-primary-color);
+
+  cursor: pointer;
+}
+
+.content nav .profile img {
+  width: 3.2rem;
+  height: 3.2rem;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.content nav .theme-toggle {
+  display: block;
+  min-width: 4.8rem;
+  height: 2.4rem;
+  background: var(--primary-color);
+  cursor: pointer;
+  position: relative;
+  border-radius: 2.4rem;
+}
+
+.content nav .theme-toggle::before {
+  content: "";
+  position: absolute;
+  top: 0.2rem;
+  left: 0.2rem;
+  bottom: 0.2rem;
+  width: calc(2.4rem - 0.4rem);
+  background: var(--on-primary);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.content nav #theme-toggle:checked + .theme-toggle::before {
+  left: calc(100% - (2.4rem - 0.4rem) - 0.2rem);
+}
+
+.content main {
+  width: 100%;
+  padding: 3.2rem 2.4rem;
+  /* max-height: calc(100vh - 6.4rem); */
+}
+
+.content main .header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.6rem;
+  flex-wrap: wrap;
+}
+
+.content main .header .left h1 {
+  font-size: 3.6rem;
+  font-weight: 600;
+  margin-bottom: 1.2rem;
+  color: var(--on-background-header);
+}
+
+.content main .header .left .breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+}
+
+.content main .header .left .breadcrumb li {
+  color: var(--on-background-header);
+}
+
+.content main .header .left .breadcrumb li a {
+  text-decoration: none;
+  color: var(--on-background-header-grey);
+  pointer-events: none;
+}
+
+.content main .header .left .breadcrumb li a.active {
+  color: var(--primary-color);
+  pointer-events: none;
+}
+
+.content main .header .report {
+  height: 3.2rem;
+  padding: 0 1.6rem;
+  border-radius: 3.2rem;
+  background: var(--primary-color);
+  color: var(--on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  font-weight: 500;
+}

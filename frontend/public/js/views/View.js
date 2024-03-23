@@ -135,12 +135,12 @@ export default class View {
 
   // Scroll To Bottom Of The Page
   #addHandlerScrollToTop() {
-    this.#scrollTop.addEventListener("click", this.scrollToTop.bind(this));
+    // this.#scrollTop.addEventListener("click", this.scrollToTop.bind(this));
   }
 
   // prettier-ignore
   // Scroll To Top Of The Page
   #addHandlerScrollTo() {
-    this.#scrollBottom.addEventListener("click", this.scrollToBottom.bind(this));
+    // this.#scrollBottom.addEventListener("click", this.scrollToBottom.bind(this));
   }
 }

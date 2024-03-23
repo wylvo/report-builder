@@ -1,4 +1,5 @@
 import * as model from "./model.js";
+import sidebarView from "./views/sidebarView.js";
 import themeView from "./views/themeView.js";
 import tabsView from "./views/tabsView.js";
 import searchView from "./views/searchView.js";
@@ -339,6 +340,8 @@ const init = async function () {
   // Pagination view handlers
   paginationView.addHandlerOnChangeRowsPerPage(controlRowsPerPage);
   paginationView.addHandlerClickPage(controlPages);
+
+  sidebarView;
 
   const version = await model.appVersion();
   tabsView._appVersion.textContent = version;
