@@ -9,14 +9,14 @@ const dbConfig = {
       ? process.env.DB_SERVER + `,${process.env.DB_PORT}`
       : process.env.DB_SERVER,
   database: process.env.DB_NAME,
-  port: process.env.DB_PORT,
+  port: process.env.DB_PORT !== "" ? process.env.DB_PORT : undefined,
   user: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   trustServerCertificate: true,
   parseJSON: true,
   options: {
     // encrypt: true, // for Azure SQL
-    trustedConnection: false, // use windows authentication
+    trustedConnection: false, // use Windows authentication
   },
   beforeConnect: function (bcConfig) {
     // Modify the connection options here
