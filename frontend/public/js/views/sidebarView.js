@@ -5,7 +5,7 @@ class SidebarView extends View {
     super();
     this._sidebar = document.querySelector(".sidebar");
     this._subMenus = this._sidebar.querySelectorAll(".menu > ul > li");
-    this._menuBtn = document.querySelector(".menu-btn");
+    this._btnMenu = document.querySelector(".menu-btn");
 
     this._addHandlerResizeSidebar();
     this._addHandlerClickMenuButton();
@@ -47,7 +47,7 @@ class SidebarView extends View {
   }
 
   _addHandlerClickMenuButton() {
-    this._menuBtn.addEventListener("click", () =>
+    this._btnMenu.addEventListener("click", () =>
       this._sidebar.classList.toggle("active")
     );
   }

@@ -5,7 +5,7 @@ import * as auth from "../../../auth.js";
 
 const router = express.Router();
 
-/** ROUTE
+/** ROUTES
  * /api/v1/reports/:id                (DELETE)
  * /api/v1/reports/:id/undoSoftDelete (PUT)
  */

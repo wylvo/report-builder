@@ -1,0 +1,167 @@
+/* 
+2 / 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 / 80 / 96 / 128
+*/
+
+header {
+  position: absolute;
+  width: 100%;
+  padding: 0 9.6rem;
+  height: 9.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: spa;
+}
+
+.logo h1 {
+  font-size: 2.4rem;
+  color: var(--on-background-header);
+  opacity: 0.8;
+}
+
+.logo p {
+  font-size: 1.2rem;
+  font-style: italic;
+  color: var(--on-background-content);
+}
+
+.main {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.main > .left {
+  width: 100%;
+  max-width: 80rem;
+  padding: 0 9.6rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.container {
+  width: 75%;
+  padding: 3.2rem;
+  box-shadow: 0rem 0.5rem 4rem rgba(14, 14, 14, 0.15);
+  align-self: center;
+}
+
+.heading {
+  font-size: 2.4rem;
+  font-weight: 600;
+  color: var(--on-background-content);
+  margin-bottom: 1.2rem;
+}
+
+.text {
+  color: var(--on-background-content);
+  margin-bottom: 2.4rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  border-top: 0.1rem solid var(--fields-border-color);
+  padding-top: 2.4rem;
+}
+
+form:first {
+  margin-top: 1.2rem;
+}
+
+.form-grouping {
+  position: relative;
+  width: 100%;
+  height: 6.4rem;
+
+  background-color: var(--on-primary);
+  /* border: 0.1rem solid var(--fields-border-color); */
+}
+
+.form-grouping input {
+  margin-top: 0.4rem;
+
+  font-size: 1.6rem;
+  font-weight: 500;
+
+  color: var(--on-background-content);
+  background-color: var(--fields-background-color);
+
+  border: none;
+  border-left: 0.4rem solid transparent;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.form-grouping input:hover {
+  background-color: var(--fields-hover-color);
+}
+
+.form-grouping input:focus {
+  border-color: var(--on-background);
+}
+
+.form-btn {
+  margin-top: 2.4rem;
+  align-self: center;
+}
+
+.form-btn button {
+  padding: 1.2rem 4.8rem;
+  color: var(--on-primary);
+  background-color: var(--fields-on-background);
+  transform: all 0.3s ease;
+}
+
+.form-btn button:hover {
+  filter: brightness(150%);
+}
+
+.form-btn button:active {
+  scale: 0.95;
+}
+
+.main > .right {
+  flex: 1;
+  min-width: 64rem;
+  flex-shrink: 0;
+  background: url("../img/showroow_2.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+@media screen and (max-width: 1408px) {
+  .main > .left {
+    padding: 0 4.8rem;
+    max-width: 75%;
+  }
+}
+
+@media screen and (max-width: 1152px) {
+  .main > .left {
+    padding: 0 9.6rem;
+    max-width: 75%;
+  }
+
+  .container {
+    width: 100%;
+  }
+
+  .form-grouping input {
+    font-size: 1.2rem;
+  }
+
+  .main > .right {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .main > .left {
+    padding: 0 4.8rem;
+    max-width: 100%;
+  }
+}

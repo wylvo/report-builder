@@ -85,6 +85,10 @@ export const sendBackupReports = async function (reports) {
   return await fetchJSON("/api/backup", reports);
 };
 
+export const signIn = async function (email, password) {
+  return await fetchJSON("/signin", { email, password });
+};
+
 // Generate UUID version 4
 const generateUUID = () => {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {

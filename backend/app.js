@@ -12,9 +12,13 @@ import routerV1 from "./api/v1/router.js";
 import globalErrorHandler from "./api/errors/errorController.js";
 import GlobalError from "./api/errors/globalError.js";
 import { signIn, signOut } from "./auth.js";
+import { viewRouter } from "./views/viewRouter.js";
 
 const app = express();
 const __dirname = path.resolve();
+
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "/backend/views"));
 
 // Set security HTTP headers
 app.use(helmet());
@@ -43,6 +47,7 @@ app.set("json spaces", 2);
 // Static files
 app.use(express.static(path.join(__dirname, "/frontend/public")));
 
+app.use("/", viewRouter);
 app.use("/api/v1", routerV1);
 app.post("/signin", signIn);
 app.post("/signout", signOut);
