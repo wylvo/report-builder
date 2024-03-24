@@ -17,18 +17,20 @@ const send = async (card) => {
   return await fetch(process.env.MS_TEAMS_WEBHOOK_URL, requestOptions);
 };
 
-export const sendReportToWebhook = catchAsync(async (req, res, next) => {
-  const id = req.params.id;
+export const sendReportToIncomingWebhook = catchAsync(
+  async (req, res, next) => {
+    const id = req.params.id;
 
-  const report = await findReportByIdQuery(id);
+    const report = await findReportByIdQuery(id);
 
-  if (!report)
-    return next(new GlobalError(`Report not found with id: ${id}.`, 404));
+    if (!report)
+      return next(new GlobalError(`Report not found with id: ${id}.`, 404));
 
-  // const response = await send(setAdaptiveCard(...report));
+    // const response = await send(setAdaptiveCard(...report));
 
-  res.status(200).json({
-    status: "success",
-    data: report,
-  });
-});
+    res.status(200).json({
+      status: "success",
+      data: report,
+    });
+  }
+);

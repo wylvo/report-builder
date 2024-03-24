@@ -5,6 +5,6 @@ import * as auth from "../../../auth.js";
 
 const router = express.Router();
 
-router.post("/:id", webhook.sendReportToWebhook);
+router.post("/:id", webhook.sendReportToIncomingWebhook);
 
 export { router as webhookRouter };

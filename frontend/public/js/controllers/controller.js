@@ -1,12 +1,13 @@
-import * as model from "./model.js";
-import sidebarView from "./views/sidebarView.js";
-import themeView from "./views/themeView.js";
-import tabsView from "./views/tabsView.js";
-import searchView from "./views/searchView.js";
-import paginationView from "./views/paginationView.js";
-import tableView from "./views/tableView.js";
-import notificationView from "./views/notificationView.js";
-import modalView from "./views/modalView.js";
+import * as model from "../model/model.js";
+import api from "../model/api.js";
+import sidebarView from "../views/sidebarView.js";
+import themeView from "../views/themeView.js";
+import tabsView from "../views/tabsView.js";
+import searchView from "../views/searchView.js";
+import paginationView from "../views/paginationView.js";
+import tableView from "../views/tableView.js";
+import notificationView from "../views/notificationView.js";
+import modalView from "../views/modalView.js";
 
 let reportView,
   takeSnapshot = false;
@@ -111,7 +112,7 @@ const controlSaveReport = function (reportId) {
     reportView._btnTeams.disabled = false;
     tabsView.render(model.state.tab, report.incident.title, report.id);
     model.loadReport(model.state.tab, report.id);
-    model.sendBackupReports(model.state.reports);
+    api.sendBackupReports(model.state.reports);
   } catch (error) {
     notificationView.error(error.message, 60);
     console.error(error);
@@ -137,7 +138,7 @@ const controlSendReport = async function (id = undefined) {
     if(reportViewInTab) reportViewInTab.renderSpinner(reportViewInTab._btnTeams);
     tableView.renderSpinner(tableViewBtnTeams);
 
-    const request = await model.sendTeamsWebhook(report);
+    const request = await api.sendTeamsWebhook(report);
     if(reportViewInTab) {
       reportViewInTab.clearSpinner(reportViewInTab._btnTeams, "success");
       reportViewInTab._btnTeams.disabled = true;
@@ -286,7 +287,7 @@ const init = async function () {
     notificationView.success(`Reports successfully migrated to v1.0.0-beta`, 60);
     model.saveReportsInLocalStorage();
   }
-  // model.sendBackupReports(model.state.reports);
+  // api.sendBackupReports(model.state.reports);
 
   // Initialize all tabs
   tabsView.renderAll(model.initNumberOfTabs(5));
@@ -343,7 +344,7 @@ const init = async function () {
 
   sidebarView;
 
-  const version = await model.appVersion();
+  const version = await api.v1.version.getVersion();
   tabsView._appVersion.textContent = version;
   console.log(model.state);
 };

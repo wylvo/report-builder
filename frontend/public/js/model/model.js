@@ -1,5 +1,7 @@
-import { DEFAULT_REPORT } from "./config.js";
+import { DEFAULT_REPORT } from "../config.js";
 import { migrateReportData } from "./migrate.js";
+import api from "./api.js";
+import utils from "./utils.js";
 
 export const migrateReport = migrateReportData;
 export const state = {
@@ -16,105 +18,10 @@ export const state = {
   tab: 0,
   tabs: new Map(),
   clipboard: new Map(),
-};
-
-// Sleep/Wait and do nothing
-export const sleep = (seconds) =>
-  new Promise((resolve) => setTimeout(resolve, seconds * 1000));
-
-// prettier-ignore
-// https://stackoverflow.com/questions/722668/traverse-all-the-nodes-of-a-json-object-tree-with-javascript#answer-722732
-const traverse = (func, defaultObject, targetObject, currentObject = undefined) => {
-  for (const key in defaultObject) {
-    func.apply(this, [defaultObject, targetObject, key, currentObject]);
-
-    if (Object.hasOwn(defaultObject, key) && typeof defaultObject[key] === "object") {
-      traverse(func, defaultObject[key], targetObject[key], key);
-    }
-  }
-};
-
-// Freeze objects recursively (freeze nested objects)
-const deepFreeze = (object) => {
-  object = Object.freeze(object);
-  for (const key in object) {
-    if (Object.hasOwn(object, key) && typeof object[key] === "object") {
-      if (!Object.isFrozen(object[key])) deepFreeze(object[key]);
-    }
-  }
-};
-
-// JSON Fetch requests
-const fetchJSON = async (url, jsonData = undefined) => {
-  try {
-    const response = jsonData
-      ? await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify(jsonData),
-        })
-      : await fetch(url);
-
-    const data = await response.json();
-
-    if (!response.ok)
-      throw new Error(
-        `Request failed with status code ${response.status} (${response.statusText}).`
-      );
-    return { response, data };
-  } catch (error) {
-    throw error;
-  }
-};
-
-// Get app version from package.json
-export const appVersion = async function () {
-  return (state.version = (await fetchJSON("/api/v1/version")).data.version);
-};
-
-// Send Teams webhook data to local server. Local server will send webhook & handle webhook response
-export const sendTeamsWebhook = async function (report) {
-  return await fetchJSON("/api/send", report);
-};
-
-// Send a copy of reports to local server. Local server will write reports into a JSON file for backup
-export const sendBackupReports = async function (reports) {
-  return await fetchJSON("/api/backup", reports);
-};
-
-export const signIn = async function (email, password) {
-  return await fetchJSON("/signin", { email, password });
-};
-
-// Generate UUID version 4
-const generateUUID = () => {
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0,
-      v = c == "x" ? r : (r & 0x3) | 0x8;
-    return v.toString(16).toLowerCase();
-  });
-};
-
-// Format date to MM/DD/YYYY HH:mm AM or PM
-export const formatDate = (date) => {
-  date = new Date(date);
-  if (isNaN(date)) return null;
-
-  let hours = date.getHours();
-  let minutes = date.getMinutes();
-  let amPM = hours >= 12 ? "PM" : "AM";
-  hours = hours % 12;
-  hours = hours ? hours : 12; // the hour '0' should be '12'
-  minutes = minutes < 10 ? "0" + minutes : minutes;
-
-  // prettier-ignore
-  return {
-    iso: date.toISOString(),
-    sharepoint: `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()} ${hours}:${minutes} ${amPM}`,
-  };
+  user: {
+    profile: {},
+    reports: [],
+  },
 };
 
 // Find report index by ID
@@ -257,7 +164,7 @@ export const checkValidity = (report) => {
 // Create a single report object
 export const createReportObject = function (report, form) {
   return {
-    id: report?.id ?? generateUUID(),
+    id: report?.id ?? utils.generateUUID(),
     version: state.version,
     createdDateTime: report?.createdTime ?? new Date().toISOString(),
     lastModifiedDateTime: null,
@@ -272,7 +179,7 @@ export const createReportObject = function (report, form) {
     call: {
       date: form.date.value.trim(),
       time: form.time.value.trim(),
-      dateTime: formatDate(`${form.date.value.trim()} ${form.time.value.trim()}`).sharepoint,
+      dateTime: utils.formatDate(`${form.date.value.trim()} ${form.time.value.trim()}`).sharepoint,
       phone: form["phone-no-caller-id"].checked
         ? "No Caller ID"
         : form["phone-number"].value.trim(),
@@ -294,7 +201,7 @@ export const createReportObject = function (report, form) {
       title: form["incident-title"].value.trim(),
       date: form["incident-date"].value.trim(),
       time: form["incident-time"].value.trim(),
-      dateTime: formatDate(
+      dateTime: utils.formatDate(
         `${form["incident-date"].value.trim()} ${form["incident-time"].value.trim()}`
       ).sharepoint,
       copyTimestamp: form["copy-timestamp"].checked,
@@ -400,7 +307,7 @@ export const newReport = function (tabIndex) {
 export const addReport = function (report) {
   state.reports.unshift(report);
   saveReportsInLocalStorage();
-  sendBackupReports([report]);
+  api.sendBackupReports([report]);
   return report;
 };
 
@@ -412,7 +319,7 @@ export const deleteReport = function (report) {
   const index = findReportIndex(report);
   state.reports.splice(index, 1);
   saveReportsInLocalStorage();
-  sendBackupReports([report]);
+  api.sendBackupReports([report]);
   return report;
 };
 
@@ -577,7 +484,7 @@ const initThemeInLocalStorage = function () {
 };
 
 const init = function () {
-  deepFreeze(DEFAULT_REPORT);
+  utils.deepFreeze(DEFAULT_REPORT);
   initReportsInLocalStorage();
   initThemeInLocalStorage();
 };

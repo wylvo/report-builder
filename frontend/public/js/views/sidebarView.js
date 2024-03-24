@@ -7,6 +7,8 @@ class SidebarView extends View {
     this._subMenus = this._sidebar.querySelectorAll(".menu > ul > li");
     this._btnMenu = document.querySelector(".menu-btn");
 
+    console.log(this._subMenus);
+
     this._addHandlerResizeSidebar();
     this._addHandlerClickMenuButton();
     this._addHandlerClickSidebarSubMenus();

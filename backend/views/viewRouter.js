@@ -1,9 +1,10 @@
 import express from "express";
-import { getMainPage, getSignInForm } from "./viewController.js";
+import * as views from "./viewController.js";
+import * as auth from "../auth.js";
 
 const router = express.Router();
 
-router.get("/", getMainPage);
-router.get("/signin", getSignInForm);
+router.get("/", auth.protect, views.getMainPage);
+router.get("/signin", views.getSignInForm);
 
 export { router as viewRouter };
