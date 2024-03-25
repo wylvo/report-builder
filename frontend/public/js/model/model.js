@@ -166,7 +166,7 @@ export const createReportObject = function (report, form) {
   return {
     id: report?.id ?? utils.generateUUID(),
     version: state.version,
-    createdDateTime: report?.createdTime ?? new Date().toISOString(),
+    createdDateTime: utils.formatDate(report?.createdDateTime).iso ?? new Date().toISOString(),
     lastModifiedDateTime: null,
     createdBy:
       report?.createdBy ??
@@ -262,7 +262,6 @@ export const updateReport = function (reportOrId, form) {
   report.incident = clone.incident;
   report.tech = clone.tech;
 
-  saveReportsInLocalStorage();
   return report;
 };
 
@@ -303,13 +302,13 @@ export const newReport = function (tabIndex) {
   return tab.report;
 };
 
-// Add a single report. Update local storage. Send a backup of the report
-export const addReport = function (report) {
-  state.reports.unshift(report);
-  saveReportsInLocalStorage();
-  api.sendBackupReports([report]);
-  return report;
-};
+// // Add a single report. Update local storage. Send a backup of the report
+// export const addReport = function (report) {
+//   state.reports.unshift(report);
+//   saveReportsInLocalStorage();
+//   api.sendBackupReports([report]);
+//   return report;
+// };
 
 // Remove a single report. Update local storage. Send a backup of the report
 export const deleteReport = function (report) {
@@ -485,42 +484,60 @@ const initThemeInLocalStorage = function () {
 
 export const DB = {
   getReports: async () => {
+    // API request to get all reports from the database
     const {
       data: { data },
     } = await api.v1.reports.getReports();
+
+    // Add all reports in the model state
     state.reports = data;
   },
 
-  createReport: async (report, form) => {
+  createReport: async (tabReport, form) => {
     // Create a report object
-    const reportObject = createReportObject(report, form);
+    const reportObject = createReportObject(tabReport, form);
 
     // Check validity of the report object
     checkValidity(reportObject);
 
     // API request to create a report to the database
     const {
-      data: { data },
+      data: {
+        data: [report],
+      },
     } = await api.v1.reports.createReport(reportObject);
 
     // Add the report in the model state
-    state.reports.unshift(data);
+    state.reports.unshift(report);
 
-    return data;
+    return report;
   },
 
   getReport: async (id) => {
     const {
-      data: { data },
+      data: {
+        data: [report],
+      },
     } = await api.v1.reports.getReport(id);
-    return data;
+
+    return report;
   },
 
-  updateReport: async (id, report) => {
+  updateReport: async (id, form) => {
+    // Update a report object
+    const reportObject = updateReport(id, form);
+
+    // API request to create a report to the database
     const {
-      data: { data },
-    } = await api.v1.reports.updateReport(id, report);
-    return data;
+      data: {
+        data: [report],
+      },
+    } = await api.v1.reports.updateReport(id, reportObject);
+
+    // Persist tableRowEl to allow tableView to update the table row element
+    report.tableRowEl = reportObject.tableRowEl;
+
+    return report;
   },
 
   deleteReport: async (id) => {
@@ -532,14 +549,15 @@ export const DB = {
     const { response } = await api.v1.reports.undoSoftDeleteReport(id);
     return response;
   },
+
+  getUserProfile: async () => {},
+
+  getUsers: async () => {},
 };
-
-const getUserProfile = async () => {};
-
-const getUsers = async () => {};
 
 export const init = async function () {
   utils.deepFreeze(DEFAULT_REPORT);
   await DB.getReports();
+  state.version = await api.v1.version.getVersion();
   initThemeInLocalStorage();
 };

@@ -91,7 +91,7 @@ const controlSaveReport = async function (reportId) {
   try {
     // Save report
     if (!id) {
-      report = await model.DB.createReport(model.state.tab, reportView._form)
+      report = await model.DB.createReport(model.state.tab, reportView._form);
       tableView.render(report);
       tableView.updateTotalReports(model.state.reports);
       notificationView.success(`Report successfully created: [${report.id}]`);
@@ -99,18 +99,17 @@ const controlSaveReport = async function (reportId) {
 
     // Save changes
     if (id) {
-      report = model.updateReport(id, reportView._form);
+      report = await model.DB.updateReport(id, reportView._form);
       tableView.update(report);
       notificationView.success(`Report changes were saved: [${report.id}]`);
     }
-
 
     reportView.takeSnapshot(reportView.newClone());
     reportView.updateTags(report);
     reportView._btnTeams.disabled = false;
     tabsView.render(model.state.tab, report.incident.title, report.id);
     model.loadReport(model.state.tab, report.id);
-    api.sendBackupReports(model.state.reports);
+    // api.sendBackupReports(model.state.reports);
   } catch (error) {
     notificationView.error(error.message, 60);
     console.error(error);
