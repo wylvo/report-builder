@@ -34,7 +34,7 @@ export class NotificationView extends View {
           </svg>
           <div class="message">
             <span class="header">${header}</span>
-            <span class="content">${content}</span>
+            <span >${content}</span>
           </div>
         </div>
         <button class="close-btn">&times;</button>

@@ -16,7 +16,7 @@ router.put("/:id/undoSoftDelete", report.undoSoftDeleteReport);
  * /api/v1/reports      (GET & POST)
  * /api/v1/reports/:id  (GET & PUT)
  */
-router.use(auth.restrictTo("user"));
+// router.use(auth.restrictTo("user"));
 router.route("/").get(report.getAllReports).post(report.createReport);
 router.route("/:id").get(report.getReport).put(report.updateReport);
 

@@ -76,7 +76,7 @@ const controlRenderReport = function () {
 
     const report = model.loadReport(model.state.tab, id);
     reportView.render(report);
-    console.log(report);
+    console.log(model.state);
   } catch (error) {
     controlNewReport();
     notificationView.error(error.message, 60);
@@ -85,15 +85,13 @@ const controlRenderReport = function () {
 };
 
 // prettier-ignore
-const controlSaveReport = function (reportId) {
+const controlSaveReport = async function (reportId) {
   const id = reportId ? reportId : window.location.hash.slice(1);
   let report;
   try {
     // Save report
     if (!id) {
-      report = model.createReportObject(model.state.tab, reportView._form);
-      model.checkValidity(report);
-      model.addReport(report);
+      report = await model.DB.createReport(model.state.tab, reportView._form)
       tableView.render(report);
       tableView.updateTotalReports(model.state.reports);
       notificationView.success(`Report successfully created: [${report.id}]`);
@@ -282,6 +280,8 @@ const controlBeforeUnload = function () {
  *************************************************************
  */
 const init = async function () {
+  await model.init();
+
   // prettier-ignore
   if (model.migrateReport(model.state.reports)) {
     notificationView.success(`Reports successfully migrated to v1.0.0-beta`, 60);
@@ -344,8 +344,9 @@ const init = async function () {
 
   sidebarView;
 
-  const version = await api.v1.version.getVersion();
-  tabsView._appVersion.textContent = version;
+  // const version = await api.v1.version.getVersion();
+  // console.log("Version", version);
+  // tabsView._appVersion.textContent = version;
   console.log(model.state);
 };
 

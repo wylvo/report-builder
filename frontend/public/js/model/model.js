@@ -113,7 +113,7 @@ export const checkValidity = (report) => {
   };
 
   // Traverse default report object, and compare data types with report object passed in parameter
-  traverse(hasSameValueTypes, DEFAULT_REPORT, report);
+  utils.traverse(hasSameValueTypes, DEFAULT_REPORT, report);
 
   const hasMissingKeys = missingKeys.length > 0;
   const hasinvalidTypes = invalidTypes.length > 0;
@@ -483,10 +483,63 @@ const initThemeInLocalStorage = function () {
   state.theme = theme;
 };
 
-const init = function () {
-  utils.deepFreeze(DEFAULT_REPORT);
-  initReportsInLocalStorage();
-  initThemeInLocalStorage();
+export const DB = {
+  getReports: async () => {
+    const {
+      data: { data },
+    } = await api.v1.reports.getReports();
+    state.reports = data;
+  },
+
+  createReport: async (report, form) => {
+    // Create a report object
+    const reportObject = createReportObject(report, form);
+
+    // Check validity of the report object
+    checkValidity(reportObject);
+
+    // API request to create a report to the database
+    const {
+      data: { data },
+    } = await api.v1.reports.createReport(reportObject);
+
+    // Add the report in the model state
+    state.reports.unshift(data);
+
+    return data;
+  },
+
+  getReport: async (id) => {
+    const {
+      data: { data },
+    } = await api.v1.reports.getReport(id);
+    return data;
+  },
+
+  updateReport: async (id, report) => {
+    const {
+      data: { data },
+    } = await api.v1.reports.updateReport(id, report);
+    return data;
+  },
+
+  deleteReport: async (id) => {
+    const { response } = await api.v1.reports.deleteReport(id);
+    return response;
+  },
+
+  undoSoftDeleteReport: async (id) => {
+    const { response } = await api.v1.reports.undoSoftDeleteReport(id);
+    return response;
+  },
 };
 
-init();
+const getUserProfile = async () => {};
+
+const getUsers = async () => {};
+
+export const init = async function () {
+  utils.deepFreeze(DEFAULT_REPORT);
+  await DB.getReports();
+  initThemeInLocalStorage();
+};

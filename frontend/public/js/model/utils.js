@@ -5,12 +5,12 @@ export default {
 
   // prettier-ignore
   // https://stackoverflow.com/questions/722668/traverse-all-the-nodes-of-a-json-object-tree-with-javascript#answer-722732
-  traverse: (func, defaultObject, targetObject, currentObject = undefined) => {
+  traverse(func, defaultObject, targetObject, currentObject = undefined) {
     for (const key in defaultObject) {
       func.apply(this, [defaultObject, targetObject, key, currentObject]);
 
       if (Object.hasOwn(defaultObject, key) && typeof defaultObject[key] === "object") {
-        traverse(func, defaultObject[key], targetObject[key], key);
+        this.traverse(func, defaultObject[key], targetObject[key], key);
       }
     }
   },

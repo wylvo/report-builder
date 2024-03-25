@@ -19,7 +19,7 @@ const fetchJSON = async (url, method = undefined, jsonData = undefined) => {
 
     if (!response.ok)
       throw new Error(
-        `Request failed with status code ${response.status} (${response.statusText}).`
+        `${data.message}. Request failed with status code ${response.status} (${response.statusText}).`
       );
     return { response, data };
   } catch (error) {
@@ -47,13 +47,16 @@ export default {
       async deleteReport(id) {
         return await fetchJSON(`${this.url}/${id}`, "DELETE", {});
       },
+      async undoSoftDeleteReport(id) {
+        return await fetchJSON(`${this.url}/${id}/undoSoftDelete`, "PUT", {});
+      },
     },
 
     users: {
       url: "/api/v1/users",
 
       async resetUserPassword(id, password, passwordConfirmation) {
-        return await fetchJSON(`${this.url}/${id}`, "POST", {
+        return await fetchJSON(`${this.url}/${id}/resetPassword`, "POST", {
           password,
           passwordConfirmation,
         });

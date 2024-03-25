@@ -110,9 +110,11 @@ export const deleteReport = catchAsync(async (req, res, next) => {
   if (!report)
     return next(new GlobalError(`Report not found with id: ${id}.`, 404));
 
-  if (req.user.role === "user") softDeleteReport(report);
+  /*if (req.user.role === "user") softDeleteReport(report);
   if (req.user.role === "admin")
-    req.body.isSoftDelete ? softDeleteReport(report) : hardDeleteReport(report);
+    req.body.isSoftDelete ? softDeleteReport(report) :*/ hardDeleteReport(
+    report
+  );
 
   res.status(204).json({
     status: "success",

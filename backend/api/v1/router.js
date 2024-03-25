@@ -17,7 +17,7 @@ export const generateUUID = () => {
 const router = express.Router();
 
 // Protect all routes after this middleware
-router.use(auth.protect);
+// router.use(auth.protect);
 
 // Mount all routes. Each route will handle its own sub routes
 router.use("/users", userRouter); // - /api/v1/users
