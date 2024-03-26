@@ -1,8 +1,9 @@
 import { mssql } from "../../../config/db.config.js";
 import { findReportByIdQuery } from "../reports/reportController.js";
+import { setAdaptiveCard } from "./card.js";
 import catchAsync from "../../errors/catchAsync.js";
 import GlobalError from "../../errors/globalError.js";
-import { setAdaptiveCard } from "./card.js";
+import config from "../../../config/app.config.js";
 
 // Send AJAX Request To Microsoft Teams Webhook URL Endpoint With (Adaptive) Card JSON In Body
 const send = async (card) => {
@@ -14,7 +15,7 @@ const send = async (card) => {
     body: JSON.stringify(card),
   };
 
-  return await fetch(process.env.MS_TEAMS_WEBHOOK_URL, requestOptions);
+  return await fetch(config.webhook.microsoftTeams.url, requestOptions);
 };
 
 export const sendReportToIncomingWebhook = catchAsync(

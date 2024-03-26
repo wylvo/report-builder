@@ -19,18 +19,23 @@ const backupFileName = `backup_${port}_v${pjsonVersion}.json`;
 const backupFilePath = path.join(__dirname, `/frontend/${backupFileName}`);
 
 const config = {
-  port,
-  version: pjsonVersion,
-  jwt: {
-    secret: process.env.JWT_SECRET,
-    expiresIn: process.env.JWT_EXPIRES_IN,
-    cookie: { expiresIn: process.env.JWT_COOKIE_EXPIRES_IN },
-  },
   backup: {
     file: {
       path: backupFilePath,
     },
   },
+  jwt: {
+    secret: process.env.JWT_SECRET,
+    expiresIn: process.env.JWT_EXPIRES_IN,
+    cookie: { expiresIn: process.env.JWT_COOKIE_EXPIRES_IN },
+  },
+  webhook: {
+    microsoftTeams: {
+      url: process.env.MS_TEAMS_WEBHOOK_URL,
+    },
+  },
+  port,
+  version: pjsonVersion,
 };
 
 export default config;

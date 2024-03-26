@@ -167,23 +167,27 @@ const controlSendReport = async function (id = undefined) {
 
 // prettier-ignore
 const controlDeleteReport = async function (id) {
-  const report = model.findReportById(id);
+  try {    
+    const report = model.findReportById(id);
+  
+    let isDeleteConfirmed = true;
+    isDeleteConfirmed = await modalView.confirmDelete(report);
+    if(!isDeleteConfirmed) return;
+    if(id === window.location.hash.slice(1)) tabsView.removeLocationHash();
+  
+    const tabIndex = model.findReportInTab(id);
+    if (tabIndex) {
+      model.newReport(tabIndex)
+      tabsView.tabs.get(tabIndex).newReport((takeSnapshot = true))
+    }
+  
+    await model.DB.deleteReport(id);
+    tableView.updateTotalReports(model.state.reports);
+    notificationView.success(`Report successfully deleted: ${report.incident.title} [${report.id}]`);
 
-  let isDeleteConfirmed = true;
-  isDeleteConfirmed = await modalView.confirmDelete(report);
-  if(!isDeleteConfirmed) return;
-  if(id === window.location.hash.slice(1)) tabsView.removeLocationHash();
-
-  const tabIndex = model.findReportInTab(id);
-  if (tabIndex) {
-    model.newReport(tabIndex)
-    tabsView.tabs.get(tabIndex).newReport((takeSnapshot = true))
+  } catch (error) {
+    notificationView.error(error, 60);
   }
-
-  // model.findReportInTab(id);
-  model.deleteReport(report);
-  tableView.updateTotalReports(model.state.reports);
-  notificationView.success(`Report successfully deleted: ${report.incident.title} [${report.id}]`);
 };
 
 // prettier-ignore

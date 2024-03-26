@@ -15,7 +15,9 @@ const fetchJSON = async (url, method = undefined, jsonData = undefined) => {
           })
         : await fetch(url);
 
-    const data = await response.json();
+    let data;
+    if (method === "DELETE") data = null;
+    else data = await response.json();
 
     if (!response.ok)
       throw new Error(
@@ -76,6 +78,9 @@ export default {
       async deleteUser(id) {
         return await fetchJSON(`${this.url}/${id}`, "DELETE", {});
       },
+      async getMe() {
+        return await fetchJSON(`${this.url}/me`);
+      },
     },
 
     version: {
@@ -90,7 +95,7 @@ export default {
     webhook: {
       url: "/api/v1/webhook",
 
-      async SendReportToIncomingWebhook() {
+      async sendReportToIncomingWebhook(id) {
         return await fetchJSON(`${this.url}/${id}`, "POST", {});
       },
     },

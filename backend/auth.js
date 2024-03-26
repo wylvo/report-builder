@@ -48,6 +48,7 @@ const createJWT = (user, res, statusCode) => {
   res.cookie("jwt", token, cookieOptions);
 
   user.password = undefined;
+  user.passwordResetAt = undefined;
 
   res.status(statusCode).json({
     status: "success",
@@ -76,7 +77,7 @@ export const signIn = catchAsync(async (req, res, next) => {
     recordset: [user],
   } = await mssql()
     .input("email", email)
-    .query("SELECT * FROM users WHERE email = @email");
+    .query("SELECT * FROM users WHERE email = @email;");
 
   if (!user || !(await comparePasswords(password, user.password)))
     return next(new GlobalError("Incorrect email or password", 401));

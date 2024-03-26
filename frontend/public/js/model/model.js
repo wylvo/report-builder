@@ -26,18 +26,18 @@ export const state = {
 
 // Find report index by ID
 // prettier-ignore
-const findReportIndex = (targetReport) => {
+const findReportIndex = (targetReport, raiseError = true) => {
   const index = state.reports.findIndex((report) =>
     report.id === (typeof targetReport === "object" ? targetReport.id : targetReport));
-  if(index === -1)
+  if(index === -1 && raiseError)
     throw new TypeError(`Invalid target. Report index is undefined.`);
   return index;
 }
 
 // Find report by ID
-export const findReportById = (id) => {
+export const findReportById = (id, raiseError = true) => {
   const report = state.reports.find((report) => report.id === id);
-  if (typeof report === "undefined")
+  if (typeof report === "undefined" && raiseError)
     throw new TypeError(`Invalid id "${id}". Report is undefined.`);
   return report;
 };
@@ -311,16 +311,16 @@ export const newReport = function (tabIndex) {
 // };
 
 // Remove a single report. Update local storage. Send a backup of the report
-export const deleteReport = function (report) {
-  report.isDeleted = true;
-  report.tableRowEl.remove();
+// export const deleteReport = function (report) {
+//   report.isDeleted = true;
+//   report.tableRowEl.remove();
 
-  const index = findReportIndex(report);
-  state.reports.splice(index, 1);
-  saveReportsInLocalStorage();
-  api.sendBackupReports([report]);
-  return report;
-};
+//   const index = findReportIndex(report);
+//   state.reports.splice(index, 1);
+//   saveReportsInLocalStorage();
+//   api.sendBackupReports([report]);
+//   return report;
+// };
 
 // Save reports to the local browser storage
 export const saveReportsInLocalStorage = function () {
@@ -527,7 +527,7 @@ export const DB = {
     // Update a report object
     const reportObject = updateReport(id, form);
 
-    // API request to create a report to the database
+    // API request to update a report from the database
     const {
       data: {
         data: [report],
@@ -541,18 +541,60 @@ export const DB = {
   },
 
   deleteReport: async (id) => {
+    // API request to delete a report from the database
     const { response } = await api.v1.reports.deleteReport(id);
+
+    // Find & check if report is in the state object
+    const index = findReportIndex(id, false);
+
+    // If found, remove the row element and report object
+    if (index !== -1) {
+      state.reports[index].tableRowEl.remove();
+      state.reports.splice(index, 1);
+    }
+
     return response;
   },
 
+  // TO TEST
   undoSoftDeleteReport: async (id) => {
-    const { response } = await api.v1.reports.undoSoftDeleteReport(id);
-    return response;
+    const {
+      data: {
+        data: [report],
+      },
+    } = await api.v1.reports.undoSoftDeleteReport(id);
+
+    return report;
   },
 
-  getUserProfile: async () => {},
+  // TO TEST
+  getUsers: async () => {
+    await api.v1.users.getUsers();
+  },
+  // TO TEST
+  createUser: async (user) => {
+    await api.v1.users.createUser(user);
+  },
+  // TO TEST
+  getUser: async (id) => {
+    await api.v1.users.getUser(id);
+  },
+  // TO TEST
+  updateUser: async (id, user) => {
+    await api.v1.users.updateUser(id, user);
+  },
+  // TO TEST
+  deleteUser: async (id) => {
+    await api.v1.users.deleteUser(id);
+  },
+  // TO TEST
+  getUserProfile: async () => {
+    await api.v1.users.getMe();
+  },
 
-  getUsers: async () => {},
+  sendReportToIncomingWebhook: async (id) => {
+    await api.v1.webhook.sendReportToIncomingWebhook(id);
+  },
 };
 
 export const init = async function () {

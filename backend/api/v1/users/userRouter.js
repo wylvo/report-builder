@@ -7,6 +7,11 @@ import * as auth from "../../../auth.js";
 
 const router = express.Router();
 
+/** ROUTE
+ * /api/v1/users/me (GET)
+ */
+router.get("/me", user.getMe, user.getUser);
+
 // Restrict the following routes to admin role after this middleware
 router.use(auth.restrictTo("admin"));
 

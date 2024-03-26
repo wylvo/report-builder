@@ -18,7 +18,15 @@ const mergeUserData = (id, obj) => {
   return [
     {
       id,
-      ...filterObject(obj, "fullName", "username", "email", "initials", "role"),
+      ...filterObject(
+        obj,
+        "fullName",
+        "username",
+        "email",
+        "initials",
+        "active",
+        "role"
+      ),
     },
   ];
 };
@@ -130,5 +138,10 @@ export const deleteUser = catchAsync(async (req, res, next) => {
     data: null,
   });
 });
+
+export const getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+};
 
 export { resetUserPassword as resetUserPassword };
