@@ -1,92 +1,76 @@
 export default {
   // Source: https://learn.microsoft.com/en-us/sql/relational-databases/json/format-query-results-as-json-with-for-json-sql-server?view=sql-server-ver16&redirectedfrom=MSDN&tabs=json-path
   // Source: https://learn.microsoft.com/en-us/sql/relational-databases/json/convert-json-data-to-rows-and-columns-with-openjson-sql-server?view=sql-server-ver16
-  getAll: `
-    SELECT
-      id AS [id],
-      version AS [version],
-      createdDateTime AS [createdDateTime],
-      lastModifiedDateTime AS [lastModifiedDateTime],
-      createdBy AS [createdBy],
-      updatedBy AS [updatedBy],
-      isDeleted AS [isDeleted],
-      isWebhookSent AS [isWebhookSent],
-      hasTriggeredWebhook AS [hasTriggeredWebhook],
-      callDate AS [call.date],
-      callTime AS [call.time],
-      callDateTime AS [call.dateTime],
-      callPhone AS [call.phone],
-      callStatus AS [call.status],
-      storeNumber AS [store.number],
-      storeEmployeeName AS [store.employee.name],
-      storeEmployeeIsStoreManager AS [store.employee.isStoreManager],
-      storeDistrictManagerName AS [store.districtManager.name],
-      storeDistrictManagerUsername AS [store.districtManager.username],
-      storeDistrictManagerIsContacted AS [store.districtManager.isContacted],
-      incidentTitle AS [incident.title],
-      incidentDate AS [incident.date],
-      incidentTime AS [incident.time],
-      incidentDateTime AS [incident.dateTime],
-      incidentCopyTimestamp AS [incident.copyTimestamp],
-      incidentType AS [incident.type],
-      incidentPos AS [incident.pos],
-      incidentIsProcedural AS [incident.isProcedural],
-      incidentError AS [incident.error],
-      incidentTransactionType AS [incident.transaction.type],
-      incidentTransactionNumber AS [incident.transaction.number],
-      incidentTransactionIsIRCreated AS [incident.transaction.isIRCreated],
-      incidentDetails AS [incident.details],
-      techName AS [tech.name],
-      techUsername AS [tech.username],
-      techInitials AS [tech.initials],
-      techIsOnCall AS [tech.isOnCall]
-    FROM reports
-    ORDER BY createdDateTime DESC
-    FOR JSON PATH;
+  JSONSelect: `
+    id AS [id],
+    version AS [version],
+    createdDateTime AS [createdDateTime],
+    lastModifiedDateTime AS [lastModifiedDateTime],
+    createdBy AS [createdBy],
+    updatedBy AS [updatedBy],
+    isDeleted AS [isDeleted],
+    isWebhookSent AS [isWebhookSent],
+    hasTriggeredWebhook AS [hasTriggeredWebhook],
+    callDate AS [call.date],
+    callTime AS [call.time],
+    callDateTime AS [call.dateTime],
+    callPhone AS [call.phone],
+    callStatus AS [call.status],
+    storeNumber AS [store.number],
+    storeEmployeeName AS [store.employee.name],
+    storeEmployeeIsStoreManager AS [store.employee.isStoreManager],
+    storeDistrictManagerName AS [store.districtManager.name],
+    storeDistrictManagerUsername AS [store.districtManager.username],
+    storeDistrictManagerIsContacted AS [store.districtManager.isContacted],
+    incidentTitle AS [incident.title],
+    incidentDate AS [incident.date],
+    incidentTime AS [incident.time],
+    incidentDateTime AS [incident.dateTime],
+    incidentCopyTimestamp AS [incident.copyTimestamp],
+    incidentType AS [incident.type],
+    incidentPos AS [incident.pos],
+    incidentIsProcedural AS [incident.isProcedural],
+    incidentError AS [incident.error],
+    incidentTransactionType AS [incident.transaction.type],
+    incidentTransactionNumber AS [incident.transaction.number],
+    incidentTransactionIsIRCreated AS [incident.transaction.isIRCreated],
+    incidentDetails AS [incident.details],
+    techName AS [tech.name],
+    techUsername AS [tech.username],
+    techInitials AS [tech.initials],
+    techIsOnCall AS [tech.isOnCall]
   `,
-  get: `
-    SELECT 
-      id AS [id],
-      version AS [version],
-      createdDateTime AS [createdDateTime],
-      lastModifiedDateTime AS [lastModifiedDateTime],
-      createdBy AS [createdBy],
-      updatedBy AS [updatedBy],
-      isDeleted AS [isDeleted],
-      isWebhookSent AS [isWebhookSent],
-      hasTriggeredWebhook AS [hasTriggeredWebhook],
-      callDate AS [call.date],
-      callTime AS [call.time],
-      callDateTime AS [call.dateTime],
-      callPhone AS [call.phone],
-      callStatus AS [call.status],
-      storeNumber AS [store.number],
-      storeEmployeeName AS [store.employee.name],
-      storeEmployeeIsStoreManager AS [store.employee.isStoreManager],
-      storeDistrictManagerName AS [store.districtManager.name],
-      storeDistrictManagerUsername AS [store.districtManager.username],
-      storeDistrictManagerIsContacted AS [store.districtManager.isContacted],
-      incidentTitle AS [incident.title],
-      incidentDate AS [incident.date],
-      incidentTime AS [incident.time],
-      incidentDateTime AS [incident.dateTime],
-      incidentCopyTimestamp AS [incident.copyTimestamp],
-      incidentType AS [incident.type],
-      incidentPos AS [incident.pos],
-      incidentIsProcedural AS [incident.isProcedural],
-      incidentError AS [incident.error],
-      incidentTransactionType AS [incident.transaction.type],
-      incidentTransactionNumber AS [incident.transaction.number],
-      incidentTransactionIsIRCreated AS [incident.transaction.isIRCreated],
-      incidentDetails AS [incident.details],
-      techName AS [tech.name],
-      techUsername AS [tech.username],
-      techInitials AS [tech.initials],
-      techIsOnCall AS [tech.isOnCall]
-    FROM reports
-    WHERE id = @id
-    FOR JSON PATH;
-  `,
+
+  getAll() {
+    return `
+      SELECT
+        ${this.JSONSelect}
+      FROM reports
+      WHERE isDeleted = 0
+      ORDER BY createdDateTime DESC
+      FOR JSON PATH;
+    `;
+  },
+
+  getSoftDeleted() {
+    return `
+      SELECT 
+        ${this.JSONSelect}
+      FROM reports
+      WHERE isDeleted = 1
+      FOR JSON PATH;
+    `;
+  },
+
+  get() {
+    return `
+      SELECT 
+        ${this.JSONSelect}
+      FROM reports
+      WHERE id = @id
+      FOR JSON PATH;
+    `;
+  },
 
   // Source: https://learn.microsoft.com/fr-fr/archive/blogs/sqlserverstorageengine/openjson-the-easiest-way-to-import-json-text-into-table#use-case-2-updating-table-row-using-json-object
   create: `
@@ -224,15 +208,18 @@ export default {
     ) AS json
     WHERE reports.id = @id;
   `,
+
+  delete: "DELETE FROM reports WHERE id = @id;",
+
   softDelete: `
     UPDATE reports
     SET isDeleted = 1
     WHERE id = @id;
   `,
+
   undoSoftDelete: `
   UPDATE reports
   SET isDeleted = 0
   WHERE id = @id;
 `,
-  delete: "DELETE FROM reports WHERE id = @id;",
 };

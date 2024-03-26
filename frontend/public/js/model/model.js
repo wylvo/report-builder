@@ -592,6 +592,7 @@ export const DB = {
     await api.v1.users.getMe();
   },
 
+  // TO TEST
   sendReportToIncomingWebhook: async (id) => {
     await api.v1.webhook.sendReportToIncomingWebhook(id);
   },

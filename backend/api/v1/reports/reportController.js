@@ -6,7 +6,7 @@ import reportsSQL from "./reportModel.js";
 export const findReportByIdQuery = async (id) => {
   const {
     recordset: [report],
-  } = await mssql().input("id", id).query(reportsSQL.get);
+  } = await mssql().input("id", id).query(reportsSQL.get());
 
   return report;
 };
@@ -14,7 +14,7 @@ export const findReportByIdQuery = async (id) => {
 export const getAllReports = catchAsync(async (req, res, next) => {
   const {
     recordset: [reports],
-  } = await mssql().query(reportsSQL.getAll);
+  } = await mssql().query(reportsSQL.getAll());
 
   res.status(200).json({
     status: "success",
@@ -119,5 +119,17 @@ export const deleteReport = catchAsync(async (req, res, next) => {
   res.status(204).json({
     status: "success",
     data: null,
+  });
+});
+
+export const getSoftDeletedReports = catchAsync(async (req, res, next) => {
+  const {
+    recordset: [reports],
+  } = await mssql().query(reportsSQL.getSoftDeleted());
+
+  res.status(200).json({
+    status: "success",
+    results: reports.length,
+    data: reports,
   });
 });
