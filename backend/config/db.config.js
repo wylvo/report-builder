@@ -6,7 +6,7 @@ const dbConfig = {
   driver: "msnodesqlv8",
   server:
     process.env.DB_PORT !== "" && process.env.DB_SERVER.includes("\\")
-      ? process.env.DB_SERVER + `,${process.env.DB_PORT}`
+      ? `${process.env.DB_SERVER},${process.env.DB_PORT}`
       : process.env.DB_SERVER,
   database: process.env.DB_NAME,
   port: process.env.DB_PORT !== "" ? process.env.DB_PORT : undefined,
@@ -59,7 +59,7 @@ export const mssqlDataTypes = {
   NVarChar: sql.NVarChar,
   Int: sql.Int,
   Bit: sql.Bit,
-  DateTime: sql.DateTime,
+  DateTimeOffset: sql.DateTimeOffset,
 };
 
 export default dbConfig;
