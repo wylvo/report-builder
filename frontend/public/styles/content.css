@@ -131,7 +131,11 @@
   font-weight: 500;
 }
 
-/* DASHBOARD */
+/*
+===============================================
+DASHBOARD
+===============================================
+ */
 
 .content main .insights {
   display: grid;
@@ -142,8 +146,8 @@
 
 .content main .insights li {
   padding: 2.4rem;
-  background: var(--light);
-  border-radius: 2rem;
+  background: var(--background-primary-color);
+  border-radius: 0.4rem;
   display: flex;
   align-items: center;
   gap: 2.4rem;
@@ -153,7 +157,7 @@
 .content main .insights li .bx {
   width: 8rem;
   height: 8rem;
-  border-radius: 1rem;
+  border-radius: 0.4rem;
   font-size: 3.2rem;
   display: flex;
   align-items: center;
@@ -161,33 +165,28 @@
 }
 
 .content main .insights li:nth-child(1) .bx {
-  background: var(--light-primary);
-  color: var(--primary);
+  background: var(--misc-background-color);
+  color: var(--misc-on-background);
 }
 
 .content main .insights li:nth-child(2) .bx {
-  background: var(--light-warning);
-  color: var(--warning);
+  background: var(--warning-background-color);
+  color: var(--warning-on-background);
 }
 
 .content main .insights li:nth-child(3) .bx {
-  background: var(--light-success);
-  color: var(--success);
+  background: var(--good-background-color);
+  color: var(--good-on-background);
 }
 
 .content main .insights li:nth-child(4) .bx {
-  background: var(--light-danger);
-  color: var(--danger);
+  background: var(--attention-background-color);
+  color: var(--attention-on-background);
 }
 
 .content main .insights li .info h3 {
   font-size: 2.4rem;
   font-weight: 600;
-  color: var(--dark);
-}
-
-.content main .insights li .info p {
-  color: var(--dark);
 }
 
 .content main .bottom-data {
@@ -196,12 +195,11 @@
   grid-gap: 2.4rem;
   margin-top: 2.4rem;
   width: 100%;
-  color: var(--dark);
 }
 
 .content main .bottom-data > div {
-  border-radius: 2.4rem;
-  background: var(--light);
+  border-radius: 0.4rem;
+  background: var(--background-primary-color);
   padding: 2.4rem;
   overflow-x: auto;
 }
@@ -237,7 +235,7 @@
   padding-bottom: 1.2rem;
   font-size: 1.2rem;
   text-align: left;
-  border-bottom: 0.1rem solid var(--grey);
+  border-bottom: 0.1rem solid var(--on-background-low-contrast);
 }
 
 .content main .bottom-data .orders table td {
@@ -264,25 +262,25 @@
 }
 
 .content main .bottom-data .orders table tbody tr:hover {
-  background: var(--grey);
+  background: var(--on-background-low-contrast);
 }
 
 .content main .bottom-data .orders table tr td .status {
   font-size: 1.2rem;
   padding: 0.8rem 1.6rem;
   color: var(--light);
-  border-radius: 2.4rem;
+  border-radius: 0.2rem;
   font-weight: 700;
 }
 
 .content main .bottom-data .orders table tr td .status.completed {
-  color: var(--success);
-  background: var(--light-success);
+  color: var(--good-on-background);
+  background: var(--good-background-color);
 }
 
 .content main .bottom-data .orders table tr td .status.inprogress {
-  color: var(--warning);
-  background: var(--light-warning);
+  color: var(--warning-on-background);
+  background: var(--warning-background-color);
 }
 
 .content main .bottom-data .reminders {
@@ -296,7 +294,7 @@
 
 .content main .bottom-data .reminders li {
   margin-bottom: 1.6rem;
-  background: var(--grey);
+  background: var(--on-background-low-contrast);
   padding: 1.6rem 1.2rem;
   border-radius: 1.2rem;
   display: flex;
