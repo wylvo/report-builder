@@ -130,3 +130,201 @@
   gap: 1.2rem;
   font-weight: 500;
 }
+
+/* DASHBOARD */
+
+.content main .insights {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
+  gap: 2.4rem;
+  margin-top: 3.2rem;
+}
+
+.content main .insights li {
+  padding: 2.4rem;
+  background: var(--light);
+  border-radius: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 2.4rem;
+  cursor: pointer;
+}
+
+.content main .insights li .bx {
+  width: 8rem;
+  height: 8rem;
+  border-radius: 1rem;
+  font-size: 3.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.content main .insights li:nth-child(1) .bx {
+  background: var(--light-primary);
+  color: var(--primary);
+}
+
+.content main .insights li:nth-child(2) .bx {
+  background: var(--light-warning);
+  color: var(--warning);
+}
+
+.content main .insights li:nth-child(3) .bx {
+  background: var(--light-success);
+  color: var(--success);
+}
+
+.content main .insights li:nth-child(4) .bx {
+  background: var(--light-danger);
+  color: var(--danger);
+}
+
+.content main .insights li .info h3 {
+  font-size: 2.4rem;
+  font-weight: 600;
+  color: var(--dark);
+}
+
+.content main .insights li .info p {
+  color: var(--dark);
+}
+
+.content main .bottom-data {
+  display: flex;
+  flex-wrap: wrap;
+  grid-gap: 2.4rem;
+  margin-top: 2.4rem;
+  width: 100%;
+  color: var(--dark);
+}
+
+.content main .bottom-data > div {
+  border-radius: 2.4rem;
+  background: var(--light);
+  padding: 2.4rem;
+  overflow-x: auto;
+}
+
+.content main .bottom-data .header {
+  display: flex;
+  align-items: center;
+  grid-gap: 1.6rem;
+  margin-bottom: 2.4rem;
+}
+
+.content main .bottom-data .header h3 {
+  margin-right: auto;
+  font-size: 2.4rem;
+  font-weight: 600;
+}
+
+.content main .bottom-data .header .bx {
+  cursor: pointer;
+}
+
+.content main .bottom-data .orders {
+  flex-grow: 1;
+  flex-basis: 50rem;
+}
+
+.content main .bottom-data .orders table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.content main .bottom-data .orders table th {
+  padding-bottom: 1.2rem;
+  font-size: 1.2rem;
+  text-align: left;
+  border-bottom: 0.1rem solid var(--grey);
+}
+
+.content main .bottom-data .orders table td {
+  padding: 1.6rem 0;
+}
+
+.content main .bottom-data .orders table tr td:first-child {
+  display: flex;
+  align-items: center;
+  grid-gap: 1.2rem;
+  padding-left: 0.8rem;
+}
+
+.content main .bottom-data .orders table td img {
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.content main .bottom-data .orders table tbody tr {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.content main .bottom-data .orders table tbody tr:hover {
+  background: var(--grey);
+}
+
+.content main .bottom-data .orders table tr td .status {
+  font-size: 1.2rem;
+  padding: 0.8rem 1.6rem;
+  color: var(--light);
+  border-radius: 2.4rem;
+  font-weight: 700;
+}
+
+.content main .bottom-data .orders table tr td .status.completed {
+  color: var(--success);
+  background: var(--light-success);
+}
+
+.content main .bottom-data .orders table tr td .status.inprogress {
+  color: var(--warning);
+  background: var(--light-warning);
+}
+
+.content main .bottom-data .reminders {
+  flex-grow: 1;
+  flex-basis: 30rem;
+}
+
+.content main .bottom-data .reminders .task-list {
+  width: 100%;
+}
+
+.content main .bottom-data .reminders li {
+  margin-bottom: 1.6rem;
+  background: var(--grey);
+  padding: 1.6rem 1.2rem;
+  border-radius: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.content main .bottom-data .reminders .task-list li .task-title {
+  display: flex;
+  align-items: center;
+}
+
+.content main .bottom-data .reminders .task-list li .task-title p {
+  margin-left: 0.8rem;
+}
+
+.content main .bottom-data .reminders .task-list li .bx {
+  cursor: pointer;
+}
+
+.content main .bottom-data .reminders .task-list li.completed {
+  border-left: 1.2rem solid var(--good-on-background);
+}
+
+.content main .bottom-data .reminders .task-list li.not-completed {
+  border-left: 1.2rem solid var(--attention-on-background);
+}
+
+.content main .bottom-data .reminders .task-list li:last-child {
+  margin-bottom: 0;
+}

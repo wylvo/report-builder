@@ -37,7 +37,7 @@
         <div class="menu">
           <p class="title">Main</p>
           <ul>
-            <li>
+            <li id="dashboard-link">
               <a href="#">
                 <i class="bx bxs-dashboard"></i>
                 <span class="text">Dashboard</span>
@@ -55,23 +55,23 @@
                 </li>
               </ul>
             </li> -->
-            <li>
+            <li id="reports-link">
               <a href="#">
                 <i class="bx bxs-report"></i>
                 <span class="text">Reports</span>
                 <i class="arrow bx bx-chevron-down"></i>
               </a>
-              <ul class="sub-menu">
+              <!-- <ul class="sub-menu">
                 <li>
-                  <a href="#"><span class="text">New</span></a>
+                  <a href="#"><span class="text">All Reports</span></a>
                 </li>
                 <li>
-                  <a href="#"><span class="text">Import</span></a>
+                  <a href="#"><span class="text">My Reports</span></a>
                 </li>
                 <li>
-                  <a href="#"><span class="text">Deleted</span></a>
+                  <a href="#"><span class="text">Deleted Reports</span></a>
                 </li>
-              </ul>
+              </ul> -->
             </li>
             <!-- <li>
               <a href="#">
@@ -84,25 +84,25 @@
         <div class="menu">
           <p class="title">Admin</p>
           <ul>
-            <li>
+            <li id="users-link">
               <a href="#">
                 <i class="bx bx-group"></i>
                 <span class="text">Users</span>
               </a>
             </li>
-            <li>
+            <!-- <li>
               <a href="#">
                 <i class="bx bx-cog"></i>
                 <span class="text">Settings</span>
               </a>
-            </li>
+            </li> -->
           </ul>
         </div>
       </nav>
       <div class="menu">
         <p class="title">Account</p>
         <ul>
-          <li>
+          <li id="me-link">
             <a href="#">
               <i class="bx bx-user"></i>
               <span class="text">Me</span>
@@ -156,13 +156,6 @@
             <span>Download JSON</span>
           </a>
         </div>
-
-        <!-- NOTIFICATIONS -->
-        <div class="notifications"></div>
-
-        <!-- MODAL -->
-        <div class="modal-ctn"></div>
-        <div class="overlay hidden"></div>
 
         <section class="section-col">
           <!-- FORM -->
@@ -308,6 +301,13 @@
             </div>
           </div>
         </section>
+
+        <!-- NOTIFICATIONS -->
+        <div class="notifications"></div>
+
+        <!-- MODAL -->
+        <div class="modal-ctn"></div>
+        <div class="overlay hidden"></div>
       </main>
     </div>
     <!-- <footer class="footer">

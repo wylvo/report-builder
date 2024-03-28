@@ -345,8 +345,6 @@ const init = async function () {
   paginationView.addHandlerOnChangeRowsPerPage(controlRowsPerPage);
   paginationView.addHandlerClickPage(controlPages);
 
-  sidebarView;
-
   // const version = await api.v1.version.getVersion();
   // console.log("Version", version);
   // tabsView._appVersion.textContent = version;

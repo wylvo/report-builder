@@ -17,18 +17,23 @@ class TabsView extends View {
   }
 
   renderAll(numberOfTabs = [0, 1, 2, 3, 4]) {
+    this.#clearTabs();
+    const tabsList = document.querySelector(".tab-list");
+    const tabFormContainer = document.querySelector(".tabs-forms");
+
     this.tabs = new Map(
       numberOfTabs.map((_, tabIndex) => {
         const tabElement = this.generateTabElement(tabIndex);
         const formElement = this.generateFormElement(tabIndex);
 
-        this.#tabsList.appendChild(tabElement);
-        this.#tabFormContainer.appendChild(formElement);
+        tabsList.appendChild(tabElement);
+        tabFormContainer.appendChild(formElement);
 
         const reportView = new ReportView(tabElement, formElement);
         return [tabIndex, reportView];
       })
     );
+
     this.#init();
     return this.tabs;
   }
@@ -37,6 +42,11 @@ class TabsView extends View {
     const reportView = this.tabs.get(tabIndex);
     reportView._tab.firstElementChild.textContent = title;
     reportView._tab.firstElementChild.setAttribute("href", `#${id}`);
+  }
+
+  #clearTabs() {
+    this.#tabsList.innerHTML = "";
+    this.#tabFormContainer.innerHTML = "";
   }
 
   generateTabElement(index) {
