@@ -115,7 +115,7 @@ class SidebarView extends View {
     // this._main.insertAdjacentElement()
   }
 
-  #dashboardHtml() {
+  #dashboardHtml(data) {
     return `
       <div>
         <div class="header">
@@ -124,7 +124,7 @@ class SidebarView extends View {
             <ul class="breadcrumb">
               <li><a href="#"> Dashboard </a></li>
               /
-              <li><a href="#" class="active">Reports</a></li>
+              <li><a href="#" class="active">Analytics</a></li>
             </ul>
           </div>
           <a href="#" class="report">
@@ -133,46 +133,44 @@ class SidebarView extends View {
           </a>
         </div>
 
-        <!-- Insights -->
+        <!-- INSIGHTS -->
         <ul class="insights">
           <li>
-            <i class="bx bx-calendar-check"></i>
+            <i class='bx bx-calendar-week' ></i>
             <span class="info">
-              <h3>1,074</h3>
-              <p>Paid Orders</p>
+              <h3>28</h3>
+              <p>Reports This Week</p>
             </span>
           </li>
           <li>
-            <i class="bx bx-show-alt"></i>
+            <i class='bx bx-calendar' ></i>
             <span class="info">
-              <h3>3,944</h3>
-              <p>Site Visit</p>
+              <h3>94</h3>
+              <p>Reports This Month</p>
             </span>
           </li>
           <li>
-            <i class="bx bx-line-chart"></i>
+            <i class='bx bx-calendar-event'></i>
             <span class="info">
-              <h3>14,721</h3>
-              <p>Searches</p>
+              <h3>464</h3>
+              <p>Reports This Year</p>
             </span>
           </li>
           <li>
-            <i class="bx bx-dollar-circle"></i>
-            <span class="info">
-              <h3>1,074</h3>
-              <p>Total Sales</p>
-            </span>
-          </li>
+          <i class='bx bx-food-menu'></i>
+          <span class="info">
+            <h3>1,074</h3>
+            <p>Total Reports</p>
+          </span>
+        </li>
         </ul>
-        <!-- End of Insights -->
 
+        <!-- ANALYTICS 1 -->
         <div class="bottom-data">
-          <div class="orders">
+          <div class="reports">
             <div class="header">
-              <i class="bx bx-list-ul"></i>
+              <i class="bx bx-food-menu"></i>
               <h3>Recently Created Reports</h3>
-              <i class="bx bx-filter"></i>
-              <i class="bx bx-search"></i>
             </div>
             <table>
               <thead>
@@ -215,41 +213,208 @@ class SidebarView extends View {
                   <td>505</td>
                   <td>No</td>
                 </tr>
+                <tr>
+                  <td>
+                    <img src="img/profile.jpg" />
+                    <p>William Evora</p>
+                  </td>
+                  <td>20-03-2024</td>
+                  <td><span class="status completed">Completed</span></td>
+                  <td>101</td>
+                  <td>Yes</td>
+                </tr>
+                <tr>
+                  <td>
+                    <img src="img/profile.jpg" />
+                    <p>William Evora</p>
+                  </td>
+                  <td>19-03-2024</td>
+                  <td><span class="status inprogress">In Progress</span></td>
+                  <td>211</td>
+                  <td>No</td>
+                </tr>
+                <tr>
+                  <td>
+                    <img src="img/profile.jpg" />
+                    <p>William Evora</p>
+                  </td>
+                  <td>14-03-2024</td>
+                  <td><span class="status completed">Completed</span></td>
+                  <td>505</td>
+                  <td>No</td>
+                </tr>
+                <tr>
+                <td>
+                    <img src="img/profile.jpg" />
+                    <p>William Evora</p>
+                  </td>
+                  <td>14-03-2024</td>
+                  <td><span class="status completed">Completed</span></td>
+                  <td>505</td>
+                  <td>No</td>
+                </tr>
               </tbody>
             </table>
           </div>
 
-          <!-- Reminders -->
-          <div class="reminders">
-            <div class="header">
-              <i class="bx bx-note"></i>
-              <h3>Reminders</h3>
-              <i class="bx bx-filter"></i>
+          <!-- ANALYTICS 2 -->
+          <div class="analytics-grouping">
+            <div class="analytics">
+              <div class="header">
+                <i class='bx bx-group' ></i>
+                <h3>By Users</h3>
+              </div>
+              <ul class="list">
+                <li class="user">
+                  <div class="list-title">
+                    <img src="img/profile.jpg" />
+                    <p>William Evora</p>
+                  </div>
+                  <div class="reports-container">
+                    <p class="count">145</p>
+                    <i class="bx bx-food-menu"></i>
+                  </div>
+                </li>
+                <li class="user">
+                  <div class="list-title">
+                    <img src="img/profile.jpg" />
+                    <p>Vasileios Nikitaras</p>
+                  </div>
+                  <div class="reports-container">
+                    <p class="count">135</p>
+                    <i class="bx bx-food-menu"></i>
+                  </div>
+                </li>
+                <li class="user">
+                  <div class="list-title">
+                    <img src="img/profile.jpg" />
+                    <p>Robert Tam</p>
+                  </div>
+                  <div class="reports-container">
+                    <p class="count">111</p>
+                    <i class="bx bx-food-menu"></i>
+                  </div>
+                </li>
+              </ul>
             </div>
-            <ul class="task-list">
-              <li class="completed">
-                <div class="task-title">
-                  <i class="bx bx-check-circle"></i>
-                  <p>Start Our Meeting</p>
+            <div class="analytics">
+              <div div class="header">
+                <i class='bx bx-detail'></i>
+                <h3>By Incident Type</h3>
+              </div>
+              <ul class="list">
+                <li class="type">
+                  <div class="list-title">
+                    <i class='bx bx-bug' ></i>
+                    <p>Bugs</p>
+                  </div>
+                  <div class="reports-container">
+                    <p class="count">127</p>
+                    <i class="bx bx-food-menu"></i>
+                  </div>
+                </li>
+                <li class="type">
+                  <div class="list-title">
+                    <i class='bx bx-globe' ></i>
+                    <p>Networking</p>
+                  </div>
+                  <div class="reports-container">
+                    <p class="count">97</p>
+                    <i class="bx bx-food-menu"></i>
+                  </div>
+                </li>
+                <li class="type">
+                  <div class="list-title">
+                    <i class='bx bx-window-alt' ></i>
+                    <p>Software</p>
+                  </div>
+                  <div class="reports-container">
+                    <p class="count">58</p>
+                    <i class="bx bx-food-menu"></i>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+          
+          <!-- ANALYTICS 3 -->
+          <div class="analytics">
+            <div class="header">
+              <i class='bx bx-store'></i>
+              <h3>By Stores</h3>
+            </div>
+            <ul class="list">
+              <li class="store">
+                <div class="store-title">
+                  <i class='bx bx-store'></i>
+                  <p>116</p>
                 </div>
-                <i class="bx bx-dots-vertical-rounded"></i>
+                <div class="reports-container">
+                  <p class="count">72</p>
+                  <i class="bx bx-food-menu"></i>
+                </div>
               </li>
-              <li class="completed">
-                <div class="task-title">
-                  <i class="bx bx-check-circle"></i>
-                  <p>Analyse Our Site</p>
+              <li class="store">
+                <div class="store-title">
+                  <i class='bx bx-store'></i>
+                  <p>211</p>
                 </div>
-                <i class="bx bx-dots-vertical-rounded"></i>
+                <div class="reports-container">
+                  <p class="count">36</p>
+                  <i class="bx bx-food-menu"></i>
+                </div>
               </li>
-              <li class="not-completed">
-                <div class="task-title">
-                  <i class="bx bx-x-circle"></i>
-                  <p>Play Football</p>
+              <li class="store">
+                <div class="store-title">
+                  <i class='bx bx-store'></i>
+                  <p>101</p>
                 </div>
-                <i class="bx bx-dots-vertical-rounded"></i>
+                <div class="reports-container">
+                  <p class="count">12</p>
+                  <i class="bx bx-food-menu"></i>
+                </div>
+              </li>
+              <li class="store">
+                <div class="store-title">
+                  <i class='bx bx-store'></i>
+                  <p>116</p>
+                </div>
+                <div class="reports-container">
+                  <p class="count">72</p>
+                  <i class="bx bx-food-menu"></i>
+                </div>
+              </li>
+              <li class="store">
+                <div class="store-title">
+                  <i class='bx bx-store'></i>
+                  <p>211</p>
+                </div>
+                <div class="reports-container">
+                  <p class="count">36</p>
+                  <i class="bx bx-food-menu"></i>
+                </div>
+              </li>
+              <li class="store">
+                <div class="store-title">
+                  <i class='bx bx-store'></i>
+                  <p>101</p>
+                </div>
+                <div class="reports-container">
+                  <p class="count">12</p>
+                  <i class="bx bx-food-menu"></i>
+                </div>
+              </li>
+              <li class="store">
+                <div class="store-title">
+                  <i class='bx bx-store'></i>
+                  <p>116</p>
+                </div>
+                <div class="reports-container">
+                  <p class="count">72</p>
+                  <i class="bx bx-food-menu"></i>
+                </div>
               </li>
             </ul>
-            <!-- End of Reminders -->
           </div>
         </div>
         

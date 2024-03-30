@@ -28,6 +28,10 @@
   margin-right: auto;
 }
 
+.bx {
+  font-size: 2rem;
+}
+
 .content nav .menu-btn .bx.bx-menu {
   width: 3.2rem;
   height: 3.2rem;
@@ -97,27 +101,6 @@
   color: var(--on-background-header);
 }
 
-.content main .header .left .breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 1.6rem;
-}
-
-.content main .header .left .breadcrumb li {
-  color: var(--on-background-header);
-}
-
-.content main .header .left .breadcrumb li a {
-  text-decoration: none;
-  color: var(--on-background-header-grey);
-  pointer-events: none;
-}
-
-.content main .header .left .breadcrumb li a.active {
-  color: var(--primary-color);
-  pointer-events: none;
-}
-
 .content main .header .report {
   height: 3.2rem;
   padding: 0 1.6rem;
@@ -151,7 +134,6 @@ DASHBOARD
   display: flex;
   align-items: center;
   gap: 2.4rem;
-  cursor: pointer;
 }
 
 .content main .insights li .bx {
@@ -165,8 +147,8 @@ DASHBOARD
 }
 
 .content main .insights li:nth-child(1) .bx {
-  background: var(--misc-background-color);
-  color: var(--misc-on-background);
+  background: var(--info-background-color);
+  color: var(--info-on-background);
 }
 
 .content main .insights li:nth-child(2) .bx {
@@ -180,8 +162,8 @@ DASHBOARD
 }
 
 .content main .insights li:nth-child(4) .bx {
-  background: var(--attention-background-color);
-  color: var(--attention-on-background);
+  background: var(--misc-background-color);
+  color: var(--misc-on-background);
 }
 
 .content main .insights li .info h3 {
@@ -192,7 +174,7 @@ DASHBOARD
 .content main .bottom-data {
   display: flex;
   flex-wrap: wrap;
-  grid-gap: 2.4rem;
+  gap: 2.4rem;
   margin-top: 2.4rem;
   width: 100%;
 }
@@ -202,18 +184,25 @@ DASHBOARD
   background: var(--background-primary-color);
   padding: 2.4rem;
   overflow-x: auto;
+  flex-grow: 1;
+}
+
+.content main .bottom-data .analytics-grouping {
+  display: flex;
+  gap: 2.4rem;
+  flex-direction: column;
 }
 
 .content main .bottom-data .header {
   display: flex;
   align-items: center;
-  grid-gap: 1.6rem;
+  gap: 1.6rem;
   margin-bottom: 2.4rem;
 }
 
 .content main .bottom-data .header h3 {
   margin-right: auto;
-  font-size: 2.4rem;
+  /* font-size: 2.4rem; */
   font-weight: 600;
 }
 
@@ -221,51 +210,51 @@ DASHBOARD
   cursor: pointer;
 }
 
-.content main .bottom-data .orders {
+.content main .bottom-data .reports {
   flex-grow: 1;
   flex-basis: 50rem;
 }
 
-.content main .bottom-data .orders table {
+.content main .bottom-data .reports table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.content main .bottom-data .orders table th {
+.content main .bottom-data .reports table th {
   padding-bottom: 1.2rem;
   font-size: 1.2rem;
   text-align: left;
   border-bottom: 0.1rem solid var(--on-background-low-contrast);
 }
 
-.content main .bottom-data .orders table td {
+.content main .bottom-data .reports table td {
   padding: 1.6rem 0;
 }
 
-.content main .bottom-data .orders table tr td:first-child {
+.content main .bottom-data .reports table tr td:first-child {
   display: flex;
   align-items: center;
-  grid-gap: 1.2rem;
+  gap: 1.2rem;
   padding-left: 0.8rem;
 }
 
-.content main .bottom-data .orders table td img {
+.content main .bottom-data .reports table td img {
   width: 3.2rem;
   height: 3.2rem;
   border-radius: 50%;
   object-fit: cover;
 }
 
-.content main .bottom-data .orders table tbody tr {
+.content main .bottom-data .reports table tbody tr {
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.content main .bottom-data .orders table tbody tr:hover {
+.content main .bottom-data .reports table tbody tr:hover {
   background: var(--on-background-low-contrast);
 }
 
-.content main .bottom-data .orders table tr td .status {
+.content main .bottom-data .reports table tr td .status {
   font-size: 1.2rem;
   padding: 0.8rem 1.6rem;
   color: var(--light);
@@ -273,56 +262,74 @@ DASHBOARD
   font-weight: 700;
 }
 
-.content main .bottom-data .orders table tr td .status.completed {
+.content main .bottom-data .reports table tr td .status.completed {
   color: var(--good-on-background);
   background: var(--good-background-color);
 }
 
-.content main .bottom-data .orders table tr td .status.inprogress {
+.content main .bottom-data .reports table tr td .status.inprogress {
   color: var(--warning-on-background);
   background: var(--warning-background-color);
 }
 
-.content main .bottom-data .reminders {
+.content main .bottom-data .analytics {
   flex-grow: 1;
-  flex-basis: 30rem;
+  flex-basis: 6.4rem;
 }
 
-.content main .bottom-data .reminders .task-list {
+.content main .bottom-data .analytics .list {
   width: 100%;
 }
 
-.content main .bottom-data .reminders li {
+.content main .bottom-data .analytics li {
   margin-bottom: 1.6rem;
   background: var(--on-background-low-contrast);
   padding: 1.6rem 1.2rem;
-  border-radius: 1.2rem;
+  border-radius: 0.4rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.content main .bottom-data .reminders .task-list li .task-title {
+.content main .bottom-data .analytics .list li .list-title {
   display: flex;
   align-items: center;
 }
 
-.content main .bottom-data .reminders .task-list li .task-title p {
+.content main .bottom-data .analytics .list li .list-title img {
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.content main .bottom-data .analytics .list li .store-title,
+.content main .bottom-data .analytics .list li .reports-container {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.content main .bottom-data .analytics .list li .list-title p {
   margin-left: 0.8rem;
 }
 
-.content main .bottom-data .reminders .task-list li .bx {
+.content main .bottom-data .analytics .list li .bx {
   cursor: pointer;
 }
 
-.content main .bottom-data .reminders .task-list li.completed {
-  border-left: 1.2rem solid var(--good-on-background);
+.content main .bottom-data .analytics .list li.user {
+  border-left: 1.2rem solid var(--on-background);
 }
 
-.content main .bottom-data .reminders .task-list li.not-completed {
-  border-left: 1.2rem solid var(--attention-on-background);
+.content main .bottom-data .analytics .list li.type {
+  border-left: 1.2rem solid var(--info-on-background);
 }
 
-.content main .bottom-data .reminders .task-list li:last-child {
+.content main .bottom-data .analytics .list li.store {
+  border-left: 1.2rem solid var(--primary-color);
+}
+
+.content main .bottom-data .analytics .list li:last-child {
   margin-bottom: 0;
 }

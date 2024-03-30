@@ -79,6 +79,9 @@
   --misc-background-color: #ccc;
   --misc-on-background: #636363;
 
+  --lila-background-color: #e1adff;
+  --lila-on-background: #772fa0;
+
   /* Tooltip */
   --tooltip-background-color: #000000d4;
   --tooltip-on-background: #fff;
@@ -174,7 +177,7 @@ select {
   background-color: var(--fields-background-color);
   transition: all 0.15s;
   border-radius: 0.2rem;
-  border: 0.1rem solid var(--fields-border-color);
+  border: 0.1rem solid transparent;
   order: 2;
   /* outline: 0.1rem solid transparent; */
 }
@@ -346,10 +349,8 @@ label {
 }
 
 .scroll-btns {
-  position: fixed;
   bottom: 1%;
   left: 8.8rem;
-  width: calc(100% - 8.8rem);
 
   display: flex;
   flex-direction: column;
