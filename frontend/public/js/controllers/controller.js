@@ -2,10 +2,10 @@ import * as model from "../model/model.js";
 import api from "../model/api.js";
 import sidebarView from "../views/sidebarView.js";
 import themeView from "../views/themeView.js";
-import tabsView from "../views/tabsView.js";
-import searchView from "../views/searchView.js";
-import paginationView from "../views/paginationView.js";
-import tableView from "../views/tableView.js";
+import tabsView from "../views/reports/tabsView.js";
+import searchView from "../views/reports/searchView.js";
+import paginationView from "../views/reports/paginationView.js";
+import tableView from "../views/reports/tableView.js";
 import notificationView from "../views/notificationView.js";
 import modalView from "../views/modalView.js";
 

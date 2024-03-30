@@ -1,4 +1,4 @@
-import View from "./View.js";
+import View from "../View.js";
 
 class TableView extends View {
   _table = document.querySelector("tbody");

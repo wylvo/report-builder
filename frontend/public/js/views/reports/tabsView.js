@@ -1,4 +1,4 @@
-import View from "./View.js";
+import View from "../View.js";
 import { ReportView } from "./reportView.js";
 
 class TabsView extends View {
@@ -474,7 +474,8 @@ class TabsView extends View {
                   class="tech-employee"
                   required
                 >
-                  <option selected value="carah.malcolm">Carah Malcolm</option>
+                  <option selected value="william.evora">William Evora</option>
+                  <option value="carah.malcolm">Carah Malcolm</option>
                 </select>
                 <label for="tech-employee_${index}">TECH Signature:</label>
               </div>

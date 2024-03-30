@@ -1,0 +1,165 @@
+export default () => `
+  <div>
+    <div class="header">
+      <div class="left">
+        <h1>Reports</h1>
+      </div>
+      <a href="#" class="report">
+        <i class="bx bx-cloud-download"></i>
+        <span>Download JSON</span>
+      </a>
+    </div>
+
+    <section class="section-col">
+      <!-- FORM -->
+      <div class="container tab-form-ctn">
+        <div class="tabs-ctn">
+          <ul class="tab-list" role="tablist">
+            <!-- <li><a class="tab-btn" id="tab_0" href="#">Form 0</a></li> -->
+          </ul>
+        </div>
+        <div class="tabs-forms"></div>
+      </div>
+
+      <!-- TABLE -->
+      <div class="container table-ctn">
+        <div class="tabs-ctn">
+          <ul class="tab-list" role="tablist">
+            <li role="presentation">
+              <a class="tab-btn" id="tab_0" href="#" role="tab" tabindex="0"
+                >All Reports</a
+              >
+            </li>
+            <li role="presentation">
+              <a class="tab-btn" id="tab_0" href="#" role="tab" tabindex="0"
+                >My Reports</a
+              >
+            </li>
+            <li role="presentation">
+              <a class="tab-btn" id="tab_0" href="#" role="tab" tabindex="0"
+                >Deleted Reports</a
+              >
+            </li>
+            <li role="presentation"></li>
+            <li role="presentation"></li>
+            <li role="presentation"></li>
+          </ul>
+        </div>
+        <div class="tabs-forms"></div>
+
+        <div class="table-header">
+          <form class="table-filter">
+            <div>
+              <label for="table-filter-by">Filter By:</label>
+              <select
+                id="table-filter-by"
+                name="table-filter-by"
+                class="table-filter-by"
+              >
+                <option value="tech">TECH</option>
+                <option value="call.dateTime">Date</option>
+                <option value="incident.title">Title</option>
+                <option value="call.status">Status</option>
+                <option value="call.phone">Phone</option>
+                <option value="store.number">Store</option>
+                <option value="incident.type">Type</option>
+                <option value="incident.isProcedural">Procedural</option>
+                <option value="store.employee.name">Emp</option>
+                <option value="store.districtManager">DM</option>
+                <option value="tech.isOnCall">On-call</option>
+              </select>
+            </div>
+            <div class="table-filter-search-ctn">
+              <label for="table-filter-search">Filter: </label>
+              <input
+                type="search"
+                name="table-filter-search"
+                id="table-filter-search"
+                class="table-filter-search"
+                placeholder="Search..."
+              />
+            </div>
+          </form>
+          <div class="table-view">
+            <div class="table-meta-data">
+              <p>
+                Total Reports:
+                <strong><span class="total-reports">0</span></strong>
+              </p>
+            </div>
+            <div class="table-pagination">
+              <!-- <button disabled class="table-pagination-btn">
+                <svg class="icons">
+                  <use href="/img/icons.svg#icon-chevron-left"></use>
+                </svg>
+              </button>
+              <span data-page="1" class="table-pagination-text">1</span>
+              <button class="table-pagination-btn">
+                <svg class="icons">
+                  <use href="/img/icons.svg#icon-chevron-right"></use>
+                </svg>
+              </button> -->
+            </div>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table class="table-content">
+            <thead>
+              <tr>
+                <th>TECH</th>
+                <th>Date</th>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Store</th>
+                <th>Emp</th>
+                <th>DM</th>
+                <th>Type</th>
+                <th>Procedural</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="table-footer">
+          <div class="table-rows">
+            <div>
+              <label for="table-rows-per-page">Rows per page:</label>
+              <select
+                id="table-rows-per-page"
+                name="table-rows-per-page"
+                class="table-rows-per-page"
+              >
+                <option selected value="50">50</option>
+                <option value="100">100</option>
+                <option value="250">250</option>
+                <option value="500">500</option>
+                <option value="1000">1000</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-pagination">
+            <!-- <button data-page="" class="table-pagination-btn">
+              <svg class="icons">
+                <use href="/img/icons.svg#icon-chevron-left"></use>
+              </svg>
+            </button>
+            <span class="table-pagination-text">1</span>
+            <button data-page="" class="table-pagination-btn">
+              <svg class="icons">
+                <use href="/img/icons.svg#icon-chevron-right"></use>
+              </svg>
+            </button> -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NOTIFICATIONS -->
+    <div class="notifications"></div>
+
+    <!-- MODAL -->
+    <div class="modal-ctn"></div>
+    <div class="overlay hidden"></div>
+  </div>
+`;
