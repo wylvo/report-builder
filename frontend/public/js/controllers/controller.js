@@ -9,12 +9,12 @@ import notificationView from "../views/notifications/notificationView.js";
 import modalView from "../views/notifications/modalView.js";
 import reportTabsView from "../views/reports/reportTabsView.js";
 
-let reportView,
+let reportFormView,
   takeSnapshot = false;
 
 const controlTabs = function (tabIndex, id = undefined) {
   model.state.tab = tabIndex;
-  reportView = reportTabsView.tabs.get(model.state.tab);
+  reportFormView = reportTabsView.tabs.get(model.state.tab);
   const reportId = id ? id : model.state.tabs.get(tabIndex).report.id;
   reportTabsView.updateLocationHash(reportId);
 };
@@ -23,8 +23,8 @@ const controlTabs = function (tabIndex, id = undefined) {
 const controlUniqueReportPerTab = function (id, event = undefined) {
   for (const [index, tab] of model.state.tabs) {
     if (tab.report.id && tab.report.id === id) {
-      const reportView = reportTabsView.tabs.get(index);
-      if (!event) reportView._tab.firstElementChild.click();
+      const reportFormView = reportTabsView.tabs.get(index);
+      if (!event) reportFormView._tab.firstElementChild.click();
       return true;
     }
   }
@@ -38,7 +38,7 @@ const controlUniqueReportPerTab = function (id, event = undefined) {
 // prettier-ignore
 const controlPaste = function () {
   model.state.clipboard.forEach((clipboardInput, index) => {
-    const reportInput = reportView._inputs.get("*").get(index);
+    const reportInput = reportFormView._inputs.get("*").get(index);
 
     if (reportInput.getAttribute("type") === "checkbox") {
       if (reportInput.checked && !clipboardInput.checked) reportInput.click();
@@ -49,20 +49,20 @@ const controlPaste = function () {
       reportInput.value = clipboardInput.value;
   });
   notificationView.success(`Report state pasted into tab ${model.state.tab + 1}`, 5);
-  reportView._form.onchange();
+  reportFormView._form.onchange();
 };
 
 // prettier-ignore
 const controlCopy = function (inputs = undefined) {
   model.state.clipboard = inputs;
   if (model.state.clipboard.size > 0)
-    reportTabsView.tabs.forEach((reportView) => reportView._btnPaste.disabled = false);
+    reportTabsView.tabs.forEach((reportFormView) => reportFormView._btnPaste.disabled = false);
   notificationView.info(`Report state copied from tab ${model.state.tab + 1}`, 5);
 };
 
 const controlNewReport = function () {
   model.newReport(model.state.tab);
-  reportView.newReport((takeSnapshot = true));
+  reportFormView.newReport((takeSnapshot = true));
   reportTabsView.removeLocationHash();
 };
 
@@ -75,7 +75,7 @@ const controlRenderReport = function () {
     if (isReportPresentInTab) return;
 
     const report = model.loadReport(model.state.tab, id);
-    reportView.render(report);
+    reportFormView.render(report);
     console.log(model.state);
   } catch (error) {
     controlNewReport();
@@ -91,7 +91,7 @@ const controlSaveReport = async function (reportId) {
   try {
     // Save report
     if (!id) {
-      report = await model.DB.createReport(model.state.tab, reportView._form);
+      report = await model.DB.createReport(model.state.tab, reportFormView._form);
       reportTableView.render(report);
       reportTableView.updateTotalCount(model.state.reports);
       notificationView.success(`Report successfully created: [${report.id}]`);
@@ -99,14 +99,14 @@ const controlSaveReport = async function (reportId) {
 
     // Save changes
     if (id) {
-      report = await model.DB.updateReport(id, reportView._form);
+      report = await model.DB.updateReport(id, reportFormView._form);
       reportTableView.update(report);
       notificationView.success(`Report changes were saved: [${report.id}]`);
     }
 
-    reportView.takeSnapshot(reportView.newClone());
-    reportView.updateTags(report);
-    reportView._btnTeams.disabled = false;
+    reportFormView.takeSnapshot(reportFormView.newClone());
+    reportFormView.updateTags(report);
+    reportFormView._btnTeams.disabled = false;
     reportTabsView.render(model.state.tab, report.incident.title, report.id);
     model.loadReport(model.state.tab, report.id);
     // api.sendBackupReports(model.state.reports);
@@ -268,8 +268,8 @@ const controlTheme = function (theme) {
 
 const controlBeforeUnload = function () {
   let hasChanges;
-  for (const [_, reportView] of reportTabsView.tabs) {
-    if (reportView._changes.length > 0) {
+  for (const [_, reportFormView] of reportTabsView.tabs) {
+    if (reportFormView._changes.length > 0) {
       hasChanges = true;
       break;
     }
@@ -294,7 +294,7 @@ const init = async function () {
 
   // Initialize all tabs
   reportTabsView.renderAll(model.initNumberOfTabs(5));
-  reportView = reportTabsView.tabs.get(model.state.tab);
+  reportFormView = reportTabsView.tabs.get(model.state.tab);
 
   // If id in hash render report
   if (window.location.hash.slice(1)) controlRenderReport();
@@ -317,16 +317,16 @@ const init = async function () {
   reportTabsView.addHandlerBeforeUnload(controlBeforeUnload);
 
   // Report view handler render. Applies to every report views (targeting Window object)
-  reportView.addHandlerRender(controlUnsavedReport, controlRenderReport);
+  reportFormView.addHandlerRender(controlUnsavedReport, controlRenderReport);
   // ^^^ ERROR WHEN EDITING URL, OVERWRITING AN EXISTING REPORT ^^^
 
   // Report view handlers per tabs
-  reportTabsView.tabs.forEach((reportView) => {
-    reportView.addHandlerPaste(controlPaste);
-    reportView.addHandlerCopy(controlCopy);
-    reportView.addHandlerNew(controlUnsavedReport, controlNewReport);
-    reportView.addHandlerSave(controlSaveReport);
-    reportView.addHandlerSend(controlSendReport);
+  reportTabsView.tabs.forEach((reportFormView) => {
+    reportFormView.addHandlerPaste(controlPaste);
+    reportFormView.addHandlerCopy(controlCopy);
+    reportFormView.addHandlerNew(controlUnsavedReport, controlNewReport);
+    reportFormView.addHandlerSave(controlSaveReport);
+    reportFormView.addHandlerSend(controlSendReport);
   });
 
   // Table view handlers

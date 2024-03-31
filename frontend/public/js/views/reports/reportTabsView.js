@@ -1,9 +1,9 @@
 import TabsView from "../tabsView.js";
-import { ReportView } from "./reportFormView.js";
+import { ReportFormView } from "./reportFormView.js";
 
 class ReportTabsView extends TabsView {
   constructor() {
-    super(ReportView);
+    super(ReportFormView);
   }
 
   _generateTabHtml(index) {

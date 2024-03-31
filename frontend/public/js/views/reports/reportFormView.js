@@ -1,12 +1,6 @@
-import View from "../View.js";
+import FormView from "../formView.js";
 
-export class ReportView extends View {
-  // Inputs keys
-  #FIELDS = "all-fields";
-  #CHECKBOXES = "all-checkboxes";
-  #SELECTS = "all-selects";
-  #TEXTAREAS = "all-textareas";
-
+export class ReportFormView extends FormView {
   // Accordions keys
   #CALL = "phone-call-accordion";
   #STORE = "store-information-accordion";
@@ -19,19 +13,7 @@ export class ReportView extends View {
 
   // prettier-ignore
   constructor(tabElement, formElement) {
-    super();
-    this._tab = tabElement;
-    this._form = formElement;
-
-    // Initialize inputs (includes checkboxes, selects & text areas)
-    this._inputs = this.initializeAllInputs(this._form);
-    this._fields = this._inputs.get(this.#FIELDS);
-    this._checkBoxes = this._inputs.get(this.#CHECKBOXES);
-    this._selects = this._inputs.get(this.#SELECTS);
-    this._textAreas = this._inputs.get(this.#TEXTAREAS);
-
-    // Initialize text inputs with the "maxlength" HTML attribute
-    this._maxLengthInputs = this.initTextInputsWithMaxLength(this._inputs.get("*"));
+    super(tabElement, formElement);
 
     // Initialize accordions
     this._accordions = this.initalizeAllAccordions();
@@ -73,54 +55,13 @@ export class ReportView extends View {
   // Initialize default handlers & expand accordions
   #init() {
     this.newReport(true);
-    this.updateTextInputsLength();
     this._expandAllAccordions();
     this._addHandlerTimestampNow();
-    this._addHandlerTextInputMaxLength();
     this._addHandlerCollapseExpandOrAccordion();
     this._addHandlerCopyDateTime();
     this._addHandlerNoCallerIdSwitch();
     this._addHandlerTransactionIssueSwitch();
     this._addHandlerOnChange();
-  }
-
-  // prettier-ignore
-  // Initialize all form input types. Returns a Map() object. Keys are input types. Values are elements
-  initializeAllInputs(form) {
-    const fieldElements = [...form.getElementsByTagName("input")]
-      .filter((el) => el.getAttribute("type") !== "checkbox");
-    const checkBoxElements = [...form.getElementsByTagName("input")]
-      .filter((el) => el.getAttribute("type") === "checkbox");
-    const selectElements = [...form.getElementsByTagName("select")];
-    const textAreaElements = [...form.getElementsByTagName("textarea")];
-
-    const keyValue = (array) => array.map((element) => [element.name, element]);
-
-    const fields = new Map(keyValue(fieldElements));
-    const checkBoxes = new Map(keyValue(checkBoxElements));
-    const selects = new Map(keyValue(selectElements));
-    const textAreas = new Map(keyValue(textAreaElements));
-    const allInputs = new Map([...checkBoxes, ...fields, ...selects, ...textAreas]);
-
-    return new Map([
-      [this.#FIELDS, fields],
-      [this.#CHECKBOXES, checkBoxes],
-      [this.#SELECTS, selects],
-      [this.#TEXTAREAS, textAreas],
-      [this.#ALL, allInputs],
-    ]);
-  }
-
-  // prettier-ignore
-  initTextInputsWithMaxLength(allInputs) {
-    const maxLengthInputs = new Map();
-    allInputs.forEach((input) => {
-      if (input.hasAttribute("maxlength") && input.name !== "phone-number") {
-        maxLengthInputs.set(input, input.parentElement);
-        input.parentElement.querySelector(".max-length-text").textContent = input.getAttribute("maxlength");
-      }
-    });
-    return maxLengthInputs;
   }
 
   // prettier-ignore
@@ -141,43 +82,6 @@ export class ReportView extends View {
       ...allAccordionsByKeyName,
       allAccordions
     ]);
-  }
-
-  // Form clone (To be referenced whenever there are changes in the form)
-  newClone(isDeep = true) {
-    return this._form.cloneNode(isDeep);
-  }
-
-  // prettier-ignore
-  // Make clone select element equal to state select element. (A default clone does not apply this).
-  #deepSnapshot(clone, state) {
-    const cloneSelects = clone.get(this.#SELECTS);
-    const stateSelects = state.get(this.#SELECTS);
-    stateSelects.forEach(
-      (stateSelect, i) => (cloneSelects.get(i).selectedIndex = stateSelect.selectedIndex)
-    );
-    return clone;
-  }
-
-  // Take a snapshot of the report by cloning the form element
-  takeSnapshot(snapshot) {
-    snapshot = snapshot ? snapshot : this.newClone(true);
-
-    // State of the report inputs
-    const state = this._inputs;
-
-    // Clone of the report inputs
-    const weakClone = this.initializeAllInputs(snapshot);
-    const clone = this.#deepSnapshot(weakClone, state);
-
-    // Check for changes between state & clone. Update changes array
-    this.hasStateChanged(state.get(this.#ALL), clone.get(this.#ALL));
-
-    return (this._snapshot = {
-      state: state.get(this.#ALL),
-      clone: clone.get(this.#ALL),
-      taken: true,
-    });
   }
 
   // prettier-ignore
@@ -368,14 +272,6 @@ export class ReportView extends View {
     });
   }
 
-  // prettier-ignore
-  updateTextInputsLength() {
-    this._maxLengthInputs.forEach((container, input) => {
-      const currentLengthElement = container.querySelector(`#${input.id}-length`);
-      currentLengthElement.textContent = input.value.length;
-    });
-  }
-
   clearTags() {
     const tags = [...this._tags];
     tags.forEach((tag) => tag.classList.add("hidden"));
@@ -506,16 +402,6 @@ export class ReportView extends View {
   }
 
   // prettier-ignore
-  _addHandlerTextInputMaxLength() {
-    this._maxLengthInputs.forEach((container, input) => {
-      input.addEventListener("input", () => {
-        const currentLengthElement = container.querySelector(`#${input.id}-length`);
-        currentLengthElement.textContent = input.value.length;
-      });
-    });
-  }
-
-  // prettier-ignore
   _addHandlerCollapseExpandOrAccordion() {
     this._all(this._accordions).forEach((accordion) => {
       accordion.header.addEventListener("click", this._collapseOrExpandAccordion.bind(this));
@@ -562,8 +448,9 @@ export class ReportView extends View {
   }
 
   addHandlerPaste(handler) {
-    this._btnPaste.addEventListener("click", function () {
+    this._btnPaste.addEventListener("click", () => {
       handler();
+      this.updateTextInputsLength();
     });
   }
 
