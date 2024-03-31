@@ -5,7 +5,7 @@ import themeView from "../views/themeView.js";
 import tabsView from "../views/reports/tabsView.js";
 import searchView from "../views/reports/searchView.js";
 import paginationView from "../views/reports/paginationView.js";
-import tableView from "../views/reports/tableView.js";
+import reportTableView from "../views/reports/reportTableView.js";
 import notificationView from "../views/notificationView.js";
 import modalView from "../views/modalView.js";
 
@@ -92,15 +92,15 @@ const controlSaveReport = async function (reportId) {
     // Save report
     if (!id) {
       report = await model.DB.createReport(model.state.tab, reportView._form);
-      tableView.render(report);
-      tableView.updateTotalReports(model.state.reports);
+      reportTableView.render(report);
+      reportTableView.updateTotalCount(model.state.reports);
       notificationView.success(`Report successfully created: [${report.id}]`);
     }
 
     // Save changes
     if (id) {
       report = await model.DB.updateReport(id, reportView._form);
-      tableView.update(report);
+      reportTableView.update(report);
       notificationView.success(`Report changes were saved: [${report.id}]`);
     }
 
@@ -133,7 +133,7 @@ const controlSendReport = async function (id = undefined) {
     if (!isPromptConfirmed) return;
 
     if(reportViewInTab) reportViewInTab.renderSpinner(reportViewInTab._btnTeams);
-    tableView.renderSpinner(tableViewBtnTeams);
+    reportTableView.renderSpinner(tableViewBtnTeams);
 
     const request = await api.sendTeamsWebhook(report);
     if(reportViewInTab) {
@@ -141,7 +141,7 @@ const controlSendReport = async function (id = undefined) {
       reportViewInTab._btnTeams.disabled = true;
     }
 
-    tableView.clearSpinner(tableViewBtnTeams, "success");
+    reportTableView.clearSpinner(tableViewBtnTeams, "success");
     tableViewBtnTeams.disabled = true;
     notificationView.success(`Report successfully sent on Teams. Status code ${request.response.status} (${request.response.statusText})`);
 
@@ -155,11 +155,11 @@ const controlSendReport = async function (id = undefined) {
     console.error(error);
     notificationView.error(error, 60);
     if(reportViewInTab) reportViewInTab.clearSpinner(reportViewInTab._btnTeams);
-    tableView.clearSpinner(tableViewBtnTeams);
+    reportTableView.clearSpinner(tableViewBtnTeams);
 
     if (error.message.includes("Request failed")) {
       if(reportViewInTab) reportViewInTab.clearSpinner(reportViewInTab._btnTeams, "error");
-      tableView.clearSpinner(tableViewBtnTeams, "error");
+      reportTableView.clearSpinner(tableViewBtnTeams, "error");
       notificationView.warning("Make sure you have internet access.", 60);
     }
   }
@@ -182,7 +182,7 @@ const controlDeleteReport = async function (id) {
     }
   
     await model.DB.deleteReport(id);
-    tableView.updateTotalReports(model.state.reports);
+    reportTableView.updateTotalCount(model.state.reports);
     notificationView.success(`Report successfully deleted: ${report.incident.title} [${report.id}]`);
 
   } catch (error) {
@@ -219,15 +219,15 @@ const controlSearchResults = function () {
   if (!query) {
     model.state.search.query = "";
     model.state.search.results = [];
-    tableView.updateTotalReports(model.state.reports);
-    return tableView.renderAll(model.rowsPerPage());
+    reportTableView.updateTotalCount(model.state.reports);
+    return reportTableView.renderAll(model.rowsPerPage());
   }
 
   const filterBy = searchView.filterBy();
   model.filterSearch(query, filterBy);
 
   controlRenderAllReports();
-  tableView.updateTotalReports(model.state.search.results);
+  reportTableView.updateTotalCount(model.state.search.results);
 };
 
 const controlClearSearchResults = function () {
@@ -246,12 +246,12 @@ const controlPages = function (page) {
   paginationView.renderAll(model.pages(page));
 
   const reports = model.rowsPerPage(page);
-  tableView.renderAll(reports);
+  reportTableView.renderAll(reports);
 };
 
 const controlRenderAllReports = function () {
   const reports = model.rowsPerPage();
-  tableView.renderAll(reports);
+  reportTableView.renderAll(reports);
   paginationView.renderAll(model.pages());
 };
 
@@ -301,8 +301,8 @@ const init = async function () {
 
   // Initialize all table rows per page
   model.state.rowsPerPage = paginationView.rowsPerPage();
-  tableView.renderAll(model.rowsPerPage());
-  tableView.updateTotalReports(model.state.reports);
+  reportTableView.renderAll(model.rowsPerPage());
+  reportTableView.updateTotalCount(model.state.reports);
 
   // Initialize all pagination buttons
   paginationView.renderAll(model.pages());
@@ -330,12 +330,12 @@ const init = async function () {
   });
 
   // Table view handlers
-  tableView.addHandlerUniqueReportPerTab(
+  reportTableView.addHandlerUniqueReportPerTab(
     controlUnsavedReport,
     controlUniqueReportPerTab
   );
-  tableView.addHandlerSend(controlSendReport);
-  tableView.addHandlerDelete(controlDeleteReport);
+  reportTableView.addHandlerSend(controlSendReport);
+  reportTableView.addHandlerDelete(controlDeleteReport);
 
   // Search view handler
   searchView.addHandlerSearch(controlSearchResults);

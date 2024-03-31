@@ -1,51 +1,20 @@
-import View from "../View.js";
+import TableView from "../tableView.js";
 
-class TableView extends View {
-  _table = document.querySelector("tbody");
-  _totalReports = document.querySelector(".total-reports");
-  _reports;
-
+class ReportTableView extends TableView {
   constructor() {
     super();
   }
 
-  // prettier-ignore
-  renderAll(reports) {
-    this.#clearTable();
-    this._reports = reports;
-    if (!Array.isArray(reports) || (Array.isArray(reports) && reports.length === 0))
-      return this._table.appendChild(this.#generateRowElement());
-    reports.forEach((report) => {
-      this._table.appendChild(this.#generateRowElement(report));
-    });
+  update(data) {
+    const { currentElement, newElement } = this._generateRowElement(data);
+
+    console.log(currentElement, newElement);
+    currentElement.replaceWith(newElement);
+
+    return newElement;
   }
 
-  // prettier-ignore
-  render(report) {
-    if(!window.location.hash) window.location.hash = report.id;
-    this._table.insertBefore(this.#generateRowElement(report), this._table.firstChild);
-    return report.tableRowEl;
-  }
-
-  update(report) {
-    report.tableRowEl.replaceWith(this.#generateRowElement(report));
-    return report.tableRowEl;
-  }
-
-  updateTotalReports(reports) {
-    this._totalReports.textContent = reports.length;
-  }
-
-  #clearTable() {
-    this._table.innerHTML = "";
-  }
-
-  #generateRowElement(report) {
-    if (!report) return this.htmlStringToElement(this.#_generateEmptyRowHtml());
-    return this._escapeHtml(report);
-  }
-
-  #_generateEmptyRowHtml() {
+  _generateEmptyRowHtml() {
     return `
       <tr class="table-row">
         <td data-cell="TECH">
@@ -169,4 +138,4 @@ class TableView extends View {
   }
 }
 
-export default new TableView();
+export default new ReportTableView();

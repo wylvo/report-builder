@@ -84,7 +84,7 @@ export default () => `
             <div class="table-meta-data">
               <p>
                 Total Reports:
-                <strong><span class="total-reports">0</span></strong>
+                <strong><span class="count">0</span></strong>
               </p>
             </div>
             <div class="table-pagination">

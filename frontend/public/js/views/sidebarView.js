@@ -2,7 +2,7 @@ import View from "./View.js";
 import tabsView from "./reports/tabsView.js";
 
 import dashboadHtml from "./dashboard/dashboadHtml.js";
-import reportHtml from "./reports/reportHtml.js";
+import reportHtml from "./reports/reportsHtml.js";
 import usersHtml from "./users/usersHtml.js";
 import meHtml from "./me/meHtml.js";
 
@@ -64,16 +64,16 @@ class SidebarView extends View {
     this._main.innerHTML = "";
   }
 
-  render(link) {
+  render(data, link) {
     const linkName = link.split("-")[0];
 
-    if (linkName === "dashboard") this.#generateElement(this.#dashboardHtml());
+    if (linkName === "dashboard") this.#generateElement(dashboadHtml(data));
     if (linkName === "reports") {
-      this.#generateElement(this.#reportsHtml());
+      this.#generateElement(reportHtml());
       tabsView.renderAll();
     }
-    if (linkName === "users") this.#generateElement(this.#usersHtml());
-    if (linkName === "me") this.#generateElement(this.#meHtml());
+    if (linkName === "users") this.#generateElement(usersHtml());
+    if (linkName === "me") this.#generateElement();
   }
 
   _addHandlerClickMenuButton() {
@@ -86,7 +86,7 @@ class SidebarView extends View {
     this._menus.forEach((element) => {
       element.addEventListener("click", (e) => {
         const link = e.target.closest("li");
-        this.render(link.id);
+        this.render(null, link.id);
       });
     });
   }
@@ -118,18 +118,6 @@ class SidebarView extends View {
       this._main.insertAdjacentElement("beforeend", childElement)
     );
     // this._main.insertAdjacentElement()
-  }
-
-  #dashboardHtml(data) {}
-
-  #reportsHtml() {}
-
-  #usersHtml() {
-    return ``;
-  }
-
-  #meHtml() {
-    return ``;
   }
 }
 

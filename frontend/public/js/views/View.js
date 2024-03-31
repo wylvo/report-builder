@@ -36,14 +36,18 @@ export default class View {
     return template.lastElementChild;
   }
 
-  _escapeHtml(report) {
-    report.tableRowEl = {};
-    const clone = structuredClone(report);
+  _escapeHtml(data) {
+    let currentElement;
+    currentElement = data.tableRowEl;
+    data.tableRowEl = {};
+
+    const clone = structuredClone(data);
+
     this.#traverse(clone, this.#escapeHtmlObjectKeyValueTypeOfString);
 
     clone.tableRowEl = this.htmlStringToElement(this._generatetHtml(clone));
-    report.tableRowEl = clone.tableRowEl;
-    return clone.tableRowEl;
+    data.tableRowEl = clone.tableRowEl;
+    return { currentElement, newElement: clone.tableRowEl };
   }
 
   #escapeHtmlObjectKeyValueTypeOfString(object, key) {

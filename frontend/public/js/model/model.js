@@ -525,17 +525,14 @@ export const DB = {
 
   updateReport: async (id, form) => {
     // Update a report object
-    const reportObject = updateReport(id, form);
+    const report = updateReport(id, form);
+    const tableRowEl = report.tableRowEl;
+    report.tableRowEl = undefined;
 
     // API request to update a report from the database
-    const {
-      data: {
-        data: [report],
-      },
-    } = await api.v1.reports.updateReport(id, reportObject);
+    await api.v1.reports.updateReport(id, report);
 
-    // Persist tableRowEl to allow tableView to update the table row element
-    report.tableRowEl = reportObject.tableRowEl;
+    report.tableRowEl = tableRowEl;
 
     return report;
   },
