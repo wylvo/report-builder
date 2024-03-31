@@ -8,31 +8,25 @@ class UserTableView extends TableView {
   _generateEmptyRowHtml() {
     return `
       <tr class="table-row">
-        <td data-cell="TECH">
+        <td data-cell="Picture">
           <div>N/A</div>
         </td>
-        <td data-cell="Date">
+        <td data-cell="Full Name">
           <div>-</div>
         </td>
-        <td data-cell="Title">
+        <td data-cell="Email">
           <div>-</div>
         </td>
-        <td data-cell="Phone">
+        <td data-cell="Username">
           <div>-</div>
         </td>
-        <td data-cell="Num">
+        <td data-cell="Initials">
           <div>-</div>
         </td>
-        <td data-cell="Employee">
+        <td data-cell="Role">
           <div>-</div>
         </td>
-        <td data-cell="DM">
-          <div>-</div>
-        </td>
-        <td data-cell="Procedural">
-          <div>-</div>
-        </td>
-        <td data-cell="Type">
+        <td data-cell="Status">
           <div>-</div>
         </td>
         <td data-cell="Actions">
@@ -43,56 +37,38 @@ class UserTableView extends TableView {
   }
 
   // prettier-ignore
-  _generatetHtml(report) {
-    const date = new Date(`${report.call.date} ${report.call.time}`).toDateString();
-    const time = report.call.dateTime.split(" ").slice(1, 3).join(" ");
-    const formattedDate = `${date}, ${time}`;
-    const status = {
-      class: report.call.status.includes("In Progress") ? "warning" : "good",
-      text: report.call.status
-    }
-    const isProcedural = report.incident.isProcedural
-      ? { class: `class="attention"`, text: "Yes" }
-      : { class: "", text: "No" };
-
-    const isOnCallClass = report.tech.isOnCall ? "on-call" : ""
-
+  _generatetHtml(user) {
     return `
-    <tr class="table-row">
-      <td data-cell="TECH">
-        <div><p class="table-row-cell-pp ${isOnCallClass}">${report.tech.initials}</p></div>
-      </td>
-      <td data-cell="Date"><div>${formattedDate}</div></td>
-      <td data-cell="Title">
-        <div><a class="table-row-link" href="#${report.id}">${report.incident.title}</a></div>
-      </td>
-      <td data-cell="Status">
-        <div><p class="${status.class}">${status.text}</p></div>
-      </td>
-      <td data-cell="Num"><div>${report.store.number}</div></td>
-      <td data-cell="Employee"><div>${report.store.employee.name}</div></td>
-      <td data-cell="DM"><div>${report.store.districtManager.name}</div></td>
-      <td data-cell="Type"><div>${report.incident.type}</div></td>
-      <td data-cell="Procedural">
-        <div><p ${isProcedural.class}>${isProcedural.text}</p></div>
-      </td>
-      <td data-cell="Actions" data-id="${report.id}" class="table-row-buttons">
-        <div>
-          <button ${
-            report.isWebhookSent ? "disabled" : ""
-          } class="table-row-teams-btn icons">
-            <svg>
-              <use href="/img/icons.svg#icon-ms-teams"></use>
-            </svg>
-          </button>
-          <button class="table-row-delete-btn icons">
-            <svg>
-              <use href="/img/icons.svg#icon-delete"></use>
-            </svg>
-          </button>
-        </div>
-      </td>
-    </tr>
+      <tr class="table-row">
+        <td data-cell="Picture">
+          <div><p class="table-row-cell-pp"></p></div>
+        </td>
+        <td data-cell="Full Name"><div></div></td>
+        <td data-cell="Email">
+          <div><a class="table-row-link" href="#${user?.id}"></a></div>
+        </td>
+        <td data-cell="Username"><div></div></td>
+        <td data-cell="Initials"><div></div></td>
+        <td data-cell="Role"><div></div></td>
+        <td data-cell="Status">
+          <div><p></p></div>
+        </td>
+        <td data-cell="Actions" data-id="${user?.id}" class="table-row-buttons">
+          <div>
+            <button class="table-row-teams-btn icons">
+              <svg>
+                <use href="/img/icons.svg#icon-ms-teams"></use>
+              </svg>
+            </button>
+            
+            <button class="table-row-delete-btn icons">
+              <svg>
+                <use href="/img/icons.svg#icon-delete"></use>
+              </svg>
+            </button>
+          </div>
+        </td>
+      </tr>
     `;
   }
 

@@ -28,7 +28,7 @@ class ReportTableView extends TableView {
         <td data-cell="Phone">
           <div>-</div>
         </td>
-        <td data-cell="Num">
+        <td data-cell="Store">
           <div>-</div>
         </td>
         <td data-cell="Employee">
@@ -77,7 +77,7 @@ class ReportTableView extends TableView {
       <td data-cell="Status">
         <div><p class="${status.class}">${status.text}</p></div>
       </td>
-      <td data-cell="Num"><div>${report.store.number}</div></td>
+      <td data-cell="Store"><div>${report.store.number}</div></td>
       <td data-cell="Employee"><div>${report.store.employee.name}</div></td>
       <td data-cell="DM"><div>${report.store.districtManager.name}</div></td>
       <td data-cell="Type"><div>${report.incident.type}</div></td>

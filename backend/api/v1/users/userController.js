@@ -20,12 +20,13 @@ const mergeUserData = (id, obj) => {
       id,
       ...filterObject(
         obj,
+        "role",
+        "isActive",
+        "email",
+        "profilePictureURL",
         "fullName",
         "username",
-        "email",
-        "initials",
-        "active",
-        "role"
+        "initials"
       ),
     },
   ];
@@ -52,13 +53,14 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
 export const createUser = catchAsync(async (req, res, next) => {
   const [
     {
-      fullName,
-      username,
-      initials,
+      role,
       email,
       password,
       passwordConfirmation,
-      role,
+      profilePictureURL,
+      fullName,
+      username,
+      initials,
     },
   ] = req.body;
   const id = generateUUID();
@@ -73,12 +75,13 @@ export const createUser = catchAsync(async (req, res, next) => {
 
   await mssql()
     .input("id", id)
+    .input("role", role)
+    .input("email", email)
+    .input("password", await hashPassword(password))
+    .input("profilePictureURL", profilePictureURL)
     .input("fullName", fullName)
     .input("username", username)
     .input("initials", initials)
-    .input("email", email)
-    .input("password", await hashPassword(password))
-    .input("role", role)
     .query(usersSQL.create);
 
   res.status(201).json({

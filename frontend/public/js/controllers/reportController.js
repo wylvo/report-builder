@@ -1,7 +1,7 @@
 import * as model from "../model/model.js";
 import api from "../model/api.js";
 import sidebarView from "../views/sidebar/sidebarView.js";
-import themeView from "../views/themeView.js";
+import themeView from "../views/theme/themeView.js";
 import searchView from "../views/searchView.js";
 import paginationView from "../views/paginationView.js";
 import reportTableView from "../views/reports/reportTableView.js";
@@ -351,4 +351,4 @@ const init = async function () {
   console.log(model.state);
 };
 
-init();
+// init();

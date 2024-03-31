@@ -1,9 +1,9 @@
 export default {
   getAll:
-    "SELECT id, fullName, username, initials, email, active, role FROM users;",
+    "SELECT id, role, isActive, email, fullName, username, initials FROM users;",
   get: "SELECT * FROM users WHERE id = @id;",
-  create: `INSERT INTO users (id, fullName, username, initials, email, password, role)
-  VALUES (@id, @fullName, @username, @initials, @email, @password, @role);`,
+  create: `INSERT INTO users (id, role, email, password, profilePictureURL, fullName, username, initials)
+  VALUES (@id, @role, @email, @password, @profilePictureURL, @fullName, @username, @initials);`,
 
   // Source: https://learn.microsoft.com/fr-fr/archive/blogs/sqlserverstorageengine/openjson-the-easiest-way-to-import-json-text-into-table#use-case-2-updating-table-row-using-json-object
   update: `

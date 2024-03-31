@@ -13,7 +13,7 @@ const router = express.Router();
 router.get("/me", user.getMe, user.getUser);
 
 // Restrict the following routes to admin role after this middleware
-router.use(auth.restrictTo("admin"));
+// router.use(auth.restrictTo("admin"));
 
 /** ROUTES
  * /api/v1/users/:id/resetPassword  (POST)

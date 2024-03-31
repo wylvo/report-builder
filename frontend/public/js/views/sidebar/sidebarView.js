@@ -1,5 +1,6 @@
 import View from "../View.js";
 import reportTabsView from "../reports/reportTabsView.js";
+import userTabsView from "../users/userTabsView.js";
 
 import dashboadHtml from "../dashboard/dashboadHtml.js";
 import reportHtml from "../reports/reportsHtml.js";
@@ -72,7 +73,10 @@ class SidebarView extends View {
       this.#generateElement(reportHtml());
       reportTabsView.renderAll();
     }
-    if (linkName === "users") this.#generateElement(usersHtml());
+    if (linkName === "users") {
+      this.#generateElement(usersHtml());
+      userTabsView.renderAll();
+    }
     if (linkName === "me") this.#generateElement();
   }
 

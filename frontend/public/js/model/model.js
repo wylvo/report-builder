@@ -7,20 +7,29 @@ export const migrateReport = migrateReportData;
 export const state = {
   version: null,
   theme: "light",
-  rowsPerPage: null,
+
+  user: {
+    profile: {},
+    reports: [],
+    reportsDeleted: [],
+  },
+
+  users: [],
+  usersInactive: [],
+
+  tab: 0,
+  tabs: new Map(),
+  clipboard: new Map(),
+
   reports: [],
+  reportsDeleted: [],
+
+  rowsPerPage: null,
   search: {
     query: "",
     filterBy: "",
     results: [],
     page: 1,
-  },
-  tab: 0,
-  tabs: new Map(),
-  clipboard: new Map(),
-  user: {
-    profile: {},
-    reports: [],
   },
 };
 

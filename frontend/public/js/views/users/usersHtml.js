@@ -46,15 +46,13 @@ export default () => `
           <table class="table-content">
             <thead>
               <tr>
-                <th>TECH</th>
-                <th>Date</th>
-                <th>Title</th>
+                <th>Picture</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Username</th>
+                <th>Initials</th>
+                <th>Role</th>
                 <th>Status</th>
-                <th>Store</th>
-                <th>Emp</th>
-                <th>DM</th>
-                <th>Type</th>
-                <th>Procedural</th>
                 <th>Actions</th>
               </tr>
             </thead>
