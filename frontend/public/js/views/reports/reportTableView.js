@@ -8,7 +8,6 @@ class ReportTableView extends TableView {
   update(data) {
     const { currentElement, newElement } = this._generateRowElement(data);
 
-    console.log(currentElement, newElement);
     currentElement.replaceWith(newElement);
 
     return newElement;

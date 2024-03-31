@@ -1,4 +1,4 @@
-import View from "../View.js";
+import View from "./View.js";
 
 class PaginationView extends View {
   #rowsPerPageSelect = document.querySelector(".table-rows-per-page");

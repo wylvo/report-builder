@@ -1,6 +1,6 @@
 import View from "./View.js";
 
-export default class tableView extends View {
+export default class TableView extends View {
   _table = document.querySelector("tbody");
   _count = document.querySelector(".table-meta-data .count");
   _data;

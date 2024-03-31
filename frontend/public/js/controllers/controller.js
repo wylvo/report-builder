@@ -1,29 +1,29 @@
 import * as model from "../model/model.js";
 import api from "../model/api.js";
-import sidebarView from "../views/sidebarView.js";
+import sidebarView from "../views/sidebar/sidebarView.js";
 import themeView from "../views/themeView.js";
-import tabsView from "../views/reports/tabsView.js";
-import searchView from "../views/reports/searchView.js";
-import paginationView from "../views/reports/paginationView.js";
+import searchView from "../views/searchView.js";
+import paginationView from "../views/paginationView.js";
 import reportTableView from "../views/reports/reportTableView.js";
-import notificationView from "../views/notificationView.js";
-import modalView from "../views/modalView.js";
+import notificationView from "../views/notifications/notificationView.js";
+import modalView from "../views/notifications/modalView.js";
+import reportTabsView from "../views/reports/reportTabsView.js";
 
 let reportView,
   takeSnapshot = false;
 
 const controlTabs = function (tabIndex, id = undefined) {
   model.state.tab = tabIndex;
-  reportView = tabsView.tabs.get(model.state.tab);
+  reportView = reportTabsView.tabs.get(model.state.tab);
   const reportId = id ? id : model.state.tabs.get(tabIndex).report.id;
-  tabsView.updateLocationHash(reportId);
+  reportTabsView.updateLocationHash(reportId);
 };
 
 // prettier-ignore
 const controlUniqueReportPerTab = function (id, event = undefined) {
   for (const [index, tab] of model.state.tabs) {
     if (tab.report.id && tab.report.id === id) {
-      const reportView = tabsView.tabs.get(index);
+      const reportView = reportTabsView.tabs.get(index);
       if (!event) reportView._tab.firstElementChild.click();
       return true;
     }
@@ -56,14 +56,14 @@ const controlPaste = function () {
 const controlCopy = function (inputs = undefined) {
   model.state.clipboard = inputs;
   if (model.state.clipboard.size > 0)
-    tabsView.tabs.forEach((reportView) => reportView._btnPaste.disabled = false);
+    reportTabsView.tabs.forEach((reportView) => reportView._btnPaste.disabled = false);
   notificationView.info(`Report state copied from tab ${model.state.tab + 1}`, 5);
 };
 
 const controlNewReport = function () {
   model.newReport(model.state.tab);
   reportView.newReport((takeSnapshot = true));
-  tabsView.removeLocationHash();
+  reportTabsView.removeLocationHash();
 };
 
 const controlRenderReport = function () {
@@ -107,7 +107,7 @@ const controlSaveReport = async function (reportId) {
     reportView.takeSnapshot(reportView.newClone());
     reportView.updateTags(report);
     reportView._btnTeams.disabled = false;
-    tabsView.render(model.state.tab, report.incident.title, report.id);
+    reportTabsView.render(model.state.tab, report.incident.title, report.id);
     model.loadReport(model.state.tab, report.id);
     // api.sendBackupReports(model.state.reports);
   } catch (error) {
@@ -124,7 +124,7 @@ const controlSendReport = async function (id = undefined) {
 
   const report = model.findReportById(id);
   const tabIndex = model.findReportInTab(report.id);
-  const reportViewInTab = tabsView.tabs.get(tabIndex);
+  const reportViewInTab = reportTabsView.tabs.get(tabIndex);
   const tableViewBtnTeams = report.tableRowEl.querySelector(".table-row-teams-btn");
   
   try {
@@ -173,12 +173,12 @@ const controlDeleteReport = async function (id) {
     let isDeleteConfirmed = true;
     isDeleteConfirmed = await modalView.confirmDelete(report);
     if(!isDeleteConfirmed) return;
-    if(id === window.location.hash.slice(1)) tabsView.removeLocationHash();
+    if(id === window.location.hash.slice(1)) reportTabsView.removeLocationHash();
   
     const tabIndex = model.findReportInTab(id);
     if (tabIndex) {
       model.newReport(tabIndex)
-      tabsView.tabs.get(tabIndex).newReport((takeSnapshot = true))
+      reportTabsView.tabs.get(tabIndex).newReport((takeSnapshot = true))
     }
   
     await model.DB.deleteReport(id);
@@ -193,7 +193,7 @@ const controlDeleteReport = async function (id) {
 // prettier-ignore
 const controlUnsavedReport = async (controlFunction, handler = undefined, event = undefined) => {
   let isSaveConfirmed = false;
-  const currentReportView = tabsView.tabs.get(model.state.tab);
+  const currentReportView = reportTabsView.tabs.get(model.state.tab);
 
   if (currentReportView._changes.length > 0) {
     if (event) event.preventDefault();
@@ -268,7 +268,7 @@ const controlTheme = function (theme) {
 
 const controlBeforeUnload = function () {
   let hasChanges;
-  for (const [_, reportView] of tabsView.tabs) {
+  for (const [_, reportView] of reportTabsView.tabs) {
     if (reportView._changes.length > 0) {
       hasChanges = true;
       break;
@@ -293,8 +293,8 @@ const init = async function () {
   // api.sendBackupReports(model.state.reports);
 
   // Initialize all tabs
-  tabsView.renderAll(model.initNumberOfTabs(5));
-  reportView = tabsView.tabs.get(model.state.tab);
+  reportTabsView.renderAll(model.initNumberOfTabs(5));
+  reportView = reportTabsView.tabs.get(model.state.tab);
 
   // If id in hash render report
   if (window.location.hash.slice(1)) controlRenderReport();
@@ -312,16 +312,16 @@ const init = async function () {
   themeView.setTheme(model.state.theme);
 
   // Tab view handlers
-  tabsView.addHandlerClickTab(controlTabs);
-  tabsView.addHandlerKeydown(controlTabs);
-  tabsView.addHandlerBeforeUnload(controlBeforeUnload);
+  reportTabsView.addHandlerClickTab(controlTabs);
+  reportTabsView.addHandlerKeydown(controlTabs);
+  reportTabsView.addHandlerBeforeUnload(controlBeforeUnload);
 
   // Report view handler render. Applies to every report views (targeting Window object)
   reportView.addHandlerRender(controlUnsavedReport, controlRenderReport);
   // ^^^ ERROR WHEN EDITING URL, OVERWRITING AN EXISTING REPORT ^^^
 
   // Report view handlers per tabs
-  tabsView.tabs.forEach((reportView) => {
+  reportTabsView.tabs.forEach((reportView) => {
     reportView.addHandlerPaste(controlPaste);
     reportView.addHandlerCopy(controlCopy);
     reportView.addHandlerNew(controlUnsavedReport, controlNewReport);

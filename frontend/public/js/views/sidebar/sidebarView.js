@@ -1,10 +1,10 @@
-import View from "./View.js";
-import tabsView from "./reports/tabsView.js";
+import View from "../View.js";
+import reportTabsView from "../reports/reportTabsView.js";
 
-import dashboadHtml from "./dashboard/dashboadHtml.js";
-import reportHtml from "./reports/reportsHtml.js";
-import usersHtml from "./users/usersHtml.js";
-import meHtml from "./me/meHtml.js";
+import dashboadHtml from "../dashboard/dashboadHtml.js";
+import reportHtml from "../reports/reportsHtml.js";
+import usersHtml from "../users/usersHtml.js";
+import meHtml from "../me/meHtml.js";
 
 class SidebarView extends View {
   constructor() {
@@ -70,7 +70,7 @@ class SidebarView extends View {
     if (linkName === "dashboard") this.#generateElement(dashboadHtml(data));
     if (linkName === "reports") {
       this.#generateElement(reportHtml());
-      tabsView.renderAll();
+      reportTabsView.renderAll();
     }
     if (linkName === "users") this.#generateElement(usersHtml());
     if (linkName === "me") this.#generateElement();

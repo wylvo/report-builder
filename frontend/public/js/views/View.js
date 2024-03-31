@@ -37,8 +37,7 @@ export default class View {
   }
 
   _escapeHtml(data) {
-    let currentElement;
-    currentElement = data.tableRowEl;
+    const currentElement = data.tableRowEl;
     data.tableRowEl = {};
 
     const clone = structuredClone(data);
