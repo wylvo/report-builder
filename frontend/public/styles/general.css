@@ -67,10 +67,12 @@
   --attention-on-background: #d33a49;
 
   --warning-background-color: #ffebc0;
+  --warning-background-color-alt: #ffae00;
   --warning-on-background: #8f6200;
   --warning-on-background-alt: #e9db1a;
 
   --good-background-color: #c3e6cb;
+  --good-background-color-alt: #20bd45;
   --good-on-background: #088b26;
 
   --info-background-color: #d7e0f8;

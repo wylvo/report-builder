@@ -293,7 +293,7 @@ img.table-row-cell-pp {
   background-color: var(--primary-color);
   color: var(--on-primary);
 
-  box-shadow: 0rem 0.1rem 0.4rem rgba(3, 39, 138, 0.75);
+  box-shadow: 0rem 0.1rem 0.4rem #03278abf;
   border-radius: 0.3rem;
   border: 0.1rem solid var(--buttons-border-color);
   transition: transform 0.2s;
@@ -305,13 +305,23 @@ img.table-row-cell-pp {
   transform: scale(0.95);
 }
 
-.table-row-buttons button.table-row-delete-btn {
+.table-row-buttons button.delete {
   background-color: var(--attention-background-color-alt);
   box-shadow: 0rem 0.1rem 0.4rem #d1000080;
 }
 
-button.table-row-teams-btn:disabled,
-button.table-row-teams-btn:disabled .icons {
+.table-row-buttons button.enable-user {
+  background-color: var(--good-background-color-alt);
+  box-shadow: 0rem 0.1rem 0.4rem #c3e6cb50;
+}
+
+.table-row-buttons button.disable-user {
+  background-color: var(--warning-background-color-alt);
+  box-shadow: 0rem 0.1rem 0.4rem #ffae0057;
+}
+
+button.teams:disabled,
+button.teams:disabled .icons {
   cursor: not-allowed;
   background-color: var(--buttons-disabled-background-color);
   color: var(--buttons-disabled-on-background);
@@ -319,8 +329,7 @@ button.table-row-teams-btn:disabled .icons {
   scale: 1;
 }
 
-button.table-row-teams-btn::after,
-button.table-row-delete-btn::after {
+button.btn::after {
   padding: 0.4rem 0.8rem;
   font-size: 1.2rem;
   font-weight: 900;
@@ -332,26 +341,35 @@ button.table-row-delete-btn::after {
   opacity: 0;
 }
 
-button.table-row-teams-btn:hover:after,
-button.table-row-delete-btn:hover::after {
+button.btn:hover::after {
   position: absolute;
   z-index: 5;
   top: -95%;
   opacity: 1;
 }
 
-button.table-row-teams-btn:hover::after {
+button.teams:hover::after {
   content: "Teams";
   opacity: 1;
 }
 
-button.table-row-delete-btn:hover::after {
+button.delete:hover::after {
   content: "Delete";
   opacity: 1;
 }
 
-button.table-row-teams-btn .icons.status-success,
-button.table-row-teams-btn .icons.status-error {
+button.enable-user:hover::after {
+  content: "Enable";
+  opacity: 1;
+}
+
+button.disable-user:hover::after {
+  content: "Disable";
+  opacity: 1;
+}
+
+button.teams .icons.status-success,
+button.teams .icons.status-error {
   position: absolute;
   top: 0%;
   left: 0%;
@@ -366,11 +384,11 @@ button.table-row-teams-btn .icons.status-error {
   z-index: 5;
 }
 
-button.table-row-teams-btn:disabled .icons.status-success {
+button.teams:disabled .icons.status-success {
   background-color: var(--good-on-background);
 }
 
-button.table-row-teams-btn .icons.status-error {
+button.teams .icons.status-error {
   background-color: var(--attention-background-color-alt);
 }
 

@@ -104,7 +104,7 @@ export class UserFormView extends FormView {
     this._form.reset();
 
     this._btnSubmit.disabled = true;
-    this._btnSubmit.children[1].textContent = "Save User";
+    this._btnSubmit.children[1].textContent = "Create User";
     this._btnSubmit.firstElementChild.firstElementChild.setAttribute("href", "/img/icons.svg#icon-save");
 
     this.updateTextInputsLength();

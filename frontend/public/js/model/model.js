@@ -434,8 +434,13 @@ export const rowsPerPage = (array, page = state.search.page) => {
   const end = page * state.rowsPerPage;
 
   // If there is a query, slice results, else slice all reports. (start = 50, end = 75)
-  if (state.search.query === "") return array.slice(start, end);
-  else return state.search.results.slice(start, end);
+  if (state.search.query === "") {
+    if (!Array.isArray(array))
+      return new TypeError(
+        "Invalid array. Expects an array to slice the content into pages"
+      );
+    return array.slice(start, end);
+  } else return state.search.results.slice(start, end);
 };
 
 // prettier-ignore

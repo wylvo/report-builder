@@ -257,21 +257,18 @@
     justify-content: start;
   }
 
-  td.table-row-buttons .table-row-teams-btn,
-  td.table-row-buttons .table-row-delete-btn {
+  td.table-row-buttons .btn {
     width: 70%;
   }
 
-  td.table-row-buttons .table-row-teams-btn::before,
-  td.table-row-buttons .table-row-delete-btn::before {
+  td.table-row-buttons .btn::before {
     content: attr(data-action);
     font-size: 1.2rem;
     font-weight: 700;
     color: var(--on-primary);
   }
 
-  button.table-row-teams-btn::after,
-  button.table-row-delete-btn::after {
+  td.table-row-buttons button.btn::after {
     opacity: 1;
     padding: 0.4rem 0.8rem;
     font-size: 1.2rem;
@@ -284,33 +281,49 @@
     opacity: 1;
   }
 
-  button.table-row-teams-btn::after,
-  button.table-row-delete-btn::after {
+  td.table-row-buttons button.btn::after {
     position: unset;
     opacity: 1;
   }
 
-  button.table-row-teams-btn:hover::after,
-  button.table-row-delete-btn:hover::after {
+  td.table-row-buttons button.btn:hover::after {
     position: unset;
     opacity: 1;
   }
 
-  button.table-row-teams-btn::after {
+  td.table-row-buttons button.teams::after {
     content: "Teams";
   }
 
-  button.table-row-delete-btn::after {
+  td.table-row-buttons button.delete::after {
     content: "Delete";
   }
 
-  button.table-row-teams-btn:disabled:after {
+  td.table-row-buttons button.enable-user::after {
+    content: "Enable";
+  }
+
+  td.table-row-buttons button.disable-user::after {
+    content: "Disable";
+  }
+
+  td.table-row-buttons button.btn:disabled:after {
     color: var(--buttons-disabled-on-background);
+  }
+
+  td.table-row-buttons button.teams:disabled:after {
     content: "Teams";
   }
 
-  button.table-row-delete-btn:disabled:after {
-    color: var(--buttons-disabled-on-background);
+  td.table-row-buttons button.delete:disabled:after {
     content: "Delete";
+  }
+
+  td.table-row-buttons button.enable-user:disabled:after {
+    content: "Enable";
+  }
+
+  td.table-row-buttons button.disable-user:disabled:after {
+    content: "Disable";
   }
 }

@@ -58,7 +58,7 @@ class UserTabsView extends TabsView {
           <div class="form-grouping-accordion">
             <div class="form-grouping-accordion-header">
               <svg class="icons">
-                <use href="/img/icons.svg#icon-phone-call"></use>
+                <use href="/img/icons.svg#icon-user"></use>
               </svg>
               <span>&#8226;</span>
               <h2>User Profile</h2>
@@ -136,7 +136,7 @@ class UserTabsView extends TabsView {
           <div class="form-grouping-accordion">
             <div class="form-grouping-accordion-header">
               <svg class="icons">
-                <use href="/img/icons.svg#icon-phone-call"></use>
+                <use href="/img/icons.svg#icon-lock-closed"></use>
               </svg>
               <span>&#8226;</span>
               <h2>User Password</h2>
@@ -157,7 +157,7 @@ class UserTabsView extends TabsView {
                   id="password_${index}"
                   name="password"
                   class="password"
-                  placeholder="John Doe"
+                  placeholder="Password"
                   required
                 />
                 <label for="password_${index}">Password:</label>
@@ -165,11 +165,11 @@ class UserTabsView extends TabsView {
 
               <div class="form-grouping-col">
                 <input
-                  type="password-confirmation"
+                  type="password"
                   id="password-confirmation_${index}"
                   name="password-confirmation"
                   class="password-confirmation"
-                  placeholder="John Doe"
+                  placeholder="Password Confirmation"
                   required
                 />
                 <label for="password-confirmation_${index}">Password Confirmation:</label>
@@ -190,7 +190,7 @@ class UserTabsView extends TabsView {
               <svg class="icons">
                 <use href="/img/icons.svg#icon-save"></use>
               </svg>
-              <p class="form-submit-btn-text" id="form-submit-btn-text_${index}">Save Record</p>
+              <p class="form-submit-btn-text" id="form-submit-btn-text_${index}">Create User</p>
             </button>
           </label>
         </div>

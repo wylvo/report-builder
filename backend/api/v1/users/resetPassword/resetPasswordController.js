@@ -1,4 +1,4 @@
-import { filterObject, findUserByIdQuery } from "../userController.js";
+import { mergeUserData, findUserByIdQuery } from "../userController.js";
 import { mssql, mssqlDataTypes } from "../../../../config/db.config.js";
 import { hashPassword } from "../../../../auth.js";
 import GlobalError from "../../../errors/globalError.js";
@@ -9,9 +9,8 @@ export const resetUserPassword = catchAsync(async (req, res, next) => {
   const { NVarChar } = mssqlDataTypes;
   const id = req.userId;
   req.userId = undefined;
-  const user = await findUserByIdQuery(id);
 
-  console.log(id);
+  const user = await findUserByIdQuery(id);
 
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
@@ -38,16 +37,6 @@ export const resetUserPassword = catchAsync(async (req, res, next) => {
 
   res.status(201).json({
     status: "success",
-    data: [
-      filterObject(
-        user,
-        "id",
-        "fullName",
-        "username",
-        "email",
-        "initials",
-        "role"
-      ),
-    ],
+    data: mergeUserData(id, user),
   });
 });

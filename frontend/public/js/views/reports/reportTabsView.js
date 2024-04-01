@@ -459,7 +459,7 @@ class ReportTabsView extends TabsView {
               <svg class="icons">
                 <use href="/img/icons.svg#icon-save"></use>
               </svg>
-              <p class="form-submit-btn-text" id="form-submit-btn-text_${index}">Save Record</p>
+              <p class="form-submit-btn-text" id="form-submit-btn-text_${index}">Create Report</p>
             </button>
           </label>
 

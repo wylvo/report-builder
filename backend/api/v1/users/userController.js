@@ -14,7 +14,7 @@ export const filterObject = (obj, ...allowedFields) => {
   return newObj;
 };
 
-const mergeUserData = (id, obj) => {
+export const mergeUserData = (id, obj) => {
   return [
     {
       id,

@@ -39,14 +39,20 @@ class UserTableView extends TableView {
   // prettier-ignore
   _generatetHtml(user) {
     const isActive = user.isActive
-    ? { class: `class="good"`, text: "Active" }
-    : { class: `class="attention"`, text: "Inactive" };
+      ? { class: `class="good"`, text: "Active" }
+      : { class: `class="attention"`, text: "Inactive" };
+
+    const profilePicture = user.profilePictureURL
+      ? user.profilePictureURL
+      : "/img/default_profile_picture.jpg";
+
     console.log(user);
+
     return `
       <tr class="table-row">
         <td data-cell="Picture">
           <div>
-            <img class="table-row-cell-pp" src="${user.profilePictureURL}" alt="Picture of ${user.fullName}" />
+            <img class="table-row-cell-pp" src="${profilePicture}" alt="Profile picture of ${user.fullName}" />
           </div>
         </td>
         <td data-cell="Full Name"><div>${user.fullName}</div></td>
@@ -61,7 +67,12 @@ class UserTableView extends TableView {
         </td>
         <td data-cell="Actions" data-id="${user.id}" class="table-row-buttons">
           <div>
-            <button class="table-row-delete-btn icons">
+            <button class="btn enable-user icons">
+              <svg>
+                <use href="/img/icons.svg#icon-enable"></use>
+              </svg>
+            </button>
+            <button class="btn delete icons">
               <svg>
                 <use href="/img/icons.svg#icon-delete"></use>
               </svg>
@@ -84,9 +95,9 @@ class UserTableView extends TableView {
 
   addHandlerDelete(handler) {
     document.addEventListener("click", function (e) {
-      if (e.target && e.target.closest(".table-row-delete-btn")) {
-        const parentElement = e.target.closest(".table-row-delete-btn")
-          .parentElement.parentElement;
+      if (e.target && e.target.closest(".delete")) {
+        const parentElement =
+          e.target.closest(".delete").parentElement.parentElement;
         const id = parentElement.dataset.id;
         handler(id);
       }

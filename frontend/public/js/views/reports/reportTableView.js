@@ -88,12 +88,12 @@ class ReportTableView extends TableView {
         <div>
           <button ${
             report.isWebhookSent ? "disabled" : ""
-          } class="table-row-teams-btn icons">
+          } class="btn teams icons">
             <svg>
               <use href="/img/icons.svg#icon-ms-teams"></use>
             </svg>
           </button>
-          <button class="table-row-delete-btn icons">
+          <button class="btn delete icons">
             <svg>
               <use href="/img/icons.svg#icon-delete"></use>
             </svg>
@@ -116,9 +116,9 @@ class ReportTableView extends TableView {
 
   addHandlerSend(handler) {
     document.addEventListener("click", function (e) {
-      if (e.target && e.target.closest(".table-row-teams-btn")) {
-        const parentElement = e.target.closest(".table-row-teams-btn")
-          .parentElement.parentElement;
+      if (e.target && e.target.closest(".teams")) {
+        const parentElement =
+          e.target.closest(".teams").parentElement.parentElement;
         const id = parentElement.dataset.id;
         handler(id);
       }
@@ -127,9 +127,9 @@ class ReportTableView extends TableView {
 
   addHandlerDelete(handler) {
     document.addEventListener("click", function (e) {
-      if (e.target && e.target.closest(".table-row-delete-btn")) {
-        const parentElement = e.target.closest(".table-row-delete-btn")
-          .parentElement.parentElement;
+      if (e.target && e.target.closest(".delete")) {
+        const parentElement =
+          e.target.closest(".delete").parentElement.parentElement;
         const id = parentElement.dataset.id;
         handler(id);
       }

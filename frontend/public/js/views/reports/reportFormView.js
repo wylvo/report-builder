@@ -123,7 +123,7 @@ export class ReportFormView extends FormView {
     this._form.reset();
 
     this._btnSubmit.disabled = true;
-    this._btnSubmit.children[1].textContent = "Save Report";
+    this._btnSubmit.children[1].textContent = "Create Report";
     this._btnSubmit.firstElementChild.firstElementChild.setAttribute("href", "/img/icons.svg#icon-save");
 
     this._checkBoxes.get("phone-no-caller-id").checked = false;

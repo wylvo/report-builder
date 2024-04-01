@@ -124,7 +124,7 @@ const controlSendReport = async function (id = undefined) {
   const report = model.findReportById(id);
   const tabIndex = model.findReportInTab(report.id);
   const reportViewInTab = reportTabsView.tabs.get(tabIndex);
-  const tableViewBtnTeams = report.tableRowEl.querySelector(".table-row-teams-btn");
+  const tableViewBtnTeams = report.tableRowEl.querySelector(".teams");
   
   try {
     if (report.hasTriggeredWebhook)
