@@ -38,29 +38,29 @@ class UserTableView extends TableView {
 
   // prettier-ignore
   _generatetHtml(user) {
+    const isActive = user.isActive
+    ? { class: `class="good"`, text: "Active" }
+    : { class: `class="attention"`, text: "Inactive" };
+    console.log(user);
     return `
       <tr class="table-row">
         <td data-cell="Picture">
-          <div><p class="table-row-cell-pp"></p></div>
-        </td>
-        <td data-cell="Full Name"><div></div></td>
-        <td data-cell="Email">
-          <div><a class="table-row-link" href="#${user?.id}"></a></div>
-        </td>
-        <td data-cell="Username"><div></div></td>
-        <td data-cell="Initials"><div></div></td>
-        <td data-cell="Role"><div></div></td>
-        <td data-cell="Status">
-          <div><p></p></div>
-        </td>
-        <td data-cell="Actions" data-id="${user?.id}" class="table-row-buttons">
           <div>
-            <button class="table-row-teams-btn icons">
-              <svg>
-                <use href="/img/icons.svg#icon-ms-teams"></use>
-              </svg>
-            </button>
-            
+            <img class="table-row-cell-pp" src="${user.profilePictureURL}" alt="Picture of ${user.fullName}" />
+          </div>
+        </td>
+        <td data-cell="Full Name"><div>${user.fullName}</div></td>
+        <td data-cell="Email">
+          <div><a class="table-row-link" href="#${user.id}">${user.email}</a></div>
+        </td>
+        <td data-cell="Username"><div>${user.username}</div></td>
+        <td data-cell="Initials"><div>${user.initials}</div></td>
+        <td data-cell="Role"><div>${user.role}</div></td>
+        <td data-cell="Status">
+          <div><p ${isActive.class}>${isActive.text}</p></div>
+        </td>
+        <td data-cell="Actions" data-id="${user.id}" class="table-row-buttons">
+          <div>
             <button class="table-row-delete-btn icons">
               <svg>
                 <use href="/img/icons.svg#icon-delete"></use>

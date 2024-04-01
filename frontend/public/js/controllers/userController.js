@@ -61,7 +61,7 @@ const controlUniqueUserPerTab = function (id, event = undefined) {
   }
   if (event) {
     controlTabs(model.state.tab, id);
-    controlRenderReport();
+    controlRenderUser();
   }
   return false;
 };
@@ -93,11 +93,11 @@ const controlCopy = function (inputs = undefined) {
 
 const controlNewReport = function () {
   model.newReport(model.state.tab);
-  userFormView.newReport((takeSnapshot = true));
+  userFormView.newUser((takeSnapshot = true));
   userTabsView.removeLocationHash();
 };
 
-const controlRenderReport = function () {
+const controlRenderUser = function () {
   try {
     const id = window.location.hash.slice(1);
     if (!id) return controlNewReport();
@@ -146,8 +146,8 @@ const controlSaveReport = async function (reportId) {
   }
 };
 
-const controlRenderAllReports = function () {
-  const users = model.rowsPerPage();
+const controlRenderAllUsers = function () {
+  const users = model.rowsPerPage(model.state.users);
   userTableView.renderAll(users);
   paginationView.renderAll(model.pages());
 };
@@ -156,18 +156,18 @@ const controlRowsPerPage = function (rowsPerPage) {
   model.state.rowsPerPage = rowsPerPage;
   model.state.search.page = 1;
 
-  controlRenderAllReports();
+  controlRenderAllUsers();
 };
 
 const controlPages = function (page) {
   if (isNaN(page)) return;
   paginationView.renderAll(model.pages(page));
 
-  const users = model.rowsPerPage(page);
+  const users = model.rowsPerPage(model.state.users, page);
   userTableView.renderAll(users);
 };
 
-const init = async function () {
+export const init = async function () {
   await model.init();
 
   // Initialize all tabs
@@ -175,11 +175,11 @@ const init = async function () {
   userFormView = userTabsView.tabs.get(model.state.tab);
 
   // If id in hash render user
-  if (window.location.hash.slice(1)) controlRenderReport();
+  if (window.location.hash.slice(1)) controlRenderUser();
 
   // Initialize all table rows per page
   model.state.rowsPerPage = paginationView.rowsPerPage();
-  userTableView.renderAll(model.rowsPerPage());
+  userTableView.renderAll(model.rowsPerPage(model.state.users));
   userTableView.updateTotalCount(model.state.users);
 
   // Initialize all pagination buttons
@@ -191,7 +191,7 @@ const init = async function () {
   userTabsView.addHandlerBeforeUnload(controlBeforeUnload);
 
   // User view handler render. Applies to every user views (targeting Window object)
-  userFormView.addHandlerRender(controlUnsavedUser, controlRenderReport);
+  userFormView.addHandlerRender(controlUnsavedUser, controlRenderUser);
   // ^^^ ERROR WHEN EDITING URL, OVERWRITING AN EXISTING REPORT ^^^
 
   // User view handlers per tabs
@@ -216,7 +216,8 @@ const init = async function () {
   // const version = await api.v1.version.getVersion();
   // console.log("Version", version);
   // tabsView._appVersion.textContent = version;
-  console.log(model.state);
+  // console.log(model.state);
+  console.log(userTabsView);
 };
 
 init();

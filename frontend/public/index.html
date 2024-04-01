@@ -17,9 +17,9 @@
     <link rel="stylesheet" href="styles/table.css" />
     <link rel="stylesheet" href="styles/queries.css" />
     <link rel="shortcut icon" href="img/jj-icon.jpg" type="image/x-icon" />
-    <!-- <script type="module" src="js/_controller.js"></script> -->
-    <script type="module" src="js/controllers/reportController.js"></script>
-    <script type="module" src="js/controllers/userController.js"></script>
+    <!-- <script type="module" src="js/controllers/reportController.js"></script> -->
+    <!-- <script type="module" src="js/controllers/userController.js"></script> -->
+    <script type="module" src="js/controllers/sidebarController.js"></script>
     <title>WhoCalledTech | Main</title>
   </head>
   <body>
@@ -108,12 +108,8 @@
       <main class="main">
         <div class="header">
           <div class="left">
-            <h1>Reports</h1>
+            <h1>Users</h1>
           </div>
-          <a href="#" class="report">
-            <i class="bx bx-cloud-download"></i>
-            <span>Download JSON</span>
-          </a>
         </div>
 
         <section class="section-col">
@@ -129,82 +125,26 @@
 
           <!-- TABLE -->
           <div class="container table-ctn">
-            <div class="tabs-ctn">
-              <ul class="tab-list" role="tablist">
-                <li role="presentation">
-                  <a class="tab-btn" id="tab_0" href="#" role="tab" tabindex="0"
-                    >All Reports</a
-                  >
-                </li>
-                <li role="presentation">
-                  <a class="tab-btn" id="tab_0" href="#" role="tab" tabindex="0"
-                    >My Reports</a
-                  >
-                </li>
-                <li role="presentation">
-                  <a class="tab-btn" id="tab_0" href="#" role="tab" tabindex="0"
-                    >Deleted Reports</a
-                  >
-                </li>
-                <li role="presentation"></li>
-                <li role="presentation"></li>
-                <li role="presentation"></li>
-              </ul>
-            </div>
-            <div class="tabs-forms"></div>
-
             <div class="table-header">
-              <form class="table-filter">
-                <div>
-                  <label for="table-filter-by">Filter By:</label>
-                  <select
-                    id="table-filter-by"
-                    name="table-filter-by"
-                    class="table-filter-by"
-                  >
-                    <option value="tech">TECH</option>
-                    <option value="call.dateTime">Date</option>
-                    <option value="incident.title">Title</option>
-                    <option value="call.status">Status</option>
-                    <option value="call.phone">Phone</option>
-                    <option value="store.number">Store</option>
-                    <option value="incident.type">Type</option>
-                    <option value="incident.isProcedural">Procedural</option>
-                    <option value="store.employee.name">Emp</option>
-                    <option value="store.districtManager">DM</option>
-                    <option value="tech.isOnCall">On-call</option>
-                  </select>
-                </div>
-                <div class="table-filter-search-ctn">
-                  <label for="table-filter-search">Filter: </label>
-                  <input
-                    type="search"
-                    name="table-filter-search"
-                    id="table-filter-search"
-                    class="table-filter-search"
-                    placeholder="Search..."
-                  />
-                </div>
-              </form>
               <div class="table-view">
                 <div class="table-meta-data">
                   <p>
-                    Total Reports:
+                    Total Users:
                     <strong><span class="count">0</span></strong>
                   </p>
                 </div>
                 <div class="table-pagination">
                   <!-- <button disabled class="table-pagination-btn">
-                    <svg class="icons">
-                      <use href="/img/icons.svg#icon-chevron-left"></use>
-                    </svg>
-                  </button>
-                  <span data-page="1" class="table-pagination-text">1</span>
-                  <button class="table-pagination-btn">
-                    <svg class="icons">
-                      <use href="/img/icons.svg#icon-chevron-right"></use>
-                    </svg>
-                  </button> -->
+                      <svg class="icons">
+                        <use href="/img/icons.svg#icon-chevron-left"></use>
+                      </svg>
+                    </button>
+                    <span data-page="1" class="table-pagination-text">1</span>
+                    <button class="table-pagination-btn">
+                      <svg class="icons">
+                        <use href="/img/icons.svg#icon-chevron-right"></use>
+                      </svg>
+                    </button> -->
                 </div>
               </div>
             </div>
@@ -212,15 +152,13 @@
               <table class="table-content">
                 <thead>
                   <tr>
-                    <th>TECH</th>
-                    <th>Date</th>
-                    <th>Title</th>
+                    <th>Picture</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Username</th>
+                    <th>Initials</th>
+                    <th>Role</th>
                     <th>Status</th>
-                    <th>Store</th>
-                    <th>Emp</th>
-                    <th>DM</th>
-                    <th>Type</th>
-                    <th>Procedural</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -246,16 +184,16 @@
               </div>
               <div class="table-pagination">
                 <!-- <button data-page="" class="table-pagination-btn">
-                  <svg class="icons">
-                    <use href="/img/icons.svg#icon-chevron-left"></use>
-                  </svg>
-                </button>
-                <span class="table-pagination-text">1</span>
-                <button data-page="" class="table-pagination-btn">
-                  <svg class="icons">
-                    <use href="/img/icons.svg#icon-chevron-right"></use>
-                  </svg>
-                </button> -->
+                    <svg class="icons">
+                      <use href="/img/icons.svg#icon-chevron-left"></use>
+                    </svg>
+                  </button>
+                  <span class="table-pagination-text">1</span>
+                  <button data-page="" class="table-pagination-btn">
+                    <svg class="icons">
+                      <use href="/img/icons.svg#icon-chevron-right"></use>
+                    </svg>
+                  </button> -->
               </div>
             </div>
           </div>

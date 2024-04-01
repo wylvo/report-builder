@@ -5,15 +5,10 @@ import GlobalError from "../../../errors/globalError.js";
 import catchAsync from "../../../errors/catchAsync.js";
 import resetUserPasswordSQL from "./resetPasswordModel.js";
 
-export const getUserId = (req, res, next) => {
-  req.resetPasswordUserId = req.params.id;
-  next();
-};
-
 export const resetUserPassword = catchAsync(async (req, res, next) => {
   const { NVarChar } = mssqlDataTypes;
-  const id = req.resetPasswordUserId;
-  req.resetPasswordUserId = undefined;
+  const id = req.userId;
+  req.userId = undefined;
   const user = await findUserByIdQuery(id);
 
   console.log(id);

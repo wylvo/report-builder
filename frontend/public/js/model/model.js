@@ -423,7 +423,7 @@ export const filterSearch = (query, filterBy) => {
 };
 
 // Set/Update rows per page
-export const rowsPerPage = (page = state.search.page) => {
+export const rowsPerPage = (array, page = state.search.page) => {
   // Example, page = 3, rowsPerPage = 25
   state.search.page = page;
 
@@ -434,7 +434,7 @@ export const rowsPerPage = (page = state.search.page) => {
   const end = page * state.rowsPerPage;
 
   // If there is a query, slice results, else slice all reports. (start = 50, end = 75)
-  if (state.search.query === "") return state.reports.slice(start, end);
+  if (state.search.query === "") return array.slice(start, end);
   else return state.search.results.slice(start, end);
 };
 
@@ -575,7 +575,13 @@ export const DB = {
 
   // TO TEST
   getUsers: async () => {
-    await api.v1.users.getUsers();
+    // API request to get all reports from the database
+    const {
+      data: { data },
+    } = await api.v1.users.getUsers();
+
+    // Add all reports in the model state
+    state.users = data;
   },
   // TO TEST
   createUser: async (user) => {
@@ -606,7 +612,7 @@ export const DB = {
 
 export const init = async function () {
   utils.deepFreeze(DEFAULT_REPORT);
-  await DB.getReports();
+  await Promise.all([DB.getReports(), DB.getUsers()]);
   state.version = await api.v1.version.getVersion();
   initThemeInLocalStorage();
 };

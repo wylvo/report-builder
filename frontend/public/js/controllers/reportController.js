@@ -1,8 +1,7 @@
 import * as model from "../model/model.js";
 import api from "../model/api.js";
-import sidebarView from "../views/sidebar/sidebarView.js";
 import themeView from "../views/theme/themeView.js";
-import searchView from "../views/searchView.js";
+// import searchView from "../views/searchView.js";
 import paginationView from "../views/paginationView.js";
 import reportTableView from "../views/reports/reportTableView.js";
 import notificationView from "../views/notifications/notificationView.js";
@@ -282,7 +281,7 @@ const controlBeforeUnload = function () {
  * INITIALIZE ALL HANDLERS, AND RENDER ALL EXISTING REPORTS  *
  *************************************************************
  */
-const init = async function () {
+export const init = async function () {
   await model.init();
 
   // prettier-ignore

@@ -1,30 +1,51 @@
 export default {
   getAll:
-    "SELECT id, role, isActive, email, fullName, username, initials FROM users;",
+    "SELECT id, role, isActive, email, profilePictureURL, fullName, username, initials FROM users;",
+
   get: "SELECT * FROM users WHERE id = @id;",
-  create: `INSERT INTO users (id, role, email, password, profilePictureURL, fullName, username, initials)
-  VALUES (@id, @role, @email, @password, @profilePictureURL, @fullName, @username, @initials);`,
+
+  create: `
+    INSERT INTO users
+      (id, role, email, password, profilePictureURL, fullName, username, initials)
+    VALUES
+      (@id, @role, @email, @password, @profilePictureURL, @fullName, @username, @initials);
+  `,
 
   // Source: https://learn.microsoft.com/fr-fr/archive/blogs/sqlserverstorageengine/openjson-the-easiest-way-to-import-json-text-into-table#use-case-2-updating-table-row-using-json-object
   update: `
     DECLARE @json NVARCHAR(MAX) = @rawJSON;
 
     UPDATE users
-    SET fullName = ISNULL(json.fullName, users.fullName),
-      username = ISNULL(json.username, users.username),
-      initials = ISNULL(json.initials, users.initials),
+    SET role = ISNULL(json.role, users.role),
       email = ISNULL(json.email, users.email),
-      role = ISNULL(json.role, users.role)
+      profilePictureURL ISNULL(json.profilePictureURL, users.profilePictureURL),
+      fullName = ISNULL(json.fullName, users.fullName),
+      username = ISNULL(json.username, users.username),
+      initials = ISNULL(json.initials, users.initials)
     FROM OPENJSON(@json)
     WITH (
       id VARCHAR(36),
+      role VARCHAR(64),
+      email VARCHAR(64),
+      profilePictureURL NVARCHAR(MAX),
       fullName VARCHAR(64),
       username VARCHAR(20),
-      initials VARCHAR(2),
-      email VARCHAR(64),
-      role VARCHAR(64)
+      initials VARCHAR(2)
     ) AS json
     WHERE users.id = @id;
   `,
+
   delete: "DELETE FROM users WHERE id = @id;",
+
+  enable: `
+    UPDATE users
+    SET isActive = 1
+    WHERE id = @id;
+  `,
+
+  disable: `
+    UPDATE users
+    SET isActive = 0
+    WHERE id = @id;
+  `,
 };

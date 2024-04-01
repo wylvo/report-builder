@@ -19,12 +19,9 @@ class SidebarView extends View {
     this._mainHeader = this._main.querySelector(".header");
     this._mainContent = this._main.querySelector(".section-col");
 
-    console.log(this._menus);
-
     this._addHandlerResizeSidebar();
     this._addHandlerClickMenuButton();
-    this._addHandlerClickSidebarMenus();
-    this._addHandlerClickSidebarSubMenus();
+    // this._addHandlerClickSidebarSubMenus();
   }
 
   _expand(event) {
@@ -69,15 +66,19 @@ class SidebarView extends View {
     const linkName = link.split("-")[0];
 
     if (linkName === "dashboard") this.#generateElement(dashboadHtml(data));
-    if (linkName === "reports") {
-      this.#generateElement(reportHtml());
-      reportTabsView.renderAll();
-    }
-    if (linkName === "users") {
-      this.#generateElement(usersHtml());
-      userTabsView.renderAll();
-    }
+    if (linkName === "reports") this.#generateElement(reportHtml());
+    if (linkName === "users") this.#generateElement(usersHtml());
     if (linkName === "me") this.#generateElement();
+  }
+
+  addHandlerClickSidebarMenus(handler) {
+    this._menus.forEach((element) => {
+      element.addEventListener("click", async (e) => {
+        const id = e.target.closest("li").id;
+        this.render(null, id);
+        await handler(id.split("-")[0]);
+      });
+    });
   }
 
   _addHandlerClickMenuButton() {
@@ -86,23 +87,14 @@ class SidebarView extends View {
     );
   }
 
-  _addHandlerClickSidebarMenus() {
-    this._menus.forEach((element) => {
-      element.addEventListener("click", (e) => {
-        const link = e.target.closest("li");
-        this.render(null, link.id);
-      });
-    });
-  }
+  // _addHandlerClickSidebarSubMenus() {
+  //   this._subMenus.forEach((element) => {
+  //     element.addEventListener("click", this._expand.bind(this));
 
-  _addHandlerClickSidebarSubMenus() {
-    this._subMenus.forEach((element) => {
-      element.addEventListener("click", this._expand.bind(this));
-
-      if (element.classList.contains("active"))
-        element.querySelector("ul").style.display = "block";
-    });
-  }
+  //     if (element.classList.contains("active"))
+  //       element.querySelector("ul").style.display = "block";
+  //   });
+  // }
 
   _addHandlerResizeSidebar() {
     window.addEventListener("resize", () => {
@@ -124,9 +116,5 @@ class SidebarView extends View {
     // this._main.insertAdjacentElement()
   }
 }
-
-/**
- *
- */
 
 export default new SidebarView();

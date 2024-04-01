@@ -84,8 +84,8 @@ export default {
     WITH (
       id VARCHAR(36) 'strict $.id',
       version VARCHAR(64) 'strict $.version',
-      createdDateTime DATETIME 'strict $.createdDateTime',
-      lastModifiedDateTime DATETIME '$.lastModifiedDateTime',
+      createdDateTime DATETIMEOFFSET 'strict $.createdDateTime',
+      lastModifiedDateTime DATETIMEOFFSET '$.lastModifiedDateTime',
       createdBy VARCHAR(64) 'strict $.createdBy',
       updatedBy VARCHAR(64) '$.updatedBy',
       isDeleted BIT 'strict $.isDeleted',
@@ -169,8 +169,8 @@ export default {
     WITH (
       id VARCHAR(36) 'strict $.id',
       version VARCHAR(64) 'strict $.version',
-      createdDateTime DATETIME 'strict $.createdDateTime',
-      lastModifiedDateTime DATETIME '$.lastModifiedDateTime',
+      createdDateTime DATETIMEOFFSET 'strict $.createdDateTime',
+      lastModifiedDateTime DATETIMEOFFSET '$.lastModifiedDateTime',
       createdBy VARCHAR(64) 'strict $.createdBy',
       updatedBy VARCHAR(64) '$.updatedBy',
       isDeleted BIT 'strict $.isDeleted',
@@ -218,8 +218,8 @@ export default {
   `,
 
   undoSoftDelete: `
-  UPDATE reports
-  SET isDeleted = 0
-  WHERE id = @id;
-`,
+    UPDATE reports
+    SET isDeleted = 0
+    WHERE id = @id;
+  `,
 };

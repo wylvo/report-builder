@@ -235,6 +235,14 @@
   border-radius: 0.2rem;
 }
 
+img.table-row-cell-pp {
+  align-self: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
 .table-row p.table-row-cell-pp {
   position: relative;
   align-self: center;

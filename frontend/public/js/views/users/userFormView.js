@@ -3,6 +3,7 @@ import FormView from "../formView.js";
 export class UserFormView extends FormView {
   // Accordions keys
   #USER = "user-profile-accordion";
+  #PASS = "user-password-accordion";
 
   // Generic key
   #ALL = "*";
@@ -14,6 +15,7 @@ export class UserFormView extends FormView {
     // Initialize accordions
     this._accordions = this.initalizeAllAccordions();
     this._userAccordion = this._accordions.get(this.#USER);
+    this._passAccoridon = this._accordions.get(this.#PASS);
 
     // Tags
     this._tags = this._form.querySelectorAll(".tag");
@@ -48,7 +50,7 @@ export class UserFormView extends FormView {
   // prettier-ignore
   initalizeAllAccordions() {
     const accordionElements = [...this._form.querySelectorAll(".form-grouping-accordion")];
-    const mapKey = (i) => i === 0 ? this.#USER : i;
+    const mapKey = (i) => i === 0 ? this.#USER : i === 1 ? this.#PASS : i;
     const mapValue = (accordion) => ({ header: accordion, content: accordion.nextElementSibling });
     
     const allAccordionsByKeyName = accordionElements.map((accordion, i) =>

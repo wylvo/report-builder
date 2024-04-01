@@ -40,6 +40,11 @@ export const findUserByIdQuery = async (id) => {
   return user;
 };
 
+export const getUserId = (req, res, next) => {
+  req.userId = req.params.id;
+  next();
+};
+
 export const getAllUsers = catchAsync(async (req, res, next) => {
   const { recordset: users } = await mssql().query(usersSQL.getAll);
 
@@ -141,6 +146,50 @@ export const deleteUser = catchAsync(async (req, res, next) => {
     data: null,
   });
 });
+
+export const enableUser = async (req, res, next) => {
+  const id = req.params.id;
+
+  const user = await findUserByIdQuery(id);
+
+  if (!user)
+    return next(new GlobalError(`User not found with id: ${id}.`, 404));
+
+  if (user.isActive === true)
+    return next(
+      new GlobalError(`User is already enabled with id: ${id}.`, 400)
+    );
+
+  await mssql().input("id", user.id).query(usersSQL.enable);
+  user.isActive = true;
+
+  res.status(200).json({
+    status: "success",
+    data: mergeUserData(id, user),
+  });
+};
+
+export const disableUser = async (req, res, next) => {
+  const id = req.params.id;
+
+  const user = await findUserByIdQuery(id);
+
+  if (!user)
+    return next(new GlobalError(`User not found with id: ${id}.`, 404));
+
+  if (user.isActive === false)
+    return next(
+      new GlobalError(`User is already disabled with id: ${id}.`, 400)
+    );
+
+  await mssql().input("id", user.id).query(usersSQL.disable);
+  user.isActive = false;
+
+  res.status(200).json({
+    status: "success",
+    data: mergeUserData(id, user),
+  });
+};
 
 export const getMe = (req, res, next) => {
   req.params.id = req.user.id;
