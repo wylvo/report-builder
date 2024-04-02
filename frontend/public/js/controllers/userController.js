@@ -13,7 +13,7 @@ let userFormView,
 const controlTabs = function (tabIndex, id = undefined) {
   model.state.tab = tabIndex;
   userFormView = userTabsView.tabs.get(model.state.tab);
-  const userId = id ? id : model.state.tabs.get(tabIndex).user.id;
+  const userId = id ? id : model.state.tabs.get(tabIndex).data.id;
   userTabsView.updateLocationHash(userId);
 };
 
@@ -92,7 +92,7 @@ const controlCopy = function (inputs = undefined) {
 };
 
 const controlNewReport = function () {
-  model.newReport(model.state.tab);
+  model.clearTab(model.state.tab);
   userFormView.newUser((takeSnapshot = true));
   userTabsView.removeLocationHash();
 };
@@ -120,7 +120,7 @@ const controlSaveUser = async function (userId) {
   const id = userId ? userId : window.location.hash.slice(1);
   let user;
   try {
-    // Save user
+    // Create user
     if (!id) {
       user = await model.DB.createUser(userFormView._form);
       userTableView.render(user);
@@ -128,7 +128,7 @@ const controlSaveUser = async function (userId) {
       notificationView.success(`User successfully created: [${user.id}]`);
     }
 
-    // Save changes
+    // Update User
     if (id) {
       user = await model.DB.updateUser(id, userFormView._form);
       userTableView.update(user);
@@ -136,7 +136,7 @@ const controlSaveUser = async function (userId) {
     }
 
     userFormView.takeSnapshot(userFormView.newClone());
-    // userFormView.updateTags(user);
+    userFormView.updateTags(user);
     userTabsView.render(model.state.tab, user.fullName, user.id);
     model.loadTabWith(model.state.users, model.state.tab, user.id);
   } catch (error) {
@@ -148,22 +148,24 @@ const controlSaveUser = async function (userId) {
 // prettier-ignore
 const controlDeleteUser = async function (id) {
   try {    
-    const report = model.findObjectById(model.state.users, id);
+    const user = model.findObjectById(model.state.users, id);
   
     let isDeleteConfirmed = true;
-    isDeleteConfirmed = await modalView.confirmDelete(report);
+    isDeleteConfirmed = await modalView.confirmDelete(user);
     if(!isDeleteConfirmed) return;
-    if(id === window.location.hash.slice(1)) reportTabsView.removeLocationHash();
+    if(id === window.location.hash.slice(1)) userTabsView.removeLocationHash();
   
-    const tabIndex = model.findReportInTab(id);
-    if (tabIndex) {
-      model.newReport(tabIndex)
-      reportTabsView.tabs.get(tabIndex).newReport((takeSnapshot = true))
+    const tabIndex = model.findTabIndexByObjectId(id);
+    if (tabIndex !== -1) {
+      model.clearTab(tabIndex)
+      userTabsView.tabs.get(tabIndex).newUser((takeSnapshot = true))
     }
+
+    console.log(model.state.tabs);
   
-    await model.DB.deleteReport(id);
-    reportTableView.updateTotalCount(model.state.reports);
-    notificationView.success(`Report successfully deleted: ${report.incident.title} [${report.id}]`);
+    await model.DB.deleteUser(id);
+    userTableView.updateTotalCount(model.state.users);
+    notificationView.success(`User successfully deleted: ${user.email} [${user.id}]`);
 
   } catch (error) {
     notificationView.error(error, 60);
@@ -241,7 +243,6 @@ export const init = async function () {
   // console.log("Version", version);
   // tabsView._appVersion.textContent = version;
   // console.log(model.state);
-  console.log(userTabsView);
 };
 
 init();

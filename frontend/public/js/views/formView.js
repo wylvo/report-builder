@@ -67,7 +67,9 @@ export default class FormView extends View {
     allInputs.forEach((input) => {
       if (input.hasAttribute("maxlength") && input.name !== "phone-number") {
         maxLengthInputs.set(input, input.parentElement);
-        input.parentElement.querySelector(".max-length-text").textContent = input.getAttribute("maxlength");
+
+        const maxLengthEl = input.parentElement.querySelector(".max-length-text");
+        if(maxLengthEl) maxLengthEl.textContent = input.getAttribute("maxlength");
       }
     });
     return maxLengthInputs;
@@ -114,7 +116,7 @@ export default class FormView extends View {
   updateTextInputsLength() {
     this._maxLengthInputs.forEach((container, input) => {
       const currentLengthElement = container.querySelector(`#${input.id}-length`);
-      currentLengthElement.textContent = input.value.length;
+      if (currentLengthElement) currentLengthElement.textContent = input.value.length;
     });
   }
 

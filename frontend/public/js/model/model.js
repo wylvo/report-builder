@@ -303,11 +303,11 @@ export const updateHasTriggeredWebhook = function (report) {
   updateReportKeyValue(report, "hasTriggeredWebhook", true);
 };
 
-// New report. Clear report in current tab
-export const newReport = function (tabIndex) {
+// Clear data in current tab
+export const clearTab = function (tabIndex) {
   const tab = findTab(tabIndex);
-  tab.report = {};
-  return tab.report;
+  tab.data = {};
+  return tab.data;
 };
 
 // // Add a single report. Update local storage. Send a backup of the report
@@ -345,11 +345,11 @@ const initReportsInLocalStorage = function () {
 // Find tab by Map() object key
 const findTab = (index) => state.tabs.get(index);
 
-// Find report occurence in tab
-export const findReportInTab = (id) => {
+// Find tab index by id
+export const findTabIndexByObjectId = (id) => {
   let activeTabIndex = undefined;
   state.tabs.forEach((tab, index) => {
-    if (tab.report.id === id) activeTabIndex = index;
+    if (tab.data.id === id) activeTabIndex = index;
   });
   return activeTabIndex;
 };
@@ -508,10 +508,11 @@ export const createUserObject = function (form) {
 
   return {
     role: form.role.value.trim(),
+    isEnabled: form.status.value.trim() === "1" ? true : false,
     email: form.email.value.trim(),
     fullName: form["full-name"].value.trim(),
-    username: username,
-    initials: initials,
+    username: form.username.value.trim(),
+    initials: form.initials.value.trim(),
     password: form.password.value.trim(),
     passwordConfirmation: form["password-confirmation"].value.trim(),
     // profilePictureURL: `form["profile-picture-url"].value.trim()`,

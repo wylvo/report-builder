@@ -14,7 +14,7 @@ let reportFormView,
 const controlTabs = function (tabIndex, id = undefined) {
   model.state.tab = tabIndex;
   reportFormView = reportTabsView.tabs.get(model.state.tab);
-  const reportId = id ? id : model.state.tabs.get(tabIndex).report.id;
+  const reportId = id ? id : model.state.tabs.get(tabIndex).data.id;
   reportTabsView.updateLocationHash(reportId);
 };
 
@@ -60,7 +60,7 @@ const controlCopy = function (inputs = undefined) {
 };
 
 const controlNewReport = function () {
-  model.newReport(model.state.tab);
+  model.clearTab(model.state.tab);
   reportFormView.newReport((takeSnapshot = true));
   reportTabsView.removeLocationHash();
 };
@@ -122,7 +122,7 @@ const controlSendReport = async function (id = undefined) {
   if (!id && hasIdInHash) id = hasIdInHash;
 
   const report = model.findObjectById(model.state.reports, id);
-  const tabIndex = model.findReportInTab(report.id);
+  const tabIndex = model.findTabIndexByObjectId(report.id);
   const reportViewInTab = reportTabsView.tabs.get(tabIndex);
   const tableViewBtnTeams = report.tableRowEl.querySelector(".teams");
   
@@ -174,9 +174,9 @@ const controlDeleteReport = async function (id) {
     if(!isDeleteConfirmed) return;
     if(id === window.location.hash.slice(1)) reportTabsView.removeLocationHash();
   
-    const tabIndex = model.findReportInTab(id);
-    if (tabIndex) {
-      model.newReport(tabIndex)
+    const tabIndex = model.findTabIndexByObjectId(id);
+    if (tabIndex !== -1) {
+      model.clearTab(tabIndex)
       reportTabsView.tabs.get(tabIndex).newReport((takeSnapshot = true))
     }
   

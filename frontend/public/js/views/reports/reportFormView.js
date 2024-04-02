@@ -233,7 +233,7 @@ export class ReportFormView extends FormView {
 
     // Update submit (save) button
     this._btnSubmit.disabled = true;
-    this._btnSubmit.children[1].textContent = "Save Changes";
+    this._btnSubmit.children[1].textContent = "Update Report";
     // prettier-ignore
     this._btnSubmit.firstElementChild.firstElementChild.setAttribute("href", "/img/icons.svg#icon-sync");
 
@@ -267,7 +267,7 @@ export class ReportFormView extends FormView {
       }
 
       // Id
-      if (tag.classList.contains("report-id"))
+      if (tag.classList.contains("data-id"))
         (tag.textContent = report.id), tag.classList.remove("hidden");
     });
   }

@@ -384,7 +384,7 @@ input[type="checkbox"]:disabled + span::before {
   justify-content: space-between;
 }
 
-.report-id {
+.data-id {
   margin: -1rem 0;
   color: var(--on-background-content);
   font-size: 1.6rem;
@@ -400,18 +400,18 @@ input[type="checkbox"]:disabled + span::before {
   letter-spacing: 0.05rem;
 }
 
-.report-procedural,
-.report-readonly,
-.report-oncall {
+.tag {
   border-radius: 0.2rem;
   padding: 0.8rem;
 }
 
+.user-status,
 .report-procedural {
   color: var(--attention-on-background);
   background-color: var(--attention-background-color);
 }
 
+.user-role,
 .report-oncall {
   color: var(--info-on-background);
   background-color: var(--info-background-color);
@@ -665,12 +665,14 @@ input:checked + .slider:before {
 .form-new-btn:disabled,
 .form-now-btn:disabled,
 .form-submit-btn:disabled,
+.form-reset-password-btn:disabled,
 .form-teams-btn:disabled,
 .form-paste-btn:disabled .icons,
 .form-copy-btn:disabled .icons,
 .form-new-btn:disabled .icons,
 .form-now-btn:disabled .icons,
 .form-submit-btn:disabled .icons,
+.form-reset-password-btn .icons,
 .form-teams-btn:disabled .icons {
   scale: 1;
   background-color: var(--buttons-disabled-background-color);
@@ -691,6 +693,7 @@ input:checked + .slider:before {
 .form-new-btn:disabled:active,
 .form-now-btn:disabled:active,
 .form-submit-btn:disabled:active,
+.form-reset-password-btn:disabled:active,
 .form-teams-btn:disabled:active {
   scale: 1;
 }
@@ -701,6 +704,7 @@ input:checked + .slider:before {
 }
 
 .form-submit-btn,
+.form-reset-password-btn,
 .form-teams-btn {
   width: 100%;
   height: 100%;
@@ -725,16 +729,19 @@ input:checked + .slider:before {
 }
 
 .form-submit-btn:hover,
+.form-reset-password-btn:hover,
 .form-teams-btn:hover {
   filter: brightness(135%);
 }
 
 .form-submit-btn:active,
+.form-reset-password-btn:active,
 .form-teams-btn:active {
   scale: 0.95;
 }
 
 .form-submit-btn:disabled:hover,
+.form-reset-password-btn:disabled:hover,
 .form-teams-btn:disabled:hover {
   filter: brightness(100%);
 }

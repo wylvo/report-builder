@@ -20,12 +20,17 @@ export class UserFormView extends FormView {
     // Tags
     this._tags = this._form.querySelectorAll(".tag");
 
+    // Label Password (will be modified)
+    this._PasswordLbl = this._fields.get("password").nextElementSibling;
+    this._PasswordConfLbl = this._fields.get("password-confirmation").nextElementSibling;
+
     // Buttons
     this._btnPaste = this._form.querySelector(".form-paste-btn");
     this._btnCopy = this._form.querySelector(".form-copy-btn");
     this._btnNew = this._form.querySelector(".form-new-btn");
     this._btnSubmit = this._form.querySelector(".form-submit-btn");
     this._btnSubmitText = this._form.querySelector(".form-submit-btn-text");
+    this._btnResetPassword = this._form.querySelector(".form-reset-password-btn");
 
     // Initialize default State
     this.#defaultState();
@@ -72,6 +77,7 @@ export class UserFormView extends FormView {
   hasStateChanged(clone, state) {
     this._changes = [];
     clone.forEach((el, i) => {
+      if(el.name === "password" || el.name === "password-confirmation") return;
       if (el.getAttribute("type") === "checkbox" && el.checked !== state.get(i).checked)
         this._changes.push(el.name);
       if (el.getAttribute("type") !== "checkbox" && el.value !== state.get(i).value)
@@ -99,13 +105,15 @@ export class UserFormView extends FormView {
 
     this.#defaultState();
     this.clearTags();
-
-    this._fields.forEach((field) => (field.value = ""));
     this._form.reset();
+
+    this._PasswordLbl.textContent = "Password";
+    this._PasswordConfLbl.textContent = "Confirm Password";
 
     this._btnSubmit.disabled = true;
     this._btnSubmit.children[1].textContent = "Create User";
     this._btnSubmit.firstElementChild.firstElementChild.setAttribute("href", "/img/icons.svg#icon-save");
+    this._btnResetPassword.classList.add("hidden");
 
     this.updateTextInputsLength();
 
@@ -121,9 +129,13 @@ export class UserFormView extends FormView {
     const fields = this._fields;
     const checkBoxes = this._checkBoxes;
     const selects = this._selects;
-    const textAreas = this._textAreas;
 
-    console.log(fields, checkBoxes, selects, textAreas);
+    fields.get("full-name").value = user.fullName;
+    fields.get("initials").value = user.initials;
+    fields.get("email").value = user.email;
+    fields.get("username").value = user.username;
+    selects.get("role").value = user.role;
+    selects.get("status").value = user.isEnabled ? "Enabled" : "Disabled";
 
     // Update form tags
     this.updateTags(user);
@@ -134,39 +146,46 @@ export class UserFormView extends FormView {
     // Take a new snapshot (Will help detecting changes in the form)
     this._snapshot = this.takeSnapshot();
 
-    // Update submit (save) button
+    // Update password input labels
+    this._PasswordLbl.textContent = "New Password";
+    this._PasswordConfLbl.textContent = "Confirm New Password";
+
+    // Update submit (create) button
     this._btnSubmit.disabled = true;
-    this._btnSubmit.children[1].textContent = "Save Changes";
+    this._btnSubmit.children[1].textContent = "Update User";
     // prettier-ignore
     this._btnSubmit.firstElementChild.firstElementChild.setAttribute("href", "/img/icons.svg#icon-sync");
+    this._btnResetPassword.classList.remove("hidden");
 
     this._all(this._accordions).forEach((accordion) =>
       this._expandAccordion(accordion.header, accordion.content)
     );
   }
 
-  updateTags(report) {
+  updateTags(user) {
+    console.log(user);
     const tags = [...this._tags];
-    const isProcedural = report.incident.isProcedural;
-    const isOnCall = report.tech.isOnCall;
+    const isEnabled = user.isEnabled;
+    const role = user.role;
     tags.forEach((tag) => {
-      // Procedural
-      if (tag.classList.contains("report-procedural")) {
-        if (isProcedural)
-          (tag.textContent = "PROCEDURAL"), tag.classList.remove("hidden");
+      // User Status: Enabled || Disabled
+      if (tag.classList.contains("user-status")) {
+        if (!isEnabled)
+          (tag.textContent = "DISABLED"), tag.classList.remove("hidden");
         else tag.classList.add("hidden");
       }
 
       // On-call
-      if (tag.classList.contains("report-oncall")) {
-        if (isOnCall)
-          (tag.textContent = "ON-CALL"), tag.classList.remove("hidden");
+      if (tag.classList.contains("user-role")) {
+        if (role)
+          (tag.textContent = role.toUpperCase()),
+            tag.classList.remove("hidden");
         else tag.classList.add("hidden");
       }
 
       // Id
-      if (tag.classList.contains("report-id"))
-        (tag.textContent = report.id), tag.classList.remove("hidden");
+      if (tag.classList.contains("data-id"))
+        (tag.textContent = user.id), tag.classList.remove("hidden");
     });
   }
 
@@ -249,6 +268,13 @@ export class UserFormView extends FormView {
 
   addHandlerSave(handler) {
     this._form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      handler();
+    });
+  }
+
+  addHandlerResetPassword(handler) {
+    this._btnResetPassword.addEventListener("click", function (e) {
       e.preventDefault();
       handler();
     });

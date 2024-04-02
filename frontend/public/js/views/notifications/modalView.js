@@ -94,15 +94,21 @@ class ModalView extends NotificationView {
   }
 
   // prettier-ignore
-  confirmDelete (report, timeoutSeconds = 30) {
+  confirmDelete (data, timeoutSeconds = 30) {
     this.#isTrusted = true;
+
+    let dataFill
+    if(data?.incident?.title) 
+      dataFill = { content: data.incident.title, id: data.id, type: "report"}
+    else if(data?.email)
+      dataFill = { content: data.email, id: data.id, type: "user"}
+    else return;
+
     this._headerText = "Are you sure?";
     this._contentText = `
-      <p>Do you really want to delete the following report?</p><br>
-      <p><strong>${report.incident.title.escapeHTML()}</strong><br>
-      ${report.id.escapeHTML()}</p><br>
-      <p>A backup of this report should be available at:<br>
-      <strong>http://${location.hostname}:${location.port}/api/backup</strong></p>
+      <p>Do you really want to delete the following ${dataFill.type}?</p><br>
+      <p><strong>${dataFill.content.escapeHTML()}</strong><br>
+      ${dataFill.id.escapeHTML()}</p>
     `;
     this.#btnConfirmText = "Yes, Delete";
     this.#btnCancelText = "No, Cancel";
@@ -113,7 +119,7 @@ class ModalView extends NotificationView {
     this.#isTrusted = true;
     this._headerText = "You have unsaved changes";
     this._contentText =
-      "Please save your changes before switching tabs or before rendering other reports. Save changes?";
+      "Please save your changes before switching tabs or before rendering data. Save changes?";
     this.#btnConfirmText = "Save Changes";
     this.#btnCancelText = "Discard Changes";
     return this.save(null, timeoutSeconds);

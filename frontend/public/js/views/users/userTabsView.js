@@ -44,12 +44,12 @@ class UserTabsView extends TabsView {
           </div>
         </div>
         <div class="form-meta-data">
-          <div class="user-tags">
-            <p class="user-procedural tag">PROCEDURAL</p>
-            <p class="user-oncall tag">ON-CALL</p>
+          <div class="report-tags">
+            <p class="user-status tag">PROCEDURAL</p>
+            <p class="user-role tag">ON-CALL</p>
           </div>
           <div>
-            <p class="user-id tag"></p>
+            <p class="data-id tag"></p>
           </div>
         </div>
 
@@ -70,7 +70,7 @@ class UserTabsView extends TabsView {
             </button>
           </div>
 
-          <!-- FULL NAME, EMAIL -->
+          <!-- FULL NAME, INITIALS -->
           <div class="form-grouping-content">
             <div class="grid columns-50-50 mt-36">
               <div class="form-grouping-col">
@@ -81,20 +81,46 @@ class UserTabsView extends TabsView {
                   class="full-name"
                   required
                   placeholder="John Doe"
-
                 />
                 <label for="full-name_${index}">Full Name:</label>
               </div>
+              <div class="form-grouping-col">
+                <input
+                  type="text"
+                  id="initials_${index}"
+                  name="initials"
+                  class="initials"
+                  maxlength="2"
+                  placeholder="JD"
+                />
+                <label for="initials_${index}">Initials:</label>
+                <p class="max-length"><span id="initials_${index}-length">0</span>/<span class="max-length-text"></span></p>
+              </div>
+
+              <!-- EMAIL, USERNAME -->
               <div class="form-grouping-col">
                 <input 
                   type="email"
                   id="email_${index}"
                   name="email"
                   class="email"
-                  placeholder="username@bestseller.com"
+                  placeholder="john.doe@bestseller.com"
                   required
                 />
                 <label for="email_${index}">Email:</label>
+              </div>
+              <div class="form-grouping-col">
+                <input 
+                  type="username"
+                  id="username_${index}"
+                  name="username"
+                  class="username"
+                  maxlength="20"
+                  placeholder="john.doe"
+                  required
+                />
+                <label for="username_${index}">Username:</label>
+                <p class="max-length"><span id="username_${index}-length">0</span>/<span class="max-length-text"></span></p>
               </div>
 
               <!-- ROLE, STATUS  -->
@@ -109,8 +135,8 @@ class UserTabsView extends TabsView {
 
               <div class="form-grouping-col">
                 <select id="status_${index}" name="status" class="status">
-                  <option selected value="Enabled">Enabled</option>
-                  <option value="Disabled">Disabled</option>
+                  <option selected value="1">Enabled</option>
+                  <option value="0">Disabled</option>
                 </select>
                 <label for="status_${index}">Status:</label>
               </div>
@@ -148,7 +174,7 @@ class UserTabsView extends TabsView {
             </button>
           </div>
 
-          <!-- PASSWORD, PASSWORD CONFORMATION -->
+          <!-- PASSWORD, PASSWORD CONFIRMATION -->
           <div class="form-grouping-content">
             <div class="grid columns-50-50 mt-36">
               <div class="form-grouping-col">
@@ -169,13 +195,23 @@ class UserTabsView extends TabsView {
                   id="password-confirmation_${index}"
                   name="password-confirmation"
                   class="password-confirmation"
-                  placeholder="Password Confirmation"
+                  placeholder="Confirm Password"
                   required
                 />
-                <label for="password-confirmation_${index}">Password Confirmation:</label>
+                <label for="password-confirmation_${index}">Confirm Password:</label>
               </div>
               
             </div>
+          </div>
+        </div>
+
+        <div class="form-meta-data">
+          <div class="report-tags">
+            <p class="user-status tag">PROCEDURAL</p>
+            <p class="user-role tag">ON-CALL</p>
+          </div>
+          <div>
+            <p class="data-id tag"></p>
           </div>
         </div>
 
@@ -191,6 +227,17 @@ class UserTabsView extends TabsView {
                 <use href="/img/icons.svg#icon-save"></use>
               </svg>
               <p class="form-submit-btn-text" id="form-submit-btn-text_${index}">Create User</p>
+            </button>
+          </label>
+
+          <label for="form-reset-password-btn_${index}" class="cta-button">
+            <button
+              type="submit"
+              id="form-reset-password-btn_${index}"
+              class="form-reset-password-btn"
+              disabled
+            >
+              <p class="form-reset-password-btn-text" id="form-reset-password-btn-text_${index}">Reset User Password</p>
             </button>
           </label>
         </div>

@@ -59,6 +59,7 @@ export const createUser = catchAsync(async (req, res, next) => {
   const [
     {
       role,
+      isEnabled,
       email,
       password,
       passwordConfirmation,
@@ -84,6 +85,7 @@ export const createUser = catchAsync(async (req, res, next) => {
   await mssql()
     .input("id", id)
     .input("role", role)
+    .input("isEnabled", isEnabled ?? true)
     .input("email", email)
     .input("password", await hashPassword(password))
     .input("profilePictureURL", profilePictureURL)
