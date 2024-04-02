@@ -5,14 +5,6 @@ class ReportTableView extends TableView {
     super();
   }
 
-  update(data) {
-    const { currentElement, newElement } = this._generateRowElement(data);
-
-    currentElement.replaceWith(newElement);
-
-    return newElement;
-  }
-
   _generateEmptyRowHtml() {
     return `
       <tr class="table-row">

@@ -1,4 +1,8 @@
-import { DEFAULT_REPORT } from "../config.js";
+import {
+  DEFAULT_REPORT,
+  DEFAULT_USER_CREATE,
+  DEFAULT_USER_UPDATE,
+} from "../config.js";
 import { migrateReportData } from "./migrate.js";
 import api from "./api.js";
 import utils from "./utils.js";
@@ -236,7 +240,7 @@ export const createReportObject = function (report, form) {
 };
 
 // prettier-ignore
-// Update existing report. Update local storage
+// Update existing report.
 export const updateReport = function (reportOrId, form) {
   const index = findObjectIndexById(state.reports, reportOrId);
   const report = state.reports[index];
@@ -507,16 +511,140 @@ export const createUserObject = function (form) {
   }
 
   return {
-    role: form.role.value.trim(),
-    isEnabled: form.status.value.trim() === "1" ? true : false,
-    email: form.email.value.trim(),
-    fullName: form["full-name"].value.trim(),
-    username: form.username.value.trim(),
-    initials: form.initials.value.trim(),
-    password: form.password.value.trim(),
-    passwordConfirmation: form["password-confirmation"].value.trim(),
-    // profilePictureURL: `form["profile-picture-url"].value.trim()`,
+    role: form.role?.value.trim(),
+    isEnabled: form.status?.value.trim() === "1" ? true : false,
+    email: form.email?.value.trim(),
+    fullName: form["full-name"]?.value.trim(),
+    username: form.username?.value.trim(),
+    initials: form.initials?.value.trim(),
+    password: form.password?.value.trim(),
+    passwordConfirmation: form["password-confirmation"]?.value.trim(),
+    // profilePictureURL: form["profile-picture-url"]?.value.trim(),
+    tableRowEl: {},
   };
+};
+
+// Update existing user.
+export const updateUserObject = function (userObjectOrId, form) {
+  const index = findObjectIndexById(state.users, userObjectOrId);
+  const user = state.users[index];
+  const tableRowEl = user.tableRowEl;
+  user.tableRowEl = {};
+
+  // Create a clone of the user object to update
+  let clone = structuredClone(user);
+
+  // Update the clone separately with new data from the form
+  clone.role = form.role?.value.trim();
+  clone.isEnabled = form.status?.value.trim() === "1" ? true : false;
+  clone.email = form.email?.value.trim();
+  clone.fullName = form["full-name"]?.value.trim();
+  clone.username = form.username?.value.trim();
+  clone.initials = form.initials?.value.trim();
+  // clone.profilePictureURL = form["profile-picture-url"]?.value.trim(),
+
+  // Check validity of the clone. If not valid, an error will be thrown here.
+  checkUserValidity(DEFAULT_USER_UPDATE, clone);
+
+  // Update the user
+  user.role = clone.role;
+  user.isEnabled = clone.isEnabled;
+  user.email = clone.email;
+  user.fullName = clone.fullName;
+  user.username = clone.username;
+  user.initials = clone.initials;
+  // user.profilePictureURL = clone.profilePictureURL;
+  user.tableRowEl = tableRowEl;
+
+  return user;
+};
+
+// Check validity of a user object by looking at data types
+export const checkUserValidity = (configObject, user) => {
+  const missingKeys = [];
+  const invalidTypes = [];
+
+  // prettier-ignore
+  const hasSameValueTypes = (defaultObject, targetObject, key, currentObject) => {
+    const target = typeof currentObject === "undefined" ? "root" : currentObject;
+
+    // If the target object does not exist, throw an error. (For nested objects)
+    if (typeof targetObject === "undefined") throw new Error(`Failed to create user. The "${target}" object was not found.`)
+
+    // Key Names. Sort by alphabetical order to compare them
+    const defaultKeys = Object.keys(defaultObject).sort();
+    const userKeys = Object.keys(targetObject).sort();
+
+    console.log("DEFAULT:", defaultKeys);
+    console.log("USER`:", userKeys);
+
+    // If the given number keys inside the default object !== the number keys inside the target object (user)
+    if (defaultKeys.length !== userKeys.length) {
+
+      // Throw an error. In this case, it means that the 2 objects have different lengths.
+      throw new Error(`Failed to create a user object. The number of keys found inside the "${target}" object is invalid.`);
+    }
+
+    // Key Values
+    const defaultKeyValue = defaultObject[key];
+    const targetKeyValue = targetObject[key];
+
+    // If the target (user) object key value does not exist
+    if (typeof targetKeyValue === "undefined") {
+
+      // Keep it in memory, and return nothing to stop the iteration.
+      return missingKeys.push(key);
+    }
+
+    // If the default object key value types !== the target (user) object key value types
+    if (typeof defaultKeyValue !== typeof targetKeyValue) {
+
+      // if key "initials" & "profilePictureURL" is null stop the iteration by returning nothing. "initials" & "profilePictureURL" can === null.
+      if(key === "initials" || "profilePictureURL") {
+        if (targetKeyValue === null || typeof targetKeyValue === "string") return;
+
+        // Else keep it in memory, and return nothing to stop the iteration.
+        return invalidTypes.push({ key: key, type: typeof defaultKeyValue, target: target });
+      }
+
+      // Else keep it in memory, and return nothing to stop the iteration.
+      return invalidTypes.push({ key: key, type: typeof defaultKeyValue, target: target });
+    }
+  };
+
+  // Traverse default user object, and compare data types with user object passed in parameter
+  utils.traverse(hasSameValueTypes, configObject, user);
+
+  const hasMissingKeys = missingKeys.length > 0;
+  const hasinvalidTypes = invalidTypes.length > 0;
+
+  // prettier-ignore
+  // Parse errors into a single string message
+  if (hasMissingKeys || hasinvalidTypes) {
+    throw new Error(
+      `Failed to create a user object${
+        hasMissingKeys
+          ? `. You have ${missingKeys.length} missing key(s) "${missingKeys.join(", ")}"`
+          : ""
+      }${
+        hasinvalidTypes
+          ? `. You have ${invalidTypes.length} invalid data type(s). ${invalidTypes.map((el) => 
+            `"${el.key}" should be of type "${el.type}" inside the "${el.target}" object`).join(", ")}`
+          : ""
+      }.`
+    );
+  }
+
+  const invalidInputLengths = [];
+
+  if (user.initials.length > 2) invalidInputLengths.push("initials");
+  if (user.username.length > 20) invalidInputLengths.push("username");
+
+  const hasInvalidInputLength = invalidInputLengths.length > 0;
+  // prettier-ignore
+  if (hasInvalidInputLength) {
+    throw new Error(`The following fields have invalid lengths: ${invalidInputLengths.join(", ")}.`);
+  }
 };
 
 export const DB = {
@@ -612,7 +740,11 @@ export const DB = {
   },
 
   createUser: async (form) => {
+    // Create a user object
     const userObject = createUserObject(form);
+
+    // Check validity of the user object
+    checkUserValidity(DEFAULT_USER_CREATE, userObject);
 
     // API request to create a user in the database
     const {
@@ -641,11 +773,20 @@ export const DB = {
   },
 
   // TO TEST
-  updateUser: async (id, user) => {
+  updateUser: async (id, form) => {
+    // Update a user object
+    const user = updateUserObject(id, form);
+    const tableRowEl = user.tableRowEl;
+    user.tableRowEl = undefined;
+
+    // API request to update a user from the database
     await api.v1.users.updateUser(id, user);
+
+    user.tableRowEl = tableRowEl;
+
+    return user;
   },
 
-  // TO TEST
   deleteUser: async (id) => {
     // API request to delete a user from the database
     const { response } = await api.v1.users.deleteUser(id);

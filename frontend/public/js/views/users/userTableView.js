@@ -43,8 +43,6 @@ class UserTableView extends TableView {
       ? user.profilePictureURL
       : "/img/default_profile_picture.jpg";
 
-    console.log(user);
-
     return `
       <tr class="table-row">
         <td data-cell="Picture">

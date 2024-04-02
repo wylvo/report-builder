@@ -132,7 +132,7 @@ const controlSaveUser = async function (userId) {
     if (id) {
       user = await model.DB.updateUser(id, userFormView._form);
       userTableView.update(user);
-      notificationView.success(`User changes were saved: [${user.id}]`);
+      notificationView.success(`User successfully updated: [${user.id}]`);
     }
 
     userFormView.takeSnapshot(userFormView.newClone());

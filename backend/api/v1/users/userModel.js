@@ -19,7 +19,7 @@ export default {
     SET role = ISNULL(json.role, users.role),
       isEnabled = ISNULL(json.isEnabled, users.isEnabled),
       email = ISNULL(json.email, users.email),
-      profilePictureURL ISNULL(json.profilePictureURL, users.profilePictureURL),
+      profilePictureURL = ISNULL(json.profilePictureURL, users.profilePictureURL),
       fullName = ISNULL(json.fullName, users.fullName),
       username = ISNULL(json.username, users.username),
       initials = ISNULL(json.initials, users.initials)
@@ -27,6 +27,7 @@ export default {
     WITH (
       id VARCHAR(36),
       role VARCHAR(64),
+      isEnabled BIT,
       email VARCHAR(64),
       profilePictureURL NVARCHAR(MAX),
       fullName VARCHAR(64),

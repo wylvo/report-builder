@@ -36,6 +36,12 @@ export default class TableView extends View {
     return data.tableRowEl;
   }
 
+  update(data) {
+    const { currentElement, newElement } = this._generateRowElement(data);
+    currentElement.replaceWith(newElement);
+    return newElement;
+  }
+
   updateTotalCount(array) {
     this._count.textContent = array.length;
   }

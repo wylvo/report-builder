@@ -107,8 +107,8 @@ export class UserFormView extends FormView {
     this.clearTags();
     this._form.reset();
 
-    this._PasswordLbl.textContent = "Password";
-    this._PasswordConfLbl.textContent = "Confirm Password";
+    this._PasswordLbl.textContent = "Password:";
+    this._PasswordConfLbl.textContent = "Confirm Password:";
 
     this._btnSubmit.disabled = true;
     this._btnSubmit.children[1].textContent = "Create User";
@@ -123,6 +123,7 @@ export class UserFormView extends FormView {
   render(user) {
     this.newUser();
 
+    console.log(user);
     this._tab.firstElementChild.textContent = user.fullName;
     this._tab.firstElementChild.setAttribute("href", `#${user.id}`);
 
@@ -135,7 +136,7 @@ export class UserFormView extends FormView {
     fields.get("email").value = user.email;
     fields.get("username").value = user.username;
     selects.get("role").value = user.role;
-    selects.get("status").value = user.isEnabled ? "Enabled" : "Disabled";
+    selects.get("status").value = user.isEnabled ? "1" : "0";
 
     // Update form tags
     this.updateTags(user);
@@ -147,8 +148,8 @@ export class UserFormView extends FormView {
     this._snapshot = this.takeSnapshot();
 
     // Update password input labels
-    this._PasswordLbl.textContent = "New Password";
-    this._PasswordConfLbl.textContent = "Confirm New Password";
+    this._PasswordLbl.textContent = "New Password:";
+    this._PasswordConfLbl.textContent = "Confirm New Password:";
 
     // Update submit (create) button
     this._btnSubmit.disabled = true;
@@ -163,7 +164,6 @@ export class UserFormView extends FormView {
   }
 
   updateTags(user) {
-    console.log(user);
     const tags = [...this._tags];
     const isEnabled = user.isEnabled;
     const role = user.role;
