@@ -21,7 +21,7 @@ const fetchJSON = async (url, method = undefined, jsonData = undefined) => {
 
     if (!response.ok)
       throw new Error(
-        `${data.message}. Request failed with status code ${response.status} (${response.statusText}).`
+        `${data.message} Request failed with status code ${response.status} (${response.statusText}).`
       );
     return { response, data };
   } catch (error) {
@@ -77,6 +77,12 @@ export default {
       },
       async deleteUser(id) {
         return await fetchJSON(`${this.url}/${id}`, "DELETE", {});
+      },
+      async enableUser(id) {
+        return await fetchJSON(`${this.url}/${id}/enable`, "PUT", {});
+      },
+      async disableUser(id) {
+        return await fetchJSON(`${this.url}/${id}/disable`, "PUT", {});
       },
       async getMe() {
         return await fetchJSON(`${this.url}/me`);

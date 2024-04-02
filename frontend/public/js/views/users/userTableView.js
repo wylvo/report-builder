@@ -11,22 +11,19 @@ class UserTableView extends TableView {
         <td data-cell="Picture">
           <div>N/A</div>
         </td>
-        <td data-cell="Full Name">
-          <div>-</div>
-        </td>
-        <td data-cell="Email">
-          <div>-</div>
-        </td>
         <td data-cell="Username">
           <div>-</div>
         </td>
-        <td data-cell="Initials">
+        <td data-cell="Email">
           <div>-</div>
         </td>
         <td data-cell="Role">
           <div>-</div>
         </td>
         <td data-cell="Status">
+          <div>-</div>
+        </td>
+        <td data-cell="Full Name">
           <div>-</div>
         </td>
         <td data-cell="Actions">
@@ -38,9 +35,9 @@ class UserTableView extends TableView {
 
   // prettier-ignore
   _generatetHtml(user) {
-    const isActive = user.isActive
-      ? { class: `class="good"`, text: "Active" }
-      : { class: `class="attention"`, text: "Inactive" };
+    const status = user.isEnabled
+      ? { btnClassAndIcon: "disable", class: `class="good"`, text: "Enabled" }
+      : { btnClassAndIcon: "enable", class: `class="attention"`, text: "Disabled" };
 
     const profilePicture = user.profilePictureURL
       ? user.profilePictureURL
@@ -59,17 +56,16 @@ class UserTableView extends TableView {
         <td data-cell="Email">
           <div><a class="table-row-link" href="#${user.id}">${user.email}</a></div>
         </td>
-        <td data-cell="Username"><div>${user.username}</div></td>
-        <td data-cell="Initials"><div>${user.initials}</div></td>
         <td data-cell="Role"><div>${user.role}</div></td>
         <td data-cell="Status">
-          <div><p ${isActive.class}>${isActive.text}</p></div>
+          <div><p ${status.class}>${status.text}</p></div>
         </td>
+        <td data-cell="Username"><div>${user.username}</div></td>
         <td data-cell="Actions" data-id="${user.id}" class="table-row-buttons">
           <div>
-            <button class="btn enable-user icons">
+            <button class="btn ${status.btnClassAndIcon}-user icons">
               <svg>
-                <use href="/img/icons.svg#icon-enable"></use>
+                <use href="/img/icons.svg#icon-${status.btnClassAndIcon}"></use>
               </svg>
             </button>
             <button class="btn delete icons">

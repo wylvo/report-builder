@@ -47,12 +47,12 @@ export default () => `
             <thead>
               <tr>
                 <th>Picture</th>
-                <th>Full Name</th>
+                <th>Role</th>
                 <th>Email</th>
+                <th>Status</th>
+                <th>Full Name</th>
                 <th>Username</th>
                 <th>Initials</th>
-                <th>Role</th>
-                <th>Status</th>
                 <th>Actions</th>
               </tr>
             </thead>

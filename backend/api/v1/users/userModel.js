@@ -1,6 +1,6 @@
 export default {
   getAll:
-    "SELECT id, role, isActive, email, profilePictureURL, fullName, username, initials FROM users;",
+    "SELECT id, role, isEnabled, email, profilePictureURL, fullName, username, initials FROM users;",
 
   get: "SELECT * FROM users WHERE id = @id;",
 
@@ -39,13 +39,13 @@ export default {
 
   enable: `
     UPDATE users
-    SET isActive = 1
+    SET isEnabled = 1
     WHERE id = @id;
   `,
 
   disable: `
     UPDATE users
-    SET isActive = 0
+    SET isEnabled = 0
     WHERE id = @id;
   `,
 };

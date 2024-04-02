@@ -39,7 +39,7 @@ const controlUnsavedUser = async (controlFunction, handler = undefined, event = 
   }
   if (isSaveConfirmed) {
     const id = window.location.hash.slice(1);
-    if (currentUserView._changes.length > 0) return controlSaveReport(id);
+    if (currentUserView._changes.length > 0) return controlSaveUser(id);
   }
 
   if (typeof handler === "function") {
@@ -53,9 +53,9 @@ const controlUnsavedUser = async (controlFunction, handler = undefined, event = 
 // prettier-ignore
 const controlUniqueUserPerTab = function (id, event = undefined) {
   for (const [index, tab] of model.state.tabs) {
-    if (tab.user.id && tab.user.id === id) {
-      const reportFormView = reportTabsView.tabs.get(index);
-      if (!event) reportFormView._tab.firstElementChild.click();
+    if (tab.data.id && tab.data.id === id) {
+      const userFormView = userTabsView.tabs.get(index);
+      if (!event) userFormView._tab.firstElementChild.click();
       return true;
     }
   }
@@ -105,7 +105,7 @@ const controlRenderUser = function () {
     const isPresentInTab = controlUniqueUserPerTab(id);
     if (isPresentInTab) return;
 
-    const user = model.loadReport(model.state.tab, id);
+    const user = model.loadTabWith(model.state.users, model.state.tab, id);
     userFormView.render(user);
     console.log(model.state);
   } catch (error) {
@@ -116,13 +116,13 @@ const controlRenderUser = function () {
 };
 
 // prettier-ignore
-const controlSaveReport = async function (reportId) {
-  const id = reportId ? reportId : window.location.hash.slice(1);
+const controlSaveUser = async function (userId) {
+  const id = userId ? userId : window.location.hash.slice(1);
   let user;
   try {
     // Save user
     if (!id) {
-      user = await model.DB.createUser(model.state.tab, userFormView._form);
+      user = await model.DB.createUser(userFormView._form);
       userTableView.render(user);
       userTableView.updateTotalCount(model.state.users);
       notificationView.success(`User successfully created: [${user.id}]`);
@@ -136,13 +136,37 @@ const controlSaveReport = async function (reportId) {
     }
 
     userFormView.takeSnapshot(userFormView.newClone());
-    userFormView.updateTags(user);
-    userFormView._btnTeams.disabled = false;
-    userTabsView.render(model.state.tab, user.incident.title, user.id);
-    model.loadReport(model.state.tab, user.id);
+    // userFormView.updateTags(user);
+    userTabsView.render(model.state.tab, user.fullName, user.id);
+    model.loadTabWith(model.state.users, model.state.tab, user.id);
   } catch (error) {
     notificationView.error(error.message, 60);
     console.error(error);
+  }
+};
+
+// prettier-ignore
+const controlDeleteUser = async function (id) {
+  try {    
+    const report = model.findObjectById(model.state.users, id);
+  
+    let isDeleteConfirmed = true;
+    isDeleteConfirmed = await modalView.confirmDelete(report);
+    if(!isDeleteConfirmed) return;
+    if(id === window.location.hash.slice(1)) reportTabsView.removeLocationHash();
+  
+    const tabIndex = model.findReportInTab(id);
+    if (tabIndex) {
+      model.newReport(tabIndex)
+      reportTabsView.tabs.get(tabIndex).newReport((takeSnapshot = true))
+    }
+  
+    await model.DB.deleteReport(id);
+    reportTableView.updateTotalCount(model.state.reports);
+    notificationView.success(`Report successfully deleted: ${report.incident.title} [${report.id}]`);
+
+  } catch (error) {
+    notificationView.error(error, 60);
   }
 };
 
@@ -199,7 +223,7 @@ export const init = async function () {
     // userFormView.addHandlerPaste(controlPaste);
     userFormView.addHandlerCopy(controlCopy);
     userFormView.addHandlerNew(controlUnsavedUser, controlNewReport);
-    userFormView.addHandlerSave(controlSaveReport);
+    userFormView.addHandlerSave(controlSaveUser);
   });
 
   // Table view handlers
@@ -207,7 +231,7 @@ export const init = async function () {
     controlUnsavedUser,
     controlUniqueUserPerTab
   );
-  // userTableView.addHandlerDelete(controlDeleteReport);
+  userTableView.addHandlerDelete(controlDeleteUser);
 
   // Pagination view handlers
   paginationView.addHandlerOnChangeRowsPerPage(controlRowsPerPage);

@@ -109,8 +109,8 @@ class UserTabsView extends TabsView {
 
               <div class="form-grouping-col">
                 <select id="status_${index}" name="status" class="status">
-                  <option selected value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
+                  <option selected value="Enabled">Enabled</option>
+                  <option value="Disabled">Disabled</option>
                 </select>
                 <label for="status_${index}">Status:</label>
               </div>
@@ -131,7 +131,7 @@ class UserTabsView extends TabsView {
           </div>
         </div>
 
-        <!-- USER PASSWORD -->
+        <!-- USER AUTHENTICATION -->
         <div class="form-grouping">
           <div class="form-grouping-accordion">
             <div class="form-grouping-accordion-header">
@@ -139,7 +139,7 @@ class UserTabsView extends TabsView {
                 <use href="/img/icons.svg#icon-lock-closed"></use>
               </svg>
               <span>&#8226;</span>
-              <h2>User Password</h2>
+              <h2>User Authentication</h2>
             </div>
             <button type="button">
               <svg class="icons icon-chevron">

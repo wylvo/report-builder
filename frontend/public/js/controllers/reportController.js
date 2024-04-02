@@ -21,7 +21,7 @@ const controlTabs = function (tabIndex, id = undefined) {
 // prettier-ignore
 const controlUniqueReportPerTab = function (id, event = undefined) {
   for (const [index, tab] of model.state.tabs) {
-    if (tab.report.id && tab.report.id === id) {
+    if (tab.data.id && tab.data.id === id) {
       const reportFormView = reportTabsView.tabs.get(index);
       if (!event) reportFormView._tab.firstElementChild.click();
       return true;
@@ -73,7 +73,7 @@ const controlRenderReport = function () {
     const isReportPresentInTab = controlUniqueReportPerTab(id);
     if (isReportPresentInTab) return;
 
-    const report = model.loadReport(model.state.tab, id);
+    const report = model.loadTabWith(model.state.reports, model.state.tab, id);
     reportFormView.render(report);
     console.log(model.state);
   } catch (error) {
@@ -107,7 +107,7 @@ const controlSaveReport = async function (reportId) {
     reportFormView.updateTags(report);
     reportFormView._btnTeams.disabled = false;
     reportTabsView.render(model.state.tab, report.incident.title, report.id);
-    model.loadReport(model.state.tab, report.id);
+    model.loadTabWith(model.state.reports, model.state.tab, report.id);
     // api.sendBackupReports(model.state.reports);
   } catch (error) {
     notificationView.error(error.message, 60);
@@ -121,7 +121,7 @@ const controlSendReport = async function (id = undefined) {
   let isPromptConfirmed = true;
   if (!id && hasIdInHash) id = hasIdInHash;
 
-  const report = model.findReportById(id);
+  const report = model.findObjectById(model.state.reports, id);
   const tabIndex = model.findReportInTab(report.id);
   const reportViewInTab = reportTabsView.tabs.get(tabIndex);
   const tableViewBtnTeams = report.tableRowEl.querySelector(".teams");
@@ -167,7 +167,7 @@ const controlSendReport = async function (id = undefined) {
 // prettier-ignore
 const controlDeleteReport = async function (id) {
   try {    
-    const report = model.findReportById(id);
+    const report = model.findObjectById(model.state.reports, id);
   
     let isDeleteConfirmed = true;
     isDeleteConfirmed = await modalView.confirmDelete(report);
@@ -219,7 +219,7 @@ const controlSearchResults = function () {
     model.state.search.query = "";
     model.state.search.results = [];
     reportTableView.updateTotalCount(model.state.reports);
-    return reportTableView.renderAll(model.rowsPerPage());
+    return reportTableView.renderAll(model.rowsPerPage(model.state.reports));
   }
 
   const filterBy = searchView.filterBy();
@@ -249,7 +249,7 @@ const controlPages = function (page) {
 };
 
 const controlRenderAllReports = function () {
-  const reports = model.rowsPerPage();
+  const reports = model.rowsPerPage(model.state.reports);
   reportTableView.renderAll(reports);
   paginationView.renderAll(model.pages());
 };
@@ -300,7 +300,7 @@ export const init = async function () {
 
   // Initialize all table rows per page
   model.state.rowsPerPage = paginationView.rowsPerPage();
-  reportTableView.renderAll(model.rowsPerPage());
+  reportTableView.renderAll(model.rowsPerPage(model.state.reports));
   reportTableView.updateTotalCount(model.state.reports);
 
   // Initialize all pagination buttons

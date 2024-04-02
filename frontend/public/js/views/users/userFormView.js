@@ -123,6 +123,8 @@ export class UserFormView extends FormView {
     const selects = this._selects;
     const textAreas = this._textAreas;
 
+    console.log(fields, checkBoxes, selects, textAreas);
+
     // Update form tags
     this.updateTags(user);
 

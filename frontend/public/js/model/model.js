@@ -15,7 +15,6 @@ export const state = {
   },
 
   users: [],
-  usersInactive: [],
 
   tab: 0,
   tabs: new Map(),
@@ -33,29 +32,29 @@ export const state = {
   },
 };
 
-// Find report index by ID
+// Find report index or user index by ID
 // prettier-ignore
-const findReportIndex = (targetReport, raiseError = true) => {
-  const index = state.reports.findIndex((report) =>
-    report.id === (typeof targetReport === "object" ? targetReport.id : targetReport));
+const findObjectIndexById = (array, targetObject, raiseError = true) => {
+  const index = array.findIndex((object) =>
+    object.id === (typeof targetObject === "object" ? targetObject.id : targetObject));
   if(index === -1 && raiseError)
-    throw new TypeError(`Invalid target. Report index is undefined.`);
+    throw new TypeError(`Invalid target. Object index is undefined in provided array.`);
   return index;
 }
 
-// Find report by ID
-export const findReportById = (id, raiseError = true) => {
-  const report = state.reports.find((report) => report.id === id);
-  if (typeof report === "undefined" && raiseError)
-    throw new TypeError(`Invalid id "${id}". Report is undefined.`);
-  return report;
+// Find report or user by ID
+export const findObjectById = (array, id, raiseError = true) => {
+  const object = array.find((object) => object.id === id);
+  if (typeof object === "undefined" && raiseError)
+    throw new TypeError(`Invalid id "${id}". Data object is undefined.`);
+  return object;
 };
 
 // Load report into a tab
-export const loadReport = function (tabIndex, id) {
+export const loadTabWith = function (array, tabIndex, id) {
   const tab = findTab(tabIndex);
-  tab.report = findReportById(id);
-  return tab.report;
+  tab.data = findObjectById(array, id);
+  return tab.data;
 };
 
 // Check validity of a report by looking at data types
@@ -239,7 +238,7 @@ export const createReportObject = function (report, form) {
 // prettier-ignore
 // Update existing report. Update local storage
 export const updateReport = function (reportOrId, form) {
-  const index = findReportIndex(reportOrId);
+  const index = findObjectIndexById(state.reports, reportOrId);
   const report = state.reports[index];
   const tableRowEl = report.tableRowEl;
   report.tableRowEl = {};
@@ -277,7 +276,7 @@ export const updateReport = function (reportOrId, form) {
 // Update report key values. Update local storage
 // Only "isWebhookSent" and "hasTriggeredWebhook" keys are allowed
 const updateReportKeyValue = function (report, key, value) {
-  const index = findReportIndex(report);
+  const index = findObjectIndexById(state.reports, report);
   if (!Object.hasOwn(state.reports[index], key))
     throw new TypeError(`Could not find key "${key}" in report object.`);
 
@@ -324,7 +323,7 @@ export const newReport = function (tabIndex) {
 //   report.isDeleted = true;
 //   report.tableRowEl.remove();
 
-//   const index = findReportIndex(report);
+//   const index = findObjectIndexById(report);
 //   state.reports.splice(index, 1);
 //   saveReportsInLocalStorage();
 //   api.sendBackupReports([report]);
@@ -358,7 +357,7 @@ export const findReportInTab = (id) => {
 // Initialize single tab
 const initTab = (tabIndex) =>
   state.tabs.set(tabIndex, {
-    report: {},
+    data: {},
   });
 
 // prettier-ignore
@@ -496,6 +495,29 @@ const initThemeInLocalStorage = function () {
   state.theme = theme;
 };
 
+// prettier-ignore
+export const createUserObject = function (form) {
+  const username = form.email.value.trim().split("@")[0];
+  let initials = null;
+
+  if (username.includes(".")) {
+    const firstName = username.split(".")[0];
+    const lastName = username.split(".")[1];
+    initials = `${firstName[0]}${lastName[0]}`.toUpperCase();
+  }
+
+  return {
+    role: form.role.value.trim(),
+    email: form.email.value.trim(),
+    fullName: form["full-name"].value.trim(),
+    username: username,
+    initials: initials,
+    password: form.password.value.trim(),
+    passwordConfirmation: form["password-confirmation"].value.trim(),
+    // profilePictureURL: `form["profile-picture-url"].value.trim()`,
+  };
+};
+
 export const DB = {
   getReports: async () => {
     // API request to get all reports from the database
@@ -514,7 +536,7 @@ export const DB = {
     // Check validity of the report object
     checkValidity(reportObject);
 
-    // API request to create a report to the database
+    // API request to create a report in the database
     const {
       data: {
         data: [report],
@@ -556,7 +578,7 @@ export const DB = {
     const { response } = await api.v1.reports.deleteReport(id);
 
     // Find & check if report is in the state object
-    const index = findReportIndex(id, false);
+    const index = findObjectIndexById(state.reports, id, false);
 
     // If found, remove the row element and report object
     if (index !== -1) {
@@ -578,32 +600,77 @@ export const DB = {
     return report;
   },
 
-  // TO TEST
   getUsers: async () => {
-    // API request to get all reports from the database
+    // API request to get all users from the database
     const {
       data: { data },
     } = await api.v1.users.getUsers();
 
-    // Add all reports in the model state
+    // Add all users in the model state
     state.users = data;
   },
-  // TO TEST
-  createUser: async (user) => {
-    await api.v1.users.createUser(user);
+
+  createUser: async (form) => {
+    const userObject = createUserObject(form);
+
+    // API request to create a user in the database
+    const {
+      data: {
+        data: [user],
+      },
+    } = await api.v1.users.createUser(userObject);
+
+    console.log(user);
+
+    // Add the user in the model state
+    state.users.unshift(user);
+
+    return user;
   },
+
   // TO TEST
   getUser: async (id) => {
-    await api.v1.users.getUser(id);
+    const {
+      data: {
+        data: [user],
+      },
+    } = await api.v1.users.getUser(id);
+
+    return user;
   },
+
   // TO TEST
   updateUser: async (id, user) => {
     await api.v1.users.updateUser(id, user);
   },
+
   // TO TEST
   deleteUser: async (id) => {
-    await api.v1.users.deleteUser(id);
+    // API request to delete a user from the database
+    const { response } = await api.v1.users.deleteUser(id);
+
+    // Find & check if user is in the state object
+    const index = findObjectIndexById(state.users, id, false);
+
+    // If found, remove the row element and user object
+    if (index !== -1) {
+      state.users[index].tableRowEl.remove();
+      state.users.splice(index, 1);
+    }
+
+    return response;
   },
+
+  // TO TEST
+  enableUser: async (id) => {
+    await api.v1.users.enableUser(id);
+  },
+
+  // TO TEST
+  disableUser: async (id) => {
+    await api.v1.users.disableUser(id);
+  },
+
   // TO TEST
   getUserProfile: async () => {
     await api.v1.users.getMe();

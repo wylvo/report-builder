@@ -21,7 +21,7 @@ export const mergeUserData = (id, obj) => {
       ...filterObject(
         obj,
         "role",
-        "isActive",
+        "isEnabled",
         "email",
         "profilePictureURL",
         "fullName",
@@ -70,9 +70,12 @@ export const createUser = catchAsync(async (req, res, next) => {
   ] = req.body;
   const id = generateUUID();
 
-  if (!username || !email || !role)
+  if (!username || !email || !role || (!password && !passwordConfirmation))
     return next(
-      new GlobalError("Please provide username, email, and role.", 400)
+      new GlobalError(
+        "Please provide role, email, username, and password.",
+        400
+      )
     );
 
   if (password !== passwordConfirmation)
@@ -155,13 +158,13 @@ export const enableUser = async (req, res, next) => {
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
 
-  if (user.isActive === true)
+  if (user.isEnabled === true)
     return next(
       new GlobalError(`User is already enabled with id: ${id}.`, 400)
     );
 
   await mssql().input("id", user.id).query(usersSQL.enable);
-  user.isActive = true;
+  user.isEnabled = true;
 
   res.status(200).json({
     status: "success",
@@ -177,13 +180,13 @@ export const disableUser = async (req, res, next) => {
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
 
-  if (user.isActive === false)
+  if (user.isEnabled === false)
     return next(
       new GlobalError(`User is already disabled with id: ${id}.`, 400)
     );
 
   await mssql().input("id", user.id).query(usersSQL.disable);
-  user.isActive = false;
+  user.isEnabled = false;
 
   res.status(200).json({
     status: "success",
