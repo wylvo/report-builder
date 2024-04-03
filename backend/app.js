@@ -20,8 +20,16 @@ const __dirname = path.resolve();
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "/backend/views"));
 
+// Static files
+app.use(express.static(path.join(__dirname, "/frontend/public")));
+
 // Set security HTTP headers
 app.use(helmet());
+
+// Development logging
+if (process.env.NODE_ENV === "development") {
+  app.use(morgan("dev"));
+}
 
 // Limit requests to the API
 const limiter = rateLimit({
@@ -36,16 +44,14 @@ app.use(compression());
 app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser());
 
-// Development logging
-if (process.env.NODE_ENV === "development") {
-  app.use(morgan("dev"));
-}
-
 // Format JSON responses as text with 2 indented spaces
 app.set("json spaces", 2);
 
-// Static files
-app.use(express.static(path.join(__dirname, "/frontend/public")));
+// Test middleware
+app.use((req, res, next) => {
+  console.log(req.cookies);
+  next();
+});
 
 app.use("/", viewRouter);
 app.use("/api/v1", routerV1);

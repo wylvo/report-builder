@@ -5,6 +5,6 @@ import * as auth from "../auth.js";
 const router = express.Router();
 
 router.get("/", auth.protect, views.getMainPage);
-router.get("/signin", views.getSignInForm);
+router.get("/signin", auth.isLoggedIn, views.getSignInForm);
 
 export { router as viewRouter };

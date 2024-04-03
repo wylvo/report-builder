@@ -6,6 +6,7 @@ import config from "./config/app.config.js";
 import catchAsync from "./api/errors/catchAsync.js";
 import GlobalError from "./api/errors/globalError.js";
 import { mssql } from "./config/db.config.js";
+import { findUserByIdQuery } from "./api/v1/users/userController.js";
 
 export const hashPassword = (password) => {
   return bcrypt.hash(password, 12);
@@ -97,26 +98,22 @@ export const signOut = (req, res) => {
 };
 
 export const protect = catchAsync(async (req, res, next) => {
-  // Check if has bearer in header value
-  let bearer;
+  let token;
+
+  // Check if token is in bearer header value or jwt cookie value
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
-  )
-    bearer = req.headers.authorization;
-
-  if (!bearer) {
-    return next(
-      new GlobalError("Unauthorized. Please sign in to get access.", 401)
-    );
+  ) {
+    const bearer = req.headers.authorization;
+    [, token] = bearer.split(" ");
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
-
-  // Check if has token in header value
-  const [, token] = bearer.split(" ");
 
   if (!token) {
     return next(
-      new GlobalError("Invalid token. Please sign in to get access.", 401)
+      new GlobalError("Unauthorized. Please sign in to get access.", 401)
     );
   }
 
@@ -124,12 +121,7 @@ export const protect = catchAsync(async (req, res, next) => {
   const decoded = await promisify(jwt.verify)(token, config.jwt.secret);
 
   // Check if user exists in DB
-
-  const {
-    recordset: [currentUser],
-  } = await mssql()
-    .input("id", decoded.id)
-    .query("SELECT * FROM users WHERE id = @id");
+  const currentUser = await findUserByIdQuery(decoded.id);
 
   if (!currentUser) {
     return next(
@@ -154,6 +146,37 @@ export const protect = catchAsync(async (req, res, next) => {
   req.user = currentUser;
   next();
 });
+
+// Only for rendered pages, no errors!
+export const isLoggedIn = async (req, res, next) => {
+  if (req.cookies.jwt) {
+    try {
+      // Verify the token
+      const decoded = await promisify(jwt.verify)(
+        req.cookies.jwt,
+        config.jwt.secret
+      );
+
+      // Check if user still exists
+      const currentUser = await findUserByIdQuery(decoded.id);
+      if (!currentUser) {
+        return next();
+      }
+
+      // Check if user changed password after the token was issued
+      if (hasResetPassword(currentUser, decoded.iat)) {
+        return next();
+      }
+
+      // THERE IS A LOGGED IN USER
+      res.locals.user = currentUser;
+      return next();
+    } catch (error) {
+      return next();
+    }
+  }
+  next();
+};
 
 export const restrictTo = (...roles) => {
   return (req, res, next) => {

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,12 +14,12 @@
     <link rel="stylesheet" href="styles/notifications.css" />
     <link rel="stylesheet" href="styles/modal.css" />
     <link rel="stylesheet" href="styles/tabs.css" />
-    <link rel="stylesheet" href="styles/form.css" />
     <link rel="stylesheet" href="styles/table.css" />
     <link rel="stylesheet" href="styles/queries.css" />
     <link rel="shortcut icon" href="img/jj-icon.jpg" type="image/x-icon" />
-    <!-- <script type="module" src="js/_controller.js"></script> -->
-    <script type="module" src="js/controllers/controller.js"></script>
+    <!-- <script type="module" src="js/controllers/reportController.js"></script> -->
+    <!-- <script type="module" src="js/controllers/userController.js"></script> -->
+    <script type="module" src="js/controllers/sidebarController.js"></script>
     <title>WhoCalledTech | Main</title>
   </head>
   <body>
@@ -37,63 +37,28 @@
         <div class="menu">
           <p class="title">Main</p>
           <ul>
-            <li>
+            <li id="dashboard-link">
               <a href="#">
                 <i class="bx bxs-dashboard"></i>
                 <span class="text">Dashboard</span>
               </a>
             </li>
-            <!-- <li class="active">
+            <li id="reports-link">
               <a href="#">
-                <i class="bx bx-buildings"></i>
-                <span class="text">Sites</span>
-                <i class="arrow bx bx-chevron-down"></i>
-              </a>
-              <ul class="sub-menu">
-                <li>
-                  <a href="#"><span class="text">Change Site</span></a>
-                </li>
-              </ul>
-            </li> -->
-            <li>
-              <a href="#">
-                <i class="bx bxs-report"></i>
+                <i class="bx bx-food-menu"></i>
                 <span class="text">Reports</span>
                 <i class="arrow bx bx-chevron-down"></i>
               </a>
-              <ul class="sub-menu">
-                <li>
-                  <a href="#"><span class="text">New</span></a>
-                </li>
-                <li>
-                  <a href="#"><span class="text">Import</span></a>
-                </li>
-                <li>
-                  <a href="#"><span class="text">Deleted</span></a>
-                </li>
-              </ul>
             </li>
-            <!-- <li>
-              <a href="#">
-                <i class="bx bx-list-ul"></i>
-                <span class="text">Log</span>
-              </a>
-            </li> -->
           </ul>
         </div>
         <div class="menu">
           <p class="title">Admin</p>
           <ul>
-            <li>
+            <li id="users-link">
               <a href="#">
                 <i class="bx bx-group"></i>
                 <span class="text">Users</span>
-              </a>
-            </li>
-            <li>
-              <a href="#">
-                <i class="bx bx-cog"></i>
-                <span class="text">Settings</span>
               </a>
             </li>
           </ul>
@@ -102,7 +67,7 @@
       <div class="menu">
         <p class="title">Account</p>
         <ul>
-          <li>
+          <li id="me-link">
             <a href="#">
               <i class="bx bx-user"></i>
               <span class="text">Me</span>
@@ -118,15 +83,6 @@
       </div>
     </aside>
 
-    <div class="scroll-btns">
-      <button id="theme" class="theme tooltip">
-        <svg class="icons">
-          <use></use>
-        </svg>
-        <span class="tooltiptext">Theme</span>
-      </button>
-    </div>
-
     <!-- <img src="img/jj-logo.jpg" class="jj-logo" alt="Jack & Jones brand name" /> -->
     <div class="content">
       <!-- NAVBAR -->
@@ -134,8 +90,16 @@
         <div class="menu-btn">
           <i class="bx bx-menu"></i>
         </div>
-        <input type="checkbox" id="theme-toggle" hidden />
-        <label for="theme-toggle" class="theme-toggle"></label>
+        <div class="scroll-btns">
+          <button id="theme" class="theme tooltip">
+            <svg class="icons">
+              <use></use>
+            </svg>
+            <span class="tooltiptext">Theme</span>
+          </button>
+        </div>
+        <!-- <input type="checkbox" id="theme-toggle" hidden />
+        <label for="theme-toggle" class="theme-toggle"></label> -->
         <a href="#" class="profile">
           <img src="img/profile.jpg" />
         </a>
@@ -144,25 +108,9 @@
       <main class="main">
         <div class="header">
           <div class="left">
-            <h1>Dashboard</h1>
-            <ul class="breadcrumb">
-              <li><a href="#"> Dashboard </a></li>
-              /
-              <li><a href="#" class="active">Reports</a></li>
-            </ul>
+            <h1>Users</h1>
           </div>
-          <a href="#" class="report">
-            <i class="bx bx-cloud-download"></i>
-            <span>Download JSON</span>
-          </a>
         </div>
-
-        <!-- NOTIFICATIONS -->
-        <div class="notifications"></div>
-
-        <!-- MODAL -->
-        <div class="modal-ctn"></div>
-        <div class="overlay hidden"></div>
 
         <section class="section-col">
           <!-- FORM -->
@@ -178,43 +126,11 @@
           <!-- TABLE -->
           <div class="container table-ctn">
             <div class="table-header">
-              <form class="table-filter">
-                <div>
-                  <label for="table-filter-by">Filter By:</label>
-                  <select
-                    id="table-filter-by"
-                    name="table-filter-by"
-                    class="table-filter-by"
-                  >
-                    <option value="tech">TECH</option>
-                    <option value="call.dateTime">Date</option>
-                    <option value="incident.title">Title</option>
-                    <option value="call.status">Status</option>
-                    <option value="call.phone">Phone</option>
-                    <option value="store.number">Store</option>
-                    <option value="incident.type">Type</option>
-                    <option value="incident.isProcedural">Procedural</option>
-                    <option value="store.employee.name">Emp</option>
-                    <option value="store.districtManager">DM</option>
-                    <option value="tech.isOnCall">On-call</option>
-                  </select>
-                </div>
-                <div class="table-filter-search-ctn">
-                  <label for="table-filter-search">Filter: </label>
-                  <input
-                    type="search"
-                    name="table-filter-search"
-                    id="table-filter-search"
-                    class="table-filter-search"
-                    placeholder="Search..."
-                  />
-                </div>
-              </form>
               <div class="table-view">
                 <div class="table-meta-data">
                   <p>
-                    Total Reports:
-                    <strong><span class="total-reports">0</span></strong>
+                    Total Users:
+                    <strong><span class="count">0</span></strong>
                   </p>
                 </div>
                 <div class="table-pagination">
@@ -236,15 +152,12 @@
               <table class="table-content">
                 <thead>
                   <tr>
-                    <th>TECH</th>
-                    <th>Date</th>
-                    <th>Title</th>
+                    <th>Picture</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Username</th>
+                    <th>Role</th>
                     <th>Status</th>
-                    <th>Store</th>
-                    <th>Emp</th>
-                    <th>DM</th>
-                    <th>Type</th>
-                    <th>Procedural</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -260,11 +173,10 @@
                     name="table-rows-per-page"
                     class="table-rows-per-page"
                   >
-                    <option selected value="50">50</option>
+                    <option selected value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
                     <option value="100">100</option>
-                    <option value="250">250</option>
-                    <option value="500">500</option>
-                    <option value="1000">1000</option>
                   </select>
                 </div>
               </div>
@@ -284,6 +196,13 @@
             </div>
           </div>
         </section>
+
+        <!-- NOTIFICATIONS -->
+        <div class="notifications"></div>
+
+        <!-- MODAL -->
+        <div class="modal-ctn"></div>
+        <div class="overlay hidden"></div>
       </main>
     </div>
     <!-- <footer class="footer">
