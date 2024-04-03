@@ -66,32 +66,35 @@ const controlUniqueUserPerTab = function (id, event = undefined) {
   return false;
 };
 
-// // prettier-ignore
-// const controlPaste = function () {
-//   model.state.clipboard.forEach((clipboardInput, index) => {
-//     const userInput = userFormView._inputs.get("*").get(index);
+// prettier-ignore
+const controlPaste = function () {
+  model.state.clipboard.forEach((clipboardInput, index) => {
+    const userInput = userFormView._inputs.get("*").get(index);
 
-//     if (userInput.getAttribute("type") === "checkbox") {
-//       if (userInput.checked && !clipboardInput.checked) userInput.click();
-//       if (!userInput.checked && clipboardInput.checked) userInput.click();
-//     }
+    if (userInput.getAttribute("type") === "checkbox") {
+      if (userInput.checked && !clipboardInput.checked) userInput.click();
+      if (!userInput.checked && clipboardInput.checked) userInput.click();
+    }
 
-//     if (userInput.getAttribute("type") !== "checkbox")
-//       userInput.value = clipboardInput.value;
-//   });
-//   notificationView.success(`User state pasted into tab ${model.state.tab + 1}`, 5);
-//   userFormView._form.onchange();
-// };
+    if (userInput.getAttribute("type") !== "checkbox")
+      userInput.value = clipboardInput.value;
+  });
+  notificationView.success(`User state pasted into tab ${model.state.tab + 1}`, 5);
+  userFormView._form.onchange();
+};
 
 // prettier-ignore
 const controlCopy = function (inputs = undefined) {
+  inputs.delete("password")
+  inputs.delete("password-confirmation")
+
   model.state.clipboard = inputs;
   if (model.state.clipboard.size > 0)
     userTabsView.tabs.forEach((userFormView) => userFormView._btnPaste.disabled = false);
   notificationView.info(`User state copied from tab ${model.state.tab + 1}`, 5);
 };
 
-const controlNewReport = function () {
+const controlNewUser = function () {
   model.clearTab(model.state.tab);
   userFormView.newUser((takeSnapshot = true));
   userTabsView.removeLocationHash();
@@ -100,7 +103,7 @@ const controlNewReport = function () {
 const controlRenderUser = function () {
   try {
     const id = window.location.hash.slice(1);
-    if (!id) return controlNewReport();
+    if (!id) return controlNewUser();
 
     const isPresentInTab = controlUniqueUserPerTab(id);
     if (isPresentInTab) return;
@@ -109,7 +112,7 @@ const controlRenderUser = function () {
     userFormView.render(user);
     console.log(model.state);
   } catch (error) {
-    controlNewReport();
+    controlNewUser();
     notificationView.error(error.message, 60);
     console.error(error);
   }
@@ -135,6 +138,7 @@ const controlSaveUser = async function (userId) {
       notificationView.success(`User successfully updated: [${user.id}]`);
     }
 
+    userFormView.clearPasswordFields();
     userFormView.takeSnapshot(userFormView.newClone());
     userFormView.updateTags(user);
     userTabsView.render(model.state.tab, user.fullName, user.id);
@@ -168,7 +172,26 @@ const controlDeleteUser = async function (id) {
     notificationView.success(`User successfully deleted: ${user.email} [${user.id}]`);
 
   } catch (error) {
-    notificationView.error(error, 60);
+    notificationView.error(error.message, 60);
+  }
+};
+
+// prettier-ignore
+const controlUserStatus = async function (id) {
+  try {
+    let user = model.findObjectById(model.state.users, id);
+
+    if (user.isEnabled) user = await model.DB.disableUser(user, id);
+    else user = await model.DB.enableUser(user, id);
+
+    console.log(user);
+
+    const statusMsg = user.isEnabled ? "enabled" : "disabled"
+    notificationView.success(`User successfully ${statusMsg}: ${user.email} [${user.id}]`, 3);
+
+    userTableView.update(user);
+  } catch (error) {
+    notificationView.error(error.message, 60);
   }
 };
 
@@ -218,13 +241,13 @@ export const init = async function () {
 
   // User view handler render. Applies to every user views (targeting Window object)
   userFormView.addHandlerRender(controlUnsavedUser, controlRenderUser);
-  // ^^^ ERROR WHEN EDITING URL, OVERWRITING AN EXISTING REPORT ^^^
+  // ^^^ ERROR WHEN EDITING URL, OVERWRITING AN EXISTING USER ^^^
 
   // User view handlers per tabs
   userTabsView.tabs.forEach((userFormView) => {
-    // userFormView.addHandlerPaste(controlPaste);
+    userFormView.addHandlerPaste(controlPaste);
     userFormView.addHandlerCopy(controlCopy);
-    userFormView.addHandlerNew(controlUnsavedUser, controlNewReport);
+    userFormView.addHandlerNew(controlUnsavedUser, controlNewUser);
     userFormView.addHandlerSave(controlSaveUser);
   });
 
@@ -233,6 +256,7 @@ export const init = async function () {
     controlUnsavedUser,
     controlUniqueUserPerTab
   );
+  userTableView.addHandlerStatus(controlUserStatus);
   userTableView.addHandlerDelete(controlDeleteUser);
 
   // Pagination view handlers

@@ -184,7 +184,7 @@ class UserTabsView extends TabsView {
                   name="password"
                   class="password"
                   placeholder="Password"
-                  
+                  required
                 />
                 <label for="password_${index}">Password:</label>
               </div>
@@ -196,7 +196,7 @@ class UserTabsView extends TabsView {
                   name="password-confirmation"
                   class="password-confirmation"
                   placeholder="Confirm Password"
-                  
+                  required
                 />
                 <label for="password-confirmation_${index}">Confirm Password:</label>
               </div>

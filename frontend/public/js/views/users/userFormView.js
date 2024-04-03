@@ -21,8 +21,8 @@ export class UserFormView extends FormView {
     this._tags = this._form.querySelectorAll(".tag");
 
     // Label Password (will be modified)
-    this._PasswordLbl = this._fields.get("password").nextElementSibling;
-    this._PasswordConfLbl = this._fields.get("password-confirmation").nextElementSibling;
+    this._password = this._fields.get("password");
+    this._passwordConfirmation = this._fields.get("password-confirmation");
 
     // Buttons
     this._btnPaste = this._form.querySelector(".form-paste-btn");
@@ -107,8 +107,10 @@ export class UserFormView extends FormView {
     this.clearTags();
     this._form.reset();
 
-    this._PasswordLbl.textContent = "Password:";
-    this._PasswordConfLbl.textContent = "Confirm Password:";
+    this._password.required = true;
+    this._passwordConfirmation.required = true;
+    this._password.nextElementSibling.textContent = "Password:";
+    this._passwordConfirmation.nextElementSibling.textContent = "Confirm Password:";
 
     this._btnSubmit.disabled = true;
     this._btnSubmit.children[1].textContent = "Create User";
@@ -147,9 +149,14 @@ export class UserFormView extends FormView {
     // Take a new snapshot (Will help detecting changes in the form)
     this._snapshot = this.takeSnapshot();
 
+    // Passwords input not required
+    this._password.required = false;
+    this._passwordConfirmation.required = false;
+
     // Update password input labels
-    this._PasswordLbl.textContent = "New Password:";
-    this._PasswordConfLbl.textContent = "Confirm New Password:";
+    this._password.nextElementSibling.textContent = "New Password:";
+    this._passwordConfirmation.nextElementSibling.textContent =
+      "Confirm New Password:";
 
     // Update submit (create) button
     this._btnSubmit.disabled = true;
@@ -192,6 +199,11 @@ export class UserFormView extends FormView {
   clearTags() {
     const tags = [...this._tags];
     tags.forEach((tag) => tag.classList.add("hidden"));
+  }
+
+  clearPasswordFields() {
+    this._password.value = "";
+    this._passwordConfirmation.value = "";
   }
 
   // prettier-ignore

@@ -24,6 +24,7 @@ export class NotificationView extends View {
     type = type.escapeHTML();
     icon = icon.escapeHTML();
     header = header.escapeHTML();
+    console.log(content);
     content = content.escapeHTML();
 
     const notificationHtml = `

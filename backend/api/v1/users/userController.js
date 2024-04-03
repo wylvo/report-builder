@@ -166,6 +166,7 @@ export const enableUser = async (req, res, next) => {
     );
 
   await mssql().input("id", user.id).query(usersSQL.enable);
+
   user.isEnabled = true;
 
   res.status(200).json({
@@ -188,6 +189,7 @@ export const disableUser = async (req, res, next) => {
     );
 
   await mssql().input("id", user.id).query(usersSQL.disable);
+
   user.isEnabled = false;
 
   res.status(200).json({

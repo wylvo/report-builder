@@ -61,7 +61,7 @@ class UserTableView extends TableView {
         </td>
         <td data-cell="Actions" data-id="${user.id}" class="table-row-buttons">
           <div>
-            <button class="btn ${status.btnClassAndIcon}-user icons">
+            <button class="btn status ${status.btnClassAndIcon}-user icons">
               <svg>
                 <use href="/img/icons.svg#icon-${status.btnClassAndIcon}"></use>
               </svg>
@@ -92,6 +92,20 @@ class UserTableView extends TableView {
       if (e.target && e.target.closest(".delete")) {
         const parentElement =
           e.target.closest(".delete").parentElement.parentElement;
+        const id = parentElement.dataset.id;
+        handler(id);
+      }
+    });
+  }
+
+  // prettier-ignore
+  addHandlerStatus(handler) {
+    document.addEventListener("click", function (e) {
+      if (e.target && (e.target.closest(".disable-user") || e.target.closest(".enable-user"))) {
+        const parentElement =
+          (e.target.closest(".disable-user") || e.target.closest(".enable-user"))
+            .parentElement
+            .parentElement;
         const id = parentElement.dataset.id;
         handler(id);
       }

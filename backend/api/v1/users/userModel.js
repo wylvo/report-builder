@@ -16,7 +16,8 @@ export default {
     DECLARE @json NVARCHAR(MAX) = @rawJSON;
 
     UPDATE users
-    SET role = ISNULL(json.role, users.role),
+    SET lastModifiedDateTime = GETDATE(),
+      role = ISNULL(json.role, users.role),
       isEnabled = ISNULL(json.isEnabled, users.isEnabled),
       email = ISNULL(json.email, users.email),
       profilePictureURL = ISNULL(json.profilePictureURL, users.profilePictureURL),
@@ -26,6 +27,7 @@ export default {
     FROM OPENJSON(@json)
     WITH (
       id VARCHAR(36),
+      lastModifiedDateTime DATETIMEOFFSET,
       role VARCHAR(64),
       isEnabled BIT,
       email VARCHAR(64),
@@ -41,13 +43,15 @@ export default {
 
   enable: `
     UPDATE users
-    SET isEnabled = 1
+    SET isEnabled = 1,
+    lastModifiedDateTime = GETDATE()
     WHERE id = @id;
   `,
 
   disable: `
     UPDATE users
-    SET isEnabled = 0
+    SET isEnabled = 0,
+    lastModifiedDateTime = GETDATE()
     WHERE id = @id;
   `,
 };

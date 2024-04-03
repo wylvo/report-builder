@@ -351,7 +351,7 @@ const findTab = (index) => state.tabs.get(index);
 
 // Find tab index by id
 export const findTabIndexByObjectId = (id) => {
-  let activeTabIndex = undefined;
+  let activeTabIndex = -1;
   state.tabs.forEach((tab, index) => {
     if (tab.data.id === id) activeTabIndex = index;
   });
@@ -575,8 +575,8 @@ export const checkUserValidity = (configObject, user) => {
     const defaultKeys = Object.keys(defaultObject).sort();
     const userKeys = Object.keys(targetObject).sort();
 
-    console.log("DEFAULT:", defaultKeys);
-    console.log("USER`:", userKeys);
+    // console.log("DEFAULT:", defaultKeys);
+    // console.log("USER`:", userKeys);
 
     // If the given number keys inside the default object !== the number keys inside the target object (user)
     if (defaultKeys.length !== userKeys.length) {
@@ -761,7 +761,6 @@ export const DB = {
     return user;
   },
 
-  // TO TEST
   getUser: async (id) => {
     const {
       data: {
@@ -772,7 +771,6 @@ export const DB = {
     return user;
   },
 
-  // TO TEST
   updateUser: async (id, form) => {
     // Update a user object
     const user = updateUserObject(id, form);
@@ -803,14 +801,32 @@ export const DB = {
     return response;
   },
 
-  // TO TEST
-  enableUser: async (id) => {
-    await api.v1.users.enableUser(id);
+  enableUser: async (userObject, id) => {
+    // API request to enable a user from the database
+    const {
+      data: {
+        data: [user],
+      },
+    } = await api.v1.users.enableUser(id);
+
+    // Update the status in the user object
+    userObject.isEnabled = user.isEnabled;
+
+    return userObject;
   },
 
-  // TO TEST
-  disableUser: async (id) => {
-    await api.v1.users.disableUser(id);
+  disableUser: async (userObject, id) => {
+    // API request to disable a user from the database
+    const {
+      data: {
+        data: [user],
+      },
+    } = await api.v1.users.disableUser(id);
+
+    // Update the status in the user object
+    userObject.isEnabled = user.isEnabled;
+
+    return userObject;
   },
 
   // TO TEST
