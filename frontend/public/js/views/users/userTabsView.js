@@ -70,9 +70,13 @@ class UserTabsView extends TabsView {
             </button>
           </div>
 
-          <!-- FULL NAME, INITIALS -->
           <div class="form-grouping-content">
-            <div class="grid columns-50-50 mt-36">
+            
+          <!-- PROFILE PICTURE -->
+            <img class="form-profile-picture mt-36" src="/img/default_profile_picture.jpg" alt="Profile picture" />
+            <div class="grid columns-50-50">
+
+              <!-- FULL NAME, INITIALS -->
               <div class="form-grouping-col">
                 <input
                   type="text"
@@ -153,6 +157,18 @@ class UserTabsView extends TabsView {
                 />
                 <label for="phone-number_${index}">Phone #:</label>
               </div> -->
+            </div>
+            
+            <!-- PROFILE PICTURE URL -->
+            <div class="form-grouping-col ">
+              <input
+                type="url"
+                id="profile-picture-url_${index}"
+                name="profile-picture-url"
+                class="profile-picture-url"
+                placeholder="Image URL"
+              />
+              <label for="profile-picture-url_${index}">Profile Picture URL:</label>
             </div>
           </div>
         </div>

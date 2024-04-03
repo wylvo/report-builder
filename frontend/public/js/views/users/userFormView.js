@@ -4,6 +4,7 @@ export class UserFormView extends FormView {
   // Accordions keys
   #USER = "user-profile-accordion";
   #PASS = "user-password-accordion";
+  #defaultProfilePicturePath = "/img/default_profile_picture.jpg";
 
   // Generic key
   #ALL = "*";
@@ -19,6 +20,9 @@ export class UserFormView extends FormView {
 
     // Tags
     this._tags = this._form.querySelectorAll(".tag");
+
+    this._profilePictureURL = this._fields.get("profile-picture-url");
+    this._imgProfilePicture = this._form.querySelector(".form-profile-picture");
 
     // Label Password (will be modified)
     this._password = this._fields.get("password");
@@ -51,6 +55,7 @@ export class UserFormView extends FormView {
     this._addHandlerCollapseExpandOrAccordion();
     this._addHandlerOnChange();
     this._addHandlerCheckPasswordsMatch();
+    this._addHandlerUpdateProfilePicture();
   }
 
   // prettier-ignore
@@ -108,6 +113,8 @@ export class UserFormView extends FormView {
     this.clearTags();
     this._form.reset();
 
+    this._imgProfilePicture.src = this.#defaultProfilePicturePath;
+    
     this._password.required = true;
     this._passwordConfirmation.required = true;
     this._password.nextElementSibling.textContent = "Password:";
@@ -139,7 +146,9 @@ export class UserFormView extends FormView {
     fields.get("initials").value = user.initials;
     fields.get("email").value = user.email;
     fields.get("username").value = user.username;
+    fields.get("profile-picture-url").value = user.profilePictureURL;
     selects.get("role").value = user.role;
+    selects.get("status").value = user.isEnabled ? "1" : "0";
     selects.get("status").value = user.isEnabled ? "1" : "0";
 
     // Update form tags
@@ -151,7 +160,12 @@ export class UserFormView extends FormView {
     // Take a new snapshot (Will help detecting changes in the form)
     this._snapshot = this.takeSnapshot();
 
-    // Passwords input not required
+    // Update form profile picture
+    if (user.profilePictureURL)
+      this._imgProfilePicture.src = user.profilePictureURL;
+    else this._imgProfilePicture.src = this.#defaultProfilePicturePath;
+
+    // Password inputs not required
     this._password.required = false;
     this._passwordConfirmation.required = false;
 
@@ -251,6 +265,14 @@ export class UserFormView extends FormView {
         }
       })
     );
+  }
+
+  _addHandlerUpdateProfilePicture() {
+    this._profilePictureURL.addEventListener("change", () => {
+      if (this._profilePictureURL.value === "")
+        this._imgProfilePicture.src = this.#defaultProfilePicturePath;
+      else this._imgProfilePicture.src = this._profilePictureURL.value;
+    });
   }
 
   // prettier-ignore

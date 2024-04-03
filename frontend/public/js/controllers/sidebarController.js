@@ -9,4 +9,4 @@ const controlSidebarMenus = async (linkName) => {
   if (linkName === "users") await userController.init();
 };
 
-sidebarView.addHandlerClickSidebarMenus(controlSidebarMenus);
+// sidebarView.addHandlerClickSidebarMenus(controlSidebarMenus);

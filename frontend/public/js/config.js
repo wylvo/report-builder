@@ -2,11 +2,12 @@ export const DEFAULT_USER_CREATE = Object.freeze({
   role: "string",
   isEnabled: false,
   email: "string",
-  fullName: "string",
-  username: "string",
-  initials: "string", // Can be null
   password: "string",
   passwordConfirmation: "string",
+  fullName: "string",
+  username: "string",
+  initials: "string", // Can be "null"
+  profilePictureURL: "string", // Can be "null"
   tableRowEl: {},
 });
 

@@ -519,7 +519,7 @@ export const createUserObject = function (form) {
     initials: form.initials?.value.trim(),
     password: form.password?.value.trim(),
     passwordConfirmation: form["password-confirmation"]?.value.trim(),
-    // profilePictureURL: form["profile-picture-url"]?.value.trim(),
+    profilePictureURL: form["profile-picture-url"]?.value.trim(),
     tableRowEl: {},
   };
 };
@@ -541,7 +541,7 @@ export const updateUserObject = function (userObjectOrId, form) {
   clone.fullName = form["full-name"]?.value.trim();
   clone.username = form.username?.value.trim();
   clone.initials = form.initials?.value.trim();
-  // clone.profilePictureURL = form["profile-picture-url"]?.value.trim(),
+  clone.profilePictureURL = form["profile-picture-url"]?.value.trim();
 
   // Check validity of the clone. If not valid, an error will be thrown here.
   checkUserValidity(DEFAULT_USER_UPDATE, clone);

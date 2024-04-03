@@ -541,6 +541,15 @@ input[type="checkbox"]:disabled + span::before {
   visibility: visible;
 }
 
+.form-profile-picture {
+  align-self: center;
+  justify-self: center;
+  width: 9.6rem;
+  height: 9.6rem;
+  object-fit: cover;
+  border-radius: 100%;
+}
+
 /* The switch - the box around the slider */
 .switch {
   position: relative;
@@ -699,7 +708,7 @@ input:checked + .slider:before {
 }
 
 .form-buttons {
-  font-size: 2.8rem;
+  font-size: 2.4rem;
   justify-content: center;
 }
 

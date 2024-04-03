@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles/general.css" />
+    <link rel="stylesheet" href="styles/content.css" />
+    <link rel="stylesheet" href="styles/sidebar.css" />
+    <link rel="stylesheet" href="styles/icons.css" />
+    <link rel="stylesheet" href="styles/notifications.css" />
+    <link rel="stylesheet" href="styles/modal.css" />
+    <link rel="stylesheet" href="styles/tabs.css" />
+    <link rel="stylesheet" href="styles/table.css" />
+    <link rel="stylesheet" href="styles/queries.css" />
+    <link rel="shortcut icon" href="img/jj-icon.jpg" type="image/x-icon" />
+    <script type="module" src="js/controllers/dashboardController.js"></script>
+    <title>WhoCalledTech | Dashboard</title>
+  </head>
+  <body>
+    <aside class="sidebar active">
+      <div class="head">
+        <div class="user-img">
+          <img src="/img/profile.jpg" alt="" />
+        </div>
+        <div class="user-details">
+          <p class="title">Web Dev</p>
+          <p class="name">William Evora</p>
+        </div>
+      </div>
+      <nav class="nav">
+        <div class="menu">
+          <p class="title">Main</p>
+          <ul>
+            <li id="dashboard-link">
+              <a href="/">
+                <i class="bx bxs-dashboard"></i>
+                <span class="text">Dashboard</span>
+              </a>
+            </li>
+            <li id="reports-link">
+              <a href="/reports">
+                <i class="bx bx-food-menu"></i>
+                <span class="text">Reports</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="menu">
+          <p class="title">Admin</p>
+          <ul>
+            <li id="users-link">
+              <a href="/users">
+                <i class="bx bx-group"></i>
+                <span class="text">Users</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <div class="menu">
+        <p class="title">Account</p>
+        <ul>
+          <li id="me-link">
+            <a href="/me">
+              <i class="bx bx-user"></i>
+              <span class="text">Me</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <i class="bx bx-log-out bx-flip-horizontal"></i>
+              <span class="text">Logout</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </aside>
+
+    <div class="content">
+      <!-- NAVBAR -->
+      <nav>
+        <div class="menu-btn">
+          <i class="bx bx-menu"></i>
+        </div>
+        <div class="scroll-btns">
+          <button id="theme" class="theme tooltip">
+            <svg class="icons">
+              <use></use>
+            </svg>
+            <span class="tooltiptext">Theme</span>
+          </button>
+        </div>
+        <!-- <input type="checkbox" id="theme-toggle" hidden />
+        <label for="theme-toggle" class="theme-toggle"></label> -->
+        <a href="#" class="profile">
+          <img src="img/profile.jpg" />
+        </a>
+      </nav>
+
+      <main class="main">
+        <div class="header">
+          <div class="left">
+            <h1>Dashboard</h1>
+          </div>
+        </div>
+
+        <!-- INSIGHTS -->
+        <ul class="insights">
+          <li>
+            <i class="bx bx-calendar-week"></i>
+            <span class="info">
+              <h3>28</h3>
+              <p>Reports This Week</p>
+            </span>
+          </li>
+          <li>
+            <i class="bx bx-calendar"></i>
+            <span class="info">
+              <h3>94</h3>
+              <p>Reports This Month</p>
+            </span>
+          </li>
+          <li>
+            <i class="bx bx-calendar-event"></i>
+            <span class="info">
+              <h3>464</h3>
+              <p>Reports This Year</p>
+            </span>
+          </li>
+          <li>
+            <i class="bx bx-food-menu"></i>
+            <span class="info">
+              <h3>1,074</h3>
+              <p>Total Reports</p>
+            </span>
+          </li>
+        </ul>
+
+        <!-- ANALYTICS 1 -->
+        <div class="bottom-data">
+          <div class="reports">
+            <div class="header">
+              <i class="bx bx-food-menu"></i>
+              <h3>Recently Created Reports</h3>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Date</th>
+                  <th>Title</th>
+                  <th>Status</th>
+                  <th>Store</th>
+                  <th>Procedural</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <img src="img/profile.jpg" />
+                    <p>William Evora</p>
+                  </td>
+                  <td>20-03-2024</td>
+                  <td>20-03-2024</td>
+                  <td><span class="status completed">Completed</span></td>
+                  <td>101</td>
+                  <td>Yes</td>
+                </tr>
+                <tr>
+                  <td>
+                    <img src="img/profile.jpg" />
+                    <p>William Evora</p>
+                  </td>
+                  <td>19-03-2024</td>
+                  <td>19-03-2024</td>
+                  <td><span class="status inprogress">In Progress</span></td>
+                  <td>211</td>
+                  <td>No</td>
+                </tr>
+                <tr>
+                  <td>
+                    <img src="img/profile.jpg" />
+                    <p>William Evora</p>
+                  </td>
+                  <td>14-03-2024</td>
+                  <td>14-03-2024</td>
+                  <td><span class="status completed">Completed</span></td>
+                  <td>505</td>
+                  <td>No</td>
+                </tr>
+                <tr>
+                  <td>
+                    <img src="img/profile.jpg" />
+                    <p>William Evora</p>
+                  </td>
+                  <td>20-03-2024</td>
+                  <td>20-03-2024</td>
+                  <td><span class="status completed">Completed</span></td>
+                  <td>101</td>
+                  <td>Yes</td>
+                </tr>
+                <tr>
+                  <td>
+                    <img src="img/profile.jpg" />
+                    <p>William Evora</p>
+                  </td>
+                  <td>19-03-2024</td>
+                  <td>19-03-2024</td>
+                  <td><span class="status inprogress">In Progress</span></td>
+                  <td>211</td>
+                  <td>No</td>
+                </tr>
+                <tr>
+                  <td>
+                    <img src="img/profile.jpg" />
+                    <p>William Evora</p>
+                  </td>
+                  <td>14-03-2024</td>
+                  <td>14-03-2024</td>
+                  <td><span class="status completed">Completed</span></td>
+                  <td>505</td>
+                  <td>No</td>
+                </tr>
+                <tr>
+                  <td>
+                    <img src="img/profile.jpg" />
+                    <p>William Evora</p>
+                  </td>
+                  <td>14-03-2024</td>
+                  <td>14-03-2024</td>
+                  <td><span class="status completed">Completed</span></td>
+                  <td>505</td>
+                  <td>No</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- ANALYTICS 2 -->
+          <div class="analytics-grouping">
+            <div class="analytics">
+              <div class="header">
+                <i class="bx bx-group"></i>
+                <h3>By Users</h3>
+              </div>
+              <ul class="list">
+                <li class="user">
+                  <div class="list-title">
+                    <img src="img/profile.jpg" />
+                    <p>William Evora</p>
+                  </div>
+                  <div class="reports-container">
+                    <p class="count">145</p>
+                    <i class="bx bx-food-menu"></i>
+                  </div>
+                </li>
+                <li class="user">
+                  <div class="list-title">
+                    <img src="img/profile.jpg" />
+                    <p>Vasileios Nikitaras</p>
+                  </div>
+                  <div class="reports-container">
+                    <p class="count">135</p>
+                    <i class="bx bx-food-menu"></i>
+                  </div>
+                </li>
+                <li class="user">
+                  <div class="list-title">
+                    <img src="img/profile.jpg" />
+                    <p>Robert Tam</p>
+                  </div>
+                  <div class="reports-container">
+                    <p class="count">111</p>
+                    <i class="bx bx-food-menu"></i>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="analytics">
+              <div div class="header">
+                <i class="bx bx-detail"></i>
+                <h3>By Incident Type</h3>
+              </div>
+              <ul class="list">
+                <li class="type">
+                  <div class="list-title">
+                    <i class="bx bx-bug"></i>
+                    <p>Bugs</p>
+                  </div>
+                  <div class="reports-container">
+                    <p class="count">127</p>
+                    <i class="bx bx-food-menu"></i>
+                  </div>
+                </li>
+                <li class="type">
+                  <div class="list-title">
+                    <i class="bx bx-globe"></i>
+                    <p>Networking</p>
+                  </div>
+                  <div class="reports-container">
+                    <p class="count">97</p>
+                    <i class="bx bx-food-menu"></i>
+                  </div>
+                </li>
+                <li class="type">
+                  <div class="list-title">
+                    <i class="bx bx-window-alt"></i>
+                    <p>Software</p>
+                  </div>
+                  <div class="reports-container">
+                    <p class="count">58</p>
+                    <i class="bx bx-food-menu"></i>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- ANALYTICS 3 -->
+          <div class="analytics">
+            <div class="header">
+              <i class="bx bx-store"></i>
+              <h3>By Stores</h3>
+            </div>
+            <ul class="list">
+              <li class="store">
+                <div class="store-title">
+                  <i class="bx bx-store"></i>
+                  <p>116</p>
+                </div>
+                <div class="reports-container">
+                  <p class="count">72</p>
+                  <i class="bx bx-food-menu"></i>
+                </div>
+              </li>
+              <li class="store">
+                <div class="store-title">
+                  <i class="bx bx-store"></i>
+                  <p>211</p>
+                </div>
+                <div class="reports-container">
+                  <p class="count">36</p>
+                  <i class="bx bx-food-menu"></i>
+                </div>
+              </li>
+              <li class="store">
+                <div class="store-title">
+                  <i class="bx bx-store"></i>
+                  <p>101</p>
+                </div>
+                <div class="reports-container">
+                  <p class="count">12</p>
+                  <i class="bx bx-food-menu"></i>
+                </div>
+              </li>
+              <li class="store">
+                <div class="store-title">
+                  <i class="bx bx-store"></i>
+                  <p>116</p>
+                </div>
+                <div class="reports-container">
+                  <p class="count">72</p>
+                  <i class="bx bx-food-menu"></i>
+                </div>
+              </li>
+              <li class="store">
+                <div class="store-title">
+                  <i class="bx bx-store"></i>
+                  <p>211</p>
+                </div>
+                <div class="reports-container">
+                  <p class="count">36</p>
+                  <i class="bx bx-food-menu"></i>
+                </div>
+              </li>
+              <li class="store">
+                <div class="store-title">
+                  <i class="bx bx-store"></i>
+                  <p>101</p>
+                </div>
+                <div class="reports-container">
+                  <p class="count">12</p>
+                  <i class="bx bx-food-menu"></i>
+                </div>
+              </li>
+              <li class="store">
+                <div class="store-title">
+                  <i class="bx bx-store"></i>
+                  <p>116</p>
+                </div>
+                <div class="reports-container">
+                  <p class="count">72</p>
+                  <i class="bx bx-food-menu"></i>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- NOTIFICATIONS -->
+        <div class="notifications"></div>
+
+        <!-- MODAL -->
+        <div class="modal-ctn"></div>
+        <div class="overlay hidden"></div>
+      </main>
+    </div>
+    <!-- <footer class="footer">
+      <p>v<span id="app-version">#.#.#</span></p>
+      <span>Made by William Evora :)</span>
+    </footer> -->
+  </body>
+</html>
