@@ -1,5 +1,4 @@
 import * as model from "../model/model.js";
-import api from "../model/api.js";
 import userTabsView from "../views/users/userTabsView.js";
 import userTableView from "../views/users/userTableView.js";
 import paginationView from "../views/paginationView.js";
@@ -150,6 +149,23 @@ const controlSaveUser = async function (userId) {
 };
 
 // prettier-ignore
+const controlResetUserPassword = async (userId) => {
+  try {
+    const id = userId ? userId : window.location.hash.slice(1);
+
+    if (id) {
+      const user = await model.DB.resetUserPassword(id, userFormView._form);
+      
+      notificationView.success(`User password successfully reset: ${user.email}`);
+      userFormView.clearPasswordFields();
+    }
+  } catch (error) {
+    notificationView.error(error.message, 60);
+    console.error(error);
+  }
+};
+
+// prettier-ignore
 const controlDeleteUser = async function (id) {
   try {    
     const user = model.findObjectById(model.state.users, id);
@@ -173,6 +189,7 @@ const controlDeleteUser = async function (id) {
 
   } catch (error) {
     notificationView.error(error.message, 60);
+    console.error(error);
   }
 };
 
@@ -181,10 +198,8 @@ const controlUserStatus = async function (id) {
   try {
     let user = model.findObjectById(model.state.users, id);
 
-    if (user.isEnabled) user = await model.DB.disableUser(user, id);
-    else user = await model.DB.enableUser(user, id);
-
-    console.log(user);
+    if (user.isEnabled) user = await model.DB.disableUser(id, user);
+    else user = await model.DB.enableUser(id, user);
 
     const statusMsg = user.isEnabled ? "enabled" : "disabled"
     notificationView.success(`User successfully ${statusMsg}: ${user.email} [${user.id}]`, 3);
@@ -192,6 +207,7 @@ const controlUserStatus = async function (id) {
     userTableView.update(user);
   } catch (error) {
     notificationView.error(error.message, 60);
+    console.error(error);
   }
 };
 
@@ -249,6 +265,7 @@ export const init = async function () {
     userFormView.addHandlerCopy(controlCopy);
     userFormView.addHandlerNew(controlUnsavedUser, controlNewUser);
     userFormView.addHandlerSave(controlSaveUser);
+    userFormView.addHandlerResetPassword(controlResetUserPassword);
   });
 
   // Table view handlers

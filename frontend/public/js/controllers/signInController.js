@@ -1,5 +1,5 @@
 import auth from "../model/auth.js";
-import notificationView from "../views/notificationView.js";
+import notificationView from "../views/notifications/notificationView.js";
 import signInView from "../views/signInView.js";
 
 const controlSignIn = async function (email, password) {

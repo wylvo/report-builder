@@ -15,7 +15,7 @@ export class UserFormView extends FormView {
     // Initialize accordions
     this._accordions = this.initalizeAllAccordions();
     this._userAccordion = this._accordions.get(this.#USER);
-    this._passAccoridon = this._accordions.get(this.#PASS);
+    this._passAccordion = this._accordions.get(this.#PASS);
 
     // Tags
     this._tags = this._form.querySelectorAll(".tag");
@@ -50,6 +50,7 @@ export class UserFormView extends FormView {
     this._expandAllAccordions();
     this._addHandlerCollapseExpandOrAccordion();
     this._addHandlerOnChange();
+    this._addHandlerCheckPasswordsMatch();
   }
 
   // prettier-ignore
@@ -115,6 +116,7 @@ export class UserFormView extends FormView {
     this._btnSubmit.disabled = true;
     this._btnSubmit.children[1].textContent = "Create User";
     this._btnSubmit.firstElementChild.firstElementChild.setAttribute("href", "/img/icons.svg#icon-save");
+    this._btnResetPassword.disabled = true;
     this._btnResetPassword.classList.add("hidden");
 
     this.updateTextInputsLength();
@@ -163,6 +165,8 @@ export class UserFormView extends FormView {
     this._btnSubmit.children[1].textContent = "Update User";
     // prettier-ignore
     this._btnSubmit.firstElementChild.firstElementChild.setAttribute("href", "/img/icons.svg#icon-sync");
+
+    this._btnResetPassword.disabled = true;
     this._btnResetPassword.classList.remove("hidden");
 
     this._all(this._accordions).forEach((accordion) =>
@@ -204,6 +208,7 @@ export class UserFormView extends FormView {
   clearPasswordFields() {
     this._password.value = "";
     this._passwordConfirmation.value = "";
+    this._btnResetPassword.disabled = false;
   }
 
   // prettier-ignore
@@ -235,10 +240,17 @@ export class UserFormView extends FormView {
     content.style.opacity = "0";
   }
 
-  addHandlerNew(handlerUnsavedUser, handlerNew) {
-    this._btnNew.addEventListener("click", () => {
-      handlerUnsavedUser(handlerNew);
-    });
+  // prettier-ignore
+  _addHandlerCheckPasswordsMatch() {
+    [this._password, this._passwordConfirmation].forEach((el) =>
+      el.addEventListener("input", () => {
+        if(this._password.value !== "" && this._passwordConfirmation.value !== "") {
+          if (this._password.value === this._passwordConfirmation.value)
+            this._btnResetPassword.disabled = false;
+          else this._btnResetPassword.disabled = true;
+        }
+      })
+    );
   }
 
   // prettier-ignore
@@ -248,12 +260,18 @@ export class UserFormView extends FormView {
     });
   }
 
-  // Listen for changes in the form for inputs, checkboxes, and textareas
+  // Listen for changes in the form for inputs, checkboxes, selects, and textareas
   _addHandlerOnChange() {
     this._form.onchange = () => {
       if (this._snapshot.taken)
         this.hasStateChanged(this._snapshot.clone, this._snapshot.state);
     };
+  }
+
+  addHandlerNew(handlerUnsavedUser, handlerNew) {
+    this._btnNew.addEventListener("click", () => {
+      handlerUnsavedUser(handlerNew);
+    });
   }
 
   addHandlerCopy(handler) {

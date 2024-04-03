@@ -801,7 +801,7 @@ export const DB = {
     return response;
   },
 
-  enableUser: async (userObject, id) => {
+  enableUser: async (id, userObject) => {
     // API request to enable a user from the database
     const {
       data: {
@@ -815,7 +815,7 @@ export const DB = {
     return userObject;
   },
 
-  disableUser: async (userObject, id) => {
+  disableUser: async (id, userObject) => {
     // API request to disable a user from the database
     const {
       data: {
@@ -827,6 +827,21 @@ export const DB = {
     userObject.isEnabled = user.isEnabled;
 
     return userObject;
+  },
+
+  // prettier-ignore
+  resetUserPassword: async (id, form) => {
+    const password = form.password?.value.trim();
+    const passwordConfirmation = form["password-confirmation"]?.value.trim();
+
+    // API request to reset the password of an existing user from the database
+    const {
+      data: {
+        data: [user],
+      },
+    } = await api.v1.users.resetUserPassword(id, password, passwordConfirmation);
+
+    return user;
   },
 
   // TO TEST
