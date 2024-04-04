@@ -52,12 +52,33 @@ export default {
     `;
   },
 
+  getAllByUsername() {
+    return `
+      SELECT
+        ${this.JSONSelect}
+      FROM reports
+      WHERE isDeleted = 0 AND techUsername = @username
+      ORDER BY createdDateTime DESC
+      FOR JSON PATH;
+    `;
+  },
+
   getSoftDeleted() {
     return `
       SELECT 
         ${this.JSONSelect}
       FROM reports
       WHERE isDeleted = 1
+      FOR JSON PATH;
+    `;
+  },
+
+  getSoftDeletedByUsername() {
+    return `
+      SELECT 
+        ${this.JSONSelect}
+      FROM reports
+      WHERE isDeleted = 1 AND techUsername = @username
       FOR JSON PATH;
     `;
   },
@@ -213,13 +234,15 @@ export default {
 
   softDelete: `
     UPDATE reports
-    SET isDeleted = 1
+    SET isDeleted = 1,
+    lastModifiedDateTime = GETDATE()
     WHERE id = @id;
   `,
 
   undoSoftDelete: `
     UPDATE reports
-    SET isDeleted = 0
+    SET isDeleted = 0,
+    lastModifiedDateTime = GETDATE()
     WHERE id = @id;
   `,
 };

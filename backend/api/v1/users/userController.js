@@ -5,6 +5,7 @@ import { mssql, mssqlDataTypes } from "../../../config/db.config.js";
 import catchAsync from "../../errors/catchAsync.js";
 import GlobalError from "../../errors/globalError.js";
 import usersSQL from "./userModel.js";
+import reportsSQL from "../reports/reportModel.js";
 
 export const filterObject = (obj, ...allowedFields) => {
   const newObj = {};
@@ -14,7 +15,12 @@ export const filterObject = (obj, ...allowedFields) => {
   return newObj;
 };
 
-export const mergeUserData = (id, obj) => {
+export const mergeUserData = (
+  id,
+  obj,
+  reports = undefined,
+  reportsDeleted = undefined
+) => {
   return [
     {
       id,
@@ -28,6 +34,8 @@ export const mergeUserData = (id, obj) => {
         "username",
         "initials"
       ),
+      reports: reports ? reports : [],
+      reportsDeleted: reportsDeleted ? reportsDeleted : [],
     },
   ];
 };
@@ -108,9 +116,20 @@ export const getUser = catchAsync(async (req, res, next) => {
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
 
+  // prettier-ignore
+  const [{ recordset: [reports]}, {recordset: [reportsDeleted]}] =
+    await Promise.all([
+      mssql()
+        .input("username", user.username)
+        .query(reportsSQL.getAllByUsername()),
+      mssql()
+        .input("username", user.username)
+        .query(reportsSQL.getSoftDeletedByUsername()),
+    ]);
+
   res.status(200).json({
     status: "success",
-    data: mergeUserData(id, user),
+    data: mergeUserData(id, user, reports, reportsDeleted),
   });
 });
 

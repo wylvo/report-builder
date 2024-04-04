@@ -1,3 +1,11 @@
+/*
+=============================================================================
+TABLE - Used in:
+Parent View: tableView.js
+Child Views: reportTableView.js & userTableView.js
+=============================================================================
+*/
+
 .table-header {
   display: flex;
   justify-content: space-between;

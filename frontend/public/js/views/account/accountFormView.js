@@ -23,20 +23,7 @@ export class AccountFormView extends FormView {
     this._imgProfilePicture = this._form.querySelector(".form-profile-picture");
 
 
-    // Initialize default State
-    this.#defaultState();
-
     // Initialize default handlers & expand accordions
-    this.#init();
-  }
-
-  // Initialize default state
-  #defaultState() {
-    this._snapshot = { taken: false };
-  }
-
-  // Initialize default handlers & expand accordions
-  #init() {
     this._expandAllAccordions();
     this._addHandlerCollapseExpandOrAccordion();
   }
@@ -70,7 +57,6 @@ export class AccountFormView extends FormView {
 
     this._inputs.get(this.#ALL).forEach((input) => {
       input.setAttribute("readonly", "");
-      console.log(input);
     });
     const fields = this._fields;
 

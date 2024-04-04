@@ -867,7 +867,7 @@ export const DB = {
       },
     } = await api.v1.users.getCurrentUser();
 
-    state.user.account = user;
+    state.user = user;
 
     return user;
   },

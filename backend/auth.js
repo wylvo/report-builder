@@ -73,13 +73,14 @@ export const signIn = catchAsync(async (req, res, next) => {
     );
   }
 
-  // Check if user exists && password is correct
+  // Query user by email
   const {
     recordset: [user],
   } = await mssql()
     .input("email", email)
     .query("SELECT * FROM users WHERE email = @email;");
 
+  // Check if user exists && provided password is valid
   if (!user || !(await comparePasswords(password, user.password)))
     return next(new GlobalError("Incorrect email or password", 401));
 
