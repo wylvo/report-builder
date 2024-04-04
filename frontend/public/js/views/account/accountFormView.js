@@ -16,7 +16,8 @@ export class AccountFormView extends FormView {
     this._accordions = this.initalizeAllAccordions();
     this._userAccordion = this._accordions.get(this.#USER);
 
-    // Tags
+    // Id tag
+    this._idTag = this._form.querySelector(".tag")
 
     this._profilePictureURL = this._fields.get("profile-picture-url");
     this._imgProfilePicture = this._form.querySelector(".form-profile-picture");
@@ -61,27 +62,27 @@ export class AccountFormView extends FormView {
   }
 
   render(user) {
-    console.log(user);
-    this._tab.firstElementChild.textContent = user.fullName;
+    // prettier-ignore
+    const tabTitle = `[${user.role.toUpperCase()}] - ${user.fullName} (${user.email})`;
+    this._tab.firstElementChild.textContent = tabTitle;
     this._tab.firstElementChild.setAttribute("href", `#${user.id}`);
+    this._idTag.textContent = user.id;
 
+    this._inputs.get(this.#ALL).forEach((input) => {
+      input.setAttribute("readonly", "");
+      console.log(input);
+    });
     const fields = this._fields;
-    const selects = this._selects;
 
     fields.get("full-name").value = user.fullName;
     fields.get("initials").value = user.initials;
     fields.get("email").value = user.email;
     fields.get("username").value = user.username;
-    fields.get("profile-picture-url").value = user.profilePictureURL;
-    selects.get("role").value = user.role;
-    selects.get("status").value = user.isEnabled ? "1" : "0";
-    selects.get("status").value = user.isEnabled ? "1" : "0";
+    fields.get("role").value = user.role;
+    fields.get("status").value = user.isEnabled ? "Enabled" : "Disabled";
 
     // Update input length text indicator (only the ones with "maxlength" attribute)
     this.updateTextInputsLength();
-
-    // Take a new snapshot (Will help detecting changes in the form)
-    this._snapshot = this.takeSnapshot();
 
     // Update form profile picture
     if (user.profilePictureURL)
@@ -135,14 +136,5 @@ export class AccountFormView extends FormView {
     this._all(this._accordions).forEach((accordion) => {
       accordion.header.addEventListener("click", this._collapseOrExpandAccordion.bind(this));
     });
-  }
-
-  addHandlerRender(handlerUnsavedUser, handlerRender) {
-    ["hashchange", "load"].forEach((ev) =>
-      window.addEventListener(ev, (e) => {
-        e.preventDefault();
-        handlerUnsavedUser(handlerRender);
-      })
-    );
   }
 }

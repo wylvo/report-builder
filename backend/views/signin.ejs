@@ -2,7 +2,7 @@
 <html lang="en" data-theme="light">
   <head>
     <%- include('./_head.ejs') %>
-    <!-- <script type="module" src="js/_controller.js"></script> -->
+    <link rel="stylesheet" href="styles/signin.css" />
     <script type="module" src="js/controllers/signInController.js"></script>
     <title>WhoCalledTech | Sign In</title>
   </head>
@@ -13,7 +13,6 @@
         <p>Call Log App</p>
       </div>
     </header>
-
     <main class="main">
       <!-- NOTIFICATIONS -->
       <div class="notifications"></div>
@@ -24,7 +23,7 @@
           <h1 class="heading">Welcome</h1>
           <p class="text">Please sign in into your account.</p>
           <form id="sign-in">
-            <div class="form-grouping">
+            <div class="form-grouping-signin">
               <label for="email">Email </label>
               <input
                 type="email"
@@ -34,7 +33,7 @@
                 required
               />
             </div>
-            <div class="form-grouping">
+            <div class="form-grouping-signin">
               <label for="password">Password</label>
               <input
                 type="password"

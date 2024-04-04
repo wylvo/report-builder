@@ -149,7 +149,6 @@ export class UserFormView extends FormView {
     fields.get("profile-picture-url").value = user.profilePictureURL;
     selects.get("role").value = user.role;
     selects.get("status").value = user.isEnabled ? "1" : "0";
-    selects.get("status").value = user.isEnabled ? "1" : "0";
 
     // Update form tags
     this.updateTags(user);

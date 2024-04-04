@@ -115,7 +115,7 @@ class UserTabsView extends TabsView {
               </div>
               <div class="form-grouping-col">
                 <input 
-                  type="username"
+                  type="text"
                   id="username_${index}"
                   name="username"
                   class="username"
@@ -144,19 +144,6 @@ class UserTabsView extends TabsView {
                 </select>
                 <label for="status_${index}">Status:</label>
               </div>
-              
-              <!-- <div class="form-grouping-col">
-                <input
-                  type="tel"
-                  id="phone-number_${index}"
-                  name="phone-number"
-                  class="phone-number"
-                  placeholder="(123) 456-7890"
-                  value=""
-                  maxlength="15"
-                />
-                <label for="phone-number_${index}">Phone #:</label>
-              </div> -->
             </div>
             
             <!-- PROFILE PICTURE URL -->

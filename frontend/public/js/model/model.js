@@ -13,7 +13,7 @@ export const state = {
   theme: "light",
 
   user: {
-    profile: {},
+    account: {},
     reports: [],
     reportsDeleted: [],
   },
@@ -656,6 +656,8 @@ export const DB = {
 
     // Add all reports in the model state
     state.reports = data;
+
+    return data;
   },
 
   createReport: async (tabReport, form) => {
@@ -747,6 +749,8 @@ export const DB = {
 
     // Add all users in the model state
     state.users = data;
+
+    return data;
   },
 
   createUser: async (form) => {
@@ -855,8 +859,17 @@ export const DB = {
   },
 
   // TO TEST
-  getUserProfile: async () => {
-    await api.v1.users.getMe();
+  getCurrentUserAccount: async () => {
+    // API request to get the current signed in user account from the database
+    const {
+      data: {
+        data: [user],
+      },
+    } = await api.v1.users.getCurrentUser();
+
+    state.user.account = user;
+
+    return user;
   },
 
   // TO TEST
@@ -871,6 +884,7 @@ export const init = async function () {
     DB.getReports(),
     DB.getSoftDeletedReports(),
     DB.getUsers(),
+    DB.getCurrentUserAccount(),
   ]);
   state.version = await api.v1.version.getVersion();
   initThemeInLocalStorage();

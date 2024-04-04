@@ -87,7 +87,7 @@ export default {
       async disableUser(id) {
         return await fetchJSON(`${this.url}/${id}/disable`, "PUT", {});
       },
-      async getMe() {
+      async getCurrentUser() {
         return await fetchJSON(`${this.url}/me`);
       },
     },
