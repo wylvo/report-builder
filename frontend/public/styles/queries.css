@@ -295,6 +295,10 @@
     content: "Teams";
   }
 
+  td.table-row-buttons button.undo::after {
+    content: "Undo";
+  }
+
   td.table-row-buttons button.delete::after {
     content: "Delete";
   }
@@ -313,6 +317,10 @@
 
   td.table-row-buttons button.teams:disabled:after {
     content: "Teams";
+  }
+
+  td.table-row-buttons button.undo:disabled:after {
+    content: "Undo";
   }
 
   td.table-row-buttons button.delete:disabled:after {

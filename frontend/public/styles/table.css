@@ -309,7 +309,7 @@ img.table-row-cell-pp {
   background-color: var(--attention-background-color-alt);
   box-shadow: 0rem 0.1rem 0.4rem #d1000080;
 }
-
+.table-row-buttons button.undo,
 .table-row-buttons button.enable-user {
   background-color: var(--good-background-color-alt);
   box-shadow: 0rem 0.1rem 0.4rem #c3e6cb50;
@@ -350,6 +350,11 @@ button.btn:hover::after {
 
 button.teams:hover::after {
   content: "Teams";
+  opacity: 1;
+}
+
+button.undo:hover::after {
+  content: "Undo";
   opacity: 1;
 }
 

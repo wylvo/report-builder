@@ -1,18 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="styles/general.css" />
-    <link rel="stylesheet" href="styles/login.css" />
-    <link rel="stylesheet" href="styles/icons.css" />
-    <link rel="stylesheet" href="styles/notifications.css" />
-    <link rel="stylesheet" href="styles/queries.css" />
-    <link rel="shortcut icon" href="img/jj-icon.jpg" type="image/x-icon" />
+    <%- include('./_head.ejs') %>
     <!-- <script type="module" src="js/_controller.js"></script> -->
     <script type="module" src="js/controllers/signInController.js"></script>
     <title>WhoCalledTech | Sign In</title>
@@ -24,6 +13,7 @@
         <p>Call Log App</p>
       </div>
     </header>
+
     <main class="main">
       <!-- NOTIFICATIONS -->
       <div class="notifications"></div>

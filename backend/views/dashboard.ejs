@@ -1,84 +1,12 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="styles/general.css" />
-    <link rel="stylesheet" href="styles/content.css" />
-    <link rel="stylesheet" href="styles/sidebar.css" />
-    <link rel="stylesheet" href="styles/icons.css" />
-    <link rel="stylesheet" href="styles/notifications.css" />
-    <link rel="stylesheet" href="styles/modal.css" />
-    <link rel="stylesheet" href="styles/tabs.css" />
-    <link rel="stylesheet" href="styles/table.css" />
-    <link rel="stylesheet" href="styles/queries.css" />
-    <link rel="shortcut icon" href="img/jj-icon.jpg" type="image/x-icon" />
+    <%- include('./_head.ejs') %>
     <script type="module" src="js/controllers/dashboardController.js"></script>
     <title>WhoCalledTech | Dashboard</title>
   </head>
   <body>
-    <aside class="sidebar active">
-      <div class="head">
-        <div class="user-img">
-          <img src="/img/profile.jpg" alt="" />
-        </div>
-        <div class="user-details">
-          <p class="title">Web Dev</p>
-          <p class="name">William Evora</p>
-        </div>
-      </div>
-      <nav class="nav">
-        <div class="menu">
-          <p class="title">Main</p>
-          <ul>
-            <li id="dashboard-link">
-              <a href="/">
-                <i class="bx bxs-dashboard"></i>
-                <span class="text">Dashboard</span>
-              </a>
-            </li>
-            <li id="reports-link">
-              <a href="/reports">
-                <i class="bx bx-food-menu"></i>
-                <span class="text">Reports</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div class="menu">
-          <p class="title">Admin</p>
-          <ul>
-            <li id="users-link">
-              <a href="/users">
-                <i class="bx bx-group"></i>
-                <span class="text">Users</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </nav>
-      <div class="menu">
-        <p class="title">Account</p>
-        <ul>
-          <li id="me-link">
-            <a href="/me">
-              <i class="bx bx-user"></i>
-              <span class="text">Me</span>
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              <i class="bx bx-log-out bx-flip-horizontal"></i>
-              <span class="text">Logout</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-    </aside>
+    <aside class="sidebar active"><%- include('./_sidebar.ejs') %></aside>
 
     <div class="content">
       <!-- NAVBAR -->

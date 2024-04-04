@@ -279,11 +279,6 @@ export const init = async function () {
   // Pagination view handlers
   paginationView.addHandlerOnChangeRowsPerPage(controlRowsPerPage);
   paginationView.addHandlerClickPage(controlPages);
-
-  // const version = await api.v1.version.getVersion();
-  // console.log("Version", version);
-  // tabsView._appVersion.textContent = version;
-  // console.log(model.state);
 };
 
 init();

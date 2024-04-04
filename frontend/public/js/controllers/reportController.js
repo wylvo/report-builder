@@ -1,12 +1,14 @@
 import * as model from "../model/model.js";
 import api from "../model/api.js";
+
 import themeView from "../views/theme/themeView.js";
-import searchView from "../views/searchView.js";
+import reportTabsView from "../views/reports/reportTabsView.js";
 import paginationView from "../views/paginationView.js";
+import searchView from "../views/searchView.js";
 import reportTableView from "../views/reports/reportTableView.js";
+
 import notificationView from "../views/notifications/notificationView.js";
 import modalView from "../views/notifications/modalView.js";
-import reportTabsView from "../views/reports/reportTabsView.js";
 
 let reportFormView,
   takeSnapshot = false;
@@ -189,6 +191,18 @@ const controlDeleteReport = async function (id) {
   }
 };
 
+const controlUndoDeleteReport = async function (id) {
+  try {
+    let isUndoConfirmed = true;
+    isUndoConfirmed = await modalView.confirmDelete(report);
+    if (!isUndoConfirmed) return;
+    if (id === window.location.hash.slice(1))
+      reportTabsView.removeLocationHash();
+  } catch (error) {
+    notificationView.error(error.message, 60);
+  }
+};
+
 // prettier-ignore
 const controlUnsavedReport = async (controlFunction, handler = undefined, event = undefined) => {
   let isSaveConfirmed = false;
@@ -214,23 +228,27 @@ const controlUnsavedReport = async (controlFunction, handler = undefined, event 
 const controlSearchResults = function () {
   model.state.search.page = 1;
 
+  const reports = reportTableView.isDeletedViewActive
+    ? model.state.reportsDeleted
+    : model.state.reports;
+
   const query = searchView.query();
   if (!query) {
-    model.state.search.query = "";
-    model.state.search.results = [];
-    reportTableView.updateTotalCount(model.state.reports);
-    return reportTableView.renderAll(model.rowsPerPage(model.state.reports));
+    return controlClearSearchResults();
   }
 
   const filterBy = searchView.filterBy();
-  model.filterSearch(query, filterBy);
+  model.filterSearch(reports, query, filterBy);
 
   controlRenderAllReports();
   reportTableView.updateTotalCount(model.state.search.results);
 };
 
 const controlClearSearchResults = function () {
-  controlRenderAllReports();
+  model.state.search.query = "";
+  model.state.search.results = [];
+  searchView.clearQuery();
+  return controlRenderAllReports();
 };
 
 const controlRowsPerPage = function (rowsPerPage) {
@@ -249,9 +267,18 @@ const controlPages = function (page) {
 };
 
 const controlRenderAllReports = function () {
-  const reports = model.rowsPerPage(model.state.reports);
-  reportTableView.renderAll(reports);
-  paginationView.renderAll(model.pages());
+  const reports = reportTableView.isDeletedViewActive
+    ? model.state.reportsDeleted
+    : model.state.reports;
+
+  const rowsOfReports = model.rowsPerPage(reports);
+  const pages = model.pages();
+
+  reportTableView.renderAll(rowsOfReports);
+  paginationView.renderAll(pages);
+  reportTableView.updateTotalCount(reports);
+
+  return reports;
 };
 
 const controlTheme = function (theme) {
@@ -329,12 +356,21 @@ export const init = async function () {
   });
 
   // Table view handlers
+  reportTableView.addHandlerClickAllDeletedReports(
+    controlRenderAllReports,
+    controlClearSearchResults
+  );
+  reportTableView.addHandlerClickAllReports(
+    controlRenderAllReports,
+    controlClearSearchResults
+  );
   reportTableView.addHandlerUniqueReportPerTab(
     controlUnsavedReport,
     controlUniqueReportPerTab
   );
   reportTableView.addHandlerSend(controlSendReport);
   reportTableView.addHandlerDelete(controlDeleteReport);
+  reportTableView.addHandlerUndoDelete(controlUndoDeleteReport);
 
   // Search view handler
   searchView.addHandlerSearch(controlSearchResults);

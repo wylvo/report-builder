@@ -1,6 +1,10 @@
 import TableView from "../tableView.js";
 
 class ReportTableView extends TableView {
+  #btnAllReports = document.querySelector("#table-reports");
+  #btnAllDeletedReports = document.querySelector("#table-delete-reports");
+  isDeletedViewActive = false;
+
   constructor() {
     super();
   }
@@ -57,6 +61,31 @@ class ReportTableView extends TableView {
 
     const isOnCallClass = report.tech.isOnCall ? "on-call" : ""
 
+    const buttons = !report.isDeleted 
+      ? `
+        <div>
+          <button ${report.isWebhookSent ? "disabled" : ""} class="btn teams icons">
+            <svg>
+              <use href="/img/icons.svg#icon-ms-teams"></use>
+            </svg>
+          </button>
+          <button class="btn delete icons">
+            <svg>
+              <use href="/img/icons.svg#icon-delete"></use>
+            </svg>
+          </button>
+        </div>
+      `
+      :`
+        <div>
+          <button class="btn undo icons">
+            <svg>
+              <use href="/img/icons.svg#icon-undo"></use>
+            </svg>
+          </button>
+        </div>
+      `;
+
     return `
     <tr class="table-row">
       <td data-cell="TECH">
@@ -77,23 +106,30 @@ class ReportTableView extends TableView {
         <div><p ${isProcedural.class}>${isProcedural.text}</p></div>
       </td>
       <td data-cell="Actions" data-id="${report.id}" class="table-row-buttons">
-        <div>
-          <button ${
-            report.isWebhookSent ? "disabled" : ""
-          } class="btn teams icons">
-            <svg>
-              <use href="/img/icons.svg#icon-ms-teams"></use>
-            </svg>
-          </button>
-          <button class="btn delete icons">
-            <svg>
-              <use href="/img/icons.svg#icon-delete"></use>
-            </svg>
-          </button>
-        </div>
+          ${buttons}
       </td>
     </tr>
     `;
+  }
+
+  addHandlerClickAllReports(handler, handlerClearSearch) {
+    this.#btnAllReports.addEventListener("click", () => {
+      this.isDeletedViewActive = false;
+      handler();
+      handlerClearSearch();
+      this.#btnAllDeletedReports.removeAttribute("aria-selected");
+      this.#btnAllReports.setAttribute("aria-selected", "true");
+    });
+  }
+
+  addHandlerClickAllDeletedReports(handler, handlerClearSearch) {
+    this.#btnAllDeletedReports.addEventListener("click", () => {
+      this.isDeletedViewActive = true;
+      handler();
+      handlerClearSearch();
+      this.#btnAllReports.removeAttribute("aria-selected");
+      this.#btnAllDeletedReports.setAttribute("aria-selected", "true");
+    });
   }
 
   addHandlerUniqueReportPerTab(handlerUnsavedReport, handlerUniqueReport) {
@@ -122,6 +158,17 @@ class ReportTableView extends TableView {
       if (e.target && e.target.closest(".delete")) {
         const parentElement =
           e.target.closest(".delete").parentElement.parentElement;
+        const id = parentElement.dataset.id;
+        handler(id);
+      }
+    });
+  }
+
+  addHandlerUndoDelete(handler) {
+    document.addEventListener("click", function (e) {
+      if (e.target && e.target.closest(".undo")) {
+        const parentElement =
+          e.target.closest(".undo").parentElement.parentElement;
         const id = parentElement.dataset.id;
         handler(id);
       }

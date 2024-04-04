@@ -15,13 +15,13 @@ class SearchView {
     return this.#filterBy.value;
   }
 
-  #clearQuery() {
+  clearQuery() {
     return (this.#inputFilterSearch.value = "");
   }
 
   #addHandlerOnChangeFilterBy() {
     this.#filterBy.addEventListener("change", () => {
-      this.#clearQuery();
+      this.clearQuery();
     });
   }
 

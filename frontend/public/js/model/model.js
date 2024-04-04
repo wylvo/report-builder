@@ -365,7 +365,7 @@ const initTab = (tabIndex) =>
   });
 
 // prettier-ignore
-export const filterSearch = (query, filterBy) => {
+export const filterSearch = (array, query, filterBy) => {
   state.search.results = [];
   state.search.query = query.toLowerCase();
   state.search.filterBy = filterBy;
@@ -373,7 +373,7 @@ export const filterSearch = (query, filterBy) => {
   const keys = state.search.filterBy.split(".");
   if (!keys[0] && !keys[0] !== "") return;
 
-  state.reports.map((report) =>
+  array.map((report) =>
     keys.reduce((acc, key) => {
       // Check if acc[key] exists and is an object
       if (acc && typeof acc[key] === "object") {
@@ -718,6 +718,16 @@ export const DB = {
     return response;
   },
 
+  getSoftDeletedReports: async () => {
+    // API request to get all reports from the database
+    const {
+      data: { data },
+    } = await api.v1.reports.getSoftDeletedReports();
+
+    // Add all reports in the model state
+    state.reportsDeleted = data;
+  },
+
   // TO TEST
   undoSoftDeleteReport: async (id) => {
     const {
@@ -857,7 +867,11 @@ export const DB = {
 
 export const init = async function () {
   utils.deepFreeze(DEFAULT_REPORT);
-  await Promise.all([DB.getReports(), DB.getUsers()]);
+  await Promise.all([
+    DB.getReports(),
+    DB.getSoftDeletedReports(),
+    DB.getUsers(),
+  ]);
   state.version = await api.v1.version.getVersion();
   initThemeInLocalStorage();
 };

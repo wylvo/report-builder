@@ -2,8 +2,8 @@
 <html lang="en" data-theme="dark">
   <head>
     <%- include('./_head.ejs') %>
-    <script type="module" src="js/controllers/reportController.js"></script>
-    <title>WhoCalledTech | Reports</title>
+    <script type="module" src="js/controllers/accountController.js"></script>
+    <title>WhoCalledTech | Account</title>
   </head>
   <body>
     <aside class="sidebar active"><%- include('./_sidebar.ejs') %></aside>
@@ -33,12 +33,8 @@
       <main class="main">
         <div class="header">
           <div class="left">
-            <h1>Reports</h1>
+            <h1>Users</h1>
           </div>
-          <a href="#" class="report">
-            <i class="bx bx-cloud-download"></i>
-            <span>Download JSON</span>
-          </a>
         </div>
 
         <section class="section-col">
@@ -62,12 +58,12 @@
                     id="table-reports"
                     aria-selected="true"
                   >
-                    All Reports
+                    My Reports
                   </button>
                 </li>
                 <li role="presentation">
                   <button class="tab-btn" id="table-delete-reports">
-                    All Deleted Reports
+                    My Deleted Reports
                   </button>
                 </li>
               </ul>
@@ -189,9 +185,5 @@
         <div class="overlay hidden"></div>
       </main>
     </div>
-    <!-- <footer class="footer">
-      <p>v<span id="app-version">#.#.#</span></p>
-      <span>Made by William Evora :)</span>
-    </footer> -->
   </body>
 </html>

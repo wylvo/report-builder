@@ -3,7 +3,6 @@ import View from "./View.js";
 export default class TableView extends View {
   _table = document.querySelector("tbody");
   _count = document.querySelector(".table-meta-data .count");
-  _data;
 
   constructor() {
     super();
@@ -20,7 +19,6 @@ export default class TableView extends View {
 
   renderAll(array) {
     this.#clearTable();
-    this._data = array;
 
     if (!Array.isArray(array) || (Array.isArray(array) && array.length === 0))
       return this._table.appendChild(this._generateRowElement());
