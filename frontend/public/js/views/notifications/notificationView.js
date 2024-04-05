@@ -5,6 +5,7 @@ export class NotificationView extends View {
   #WARNING = "warning";
   #SUCCESS = "success";
   #DELETE = "delete";
+  #UNDO = "undo";
   #SAVE = "save";
   #INFO = "info";
 
@@ -71,6 +72,11 @@ export class NotificationView extends View {
     if(message === null || message.includes("Failed"))
       return this.render(this.#ERROR, this.#DELETE, timeoutSec, this.#DELETE, message);
     return this.render(this.#SUCCESS, this.#DELETE, timeoutSec, this.#DELETE, message);
+  }
+
+  // prettier-ignore
+  undo(message, timeoutSec) {
+    return this.render(this.#SUCCESS, this.#UNDO, timeoutSec, this.#SUCCESS, message);
   }
 
   // prettier-ignore

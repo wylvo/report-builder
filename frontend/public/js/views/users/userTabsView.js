@@ -203,7 +203,32 @@ class UserTabsView extends TabsView {
                 />
                 <label for="password-confirmation_${index}">Confirm Password:</label>
               </div>
-              
+            </div>
+
+            <!-- PASSWORD EXPIRATION, ENABLE 2FA -->
+            <div class="grid columns-50-50">
+              <div class="form-grouping-col">
+                <select id="password-expiration_${index}" name="password-expiration" class="password-expiration">
+                  <option selected value="0">No</option>
+                  <option value="">Every Month</option>
+                  <option value="">Every 3 Months</option>
+                  <option value="">Every 6 Months</option>
+                  <option value="">Every Year</option>
+                </select>
+                <label for="password-expiration_${index}">Password Expires:</label>
+              </div>
+
+              <div class="form-grouping-col self-end">
+                <label for="enable-2fa_${index}">Enable 2FA</label>
+                <label class="switch">
+                  <input
+                    type="checkbox"
+                    id="enable-2fa_${index}"
+                    name="enable-2fa"
+                  />
+                  <span class="slider"></span>
+                </label>
+              </div>
             </div>
           </div>
         </div>

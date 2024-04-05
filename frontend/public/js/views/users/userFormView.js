@@ -4,7 +4,7 @@ export class UserFormView extends FormView {
   // Accordions keys
   #USER = "user-profile-accordion";
   #PASS = "user-password-accordion";
-  #defaultProfilePicturePath = "/img/default_profile_picture.jpg";
+  #DEFAULT_PICTURE = "/img/default_profile_picture.jpg";
 
   // Generic key
   #ALL = "*";
@@ -83,7 +83,11 @@ export class UserFormView extends FormView {
   hasStateChanged(clone, state) {
     this._changes = [];
     clone.forEach((el, i) => {
-      if(el.name === "password" || el.name === "password-confirmation") return;
+      if(el.name === "password" ||
+        el.name === "password-confirmation" ||
+        el.name === "password-expiration" ||
+        el.name === "enable-2fa"
+      ) return;
       if (el.getAttribute("type") === "checkbox" && el.checked !== state.get(i).checked)
         this._changes.push(el.name);
       if (el.getAttribute("type") !== "checkbox" && el.value !== state.get(i).value)
@@ -113,7 +117,7 @@ export class UserFormView extends FormView {
     this.clearTags();
     this._form.reset();
 
-    this._imgProfilePicture.src = this.#defaultProfilePicturePath;
+    this._imgProfilePicture.src = this.#DEFAULT_PICTURE;
     
     this._password.required = true;
     this._passwordConfirmation.required = true;
@@ -160,9 +164,7 @@ export class UserFormView extends FormView {
     this._snapshot = this.takeSnapshot();
 
     // Update form profile picture
-    if (user.profilePictureURL)
-      this._imgProfilePicture.src = user.profilePictureURL;
-    else this._imgProfilePicture.src = this.#defaultProfilePicturePath;
+    this._imgProfilePicture.src = user.profilePictureURL;
 
     // Password inputs not required
     this._password.required = false;
@@ -269,7 +271,7 @@ export class UserFormView extends FormView {
   _addHandlerUpdateProfilePicture() {
     this._profilePictureURL.addEventListener("change", () => {
       if (this._profilePictureURL.value === "")
-        this._imgProfilePicture.src = this.#defaultProfilePicturePath;
+        this._imgProfilePicture.src = this.#DEFAULT_PICTURE;
       else this._imgProfilePicture.src = this._profilePictureURL.value;
     });
   }

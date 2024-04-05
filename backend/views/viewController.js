@@ -11,7 +11,11 @@ export const getusers = (req, res) => {
 };
 
 export const getAccount = (req, res) => {
-  res.status(200).render("account");
+  console.log(req.user);
+
+  res
+    .status(200)
+    .render("account", { profilePicture: req.user.profilePictureURL });
 };
 
 export const getSignInForm = (req, res) => {

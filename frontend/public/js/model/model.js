@@ -38,18 +38,18 @@ export const state = {
 
 // Find report index or user index by ID
 // prettier-ignore
-const findObjectIndexById = (array, targetObject, raiseError = true) => {
+const findObjectIndexById = (array, targetObject, raiseErrorIfNotFound = true) => {
   const index = array.findIndex((object) =>
     object.id === (typeof targetObject === "object" ? targetObject.id : targetObject));
-  if(index === -1 && raiseError)
+  if(index === -1 && raiseErrorIfNotFound)
     throw new TypeError(`Invalid target. Object index is undefined in provided array.`);
   return index;
 }
 
 // Find report or user by ID
-export const findObjectById = (array, id, raiseError = true) => {
+export const findObjectById = (array, id, raiseErrorIfNotFound = true) => {
   const object = array.find((object) => object.id === id);
-  if (typeof object === "undefined" && raiseError)
+  if (typeof object === "undefined" && raiseErrorIfNotFound)
     throw new TypeError(`Invalid id "${id}". Data object is undefined.`);
   return object;
 };
@@ -647,6 +647,13 @@ export const checkUserValidity = (configObject, user) => {
   }
 };
 
+export const SERVER = {
+  // TO TEST
+  sendReportToIncomingWebhook: async (id) => {
+    await api.v1.webhook.sendReportToIncomingWebhook(id);
+  },
+};
+
 export const DB = {
   getReports: async () => {
     // API request to get all reports from the database
@@ -725,20 +732,26 @@ export const DB = {
     const {
       data: { data },
     } = await api.v1.reports.getSoftDeletedReports();
+    console.log(data);
 
     // Add all reports in the model state
     state.reportsDeleted = data;
   },
 
-  // TO TEST
   undoSoftDeleteReport: async (id) => {
-    const {
-      data: {
-        data: [report],
-      },
-    } = await api.v1.reports.undoSoftDeleteReport(id);
+    // API request to undo a soft deleted report from the database
+    const { response } = await api.v1.reports.undoSoftDeleteReport(id);
 
-    return report;
+    // Find & check if report is in the state object
+    const index = findObjectIndexById(state.reportsDeleted, id, false);
+
+    // If found, remove the row element and report object
+    if (index !== -1) {
+      state.reportsDeleted[index].tableRowEl.remove();
+      state.reportsDeleted.splice(index, 1);
+    }
+
+    return response;
   },
 
   getUsers: async () => {
@@ -749,6 +762,11 @@ export const DB = {
 
     // Add all users in the model state
     state.users = data;
+
+    state.users.forEach((user) => {
+      if (!user.profilePictureURL)
+        user.profilePictureURL = "/img/default_profile_picture.jpg";
+    });
 
     return data;
   },
@@ -871,20 +889,15 @@ export const DB = {
 
     return user;
   },
-
-  // TO TEST
-  sendReportToIncomingWebhook: async (id) => {
-    await api.v1.webhook.sendReportToIncomingWebhook(id);
-  },
 };
 
 export const init = async function () {
   utils.deepFreeze(DEFAULT_REPORT);
   await Promise.all([
+    DB.getCurrentUserAccount(),
     DB.getReports(),
     DB.getSoftDeletedReports(),
     DB.getUsers(),
-    DB.getCurrentUserAccount(),
   ]);
   state.version = await api.v1.version.getVersion();
   initThemeInLocalStorage();

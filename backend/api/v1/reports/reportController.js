@@ -16,10 +16,14 @@ export const getAllReports = catchAsync(async (req, res, next) => {
     recordset: [reports],
   } = await mssql().query(reportsSQL.getAll());
 
+  const { results, data } = !reports
+    ? { results: 0, data: [] }
+    : { results: reports.length, data: reports };
+
   res.status(200).json({
     status: "success",
-    results: reports.length,
-    data: reports,
+    results,
+    data,
   });
 });
 
@@ -110,11 +114,9 @@ export const deleteReport = catchAsync(async (req, res, next) => {
   if (!report)
     return next(new GlobalError(`Report not found with id: ${id}.`, 404));
 
-  /*if (req.user.role === "user") softDeleteReport(report);
+  if (req.user.role === "user") softDeleteReport(report);
   if (req.user.role === "admin")
-    req.body.isSoftDelete ? softDeleteReport(report) :*/ hardDeleteReport(
-    report
-  );
+    req.body.isHardDelete ? hardDeleteReport(report) : softDeleteReport(report);
 
   res.status(204).json({
     status: "success",
@@ -127,9 +129,13 @@ export const getSoftDeletedReports = catchAsync(async (req, res, next) => {
     recordset: [reports],
   } = await mssql().query(reportsSQL.getSoftDeleted());
 
+  const { results, data } = !reports
+    ? { results: 0, data: [] }
+    : { results: reports.length, data: reports };
+
   res.status(200).json({
     status: "success",
-    results: reports.length,
-    data: reports,
+    results,
+    data,
   });
 });

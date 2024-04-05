@@ -186,19 +186,37 @@ const controlDeleteReport = async function (id) {
     reportTableView.updateTotalCount(model.state.reports);
     notificationView.success(`Report successfully deleted: ${report.incident.title} [${report.id}]`);
 
+    await model.DB.getSoftDeletedReports();
+    if(reportTableView.isDeletedViewActive)
+      reportTableView.renderAll(model.state.reportsDeleted)
+
   } catch (error) {
+    console.error(error);
     notificationView.error(error, 60);
   }
 };
 
+// prettier-ignore
 const controlUndoDeleteReport = async function (id) {
   try {
+    const reportDeleted = model.findObjectById(model.state.reportsDeleted, id);
+
     let isUndoConfirmed = true;
-    isUndoConfirmed = await modalView.confirmDelete(report);
+    isUndoConfirmed = await modalView.confirmUndo(reportDeleted);
     if (!isUndoConfirmed) return;
-    if (id === window.location.hash.slice(1))
-      reportTabsView.removeLocationHash();
+
+    await model.DB.undoSoftDeleteReport(id);
+    reportTableView.updateTotalCount(model.state.reportsDeleted);
+    notificationView.undo(
+      `Deleted report successfully recovered: ${reportDeleted.incident.title} [${reportDeleted.id}]`
+    );
+
+    await model.DB.getReports();
+    if(!reportTableView.isDeletedViewActive)
+      reportTableView.renderAll(model.state.reports)
+
   } catch (error) {
+    console.error(error);
     notificationView.error(error.message, 60);
   }
 };

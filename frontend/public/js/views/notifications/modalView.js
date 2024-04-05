@@ -115,6 +115,26 @@ class ModalView extends NotificationView {
     return this.delete(null, timeoutSeconds);
   }
 
+  // prettier-ignore
+  confirmUndo (data, timeoutSeconds = 30) {
+    this.#isTrusted = true;
+
+    let dataFill
+    if(data?.incident?.title) 
+      dataFill = { content: data.incident.title, id: data.id}
+    else return;
+
+    this._headerText = "Are you sure?";
+    this._contentText = `
+      <p>Recover the following report?</p><br>
+      <p><strong>${dataFill.content.escapeHTML()}</strong><br>
+      ${dataFill.id.escapeHTML()}</p>
+    `;
+    this.#btnConfirmText = "Yes, Undo Delete";
+    this.#btnCancelText = "No, Cancel";
+    return this.undo(null, timeoutSeconds);
+  }
+
   confirmSave(timeoutSeconds = 3) {
     this.#isTrusted = true;
     this._headerText = "You have unsaved changes";
