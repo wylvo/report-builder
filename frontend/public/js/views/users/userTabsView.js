@@ -209,7 +209,7 @@ class UserTabsView extends TabsView {
             <div class="grid columns-50-50">
               <div class="form-grouping-col">
                 <select id="password-expiration_${index}" name="password-expiration" class="password-expiration">
-                  <option selected value="0">No</option>
+                  <option selected value="0">Password Never Expires</option>
                   <option value="">Every Month</option>
                   <option value="">Every 3 Months</option>
                   <option value="">Every 6 Months</option>

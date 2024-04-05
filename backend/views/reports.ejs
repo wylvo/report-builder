@@ -1,34 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
   <head>
-    <%- include('./_head.ejs') %>
-    <script type="module" src="js/controllers/reportController.js"></script>
-    <title>WhoCalledTech | Reports</title>
+    <%- include('./partials/head.ejs') %>
   </head>
   <body>
-    <aside class="sidebar active"><%- include('./_sidebar.ejs') %></aside>
+    <aside class="sidebar active">
+      <%- include('./partials/sidebar.ejs') %>
+    </aside>
 
     <!-- <img src="img/jj-logo.jpg" class="jj-logo" alt="Jack & Jones brand name" /> -->
     <div class="content">
-      <!-- NAVBAR -->
-      <nav>
-        <div class="menu-btn">
-          <i class="bx bx-menu"></i>
-        </div>
-        <div class="scroll-btns">
-          <button id="theme" class="theme tooltip">
-            <svg class="icons">
-              <use></use>
-            </svg>
-            <span class="tooltiptext">Theme</span>
-          </button>
-        </div>
-        <!-- <input type="checkbox" id="theme-toggle" hidden />
-        <label for="theme-toggle" class="theme-toggle"></label> -->
-        <a href="#" class="profile">
-          <img src="img/profile.jpg" />
-        </a>
-      </nav>
+      <%- include('./partials/navbar.ejs') %>
 
       <main class="main">
         <div class="header">
@@ -181,14 +163,11 @@
           </div>
         </section>
 
-        <!-- NOTIFICATIONS -->
-        <div class="notifications"></div>
-
-        <!-- MODAL -->
-        <div class="modal-ctn"></div>
-        <div class="overlay hidden"></div>
+        <%- include('./partials/notifications.ejs') %> <%-
+        include('./partials/modal.ejs') %>
       </main>
     </div>
+
     <!-- <footer class="footer">
       <p>v<span id="app-version">#.#.#</span></p>
       <span>Made by William Evora :)</span>
