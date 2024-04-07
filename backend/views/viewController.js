@@ -1,7 +1,7 @@
 export const getDashboard = (req, res) => {
   res.status(200).render("dashboard", {
     title: "Dashboard",
-    script: "dashboardController.js",
+    scriptPath: "/js/controllers/dashboardController.js",
     profilePicture: "",
   });
 };
@@ -9,7 +9,7 @@ export const getDashboard = (req, res) => {
 export const getReports = (req, res) => {
   res.status(200).render("reports", {
     title: "Reports",
-    script: "reportController.js",
+    scriptPath: "/js/controllers/reportController.js",
     profilePicture: "",
   });
 };
@@ -17,7 +17,7 @@ export const getReports = (req, res) => {
 export const getusers = (req, res) => {
   res.status(200).render("users", {
     title: "Users",
-    script: "userController.js",
+    scriptPath: "/js/controllers/userController.js",
     profilePicture: "",
   });
 };
@@ -27,7 +27,7 @@ export const getAccount = (req, res) => {
 
   res.status(200).render("account", {
     title: "Your Account",
-    script: "accountController.js",
+    scriptPath: "/js/controllers/accountController.js",
     profilePicture: req.user.profilePictureURL,
   });
 };
@@ -35,6 +35,6 @@ export const getAccount = (req, res) => {
 export const getSignInForm = (req, res) => {
   res.status(200).render("signin", {
     title: "Sign In",
-    script: "authController.js",
+    scriptPath: "/js/controllers/authController.js",
   });
 };

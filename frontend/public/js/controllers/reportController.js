@@ -1,7 +1,7 @@
 import * as model from "../model/model.js";
 import api from "../model/api.js";
+import sidebarView from "../views/sidebar/sidebarView.js";
 
-import themeView from "../views/theme/themeView.js";
 import reportTabsView from "../views/reports/reportTabsView.js";
 import paginationView from "../views/paginationView.js";
 import searchView from "../views/searchView.js";
@@ -299,17 +299,6 @@ const controlRenderAllReports = function () {
   return reports;
 };
 
-const controlTheme = function (theme) {
-  if (!theme) return;
-  try {
-    themeView.setTheme(model.switchTheme(theme));
-    model.saveThemeInLocalStorage();
-  } catch (error) {
-    console.error(error);
-    notificationView.error(error.message);
-  }
-};
-
 const controlBeforeUnload = function () {
   let hasChanges;
   for (const [_, reportFormView] of reportTabsView.tabs) {
@@ -350,10 +339,6 @@ export const init = async function () {
 
   // Initialize all pagination buttons
   paginationView.renderAll(model.pages());
-
-  // Theme view handler
-  themeView.addHandlerSwitchTheme(controlTheme);
-  themeView.setTheme(model.state.theme);
 
   // Tab view handlers
   reportTabsView.addHandlerClickTab(controlTabs);

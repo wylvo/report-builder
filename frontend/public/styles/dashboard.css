@@ -4,14 +4,14 @@ DASHBOARD - Used in:
 =============================================================================
 */
 
-.content main .insights {
+.main .content .insights {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
   gap: 2.4rem;
   margin-top: 3.2rem;
 }
 
-.content main .insights li {
+.main .content .insights li {
   padding: 2.4rem;
   background: var(--background-primary-color);
   border-radius: 0.4rem;
@@ -20,7 +20,7 @@ DASHBOARD - Used in:
   gap: 2.4rem;
 }
 
-.content main .insights li .bx {
+.main .content .insights li .bx {
   width: 8rem;
   height: 8rem;
   border-radius: 0.4rem;
@@ -30,32 +30,32 @@ DASHBOARD - Used in:
   justify-content: center;
 }
 
-.content main .insights li:nth-child(1) .bx {
+.main .content .insights li:nth-child(1) .bx {
   background: var(--info-background-color);
   color: var(--info-on-background);
 }
 
-.content main .insights li:nth-child(2) .bx {
+.main .content .insights li:nth-child(2) .bx {
   background: var(--warning-background-color);
   color: var(--warning-on-background);
 }
 
-.content main .insights li:nth-child(3) .bx {
+.main .content .insights li:nth-child(3) .bx {
   background: var(--good-background-color);
   color: var(--good-on-background);
 }
 
-.content main .insights li:nth-child(4) .bx {
+.main .content .insights li:nth-child(4) .bx {
   background: var(--misc-background-color);
   color: var(--misc-on-background);
 }
 
-.content main .insights li .info h3 {
+.main .content .insights li .info h3 {
   font-size: 2.4rem;
   font-weight: 600;
 }
 
-.content main .bottom-data {
+.main .content .bottom-data {
   display: flex;
   flex-wrap: wrap;
   gap: 2.4rem;
@@ -63,7 +63,7 @@ DASHBOARD - Used in:
   width: 100%;
 }
 
-.content main .bottom-data > div {
+.main .content .bottom-data > div {
   border-radius: 0.4rem;
   background: var(--background-primary-color);
   padding: 2.4rem;
@@ -71,74 +71,74 @@ DASHBOARD - Used in:
   flex-grow: 1;
 }
 
-.content main .bottom-data .analytics-grouping {
+.main .content .bottom-data .analytics-grouping {
   display: flex;
   gap: 2.4rem;
   flex-direction: column;
 }
 
-.content main .bottom-data .header {
+.main .content .bottom-data .header {
   display: flex;
   align-items: center;
   gap: 1.6rem;
   margin-bottom: 2.4rem;
 }
 
-.content main .bottom-data .header h3 {
+.main .content .bottom-data .header h3 {
   margin-right: auto;
   /* font-size: 2.4rem; */
   font-weight: 600;
 }
 
-.content main .bottom-data .header .bx {
+.main .content .bottom-data .header .bx {
   cursor: pointer;
 }
 
-.content main .bottom-data .reports {
+.main .content .bottom-data .reports {
   flex-grow: 1;
   flex-basis: 50rem;
 }
 
-.content main .bottom-data .reports table {
+.main .content .bottom-data .reports table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.content main .bottom-data .reports table th {
+.main .content .bottom-data .reports table th {
   padding-bottom: 1.2rem;
   font-size: 1.2rem;
   text-align: left;
   border-bottom: 0.1rem solid var(--on-background-low-contrast);
 }
 
-.content main .bottom-data .reports table td {
+.main .content .bottom-data .reports table td {
   padding: 1.6rem 0;
 }
 
-.content main .bottom-data .reports table tr td:first-child {
+.main .content .bottom-data .reports table tr td:first-child {
   display: flex;
   align-items: center;
   gap: 1.2rem;
   padding-left: 0.8rem;
 }
 
-.content main .bottom-data .reports table td img {
+.main .content .bottom-data .reports table td img {
   width: 3.2rem;
   height: 3.2rem;
   border-radius: 50%;
   object-fit: cover;
 }
 
-.content main .bottom-data .reports table tbody tr {
+.main .content .bottom-data .reports table tbody tr {
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.content main .bottom-data .reports table tbody tr:hover {
+.main .content .bottom-data .reports table tbody tr:hover {
   background: var(--on-background-low-contrast);
 }
 
-.content main .bottom-data .reports table tr td .status {
+.main .content .bottom-data .reports table tr td .status {
   font-size: 1.2rem;
   padding: 0.8rem 1.6rem;
   color: var(--light);
@@ -146,26 +146,26 @@ DASHBOARD - Used in:
   font-weight: 700;
 }
 
-.content main .bottom-data .reports table tr td .status.completed {
+.main .content .bottom-data .reports table tr td .status.completed {
   color: var(--good-on-background);
   background: var(--good-background-color);
 }
 
-.content main .bottom-data .reports table tr td .status.inprogress {
+.main .content .bottom-data .reports table tr td .status.inprogress {
   color: var(--warning-on-background);
   background: var(--warning-background-color);
 }
 
-.content main .bottom-data .analytics {
+.main .content .bottom-data .analytics {
   flex-grow: 1;
   flex-basis: 6.4rem;
 }
 
-.content main .bottom-data .analytics .list {
+.main .content .bottom-data .analytics .list {
   width: 100%;
 }
 
-.content main .bottom-data .analytics li {
+.main .content .bottom-data .analytics li {
   margin-bottom: 1.6rem;
   background: var(--on-background-low-contrast);
   padding: 1.6rem 1.2rem;
@@ -175,45 +175,45 @@ DASHBOARD - Used in:
   justify-content: space-between;
 }
 
-.content main .bottom-data .analytics .list li .list-title {
+.main .content .bottom-data .analytics .list li .list-title {
   display: flex;
   align-items: center;
 }
 
-.content main .bottom-data .analytics .list li .list-title img {
+.main .content .bottom-data .analytics .list li .list-title img {
   width: 3.2rem;
   height: 3.2rem;
   border-radius: 50%;
   object-fit: cover;
 }
 
-.content main .bottom-data .analytics .list li .store-title,
-.content main .bottom-data .analytics .list li .reports-container {
+.main .content .bottom-data .analytics .list li .store-title,
+.main .content .bottom-data .analytics .list li .reports-container {
   display: flex;
   align-items: center;
   gap: 0.8rem;
 }
 
-.content main .bottom-data .analytics .list li .list-title p {
+.main .content .bottom-data .analytics .list li .list-title p {
   margin-left: 0.8rem;
 }
 
-.content main .bottom-data .analytics .list li .bx {
+.main .content .bottom-data .analytics .list li .bx {
   cursor: pointer;
 }
 
-.content main .bottom-data .analytics .list li.user {
+.main .content .bottom-data .analytics .list li.user {
   border-left: 1.2rem solid var(--on-background);
 }
 
-.content main .bottom-data .analytics .list li.type {
+.main .content .bottom-data .analytics .list li.type {
   border-left: 1.2rem solid var(--info-on-background);
 }
 
-.content main .bottom-data .analytics .list li.store {
+.main .content .bottom-data .analytics .list li.store {
   border-left: 1.2rem solid var(--primary-color);
 }
 
-.content main .bottom-data .analytics .list li:last-child {
+.main .content .bottom-data .analytics .list li:last-child {
   margin-bottom: 0;
 }

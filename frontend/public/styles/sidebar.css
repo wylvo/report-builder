@@ -94,7 +94,8 @@
   box-shadow: 0 0.12rem 0.8rem rgb(0, 0, 0, 0.1);
 }
 
-.sidebar.active ~ .content {
+.sidebar.active ~ .main,
+.sidebar.active ~ .nav {
   width: calc(100% - 8.8rem);
   left: 8.8rem;
 }
@@ -142,7 +143,7 @@
   color: var(--on-background-header);
 }
 
-.nav {
+.sidebar nav {
   flex: 1;
 }
 

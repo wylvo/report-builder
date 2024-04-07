@@ -20,34 +20,71 @@ const handleJWTError = () =>
 const handleTokenExpiredError = () =>
   new GlobalError("Your token has expired please log in again.", 401);
 
-const sendErrorDev = (err, res) => {
-  res.status(err.statusCode).json({
-    status: err.status,
-    error: err,
-    message: err.message,
-    stack: err.stack,
+const sendErrorDev = (err, req, res) => {
+  // API error
+  if (req.originalUrl.startsWith("/api")) {
+    // Trusted error: send message to client
+    return res.status(err.statusCode).json({
+      status: err.status,
+      error: err,
+      message: err.message,
+      stack: err.stack,
+    });
+  }
+
+  // Render error to frontend
+  return res.status(err.statusCode).render("error", {
+    title: "Error",
+    statusCode: err.statusCode,
+    scriptPath: null,
+    msg: err.message,
   });
 };
 
-const sendErrorProd = (err, res) => {
-  // Operational, trusted error: send message to client
-  if (err.isTrusted) {
-    res.status(err.statusCode).json({
-      status: err.status,
-      message: err.message || err.trustedMessage,
-    });
+const sendErrorProd = (err, req, res) => {
+  // API error
+  if (req.originalUrl.startsWith("/api")) {
+    // Trusted error: send message to client
+    if (err.isTrusted) {
+      return res.status(err.statusCode).json({
+        status: err.status,
+        message: err.message || err.trustedMessage,
+      });
+    }
 
     // Programming or other unknown error: don't leak error details
-  } else {
     // Log Error
     console.error("ERROR 💥", err);
 
     // Send generic message
-    res.status(500).json({
+    return res.status(500).json({
       status: "error",
       message: "Something went very wrong!",
     });
   }
+
+  // Render error to frontend
+  // Trusted error: send message to client
+  if (err.isTrusted) {
+    console.error(err);
+    return res.status(err.statusCode).render("error", {
+      title: "Something went wrong!",
+      statusCode: err.statusCode,
+      scriptPath: null,
+      message: err.message,
+    });
+  }
+  // Programming or other unknown error: don't leak error details
+  // Log Error
+  console.error("ERROR 💥", err);
+
+  // Send generic message
+  return res.status(err.statusCode).render("error", {
+    title: "Something wnet wrong!",
+    statusCode: err.statusCode,
+    scriptPath: null,
+    msg: "Please try again later.",
+  });
 };
 
 export default (err, req, res, next) => {
@@ -55,13 +92,13 @@ export default (err, req, res, next) => {
   err.status = err.status || "error";
 
   if (process.env.NODE_ENV === "development") {
-    sendErrorDev(err, res);
+    sendErrorDev(err, req, res);
   } else if (process.env.NODE_ENV === "production") {
     let error = { ...err };
 
     if (err.number === 2627) error = handleDuplicateFieldsDB(error);
     if (err.name === "JsonWebTokenError") error = handleJWTError();
     if (err.name === "TokenExpiredError") error = handleTokenExpiredError();
-    sendErrorProd(error, res);
+    sendErrorProd(error, req, res);
   }
 };

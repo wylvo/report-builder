@@ -10,7 +10,7 @@ import utils from "./utils.js";
 export const migrateReport = migrateReportData;
 export const state = {
   version: null,
-  theme: "light",
+  theme: localStorage.getItem("theme") || "light",
 
   user: {
     account: {},

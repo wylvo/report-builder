@@ -90,7 +90,8 @@ export const signIn = catchAsync(async (req, res, next) => {
 
 export const signOut = (req, res) => {
   res.cookie("jwt", "", {
-    maxAge: 1,
+    // maxAge: 1,
+    expires: new Date(Date.now() + 10 * 1000),
     httpOnly: true,
   });
   res.status(200).json({

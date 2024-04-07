@@ -1,12 +1,20 @@
-import sidebarView from "../views/sidebar/sidebarView.js";
 import * as model from "../model/model.js";
-import * as reportController from "./reportController.js";
-import * as userController from "./userController.js";
+import sidebarView from "../views/sidebar/sidebarView.js";
+import themeView from "../views/theme/themeView.js";
 
-const controlSidebarMenus = async (linkName) => {
-  if (linkName === "dashboard") "";
-  if (linkName === "reports") await reportController.init();
-  if (linkName === "users") await userController.init();
+const controlTheme = function (theme) {
+  if (!theme) return;
+  try {
+    themeView.setTheme(model.switchTheme(theme));
+    model.saveThemeInLocalStorage();
+  } catch (error) {
+    console.error(error);
+    notificationView.error(error.message);
+  }
 };
 
-// sidebarView.addHandlerClickSidebarMenus(controlSidebarMenus);
+// Theme view handler
+themeView.addHandlerSwitchTheme(controlTheme);
+themeView.setTheme(model.state.theme);
+
+// sidebarView.addHandlerClickSidebarMenus();

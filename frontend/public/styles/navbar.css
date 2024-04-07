@@ -1,0 +1,51 @@
+.nav {
+  position: sticky;
+  left: 24rem;
+  top: 0;
+
+  height: 5.6rem;
+  width: calc(100% - 24rem);
+
+  display: flex;
+  align-items: center;
+  gap: 2.4rem;
+  padding: 0 2.4rem 0 0;
+
+  background-color: var(--background-primary-color);
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.nav a {
+  color: var(--on-background-header);
+}
+
+.nav .menu-btn {
+  margin-right: auto;
+}
+
+.bx {
+  font-size: 2rem;
+}
+
+.nav .menu-btn .bx.bx-menu {
+  width: 3.2rem;
+  height: 3.2rem;
+  /* border-radius: 0.8rem; */
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--on-background-header);
+  background-color: var(--background-primary-color);
+
+  cursor: pointer;
+}
+
+.nav .profile img {
+  width: 3.2rem;
+  height: 3.2rem;
+  object-fit: cover;
+  border-radius: 50%;
+}

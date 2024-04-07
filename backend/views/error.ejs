@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <%- include('./partials/head.ejs') %>
+  </head>
+  <body>
+    <main class="main-error">
+      <section class="container error-ctn">
+        <h1>ERROR (<%= statusCode %>)</h1>
+        <h2>Oops... Something went wrong!</h2>
+        <p class="error-msg"><%= msg %></p>
+      </section>
+
+      <%- include('./partials/notifications.ejs') %> <%-
+      include('./partials/modal.ejs') %>
+    </main>
+  </body>
+</html>
