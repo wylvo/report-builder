@@ -28,6 +28,7 @@
   width: 8.8rem;
 }
 
+.sidebar.active .head,
 .sidebar.active .menu {
   display: flex;
   align-items: center;
@@ -38,7 +39,7 @@
   text-align: center;
 }
 
-.sidebar.active .user-details,
+.sidebar.active .app-details,
 .sidebar.active .menu li a .arrow {
   display: none;
 }
@@ -116,19 +117,19 @@
   border-bottom: 0.1rem solid var(--fields-border-color);
 }
 
-.user-img {
-  width: 4rem;
-  height: 4rem;
-  border-radius: 100%;
+.app-logo {
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 0.2rem;
   overflow: hidden;
 }
 
-.user-img img {
+.app-logo img {
   width: 100%;
   object-fit: cover;
 }
 
-.user-details .title,
+.app-details .title,
 .menu .title {
   font-size: 1rem;
   font-weight: 500;
@@ -137,7 +138,7 @@
   margin-bottom: 0.2rem;
 }
 
-.user-details .name {
+.app-details .name {
   font-size: 1.6rem;
   font-weight: 500;
   color: var(--on-background-header);
