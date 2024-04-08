@@ -1,6 +1,8 @@
 import express from "express";
+import { checkSchema } from "express-validator";
 
 import { resetPasswordRouter } from "./resetPassword/resetPasswordRouter.js";
+import { create } from "./userModel.js";
 import * as user from "./userController.js";
 import * as auth from "../../../auth.js";
 
@@ -15,17 +17,17 @@ router.get("/me", user.getMe, user.getUser);
 // router.use(auth.restrictTo("admin"));
 
 /** ROUTES restricted to "admin" role
- * /api/v1/users/:id/resetPassword  (POST)
  * /api/v1/users                    (GET & POST)
  * /api/v1/users/:id                (GET, PUT & DELETE)
  * /api/v1/users/:id/enable         (PUT)
  * /api/v1/users/:id/disable        (PUT)
+ * /api/v1/users/:id/resetPassword  (POST)
  */
 
-// Handle password resets in separate module
-router.use("/:id/resetPassword", user.getUserId, resetPasswordRouter);
-
-router.route("/").get(user.getAllUsers).post(user.createUser);
+router
+  .route("/")
+  .get(user.getAllUsers)
+  .post(checkSchema(create), user.createUser);
 router
   .route("/:id")
   .get(user.getUser)
@@ -34,5 +36,8 @@ router
 
 router.put("/:id/enable", user.enableUser);
 router.put("/:id/disable", user.disableUser);
+
+// Handle password resets in separate module
+router.use("/:id/resetPassword", user.getUserId, resetPasswordRouter);
 
 export { router as userRouter };

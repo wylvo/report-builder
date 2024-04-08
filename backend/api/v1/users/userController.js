@@ -1,3 +1,5 @@
+import { validationResult } from "express-validator";
+
 import { resetUserPassword } from "./resetPassword/resetPasswordController.js";
 import { hashPassword } from "../../../auth.js";
 import { generateUUID } from "../router.js";
@@ -64,19 +66,19 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
 });
 
 export const createUser = catchAsync(async (req, res, next) => {
-  const [
-    {
-      role,
-      isEnabled,
-      email,
-      password,
-      passwordConfirmation,
-      profilePictureURL,
-      fullName,
-      username,
-      initials,
-    },
-  ] = req.body;
+  const result = validationResult(req).throw();
+  console.log(result);
+  const {
+    role,
+    isEnabled,
+    email,
+    password,
+    passwordConfirmation,
+    profilePictureURL,
+    fullName,
+    username,
+    initials,
+  } = req.body;
   const id = generateUUID();
 
   if (!username || !email || !role || (!password && !passwordConfirmation))
