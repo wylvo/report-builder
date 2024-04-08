@@ -21,18 +21,11 @@
 }
 
 .nav .menu-btn {
+  margin-left: 1.2rem;
   margin-right: auto;
 }
 
-.bx {
-  font-size: 2rem;
-}
-
-.nav .menu-btn .bx.bx-menu {
-  width: 3.2rem;
-  height: 3.2rem;
-  /* border-radius: 0.8rem; */
-
+.nav .menu-btn .icons {
   display: flex;
   align-items: center;
   justify-content: center;

@@ -170,8 +170,13 @@
 
 .menu ul li > a:hover,
 .menu ul li.active > a {
-  color: var(--dark);
+  color: var(--on-background);
   background-color: var(--on-background-low-contrast-alt);
+}
+
+.menu ul li > a:hover .icons,
+.menu ul li.active > a .icons {
+  fill: var(--on-background);
 }
 
 .menu ul li .arrow {

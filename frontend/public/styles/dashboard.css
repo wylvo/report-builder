@@ -4,14 +4,14 @@ DASHBOARD - Used in:
 =============================================================================
 */
 
-.main .content .insights {
+.content .insights {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
   gap: 2.4rem;
   margin-top: 3.2rem;
 }
 
-.main .content .insights li {
+.content .insights li {
   padding: 2.4rem;
   background: var(--background-primary-color);
   border-radius: 0.4rem;
@@ -20,7 +20,7 @@ DASHBOARD - Used in:
   gap: 2.4rem;
 }
 
-.main .content .insights li .bx {
+.content .insights li .icon-ctn {
   width: 8rem;
   height: 8rem;
   border-radius: 0.4rem;
@@ -30,32 +30,46 @@ DASHBOARD - Used in:
   justify-content: center;
 }
 
-.main .content .insights li:nth-child(1) .bx {
+.content .insights li .icon-ctn .icons {
+  width: 3.2rem;
+  height: 3.2rem;
+}
+
+.content .insights li:nth-child(1) .icon-ctn .icons {
+  fill: var(--info-on-background);
+}
+.content .insights li:nth-child(2) .icon-ctn .icons {
+  fill: var(--warning-on-background);
+}
+.content .insights li:nth-child(3) .icon-ctn .icons {
+  fill: var(--good-on-background);
+}
+.content .insights li:nth-child(4) .icon-ctn .icons {
+  fill: var(--misc-on-background);
+}
+
+.content .insights li:nth-child(1) .icon-ctn {
   background: var(--info-background-color);
-  color: var(--info-on-background);
 }
 
-.main .content .insights li:nth-child(2) .bx {
+.content .insights li:nth-child(2) .icon-ctn {
   background: var(--warning-background-color);
-  color: var(--warning-on-background);
 }
 
-.main .content .insights li:nth-child(3) .bx {
+.content .insights li:nth-child(3) .icon-ctn {
   background: var(--good-background-color);
-  color: var(--good-on-background);
 }
 
-.main .content .insights li:nth-child(4) .bx {
+.content .insights li:nth-child(4) .icon-ctn {
   background: var(--misc-background-color);
-  color: var(--misc-on-background);
 }
 
-.main .content .insights li .info h3 {
+.content .insights li .info h3 {
   font-size: 2.4rem;
   font-weight: 600;
 }
 
-.main .content .bottom-data {
+.content .bottom-data {
   display: flex;
   flex-wrap: wrap;
   gap: 2.4rem;
@@ -63,7 +77,7 @@ DASHBOARD - Used in:
   width: 100%;
 }
 
-.main .content .bottom-data > div {
+.content .bottom-data > div {
   border-radius: 0.4rem;
   background: var(--background-primary-color);
   padding: 2.4rem;
@@ -71,74 +85,70 @@ DASHBOARD - Used in:
   flex-grow: 1;
 }
 
-.main .content .bottom-data .analytics-grouping {
+.content .bottom-data .analytics-grouping {
   display: flex;
   gap: 2.4rem;
   flex-direction: column;
 }
 
-.main .content .bottom-data .header {
+.content .bottom-data .header {
   display: flex;
   align-items: center;
   gap: 1.6rem;
   margin-bottom: 2.4rem;
 }
 
-.main .content .bottom-data .header h3 {
+.content .bottom-data .header h3 {
   margin-right: auto;
   /* font-size: 2.4rem; */
   font-weight: 600;
 }
 
-.main .content .bottom-data .header .bx {
-  cursor: pointer;
-}
-
-.main .content .bottom-data .reports {
+.content .bottom-data .reports {
   flex-grow: 1;
   flex-basis: 50rem;
 }
 
-.main .content .bottom-data .reports table {
+.content .bottom-data .reports table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.main .content .bottom-data .reports table th {
+.content .bottom-data .reports table th {
   padding-bottom: 1.2rem;
   font-size: 1.2rem;
   text-align: left;
   border-bottom: 0.1rem solid var(--on-background-low-contrast);
 }
 
-.main .content .bottom-data .reports table td {
+.content .bottom-data .reports table td {
   padding: 1.6rem 0;
 }
 
-.main .content .bottom-data .reports table tr td:first-child {
+.content .bottom-data .reports table tr td:first-child {
   display: flex;
   align-items: center;
   gap: 1.2rem;
   padding-left: 0.8rem;
 }
 
-.main .content .bottom-data .reports table td img {
+.content .bottom-data .reports table td img {
   width: 3.2rem;
   height: 3.2rem;
   border-radius: 50%;
   object-fit: cover;
 }
 
-.main .content .bottom-data .reports table tbody tr {
+.content .bottom-data .reports table tbody tr {
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.main .content .bottom-data .reports table tbody tr:hover {
+.content .bottom-data .reports table tbody tr:hover {
   background: var(--on-background-low-contrast);
 }
 
-.main .content .bottom-data .reports table tr td .status {
+.content .bottom-data .reports table tr td .status {
   font-size: 1.2rem;
   padding: 0.8rem 1.6rem;
   color: var(--light);
@@ -146,26 +156,26 @@ DASHBOARD - Used in:
   font-weight: 700;
 }
 
-.main .content .bottom-data .reports table tr td .status.completed {
+.content .bottom-data .reports table tr td .status.completed {
   color: var(--good-on-background);
   background: var(--good-background-color);
 }
 
-.main .content .bottom-data .reports table tr td .status.inprogress {
+.content .bottom-data .reports table tr td .status.inprogress {
   color: var(--warning-on-background);
   background: var(--warning-background-color);
 }
 
-.main .content .bottom-data .analytics {
+.content .bottom-data .analytics {
   flex-grow: 1;
   flex-basis: 6.4rem;
 }
 
-.main .content .bottom-data .analytics .list {
+.content .bottom-data .analytics .list {
   width: 100%;
 }
 
-.main .content .bottom-data .analytics li {
+.content .bottom-data .analytics li {
   margin-bottom: 1.6rem;
   background: var(--on-background-low-contrast);
   padding: 1.6rem 1.2rem;
@@ -175,45 +185,41 @@ DASHBOARD - Used in:
   justify-content: space-between;
 }
 
-.main .content .bottom-data .analytics .list li .list-title {
+.content .bottom-data .analytics .list li .list-title {
   display: flex;
   align-items: center;
 }
 
-.main .content .bottom-data .analytics .list li .list-title img {
+.content .bottom-data .analytics .list li .list-title img {
   width: 3.2rem;
   height: 3.2rem;
   border-radius: 50%;
   object-fit: cover;
 }
 
-.main .content .bottom-data .analytics .list li .store-title,
-.main .content .bottom-data .analytics .list li .reports-container {
+.content .bottom-data .analytics .list li .store-title,
+.content .bottom-data .analytics .list li .reports-container {
   display: flex;
   align-items: center;
   gap: 0.8rem;
 }
 
-.main .content .bottom-data .analytics .list li .list-title p {
+.content .bottom-data .analytics .list li .list-title p {
   margin-left: 0.8rem;
 }
 
-.main .content .bottom-data .analytics .list li .bx {
-  cursor: pointer;
-}
-
-.main .content .bottom-data .analytics .list li.user {
+.content .bottom-data .analytics .list li.user {
   border-left: 1.2rem solid var(--on-background);
 }
 
-.main .content .bottom-data .analytics .list li.type {
+.content .bottom-data .analytics .list li.type {
   border-left: 1.2rem solid var(--info-on-background);
 }
 
-.main .content .bottom-data .analytics .list li.store {
+.content .bottom-data .analytics .list li.store {
   border-left: 1.2rem solid var(--primary-color);
 }
 
-.main .content .bottom-data .analytics .list li:last-child {
+.content .bottom-data .analytics .list li:last-child {
   margin-bottom: 0;
 }

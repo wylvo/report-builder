@@ -1,12 +1,37 @@
+.sidebar .icons,
+.list .icons {
+  width: 2rem;
+  height: 2rem;
+  fill: var(--on-background-content);
+  transition: all 0.3s ease;
+}
+
+/* .insights .icons {
+  width: 8rem;
+  height: 8rem;
+} */
+
 .icons {
   width: 3.2rem;
   height: 3.2rem;
   fill: var(--on-primary);
 }
 
+.fill-on-background {
+  fill: var(--on-background);
+}
+
+.fill-on-primary {
+  fill: var(--on-primary);
+}
+
+.icon-signout {
+  transform: rotate(180deg);
+}
+
 .icon-chevron {
   margin: 0.8rem;
-  transition: transform 0.4s;
+  transition: transform 0.3s;
 }
 
 .icon-spinner {
