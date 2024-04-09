@@ -15,10 +15,10 @@ const handleDuplicateFieldsDB = (error) => {
 };
 
 const handleJWTError = () =>
-  new GlobalError("Invalid token. Please log in again!", 401);
+  new GlobalError("Invalid token. Please sign in again!", 401);
 
 const handleTokenExpiredError = () =>
-  new GlobalError("Your token has expired please log in again.", 401);
+  new GlobalError("Your token has expired please sign in again.", 401);
 
 const sendErrorDev = (err, req, res) => {
   // API error

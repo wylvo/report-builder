@@ -1,4 +1,5 @@
-import { mergeUserData, findUserByIdQuery } from "../userController.js";
+import { mergeUserData } from "../userController.js";
+import { User } from "../userModel.js";
 import { mssql, mssqlDataTypes } from "../../../../config/db.config.js";
 import { hashPassword } from "../../../../auth.js";
 import GlobalError from "../../../errors/globalError.js";
@@ -10,7 +11,7 @@ export const resetUserPassword = catchAsync(async (req, res, next) => {
   const id = req.userId;
   req.userId = undefined;
 
-  const user = await findUserByIdQuery(id);
+  const user = await User.findById(id);
 
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));

@@ -6,7 +6,7 @@ import config from "./config/app.config.js";
 import catchAsync from "./api/errors/catchAsync.js";
 import GlobalError from "./api/errors/globalError.js";
 import { mssql } from "./config/db.config.js";
-import { findUserByIdQuery } from "./api/v1/users/userController.js";
+import { User } from "./api/v1/users/userModel.js";
 
 export const hashPassword = (password) => {
   return bcrypt.hash(password, 12);
@@ -123,7 +123,7 @@ export const protect = catchAsync(async (req, res, next) => {
   const decoded = await promisify(jwt.verify)(token, config.jwt.secret);
 
   // Check if user exists in DB
-  const currentUser = await findUserByIdQuery(decoded.id);
+  const currentUser = await User.findById(decoded.id);
 
   if (!currentUser) {
     return next(
@@ -160,7 +160,7 @@ export const isLoggedIn = async (req, res, next) => {
       );
 
       // Check if user still exists
-      const currentUser = await findUserByIdQuery(decoded.id);
+      const currentUser = await User.findById(decoded.id);
       if (!currentUser) {
         return next();
       }

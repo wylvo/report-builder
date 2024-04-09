@@ -1,8 +1,7 @@
 import express from "express";
-import { checkSchema } from "express-validator";
 
 import { resetPasswordRouter } from "./resetPassword/resetPasswordRouter.js";
-import { create } from "./userModel.js";
+import { User } from "./userModel.js";
 import * as user from "./userController.js";
 import * as auth from "../../../auth.js";
 
@@ -27,11 +26,11 @@ router.get("/me", user.getMe, user.getUser);
 router
   .route("/")
   .get(user.getAllUsers)
-  .post(checkSchema(create), user.createUser);
+  .post(user.validateCreate, user.createUser);
 router
   .route("/:id")
   .get(user.getUser)
-  .put(user.updateUser)
+  .put(user.validateUpdate, user.updateUser)
   .delete(user.deleteUser);
 
 router.put("/:id/enable", user.enableUser);
