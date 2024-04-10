@@ -22,7 +22,10 @@ const handleTokenExpiredError = () =>
 
 const sendErrorDev = (err, req, res) => {
   // API error
-  if (req.originalUrl.startsWith("/api")) {
+  if (
+    req.originalUrl.startsWith("/api") ||
+    req.originalUrl.startsWith("/signin")
+  ) {
     // Trusted error: send message to client
     return res.status(err.statusCode).json({
       status: err.status,
