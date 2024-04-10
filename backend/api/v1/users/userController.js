@@ -1,4 +1,4 @@
-import { validationResult, checkSchema } from "express-validator";
+import { checkSchema } from "express-validator";
 
 import {
   resetUserPassword,
@@ -8,9 +8,12 @@ import { hashPassword } from "../../../auth.js";
 import { generateUUID } from "../router.js";
 import { mssql, mssqlDataTypes } from "../../../config/db.config.js";
 import catchAsync from "../../errors/catchAsync.js";
-import GlobalError, {
+import GlobalError from "../../errors/globalError.js";
+import ValidationError, {
   errorValidationResult,
-} from "../../errors/globalError.js";
+  formatErrors,
+  isEmpty,
+} from "../../errors/validationError.js";
 import { User } from "./userModel.js";
 import reportsSQL from "../reports/reportModel.js";
 
@@ -65,10 +68,10 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
 export const validateCreate = catchAsync(async (req, res, next) => {
   await checkSchema(User.schema.create, ["body"]).run(req);
   const result = errorValidationResult(req);
+  const errors = result.mapped();
 
-  if (result.errors.length) {
-    return next(new GlobalError(result.array(), 400));
-  }
+  if (!isEmpty(errors))
+    return next(new ValidationError(formatErrors(errors), errors, 400));
   next();
 });
 
@@ -130,11 +133,11 @@ export const getUser = catchAsync(async (req, res, next) => {
 
 export const validateUpdate = catchAsync(async (req, res, next) => {
   await checkSchema(User.schema.update, ["body"]).run(req);
-  const result = validationResult(req);
+  const result = errorValidationResult(req);
+  const errors = result.mapped();
 
-  if (result.errors.length) {
-    return next(new GlobalError(result.mapped(), 400));
-  }
+  if (!isEmpty(errors))
+    return next(new ValidationError(formatErrors(errors), errors, 400));
   next();
 });
 

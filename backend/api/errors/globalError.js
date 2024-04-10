@@ -1,9 +1,3 @@
-import { validationResult } from "express-validator";
-
-export const errorValidationResult = validationResult.withDefaults({
-  formatter: (error) => error.msg,
-});
-
 class GlobalError extends Error {
   constructor(message, statusCode) {
     super(message);

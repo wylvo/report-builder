@@ -1,19 +1,25 @@
-import { validationResult, checkSchema } from "express-validator";
+import { checkSchema } from "express-validator";
 
 import { mergeUserData } from "../userController.js";
 import { User } from "../userModel.js";
 import { mssql, mssqlDataTypes } from "../../../../config/db.config.js";
 import { hashPassword } from "../../../../auth.js";
 import GlobalError from "../../../errors/globalError.js";
+import ValidationError, {
+  errorValidationResult,
+  formatErrors,
+  isEmpty,
+} from "../../../errors/validationError.js";
 import catchAsync from "../../../errors/catchAsync.js";
 import resetUserPasswordSQL from "./resetPasswordModel.js";
 
 export const validateResetPassword = catchAsync(async (req, res, next) => {
   await checkSchema(User.schema.resetPassword, ["body"]).run(req);
-  const result = validationResult(req);
+  const result = errorValidationResult(req);
+  const errors = result.mapped();
 
-  if (result.errors.length) {
-    return next(new GlobalError(result.array(), 400));
+  if (!isEmpty(errors)) {
+    return next(new ValidationError(formatErrors(errors), errors, 400));
   }
   next();
 });
@@ -29,9 +35,6 @@ export const resetUserPassword = catchAsync(async (req, res, next) => {
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
 
   let { password, passwordConfirmation } = req.body;
-
-  if (password !== passwordConfirmation)
-    return next(new GlobalError("Passwords do not match.", 400));
 
   // Set new password
   const newPassword = await hashPassword(password);
