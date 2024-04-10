@@ -11,7 +11,7 @@ import cookieParser from "cookie-parser";
 import routerV1 from "./api/v1/router.js";
 import globalErrorHandler from "./api/errors/errorController.js";
 import GlobalError from "./api/errors/globalError.js";
-import { signIn, signOut } from "./auth/authController.js";
+import * as auth from "./auth/authController.js";
 import { viewRouter } from "./views/viewRouter.js";
 
 const app = express();
@@ -55,8 +55,8 @@ app.use((req, res, next) => {
 
 app.use("/", viewRouter);
 app.use("/api/v1", routerV1);
-app.post("/signin", signIn);
-app.post("/signout", signOut);
+app.post("/signin", auth.validateSignIn, auth.signIn);
+app.post("/signout", auth.signOut);
 
 app.all("*", (req, res, next) => {
   next(new GlobalError(`Can't find ${req.originalUrl} on this server!`, 404));

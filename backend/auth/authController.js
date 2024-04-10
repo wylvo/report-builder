@@ -1,3 +1,5 @@
+import { checkSchema } from "express-validator";
+
 import crypto from "crypto";
 import { promisify } from "util";
 import jwt from "jsonwebtoken";
@@ -7,6 +9,11 @@ import catchAsync from "../api/errors/catchAsync.js";
 import GlobalError from "../api/errors/globalError.js";
 import { mssql } from "../config/db.config.js";
 import { User } from "../api/v1/users/userModel.js";
+import ValidationError, {
+  errorValidationResult,
+  formatErrors,
+  isEmpty,
+} from "../api/errors/validationError.js";
 
 export const hashPassword = (password) => {
   return bcrypt.hash(password, 12);
@@ -58,25 +65,20 @@ const createJWT = (user, res, statusCode) => {
   });
 };
 
+export const validateSignIn = async (req, res, next) => {
+  await checkSchema(User.schema.signIn, ["body"]).run(req);
+  const result = errorValidationResult(req);
+  const errors = result.mapped();
+
+  if (!isEmpty(errors))
+    return next(new ValidationError(formatErrors(errors), errors, 400));
+  next();
+};
+
 export const signIn = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
-  // Check if email & password exist
-  if (!email || !password) {
-    return next(
-      new GlobalError(
-        "Please sign in by providing both email and password.",
-        400
-      )
-    );
-  }
-
-  // Query user by email
-  const {
-    recordset: [user],
-  } = await mssql()
-    .input("email", email)
-    .query("SELECT * FROM users WHERE email = @email;");
+  const user = await User.findByEmail(email);
 
   // Check if user exists && provided password is valid
   if (!user || !(await comparePasswords(password, user.password)))

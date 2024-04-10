@@ -278,5 +278,23 @@ export const User = {
         passwordConfirmation: this.create.passwordConfirmation,
       };
     },
+
+    /**
+     *
+     *  VALIDATION TO SIGN IN WITH A USER
+     *
+     **/
+    signIn: {
+      email: {
+        exists: { errorMessage: "Email is required.", bail: true },
+        notEmpty: { errorMessage: "Email can't be empty.", bail: true },
+        isEmail: { errorMessage: "Invalid e-mail address" },
+      },
+      password: {
+        exists: { errorMessage: "Password is required.", bail: true },
+        notEmpty: { errorMessage: "Password can't be empty.", bail: true },
+        isString: { errorMessage: "Password should be a string" },
+      },
+    },
   },
 };
