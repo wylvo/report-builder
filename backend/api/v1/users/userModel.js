@@ -1,11 +1,4 @@
-import { body, checkSchema } from "express-validator";
 import { mssql } from "../../../config/db.config.js";
-
-// checkSchema({
-//   image: {
-//     isURL: { if: !body("profilePictureURL").isURL()},
-//   },
-// });
 
 export const User = {
   findBy: async (table, query, value) => {
@@ -145,7 +138,7 @@ export const User = {
       email: {
         exists: { errorMessage: "Email is required.", bail: true },
         notEmpty: { errorMessage: "Email can't be empty.", bail: true },
-        isEmail: { errorMessage: "Invalid e-mail address" },
+        isEmail: { errorMessage: "Invalid e-mail address", bail: true },
         custom: {
           options: async (email) => {
             const user = await User.findByEmail(email);
@@ -188,7 +181,7 @@ export const User = {
       username: {
         exists: { errorMessage: "Username is required.", bail: true },
         notEmpty: { errorMessage: "Username can't be empty.", bail: true },
-        isString: { errorMessage: "Username should be a string" },
+        isString: { errorMessage: "Username should be a string", bail: true },
         custom: {
           options: async (username, { req }) => {
             const user = await User.findByUsername(username);
@@ -232,7 +225,7 @@ export const User = {
       email: {
         optional: true,
         notEmpty: { errorMessage: "Email can't be empty.", bail: true },
-        isEmail: { errorMessage: "Invalid e-mail address" },
+        isEmail: { errorMessage: "Invalid e-mail address", bail: true },
         custom: {
           options: async (email, { req }) => {
             const user = await User.findByEmail(email);
@@ -254,7 +247,7 @@ export const User = {
       username: {
         optional: true,
         notEmpty: { errorMessage: "Username can't be empty.", bail: true },
-        isString: { errorMessage: "Username should be a string" },
+        isString: { errorMessage: "Username should be a string", bail: true },
         custom: {
           options: async (username, { req }) => {
             const user = await User.findByUsername(username);
@@ -279,28 +272,11 @@ export const User = {
      *  VALIDATION TO RESET A USER PASSWORD
      *
      **/
-    resetPassword: {
-      password: {
-        exists: { errorMessage: "Password is required.", bail: true },
-        notEmpty: { errorMessage: "Password can't be empty.", bail: true },
-        isString: { errorMessage: "Password should be a string" },
-      },
-      passwordConfirmation: {
-        exists: {
-          errorMessage: "Password confirmation is required.",
-          bail: true,
-        },
-        notEmpty: {
-          errorMessage: "Password confirmation can't be empty.",
-          bail: true,
-        },
-        custom: {
-          options: (value, { req }) => {
-            return value === req.body.password;
-          },
-          errorMessage: "Passwords do not match.",
-        },
-      },
+    resetPassword() {
+      return {
+        password: this.create.password,
+        passwordConfirmation: this.create.passwordConfirmation,
+      };
     },
   },
 };

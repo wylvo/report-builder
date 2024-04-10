@@ -14,7 +14,7 @@ import catchAsync from "../../../errors/catchAsync.js";
 import resetUserPasswordSQL from "./resetPasswordModel.js";
 
 export const validateResetPassword = catchAsync(async (req, res, next) => {
-  await checkSchema(User.schema.resetPassword, ["body"]).run(req);
+  await checkSchema(User.schema.resetPassword(), ["body"]).run(req);
   const result = errorValidationResult(req);
   const errors = result.mapped();
 
