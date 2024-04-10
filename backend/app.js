@@ -11,7 +11,7 @@ import cookieParser from "cookie-parser";
 import routerV1 from "./api/v1/router.js";
 import globalErrorHandler from "./api/errors/errorController.js";
 import GlobalError from "./api/errors/globalError.js";
-import { signIn, signOut } from "./auth.js";
+import { signIn, signOut } from "./auth/authController.js";
 import { viewRouter } from "./views/viewRouter.js";
 
 const app = express();

@@ -3,7 +3,7 @@ import { checkSchema } from "express-validator";
 import { filterUserData } from "../userController.js";
 import { User } from "../userModel.js";
 import { mssql, mssqlDataTypes } from "../../../../config/db.config.js";
-import { hashPassword } from "../../../../auth.js";
+import { hashPassword } from "../../../../auth/authController.js";
 import GlobalError from "../../../errors/globalError.js";
 import ValidationError, {
   errorValidationResult,

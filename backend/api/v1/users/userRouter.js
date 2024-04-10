@@ -3,7 +3,7 @@ import express from "express";
 import { resetPasswordRouter } from "./resetPassword/resetPasswordRouter.js";
 import { User } from "./userModel.js";
 import * as user from "./userController.js";
-import * as auth from "../../../auth.js";
+import * as auth from "../../../auth/authController.js";
 
 const router = express.Router();
 

@@ -4,7 +4,7 @@ import {
   resetUserPassword,
   validateResetPassword,
 } from "./resetPassword/resetPasswordController.js";
-import { hashPassword } from "../../../auth.js";
+import { hashPassword } from "../../../auth/authController.js";
 import { generateUUID } from "../router.js";
 import { mssql, mssqlDataTypes } from "../../../config/db.config.js";
 import catchAsync from "../../errors/catchAsync.js";

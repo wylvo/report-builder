@@ -4,7 +4,7 @@ import { userRouter } from "./users/userRouter.js";
 import { reportRouter } from "./reports/reportRouter.js";
 import { webhookRouter } from "./webhook/webhookRouter.js";
 import { versionRouter } from "./version/versionRouter.js";
-import * as auth from "../../auth.js";
+import * as auth from "../../auth/authController.js";
 
 export const generateUUID = () => {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
