@@ -1,11 +1,16 @@
 import { validationResult, checkSchema } from "express-validator";
 
-import { resetUserPassword } from "./resetPassword/resetPasswordController.js";
+import {
+  resetUserPassword,
+  validateResetPassword,
+} from "./resetPassword/resetPasswordController.js";
 import { hashPassword } from "../../../auth.js";
 import { generateUUID } from "../router.js";
 import { mssql, mssqlDataTypes } from "../../../config/db.config.js";
 import catchAsync from "../../errors/catchAsync.js";
-import GlobalError from "../../errors/globalError.js";
+import GlobalError, {
+  errorValidationResult,
+} from "../../errors/globalError.js";
 import { User } from "./userModel.js";
 import reportsSQL from "../reports/reportModel.js";
 
@@ -42,10 +47,6 @@ export const mergeUserData = (
   ];
 };
 
-const myValidationResult = validationResult.withDefaults({
-  formatter: (error) => error.msg,
-});
-
 export const getUserId = (req, res, next) => {
   req.userId = req.params.id;
   next();
@@ -63,10 +64,10 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
 
 export const validateCreate = catchAsync(async (req, res, next) => {
   await checkSchema(User.schema.create, ["body"]).run(req);
-  const result = myValidationResult(req);
+  const result = errorValidationResult(req);
 
   if (result.errors.length) {
-    return next(new GlobalError(result.mapped(), 400));
+    return next(new GlobalError(result.array(), 400));
   }
   next();
 });
@@ -77,24 +78,12 @@ export const createUser = catchAsync(async (req, res, next) => {
     isEnabled,
     email,
     password,
-    passwordConfirmation,
     profilePictureURL,
     fullName,
     username,
     initials,
   } = req.body;
   const id = generateUUID();
-
-  if (!username || !email || !role || (!password && !passwordConfirmation))
-    return next(
-      new GlobalError(
-        "Please provide role, email, username, and password.",
-        400
-      )
-    );
-
-  if (password !== passwordConfirmation)
-    return next(new GlobalError("Passwords do not match.", 400));
 
   await mssql()
     .input("id", id)
@@ -141,7 +130,7 @@ export const getUser = catchAsync(async (req, res, next) => {
 
 export const validateUpdate = catchAsync(async (req, res, next) => {
   await checkSchema(User.schema.update, ["body"]).run(req);
-  const result = myValidationResult(req);
+  const result = validationResult(req);
 
   if (result.errors.length) {
     return next(new GlobalError(result.mapped(), 400));
@@ -205,7 +194,7 @@ export const enableUser = async (req, res, next) => {
 
   const {
     recordset: [userUpdated],
-  } = await mssql().input("id", user.id).query(User.query.enable);
+  } = await mssql().input("id", user.id).query(User.query.enable());
 
   res.status(200).json({
     status: "success",
@@ -228,7 +217,7 @@ export const disableUser = async (req, res, next) => {
 
   const {
     recordset: [userUpdated],
-  } = await mssql().input("id", user.id).query(User.query.enable());
+  } = await mssql().input("id", user.id).query(User.query.disable());
 
   res.status(200).json({
     status: "success",
@@ -241,4 +230,7 @@ export const getMe = (req, res, next) => {
   next();
 };
 
-export { resetUserPassword as resetUserPassword };
+export {
+  resetUserPassword as resetUserPassword,
+  validateResetPassword as validateResetPassword,
+};

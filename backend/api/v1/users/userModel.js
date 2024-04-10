@@ -124,82 +124,82 @@ export const User = {
      **/
     create: {
       role: {
-        exists: { errorMessage: "Role is required.", bail: true },
-        notEmpty: { errorMessage: "Role can't be empty.", bail: true },
+        exists: { errorMessage: "Role is required", bail: true },
+        notEmpty: { errorMessage: "Role can't be empty", bail: true },
         isIn: {
           options: [["guest", "user", "admin"]],
-          errorMessage: "Invalid role. Only guest, user, or admin are allowed.",
+          errorMessage: "Invalid role. Only guest, user, or admin are allowed",
         },
       },
       isEnabled: {
         optional: true,
         isBoolean: {
           options: { strict: true },
-          errorMessage: "isEnabled should be a boolean (true or false).",
+          errorMessage: "isEnabled should be a boolean (true or false)",
         },
       },
       email: {
-        exists: { errorMessage: "Email is required.", bail: true },
-        notEmpty: { errorMessage: "Email can't be empty.", bail: true },
-        isEmail: { errorMessage: "Invalid e-mail address." },
+        exists: { errorMessage: "Email is required", bail: true },
+        notEmpty: { errorMessage: "Email can't be empty", bail: true },
+        isEmail: { errorMessage: "Invalid e-mail address" },
         custom: {
           options: async (email) => {
-            const user = await findByEmail(email);
+            const user = await User.findByEmail(email);
             if (user) throw new Error();
           },
-          errorMessage: "Email is already in use.",
+          errorMessage: "Email is already in use",
         },
       },
       password: {
-        exists: { errorMessage: "Password is required.", bail: true },
-        notEmpty: { errorMessage: "Password can't be empty.", bail: true },
-        isString: { errorMessage: "Password should be a string." },
+        exists: { errorMessage: "Password is required", bail: true },
+        notEmpty: { errorMessage: "Password can't be empty", bail: true },
+        isString: { errorMessage: "Password should be a string" },
       },
       passwordConfirmation: {
         exists: {
-          errorMessage: "Password confirmation is required.",
+          errorMessage: "Password confirmation is required",
           bail: true,
         },
         notEmpty: {
-          errorMessage: "Password confirmation can't be empty.",
+          errorMessage: "Password confirmation can't be empty",
           bail: true,
         },
         custom: {
           options: (value, { req }) => {
             return value === req.body.password;
           },
-          errorMessage: "Passwords do not match.",
+          errorMessage: "Passwords do not match",
         },
       },
       profilePictureURL: {
         optional: true,
-        // isURL: { errorMessage: "Invalid profile picture URL." },
-        isDataURI: { errorMessage: "Invalid profile picture data URI." },
+        // isURL: { errorMessage: "Invalid profile picture URL" },
+        isDataURI: { errorMessage: "Invalid profile picture data URI" },
       },
       fullName: {
-        exists: { errorMessage: "Full name is required.", bail: true },
-        notEmpty: { errorMessage: "Full name can't be empty.", bail: true },
-        isString: { errorMessage: "Full name should be a string." },
+        exists: { errorMessage: "Full name is required", bail: true },
+        notEmpty: { errorMessage: "Full name can't be empty", bail: true },
+        isString: { errorMessage: "Full name should be a string" },
       },
       username: {
-        exists: { errorMessage: "Username is required.", bail: true },
-        notEmpty: { errorMessage: "Username can't be empty.", bail: true },
-        isString: { errorMessage: "Username should be a string." },
+        exists: { errorMessage: "Username is required", bail: true },
+        notEmpty: { errorMessage: "Username can't be empty", bail: true },
+        isString: { errorMessage: "Username should be a string" },
         custom: {
           options: async (username, { req }) => {
             const user = await User.findByUsername(username);
             if (user && user.id !== req.params.id) throw new Error();
             return user;
           },
-          errorMessage: "Username is already in use.",
+          errorMessage: "Username is already in use",
         },
       },
       initials: {
         optional: true,
-        isString: { errorMessage: "Initials should be a string.", bail: true },
+        isString: { errorMessage: "Initials should be a string", bail: true },
         isLength: {
           options: { max: 2 },
-          errorMessage: "Invalid initials length, max 2 characters allowed.",
+          errorMessage: "Invalid initials length, max 2 characters allowed",
         },
       },
     },
@@ -212,60 +212,89 @@ export const User = {
     update: {
       role: {
         optional: true,
-        notEmpty: { errorMessage: "Role can't be empty.", bail: true },
+        notEmpty: { errorMessage: "Role can't be empty", bail: true },
         isIn: {
           options: [["guest", "user", "admin"]],
-          errorMessage: "Invalid role. Only guest, user, or admin are allowed.",
+          errorMessage: "Invalid role. Only guest, user, or admin are allowed",
         },
       },
       isEnabled: {
         optional: true,
         isBoolean: {
           options: { strict: true },
-          errorMessage: "isEnabled should be a boolean (true or false).",
+          errorMessage: "isEnabled should be a boolean (true or false)",
         },
       },
       email: {
         optional: true,
-        notEmpty: { errorMessage: "Email can't be empty.", bail: true },
-        isEmail: { errorMessage: "Invalid e-mail address." },
+        notEmpty: { errorMessage: "Email can't be empty", bail: true },
+        isEmail: { errorMessage: "Invalid e-mail address" },
         custom: {
           options: async (email, { req }) => {
             const user = await User.findByEmail(email);
             if (user && user.id !== req.params.id) throw new Error();
           },
-          errorMessage: "Email is already in use.",
+          errorMessage: "Email is already in use",
         },
       },
       profilePictureURL: {
         optional: true,
-        // isURL: { errorMessage: "Invalid profile picture URL." },
-        isDataURI: { errorMessage: "Invalid profile picture data URI." },
+        // isURL: { errorMessage: "Invalid profile picture URL" },
+        isDataURI: { errorMessage: "Invalid profile picture data URI" },
       },
       fullName: {
         optional: true,
-        notEmpty: { errorMessage: "Full name can't be empty.", bail: true },
-        isString: { errorMessage: "Full name should be a string." },
+        notEmpty: { errorMessage: "Full name can't be empty", bail: true },
+        isString: { errorMessage: "Full name should be a string" },
       },
       username: {
         optional: true,
-        notEmpty: { errorMessage: "Username can't be empty.", bail: true },
-        isString: { errorMessage: "Username should be a string." },
+        notEmpty: { errorMessage: "Username can't be empty", bail: true },
+        isString: { errorMessage: "Username should be a string" },
         custom: {
           options: async (username, { req }) => {
             const user = await User.findByUsername(username);
             if (user && user.id !== req.params.id) throw new Error();
             return user;
           },
-          errorMessage: "Username is already in use.",
+          errorMessage: "Username is already in use",
         },
       },
       initials: {
         optional: true,
-        isString: { errorMessage: "Initials should be a string.", bail: true },
+        isString: { errorMessage: "Initials should be a string", bail: true },
         isLength: {
           options: { max: 2 },
-          errorMessage: "Invalid initials length, max 2 characters allowed.",
+          errorMessage: "Invalid initials length, max 2 characters allowed",
+        },
+      },
+    },
+
+    /**
+     *
+     *  VALIDATION TO RESET A USER PASSWORD
+     *
+     **/
+    resetPassword: {
+      password: {
+        exists: { errorMessage: "Password is required", bail: true },
+        notEmpty: { errorMessage: "Password can't be empty", bail: true },
+        isString: { errorMessage: "Password should be a string" },
+      },
+      passwordConfirmation: {
+        exists: {
+          errorMessage: "Password confirmation is required",
+          bail: true,
+        },
+        notEmpty: {
+          errorMessage: "Password confirmation can't be empty",
+          bail: true,
+        },
+        custom: {
+          options: (value, { req }) => {
+            return value === req.body.password;
+          },
+          errorMessage: "Passwords do not match",
         },
       },
     },

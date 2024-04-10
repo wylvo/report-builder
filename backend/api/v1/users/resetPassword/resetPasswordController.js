@@ -1,3 +1,5 @@
+import { validationResult, checkSchema } from "express-validator";
+
 import { mergeUserData } from "../userController.js";
 import { User } from "../userModel.js";
 import { mssql, mssqlDataTypes } from "../../../../config/db.config.js";
@@ -5,6 +7,16 @@ import { hashPassword } from "../../../../auth.js";
 import GlobalError from "../../../errors/globalError.js";
 import catchAsync from "../../../errors/catchAsync.js";
 import resetUserPasswordSQL from "./resetPasswordModel.js";
+
+export const validateResetPassword = catchAsync(async (req, res, next) => {
+  await checkSchema(User.schema.resetPassword, ["body"]).run(req);
+  const result = validationResult(req);
+
+  if (result.errors.length) {
+    return next(new GlobalError(result.array(), 400));
+  }
+  next();
+});
 
 export const resetUserPassword = catchAsync(async (req, res, next) => {
   const { NVarChar } = mssqlDataTypes;
