@@ -48,12 +48,16 @@ export const User = {
     all: "SELECT id, role, isEnabled, email, profilePictureURL, fullName, username, initials FROM users;",
 
     // CREATE USER
-    insert: `
-      INSERT INTO users
-        (id, role, isEnabled, email, password, profilePictureURL, fullName, username, initials)
-      VALUES
-        (@id, @role, @isEnabled, @email, @password, @profilePictureURL, @fullName, @username, @initials);
-    `,
+    insert() {
+      return `
+        INSERT INTO users
+          (id, role, isEnabled, email, password, profilePictureURL, fullName, username, initials)
+        VALUES
+          (@id, @role, @isEnabled, @email, @password, @profilePictureURL, @fullName, @username, @initials);
+
+        ${this.byId}
+      `;
+    },
 
     // UPDATE USER
     // Source: https://learn.microsoft.com/fr-fr/archive/blogs/sqlserverstorageengine/openjson-the-easiest-way-to-import-json-text-into-table#use-case-2-updating-table-row-using-json-object

@@ -1,6 +1,6 @@
 import { checkSchema } from "express-validator";
 
-import { mergeUserData } from "../userController.js";
+import { filterUserData } from "../userController.js";
 import { User } from "../userModel.js";
 import { mssql, mssqlDataTypes } from "../../../../config/db.config.js";
 import { hashPassword } from "../../../../auth.js";
@@ -53,6 +53,6 @@ export const resetUserPassword = catchAsync(async (req, res, next) => {
 
   res.status(201).json({
     status: "success",
-    data: mergeUserData(id, user),
+    data: filterUserData(user),
   });
 });

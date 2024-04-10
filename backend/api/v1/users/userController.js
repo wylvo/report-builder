@@ -25,17 +25,16 @@ export const filterObject = (obj, ...allowedFields) => {
   return newObj;
 };
 
-export const mergeUserData = (
-  id,
+export const filterUserData = (
   obj,
   reports = undefined,
   reportsDeleted = undefined
 ) => {
   return [
     {
-      id,
       ...filterObject(
         obj,
+        "id",
         "role",
         "isEnabled",
         "email",
@@ -44,8 +43,8 @@ export const mergeUserData = (
         "username",
         "initials"
       ),
-      reports: reports ? reports : [],
-      reportsDeleted: reportsDeleted ? reportsDeleted : [],
+      ...(reports && { reports }),
+      ...(reportsDeleted && { reportsDeleted }),
     },
   ];
 };
@@ -88,7 +87,9 @@ export const createUser = catchAsync(async (req, res, next) => {
   } = req.body;
   const id = generateUUID();
 
-  await mssql()
+  const {
+    recordset: [user],
+  } = await mssql()
     .input("id", id)
     .input("role", role)
     .input("isEnabled", isEnabled ?? true)
@@ -97,12 +98,12 @@ export const createUser = catchAsync(async (req, res, next) => {
     .input("profilePictureURL", profilePictureURL)
     .input("fullName", fullName)
     .input("username", username)
-    .input("initials", initials.toUpperCase())
-    .query(User.query.insert);
+    .input("initials", initials.toUpperCase() ?? null)
+    .query(User.query.insert());
 
   res.status(201).json({
     status: "success",
-    data: mergeUserData(id, req.body),
+    data: filterUserData(user),
   });
 });
 
@@ -127,7 +128,7 @@ export const getUser = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: "success",
-    data: mergeUserData(id, user, reports, reportsDeleted),
+    data: filterUserData(user, reports, reportsDeleted),
   });
 });
 
@@ -162,7 +163,7 @@ export const updateUser = catchAsync(async (req, res, next) => {
 
   res.status(201).json({
     status: "success",
-    data: mergeUserData(id, userUpdated),
+    data: filterUserData(userUpdated),
   });
 });
 
@@ -201,7 +202,7 @@ export const enableUser = async (req, res, next) => {
 
   res.status(200).json({
     status: "success",
-    data: mergeUserData(id, userUpdated),
+    data: filterUserData(userUpdated),
   });
 };
 
@@ -224,7 +225,7 @@ export const disableUser = async (req, res, next) => {
 
   res.status(200).json({
     status: "success",
-    data: mergeUserData(id, userUpdated),
+    data: filterUserData(userUpdated),
   });
 };
 
