@@ -15,7 +15,7 @@ import ValidationError, {
   isEmpty,
 } from "../../errors/validationError.js";
 import { User } from "./userModel.js";
-import reportsSQL from "../reports/reportModel.js";
+import { Report } from "../reports/reportModel.js";
 
 export const filterObject = (obj, ...allowedFields) => {
   const newObj = {};
@@ -120,10 +120,10 @@ export const getUser = catchAsync(async (req, res, next) => {
     await Promise.all([
       mssql()
         .input("username", user.username)
-        .query(reportsSQL.getAllByUsername()),
+        .query(Report.query.byUsername()),
       mssql()
         .input("username", user.username)
-        .query(reportsSQL.getSoftDeletedByUsername()),
+        .query(Report.query.byUsernameSoftDeleted()),
     ]);
 
   res.status(200).json({

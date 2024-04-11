@@ -1,5 +1,5 @@
 import { mssql } from "../../../config/db.config.js";
-import { findReportByIdQuery } from "../reports/reportController.js";
+import { Report } from "../reports/reportModel.js";
 import { setAdaptiveCard } from "./card.js";
 import catchAsync from "../../errors/catchAsync.js";
 import GlobalError from "../../errors/globalError.js";
@@ -22,7 +22,7 @@ export const sendReportToIncomingWebhook = catchAsync(
   async (req, res, next) => {
     const id = req.params.id;
 
-    const report = await findReportByIdQuery(id);
+    const report = await Report.findById(id);
 
     if (!report)
       return next(new GlobalError(`Report not found with id: ${id}.`, 404));

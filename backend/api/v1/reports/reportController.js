@@ -1,20 +1,12 @@
 import { mssql, mssqlDataTypes } from "../../../config/db.config.js";
 import GlobalError from "../../errors/globalError.js";
 import catchAsync from "../../errors/catchAsync.js";
-import reportsSQL from "./reportModel.js";
-
-export const findReportByIdQuery = async (id) => {
-  const {
-    recordset: [report],
-  } = await mssql().input("id", id).query(reportsSQL.get());
-
-  return report;
-};
+import { Report } from "./reportModel.js";
 
 export const getAllReports = catchAsync(async (req, res, next) => {
   const {
     recordset: [reports],
-  } = await mssql().query(reportsSQL.getAll());
+  } = await mssql().query(Report.query.all());
 
   const { results, data } = !reports
     ? { results: 0, data: [] }
@@ -32,7 +24,9 @@ export const createReport = catchAsync(async (req, res, next) => {
 
   const rawJSON = JSON.stringify(req.body);
 
-  await mssql().input("rawJSON", NVarChar, rawJSON).query(reportsSQL.create);
+  await mssql()
+    .input("rawJSON", NVarChar, rawJSON)
+    .query(Report.query.insert());
 
   res.status(201).json({
     status: "success",
@@ -43,7 +37,7 @@ export const createReport = catchAsync(async (req, res, next) => {
 export const getReport = catchAsync(async (req, res, next) => {
   const id = req.params.id;
 
-  const report = await findReportByIdQuery(id);
+  const report = await Report.findById(id);
 
   if (!report)
     return next(new GlobalError(`Report not found with id: ${id}.`, 404));
@@ -60,7 +54,7 @@ export const updateReport = catchAsync(async (req, res, next) => {
   const id = req.params.id;
   const rawJSON = JSON.stringify(req.body);
 
-  const report = await findReportByIdQuery(id);
+  const report = await Report.findById(id);
 
   if (!report)
     return next(new GlobalError(`Report not found with id: ${id}.`, 404));
@@ -68,7 +62,7 @@ export const updateReport = catchAsync(async (req, res, next) => {
   await mssql()
     .input("id", report[0].id)
     .input("rawJSON", NVarChar, rawJSON)
-    .query(reportsSQL.update);
+    .query(Report.query.update());
 
   res.status(201).json({
     status: "success",
@@ -77,17 +71,17 @@ export const updateReport = catchAsync(async (req, res, next) => {
 });
 
 const hardDeleteReport = async (report) => {
-  await mssql().input("id", report[0].id).query(reportsSQL.delete);
+  await mssql().input("id", report[0].id).query(Report.query.delete);
 };
 
 const softDeleteReport = async (report) => {
-  await mssql().input("id", report[0].id).query(reportsSQL.softDelete);
+  await mssql().input("id", report[0].id).query(Report.query.softDelete);
 };
 
 export const undoSoftDeleteReport = async (req, res, next) => {
   const id = req.params.id;
 
-  const report = await findReportByIdQuery(id);
+  const report = await Report.findById(id);
 
   if (!report)
     return next(new GlobalError(`Report not found with id: ${id}.`, 404));
@@ -97,7 +91,7 @@ export const undoSoftDeleteReport = async (req, res, next) => {
       new GlobalError(`Report is not marked as deleted with id: ${id}.`, 400)
     );
 
-  await mssql().input("id", report[0].id).query(reportsSQL.undoSoftDelete);
+  await mssql().input("id", report[0].id).query(Report.query.undoSoftDelete);
   report[0].isDeleted = false;
 
   res.status(200).json({
@@ -109,7 +103,7 @@ export const undoSoftDeleteReport = async (req, res, next) => {
 export const deleteReport = catchAsync(async (req, res, next) => {
   const id = req.params.id;
 
-  const report = await findReportByIdQuery(id);
+  const report = await Report.findById(id);
 
   if (!report)
     return next(new GlobalError(`Report not found with id: ${id}.`, 404));
@@ -127,7 +121,7 @@ export const deleteReport = catchAsync(async (req, res, next) => {
 export const getSoftDeletedReports = catchAsync(async (req, res, next) => {
   const {
     recordset: [reports],
-  } = await mssql().query(reportsSQL.getSoftDeleted());
+  } = await mssql().query(Report.query.allSoftDeleted());
 
   const { results, data } = !reports
     ? { results: 0, data: [] }

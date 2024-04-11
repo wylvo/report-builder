@@ -1,10 +1,10 @@
 import { mssql } from "../../../config/db.config.js";
 
 export const User = {
-  findBy: async (table, query, value) => {
+  findBy: async (column, query, value) => {
     const {
       recordset: [user],
-    } = await mssql().input(table, value).query(query);
+    } = await mssql().input(column, value).query(query);
 
     return user;
   },
@@ -138,7 +138,7 @@ export const User = {
       email: {
         exists: { errorMessage: "Email is required.", bail: true },
         notEmpty: { errorMessage: "Email can't be empty.", bail: true },
-        isEmail: { errorMessage: "Invalid e-mail address", bail: true },
+        isEmail: { errorMessage: "Invalid email address.", bail: true },
         custom: {
           options: async (email) => {
             const user = await User.findByEmail(email);
@@ -225,7 +225,7 @@ export const User = {
       email: {
         optional: true,
         notEmpty: { errorMessage: "Email can't be empty.", bail: true },
-        isEmail: { errorMessage: "Invalid e-mail address", bail: true },
+        isEmail: { errorMessage: "Invalid email address.", bail: true },
         custom: {
           options: async (email, { req }) => {
             const user = await User.findByEmail(email);
@@ -288,7 +288,7 @@ export const User = {
       email: {
         exists: { errorMessage: "Email is required.", bail: true },
         notEmpty: { errorMessage: "Email can't be empty.", bail: true },
-        isEmail: { errorMessage: "Invalid e-mail address" },
+        isEmail: { errorMessage: "Invalid email address." },
       },
       password: {
         exists: { errorMessage: "Password is required.", bail: true },
