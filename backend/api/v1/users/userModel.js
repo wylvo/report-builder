@@ -1,10 +1,10 @@
 import { mssql } from "../../../config/db.config.js";
 
 export const User = {
-  findBy: async (column, query, value) => {
+  findBy: async (input, value, query) => {
     const {
       recordset: [user],
-    } = await mssql().input(column, value).query(query);
+    } = await mssql().input(input, value).query(query);
 
     return user;
   },
@@ -122,7 +122,6 @@ export const User = {
     create: {
       role: {
         exists: { errorMessage: "Role is required.", bail: true },
-        notEmpty: { errorMessage: "Role can't be empty.", bail: true },
         isIn: {
           options: [["guest", "user", "admin"]],
           errorMessage: "Invalid role. Only guest, user, or admin are allowed.",
@@ -137,7 +136,6 @@ export const User = {
       },
       email: {
         exists: { errorMessage: "Email is required.", bail: true },
-        notEmpty: { errorMessage: "Email can't be empty.", bail: true },
         isEmail: { errorMessage: "Invalid email address.", bail: true },
         custom: {
           options: async (email) => {
@@ -209,7 +207,6 @@ export const User = {
     update: {
       role: {
         optional: true,
-        notEmpty: { errorMessage: "Role can't be empty.", bail: true },
         isIn: {
           options: [["guest", "user", "admin"]],
           errorMessage: "Invalid role. Only guest, user, or admin are allowed.",
@@ -224,7 +221,6 @@ export const User = {
       },
       email: {
         optional: true,
-        notEmpty: { errorMessage: "Email can't be empty.", bail: true },
         isEmail: { errorMessage: "Invalid email address.", bail: true },
         custom: {
           options: async (email, { req }) => {
@@ -287,7 +283,6 @@ export const User = {
     signIn: {
       email: {
         exists: { errorMessage: "Email is required.", bail: true },
-        notEmpty: { errorMessage: "Email can't be empty.", bail: true },
         isEmail: { errorMessage: "Invalid email address." },
       },
       password: {

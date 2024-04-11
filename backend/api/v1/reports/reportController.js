@@ -1,7 +1,14 @@
+import { checkSchema } from "express-validator";
+
 import { mssql, mssqlDataTypes } from "../../../config/db.config.js";
 import GlobalError from "../../errors/globalError.js";
 import catchAsync from "../../errors/catchAsync.js";
 import { Report } from "./reportModel.js";
+import ValidationError, {
+  errorValidationResult,
+  formatErrors,
+  isEmpty,
+} from "../../errors/validationError.js";
 
 export const getAllReports = catchAsync(async (req, res, next) => {
   const {
@@ -19,18 +26,35 @@ export const getAllReports = catchAsync(async (req, res, next) => {
   });
 });
 
+export const validateCreate = catchAsync(async (req, res, next) => {
+  await checkSchema(Report.schema.create, ["body"]).run(req);
+  const result = errorValidationResult(req);
+  const errors = result.mapped();
+
+  if (!isEmpty(errors))
+    return next(new ValidationError(formatErrors(errors), errors, 400));
+  next();
+});
+
 export const createReport = catchAsync(async (req, res, next) => {
   const { NVarChar } = mssqlDataTypes;
 
-  const rawJSON = JSON.stringify(req.body);
+  const id = req.body.id;
+  // const username = req.user.username;
+  const body = [req.body];
+  const rawJSON = JSON.stringify(body);
 
-  await mssql()
+  const {
+    recordset: [report],
+  } = await mssql()
+    .input("id", id)
+    // .input("username", username)
     .input("rawJSON", NVarChar, rawJSON)
     .query(Report.query.insert());
 
   res.status(201).json({
     status: "success",
-    data: req.body,
+    data: report,
   });
 });
 
