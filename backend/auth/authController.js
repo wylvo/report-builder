@@ -135,12 +135,14 @@ export const protect = catchAsync(async (req, res, next) => {
   // Check if user changed password after the token was issued
   if (hasResetPassword(currentUser, decoded.iat)) {
     return next(
-      new GlobalError(
-        "User password was reset recently. Please sign in again.",
-        401
-      )
+      new GlobalError("User password was reset. Please sign in again.", 401)
     );
   }
+
+  // Clear sensitive data
+  currentUser.password = undefined;
+  currentUser.passwordResetAt = undefined;
+  currentUser.failedAuthenticationAttempts = undefined;
 
   // GRANT ACCESS TO PROTECTED ROUTE
   req.user = currentUser;
@@ -168,6 +170,11 @@ export const isLoggedIn = async (req, res, next) => {
       if (hasResetPassword(currentUser, decoded.iat)) {
         return next();
       }
+
+      // Clear sensitive data
+      currentUser.password = undefined;
+      currentUser.passwordResetAt = undefined;
+      currentUser.failedAuthenticationAttempts = undefined;
 
       // THERE IS A LOGGED IN USER
       res.locals.user = currentUser;

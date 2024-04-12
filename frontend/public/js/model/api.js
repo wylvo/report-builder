@@ -41,13 +41,13 @@ export default {
         return await fetchJSON(`${this.url}/softDeleted`);
       },
       async createReport(report) {
-        return await fetchJSON(this.url, "POST", [report]);
+        return await fetchJSON(this.url, "POST", report);
       },
       async getReport(id) {
         return await fetchJSON(`${this.url}/${id}`);
       },
       async updateReport(id, report) {
-        return await fetchJSON(`${this.url}/${id}`, "PUT", [report]);
+        return await fetchJSON(`${this.url}/${id}`, "PUT", report);
       },
       async deleteReport(id) {
         return await fetchJSON(`${this.url}/${id}`, "DELETE", {});
@@ -70,13 +70,13 @@ export default {
         return await fetchJSON(this.url);
       },
       async createUser(user) {
-        return await fetchJSON(this.url, "POST", [user]);
+        return await fetchJSON(this.url, "POST", user);
       },
       async getUser(id) {
         return await fetchJSON(`${this.url}/${id}`);
       },
       async updateUser(id, user) {
-        return await fetchJSON(`${this.url}/${id}`, "PUT", [user]);
+        return await fetchJSON(`${this.url}/${id}`, "PUT", user);
       },
       async deleteUser(id) {
         return await fetchJSON(`${this.url}/${id}`, "DELETE", {});

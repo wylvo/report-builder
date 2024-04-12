@@ -325,7 +325,9 @@ export const Report = {
        ******************************************/
       "call.date": {
         exists: { errorMessage: "call.date is required.", bail: true },
-        isDate: { errorMessage: "Invalid date for call.date." },
+        isDate: {
+          errorMessage: "Invalid date for call.dateeeeeee.",
+        },
       },
       "call.time": {
         exists: { errorMessage: "call.time is required.", bail: true },

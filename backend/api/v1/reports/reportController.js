@@ -27,6 +27,8 @@ export const getAllReports = catchAsync(async (req, res, next) => {
 });
 
 export const validateCreate = catchAsync(async (req, res, next) => {
+  // req.body.call.date = new Date(req.body.call.date);
+  console.log(req.body.call.date);
   await checkSchema(Report.schema.create, ["body"]).run(req);
   const result = errorValidationResult(req);
   const errors = result.mapped();
