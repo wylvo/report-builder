@@ -267,14 +267,14 @@ export const Report = {
       },
       createdDateTime: {
         exists: { errorMessage: "createdDateTime is required.", bail: true },
-        isDate: { errorMessage: "Invalid date for createdDateTime." },
+        isISO8601: { errorMessage: "Invalid date for createdDateTime." },
       },
       lastModifiedDateTime: {
         exists: {
           errorMessage: "lastModifiedDateTime is required.",
           bail: true,
         },
-        isDate: { errorMessage: "Invalid date for lastModifiedDateTime." },
+        isISO8601: { errorMessage: "Invalid date for lastModifiedDateTime." },
       },
       createdBy: {
         // TODO: CHECK IF VALID USERNAME
@@ -325,16 +325,11 @@ export const Report = {
        ******************************************/
       "call.date": {
         exists: { errorMessage: "call.date is required.", bail: true },
-        isDate: {
-          errorMessage: "Invalid date for call.dateeeeeee.",
-        },
+        isDate: { errorMessage: "Invalid date for call.date." },
       },
       "call.time": {
         exists: { errorMessage: "call.time is required.", bail: true },
-        isTime: {
-          options: { hourFormat: "hour12" },
-          errorMessage: "Invalid time for call.time.",
-        },
+        isTime: { errorMessage: "Invalid time for call.time." },
       },
       "call.dateTime": {
         exists: { errorMessage: "call.dateTime is required.", bail: true },
@@ -481,10 +476,7 @@ export const Report = {
       },
       "incident.time": {
         exists: { errorMessage: "incident.time is required.", bail: true },
-        isTime: {
-          options: { hourFormat: "hour12" },
-          errorMessage: "Invalid time for incident.time.",
-        },
+        isTime: { errorMessage: "Invalid time for incident.time." },
       },
       "incident.dateTime": {
         exists: {
