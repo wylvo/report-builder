@@ -1,14 +1,14 @@
 import { checkSchema } from "express-validator";
 
-import { mssql, mssqlDataTypes } from "../../../config/db.config.js";
-import GlobalError from "../../errors/globalError.js";
-import catchAsync from "../../errors/catchAsync.js";
 import { Report } from "./reportModel.js";
+import { mssql, mssqlDataTypes } from "../../../config/db.config.js";
+import GlobalError from "../../../errors/globalError.js";
+import catchAsync from "../../../errors/catchAsync.js";
 import ValidationError, {
   errorValidationResult,
   formatErrors,
   isEmpty,
-} from "../../errors/validationError.js";
+} from "../../../errors/validationError.js";
 
 export const getAllReports = catchAsync(async (req, res, next) => {
   const {

@@ -9,8 +9,8 @@ import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
 
 import routerV1 from "./api/v1/router.js";
-import globalErrorHandler from "./api/errors/errorController.js";
-import GlobalError from "./api/errors/globalError.js";
+import globalErrorHandler from "./errors/errorController.js";
+import GlobalError from "./errors/globalError.js";
 import * as auth from "./auth/authController.js";
 import { viewRouter } from "./views/viewRouter.js";
 

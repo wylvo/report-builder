@@ -4,14 +4,14 @@ import { promisify } from "util";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import config from "../config/app.config.js";
-import catchAsync from "../api/errors/catchAsync.js";
-import GlobalError from "../api/errors/globalError.js";
+import catchAsync from "../errors/catchAsync.js";
+import GlobalError from "../errors/globalError.js";
 import { User } from "../api/v1/users/userModel.js";
 import ValidationError, {
   errorValidationResult,
   formatErrors,
   isEmpty,
-} from "../api/errors/validationError.js";
+} from "../errors/validationError.js";
 
 export const hashPassword = (password) => {
   return bcrypt.hash(password, 12);

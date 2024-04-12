@@ -1,16 +1,16 @@
 import { checkSchema } from "express-validator";
 
-import { filterUserData } from "../userController.js";
 import { User } from "../userModel.js";
+import { filterUserData } from "../userController.js";
 import { mssql, mssqlDataTypes } from "../../../../config/db.config.js";
 import { hashPassword } from "../../../../auth/authController.js";
-import GlobalError from "../../../errors/globalError.js";
+import GlobalError from "../../../../errors/globalError.js";
 import ValidationError, {
   errorValidationResult,
   formatErrors,
   isEmpty,
-} from "../../../errors/validationError.js";
-import catchAsync from "../../../errors/catchAsync.js";
+} from "../../../../errors/validationError.js";
+import catchAsync from "../../../../errors/catchAsync.js";
 import resetUserPasswordSQL from "./resetPasswordModel.js";
 
 export const validateResetPassword = catchAsync(async (req, res, next) => {

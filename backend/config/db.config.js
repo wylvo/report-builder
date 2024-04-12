@@ -1,6 +1,6 @@
 import sql from "mssql/msnodesqlv8.js";
-import catchAsync from "../api/errors/catchAsync.js";
-import GlobalError from "../api/errors/globalError.js";
+import catchAsync from "../errors/catchAsync.js";
+import GlobalError from "../errors/globalError.js";
 
 const dbConfig = {
   driver: "msnodesqlv8",

@@ -1,5 +1,7 @@
 import { checkSchema } from "express-validator";
 
+import { User } from "./userModel.js";
+import { Report } from "../reports/reportModel.js";
 import {
   resetUserPassword,
   validateResetPassword,
@@ -7,15 +9,13 @@ import {
 import { hashPassword } from "../../../auth/authController.js";
 import { generateUUID } from "../router.js";
 import { mssql, mssqlDataTypes } from "../../../config/db.config.js";
-import catchAsync from "../../errors/catchAsync.js";
-import GlobalError from "../../errors/globalError.js";
+import catchAsync from "../../../errors/catchAsync.js";
+import GlobalError from "../../../errors/globalError.js";
 import ValidationError, {
   errorValidationResult,
   formatErrors,
   isEmpty,
-} from "../../errors/validationError.js";
-import { User } from "./userModel.js";
-import { Report } from "../reports/reportModel.js";
+} from "../../../errors/validationError.js";
 
 export const filterObject = (obj, ...allowedFields) => {
   const newObj = {};
