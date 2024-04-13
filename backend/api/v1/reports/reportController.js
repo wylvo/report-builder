@@ -1,6 +1,6 @@
-import { checkSchema } from "express-validator";
+import { ExpressValidator } from "express-validator";
 
-import { Report } from "./reportModel.js";
+import { Report, isDateTime, isPOSNumber } from "./reportModel.js";
 import { mssql, mssqlDataTypes } from "../../../config/db.config.js";
 import GlobalError from "../../../errors/globalError.js";
 import catchAsync from "../../../errors/catchAsync.js";
@@ -9,6 +9,8 @@ import ValidationError, {
   formatErrors,
   isEmpty,
 } from "../../../errors/validationError.js";
+
+const { checkSchema } = new ExpressValidator({ isDateTime, isPOSNumber });
 
 export const getAllReports = catchAsync(async (req, res, next) => {
   const {
@@ -27,8 +29,6 @@ export const getAllReports = catchAsync(async (req, res, next) => {
 });
 
 export const validateCreate = catchAsync(async (req, res, next) => {
-  // req.body.call.date = new Date(req.body.call.date);
-  console.log(req.body.call.date);
   await checkSchema(Report.schema.create, ["body"]).run(req);
   const result = errorValidationResult(req);
   const errors = result.mapped();

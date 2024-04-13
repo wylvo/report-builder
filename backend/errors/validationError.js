@@ -1,12 +1,14 @@
 import { validationResult } from "express-validator";
 
 export const errorValidationResult = validationResult.withDefaults({
-  formatter: (error) => error.msg,
+  formatter: (error) => `${error.path}: ${error.msg}`,
 });
 
-export const formatErrors = (obj) => {
+export const formatErrors = (objectOrArray) => {
   let message = "";
-  Object.keys(obj).forEach((field) => (message += `${obj[field]} `));
+  Object.keys(objectOrArray).forEach(
+    (field) => (message += `${objectOrArray[field]} `)
+  );
   return message.slice(0, -1);
 };
 

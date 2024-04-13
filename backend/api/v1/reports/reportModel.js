@@ -1,11 +1,36 @@
 import { mssql } from "../../../config/db.config.js";
-import { checkSchema, body } from "express-validator";
+import validator from "validator";
 
-// checkSchema({
-//   id: {
-//     isUUID: { options: { version: "4" } },
-//   },
-// });
+// Custom date & time validation function for checkSchema in reportController.js
+export const isDateTime = (value) => {
+  const dateTime = value.split(" ");
+  if (dateTime.length > 3) throw new Error();
+
+  let [unformattedDate, unformattedTime, amPm] = dateTime;
+  let [month, day, year] = unformattedDate.split("/");
+  if (Number(month) < 10 && month.length === 1) month = `0${month}`;
+  if (Number(day) < 10 && day.length === 1) day = `0${day}`;
+
+  const date = `${month}/${day}/${year}`;
+  const isValidDate = validator.isDate(date, {
+    format: "MM/DD/YYYY",
+    strictMode: true,
+  });
+
+  const time = `${unformattedTime} ${amPm}`;
+  const isValidTime = validator.isTime(time, { hourFormat: "hour12" });
+
+  if (!isValidDate || !isValidTime) return false;
+  return true;
+};
+
+export const isPOSNumber = (value) => {
+  if (typeof value !== "string" || value.length !== 1) throw new Error();
+
+  const number = Number(value);
+  console.log(number);
+  if (number < 1 || number > 3) throw new Error();
+};
 
 export const Report = {
   findBy: async (input, value, query) => {
@@ -258,60 +283,82 @@ export const Report = {
      **/
     create: {
       id: {
-        exists: { errorMessage: "Id is required.", bail: true },
-        isUUID: { errorMessage: "Invalid id." },
+        exists: { errorMessage: "required.", bail: true },
+        isUUID: { errorMessage: "invalid UUID." },
       },
       version: {
-        exists: { errorMessage: "Version is required.", bail: true },
-        isSemVer: { errorMessage: "Invalid version." },
+        exists: { errorMessage: "required.", bail: true },
+        isSemVer: { errorMessage: "invalid version." },
       },
       createdDateTime: {
-        exists: { errorMessage: "createdDateTime is required.", bail: true },
-        isISO8601: { errorMessage: "Invalid date for createdDateTime." },
+        exists: { errorMessage: "required.", bail: true },
+        isISO8601: {
+          options: { strict: true, strictSeparator: true },
+          errorMessage: "invalid date (see ISO 8601).",
+        },
       },
       lastModifiedDateTime: {
-        exists: {
-          errorMessage: "lastModifiedDateTime is required.",
-          bail: true,
+        exists: { errorMessage: "required.", bail: true },
+        isISO8601: {
+          options: { strict: true, strictSeparator: true },
+          errorMessage: "invalid date (see ISO 8601).",
         },
-        isISO8601: { errorMessage: "Invalid date for lastModifiedDateTime." },
       },
       createdBy: {
         // TODO: CHECK IF VALID USERNAME
-        exists: { errorMessage: "Created by is required.", bail: true },
-        notEmpty: { errorMessage: "Created by can't be empty.", bail: true },
-        isString: { errorMessage: "Created by should be a string" },
+        exists: { errorMessage: "required.", bail: true },
+        notEmpty: { errorMessage: "can't be empty.", bail: true },
+        isString: { errorMessage: "should be a string." },
       },
       updatedBy: {
         // TODO: CHECK IF VALID USERNAME
-        exists: { errorMessage: "Updated by is required.", bail: true },
-        notEmpty: { errorMessage: "Updated by can't be empty.", bail: true },
-        isString: { errorMessage: "Updated by should be a string" },
+        exists: { errorMessage: "required.", bail: true },
+        isString: { errorMessage: "should be a string." },
       },
       isDeleted: {
-        exists: { errorMessage: "isDeleted is required.", bail: true },
+        exists: { errorMessage: "required.", bail: true },
         isBoolean: {
           options: { strict: true },
-          errorMessage: "isDeleted should be a boolean (true or false).",
+          errorMessage: "should be a boolean (true or false).",
         },
       },
       isWebhookSent: {
-        exists: { errorMessage: "isWebhookSent is required.", bail: true },
+        exists: { errorMessage: "required.", bail: true },
         isBoolean: {
           options: { strict: true },
-          errorMessage: "isWebhookSent should be a boolean (true or false).",
+          errorMessage: "should be a boolean (true or false).",
         },
       },
       hasTriggeredWebhook: {
         exists: {
-          errorMessage: "hasTriggeredWebhook is required.",
+          errorMessage: "required.",
           bail: true,
         },
         isBoolean: {
           options: { strict: true },
-          errorMessage:
-            "hasTriggeredWebhook should be a boolean (true or false).",
+          errorMessage: "should be a boolean (true or false).",
         },
+      },
+
+      "**.dateTime": {
+        trim: {},
+        toUpperCase: {},
+        isDateTime: {
+          errorMessage:
+            "invalid date & time, format is: MM/DD/YYYY HH:mm AM|PM.",
+        },
+      },
+
+      "**.date": {
+        trim: {},
+        isDate: {
+          errorMessage: "invalid date, format is: YYYY/MM/DD or YYYY-MM-DD.",
+        },
+      },
+
+      "**.time": {
+        trim: {},
+        isTime: { errorMessage: "invalid time, format is: HH:mm." },
       },
 
       /********************************************
@@ -324,28 +371,23 @@ export const Report = {
        *  }
        ******************************************/
       "call.date": {
-        exists: { errorMessage: "call.date is required.", bail: true },
-        isDate: { errorMessage: "Invalid date for call.date." },
+        exists: { errorMessage: "required.", bail: true },
       },
       "call.time": {
-        exists: { errorMessage: "call.time is required.", bail: true },
-        isTime: { errorMessage: "Invalid time for call.time." },
+        exists: { errorMessage: "required.", bail: true },
       },
       "call.dateTime": {
-        exists: { errorMessage: "call.dateTime is required.", bail: true },
-        isDate: { errorMessage: "Invalid date for call.dateTime." },
+        exists: { errorMessage: "required.", bail: true },
       },
       "call.phone": {
-        exists: { errorMessage: "call.phone is required.", bail: true },
-        isString: { errorMessage: "call.phone should be a string" },
+        exists: { errorMessage: "required.", bail: true },
+        isString: { errorMessage: "should be a string." },
       },
       "call.status": {
-        exists: { errorMessage: "call.status is required.", bail: true },
-        notEmpty: { errorMessage: "call.status can't be empty.", bail: true },
+        exists: { errorMessage: "required.", bail: true },
         isIn: {
           options: [["In Progress", "Completed"]],
-          errorMessage:
-            "Invalid call.status. Only in progress or completed are allowed.",
+          errorMessage: "only 'In Progress' or 'Completed' are allowed.",
         },
       },
 
@@ -364,77 +406,44 @@ export const Report = {
        *  }
        ******************************************/
       "store.number": {
-        exists: { errorMessage: "store.number is required.", bail: true },
-        notEmpty: { errorMessage: "store.number can't be empty.", bail: true },
-        isString: { errorMessage: "store.number should be a string" },
+        exists: { errorMessage: "required.", bail: true },
+        notEmpty: { errorMessage: "can't be empty.", bail: true },
+        isString: { errorMessage: "should be a string." },
       },
       "store.employee.name": {
-        exists: {
-          errorMessage: "store.employee.name is required.",
-          bail: true,
-        },
-        isString: {
-          errorMessage: "store.employee.name should be a string",
-          bail: true,
-        },
+        exists: { errorMessage: "required.", bail: true },
+        isString: { errorMessage: "should be a string.", bail: true },
         isLength: {
           options: { max: 50 },
-          errorMessage:
-            "Invalid store.employee.name length, max 50 characters allowed.",
+          errorMessage: "invalid length, max of 50 characters allowed.",
         },
       },
       "store.employee.isStoreManager": {
-        exists: {
-          errorMessage: "store.employee.isStoreManager is required.",
-          bail: true,
-        },
+        exists: { errorMessage: "required.", bail: true },
         isBoolean: {
           options: { strict: true },
-          errorMessage:
-            "store.employee.isStoreManager should be a boolean (true or false).",
+          errorMessage: "should be a boolean (true or false).",
         },
       },
       "store.districtManager.name": {
-        exists: {
-          errorMessage: "store.districtManager.name is required.",
-          bail: true,
-        },
-        notEmpty: {
-          errorMessage: "store.districtManager.name can't be empty.",
-          bail: true,
-        },
-        isString: {
-          errorMessage: "store.districtManager.name should be a string",
-          bail: true,
-        },
+        exists: { errorMessage: "required.", bail: true },
+        notEmpty: { errorMessage: "can't be empty.", bail: true },
+        isString: { errorMessage: "should be a string.", bail: true },
         isLength: {
           options: { max: 50 },
-          errorMessage:
-            "Invalid store.districtManager.name length, max 50 characters allowed.",
+          errorMessage: "invalid length, max of 50 characters allowed.",
         },
       },
       "store.districtManager.username": {
-        exists: {
-          errorMessage: "store.districtManager.username is required.",
-          bail: true,
-        },
-        notEmpty: {
-          errorMessage: "store.districtManager.username can't be empty.",
-          bail: true,
-        },
-        isString: {
-          errorMessage: "store.districtManager.username should be a string",
-        },
+        exists: { errorMessage: "required.", bail: true },
+        notEmpty: { errorMessage: "can't be empty.", bail: true },
+        isString: { errorMessage: "should be a string." },
       },
       "store.districtManager.isContacted": {
-        exists: {
-          errorMessage: "store.districtManager.isContacted is required.",
-          bail: true,
-        },
+        exists: { errorMessage: "required.", bail: true },
         isBoolean: {
           options: { strict: true },
-          errorMessage:
-            "store.districtManager.isContacted should be a boolean (true or false).",
+          errorMessage: "should be a boolean (true or false).",
         },
       },
 
@@ -458,117 +467,93 @@ export const Report = {
        *  }
        ********************************************/
       "incident.title": {
-        exists: { errorMessage: "call.phone is required.", bail: true },
-        notEmpty: { errorMessage: "call.phone can't be empty.", bail: true },
-        isString: {
-          errorMessage: "call.phone should be a string",
-          bail: true,
-        },
+        exists: { errorMessage: "required.", bail: true },
+        notEmpty: { errorMessage: "can't be empty.", bail: true },
+        isString: { errorMessage: "should be a string.", bail: true },
         isLength: {
           options: { max: 100 },
-          errorMessage:
-            "Invalid incident.title length, max 100 characters allowed.",
+          errorMessage: "invalid length, max of 100 characters allowed.",
         },
       },
       "incident.date": {
-        exists: { errorMessage: "incident.date is required.", bail: true },
-        isDate: { errorMessage: "Invalid date for incident.date." },
+        exists: { errorMessage: "required.", bail: true },
       },
       "incident.time": {
-        exists: { errorMessage: "incident.time is required.", bail: true },
-        isTime: { errorMessage: "Invalid time for incident.time." },
+        exists: { errorMessage: "required.", bail: true },
       },
       "incident.dateTime": {
-        exists: {
-          errorMessage: "incident.dateTime is required.",
-          bail: true,
-        },
-        isDate: { errorMessage: "Invalid date for incident.dateTime." },
+        exists: { errorMessage: "required.", bail: true },
       },
       "incident.copyTimestamp": {
-        exists: {
-          errorMessage: "incident.copyTimestamp is required.",
-          bail: true,
-        },
+        exists: { errorMessage: "required.", bail: true },
         isBoolean: {
           options: { strict: true },
-          errorMessage:
-            "incident.copyTimestamp should be a boolean (true or false).",
+          errorMessage: "should be a boolean (true or false).",
         },
       },
       "incident.type": {
-        exists: { errorMessage: "incident.type is required.", bail: true },
-        notEmpty: {
-          errorMessage: "incident.type can't be empty.",
-          bail: true,
+        exists: { errorMessage: "required.", bail: true },
+        isIn: {
+          options: [
+            [
+              "Bug",
+              "Update",
+              "Outage",
+              "Software",
+              "Hardware",
+              "Networking",
+              "Authentication",
+              "Employee Mistake",
+              "Other",
+            ],
+          ],
+          errorMessage: `only 'Bug', 'Update', 'Outage', 'Software', 'Hardware', 'Networking', 'Authentication', 'Employee Mistake', 'Other' are allowed.`,
         },
-        isString: { errorMessage: "incident.type should be a string" },
       },
       "incident.pos": {
-        exists: { errorMessage: "incident.pos is required.", bail: true },
-        isString: {
-          errorMessage: "incident.pos should be a string",
-          bail: true,
-        },
-        isLength: {
-          options: { max: 1 },
-          errorMessage: "Invalid incident.pos length, max 1 character allowed.",
+        exists: { errorMessage: "required.", bail: true },
+        isIn: {
+          options: [["", "1", "2", "3"]],
+          errorMessage: `only '1', '2', '3' are allowed.`,
         },
       },
       "incident.isProcedural": {
-        exists: {
-          errorMessage: "incident.isProcedural is required.",
-          bail: true,
-        },
+        exists: { errorMessage: "required.", bail: true },
         isBoolean: {
           options: { strict: true },
-          errorMessage:
-            "incident.isProcedural should be a boolean (true or false).",
+          errorMessage: "should be a boolean (true or false).",
         },
       },
       "incident.error": {
-        exists: { errorMessage: "incident.error is required.", bail: true },
-        isString: {
-          errorMessage: "incident.error should be a string",
-          bail: true,
-        },
+        exists: { errorMessage: "required.", bail: true },
+        isString: { errorMessage: "should be a string.", bail: true },
         isLength: {
           options: { max: 100 },
-          errorMessage:
-            "Invalid incident.error length, max 100 characters allowed.",
+          errorMessage: "invalid length, max of 100 characters allowed.",
         },
       },
       "incident.transaction.*": {
         optional: true,
       },
       "incident.transaction.type": {
-        notEmpty: {
-          errorMessage: "incident.transaction.type can't be empty.",
-          bail: true,
-        },
-        isString: {
-          errorMessage: "incident.transaction.type should be a string",
-        },
+        notEmpty: { errorMessage: "can't be empty.", bail: true },
+        isString: { errorMessage: "should be a string." },
       },
       "incident.transaction.number": {
         isString: {
-          errorMessage: "incident.transaction.number should be a string",
+          errorMessage: "should be a string.",
         },
       },
       "incident.transaction.isIRCreated": {
         isBoolean: {
           options: { strict: true },
-          errorMessage:
-            "incident.transaction.isIRCreated should be a boolean (true or false).",
+          errorMessage: "should be a boolean (true or false).",
         },
       },
       "incident.details": {
-        exists: { errorMessage: "incident.details is required.", bail: true },
-        notEmpty: {
-          errorMessage: "incident.details can't be empty.",
-          bail: true,
-        },
-        isString: { errorMessage: "incident.details should be a string" },
+        exists: { errorMessage: "required.", bail: true },
+        notEmpty: { errorMessage: "can't be empty.", bail: true },
+        isString: { errorMessage: "should be a string." },
       },
 
       /********************************************
@@ -585,40 +570,27 @@ export const Report = {
           errorMessage: "tech.name can't be empty.",
           bail: true,
         },
-        isString: { errorMessage: "tech.name should be a string" },
+        isString: { errorMessage: "tech.name should be a string." },
       },
       "tech.username": {
         // TODO: CHECK IF VALID USERNAME
-        exists: { errorMessage: "tech.username is required.", bail: true },
-        notEmpty: {
-          errorMessage: "tech.username can't be empty.",
-          bail: true,
-        },
-        isString: { errorMessage: "tech.username should be a string" },
+        exists: { errorMessage: "required.", bail: true },
+        notEmpty: { errorMessage: "can't be empty.", bail: true },
+        isString: { errorMessage: "should be a string." },
       },
       "tech.initials": {
-        exists: { errorMessage: "tech.initials is required.", bail: true },
-        notEmpty: {
-          errorMessage: "tech.initials can't be empty.",
-          bail: true,
-        },
-        isString: {
-          errorMessage: "tech.initials should be a string",
-          bail: true,
-        },
+        exists: { errorMessage: "required.", bail: true },
+        isString: { errorMessage: "should be a string.", bail: true },
         isLength: {
           options: { max: 2 },
-          errorMessage: "Invalid initials length, max 2 characters allowed.",
+          errorMessage: "invalid length, max 2 characters allowed.",
         },
       },
       "tech.isOnCall": {
-        exists: {
-          errorMessage: "tech.isOnCall is required.",
-          bail: true,
-        },
+        exists: { errorMessage: "required.", bail: true },
         isBoolean: {
           options: { strict: true },
-          errorMessage: "tech.isOnCall should be a boolean (true or false).",
+          errorMessage: "should be a boolean (true or false).",
         },
       },
     },

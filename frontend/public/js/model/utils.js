@@ -37,7 +37,7 @@ export default {
   // Format date to MM/DD/YYYY HH:mm AM or PM
   formatDate: (date) => {
     date = new Date(date);
-    if (isNaN(date)) return null;
+    if (isNaN(date)) return undefined;
 
     let hours = date.getHours();
     let minutes = date.getMinutes();
@@ -52,4 +52,23 @@ export default {
       sharepoint: `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()} ${hours}:${minutes} ${amPM}`,
     };
   },
+
+  // prettier-ignore
+  formatDateISO8601: (date) => {
+    const tzo = -date.getTimezoneOffset();
+    const dif = tzo >= 0 ? '+' : '-';
+    const pad = (num) => (num < 10 ? '0' : '') + num;
+  
+    return date.getFullYear() +
+    '-' + pad(date.getMonth() + 1) +
+    '-' + pad(date.getDate()) +
+    'T' + pad(date.getHours()) +
+    ':' + pad(date.getMinutes()) +
+    ':' + pad(date.getSeconds()) +
+    dif + pad(Math.floor(Math.abs(tzo) / 60)) +
+    ':' + pad(Math.abs(tzo) % 60);
+  },
+
+  // var dt = new Date();
+  // console.log(toIsoString(dt));
 };
