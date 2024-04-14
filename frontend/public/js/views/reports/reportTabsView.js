@@ -87,7 +87,12 @@ class ReportTabsView extends TabsView {
 
               <!-- STATUS, PHONE NUMBER, PHONE NO CALLER ID  -->
               <div class="form-grouping-col">
-                <select id="status_${index}" name="status" class="status">
+                <select 
+                  id="status_${index}" 
+                  name="status" 
+                  class="status" 
+                  required
+                >
                   <option selected value="In Progress">In Progress</option>
                   <option value="Completed">Completed</option>
                 </select>
@@ -184,7 +189,12 @@ class ReportTabsView extends TabsView {
             <!-- STORE DISTRICT MANAGER, DM CONTACTED -->
             <div class="grid columns-75-25">
               <div class="form-grouping-col">
-                <select id="store-dm_${index}" name="store-dm" class="store-dm">
+                <select 
+                  id="store-dm_${index}" 
+                  name="store-dm" 
+                  class="store-dm"
+                  required
+                >
                   <option value="carolane.brisebois">Carolane Brisebois</option>
                   <option value="isabelle.hamel">Isabelle Hamel</option>
                   <option value="david.yon">David Yon</option>
@@ -252,6 +262,7 @@ class ReportTabsView extends TabsView {
                   id="incident-date_${index}"
                   name="incident-date"
                   class="incident-date"
+                  required
                 />
                 <label for="incident-date_${index}">Date:</label>
               </div>
@@ -261,6 +272,7 @@ class ReportTabsView extends TabsView {
                   id="incident-time_${index}"
                   name="incident-time"
                   class="incident-time"
+                  required
                 />
                 <label for="incident-time_${index}">Time:</label>
               </div>
@@ -287,6 +299,7 @@ class ReportTabsView extends TabsView {
                   id="incident-type_${index}"
                   name="incident-type"
                   class="incident-type"
+                  required
                 >
                   <option value="Bug">Bug</option>
                   <option value="Update">Update</option>
@@ -409,6 +422,7 @@ class ReportTabsView extends TabsView {
                 class="incident-details"
                 placeholder="What happened during this incident, actions taken, etc..."
                 maxlength="2000"
+                required
               ></textarea>
               <label for="incident-details_${index}">Details:</label>
               <p class="max-length"><span id="incident-details_${index}-length">0</span>/<span class="max-length-text"></span></p>

@@ -24,14 +24,6 @@ export const isDateTime = (value) => {
   return true;
 };
 
-export const isPOSNumber = (value) => {
-  if (typeof value !== "string" || value.length !== 1) throw new Error();
-
-  const number = Number(value);
-  console.log(number);
-  if (number < 1 || number > 3) throw new Error();
-};
-
 export const Report = {
   findBy: async (input, value, query) => {
     const {
@@ -282,6 +274,27 @@ export const Report = {
      *
      **/
     create: {
+      "**.date": {
+        trim: {},
+        isDate: {
+          errorMessage: "invalid date, format is: YYYY/MM/DD or YYYY-MM-DD.",
+        },
+      },
+
+      "**.time": {
+        trim: {},
+        isTime: { errorMessage: "invalid time, format is: HH:mm." },
+      },
+
+      "**.dateTime": {
+        trim: {},
+        toUpperCase: {},
+        isDateTime: {
+          errorMessage:
+            "invalid date & time, format is: MM/DD/YYYY HH:mm AM|PM.",
+        },
+      },
+
       id: {
         exists: { errorMessage: "required.", bail: true },
         isUUID: { errorMessage: "invalid UUID." },
@@ -340,27 +353,6 @@ export const Report = {
         },
       },
 
-      "**.dateTime": {
-        trim: {},
-        toUpperCase: {},
-        isDateTime: {
-          errorMessage:
-            "invalid date & time, format is: MM/DD/YYYY HH:mm AM|PM.",
-        },
-      },
-
-      "**.date": {
-        trim: {},
-        isDate: {
-          errorMessage: "invalid date, format is: YYYY/MM/DD or YYYY-MM-DD.",
-        },
-      },
-
-      "**.time": {
-        trim: {},
-        isTime: { errorMessage: "invalid time, format is: HH:mm." },
-      },
-
       /********************************************
        *  "call": {
        *    "date": "2023-11-05",
@@ -370,6 +362,10 @@ export const Report = {
        *    "status": "Completed"
        *  }
        ******************************************/
+      call: {
+        exists: { errorMessage: "required.", bail: true },
+        isObject: { errorMessage: "has to be an object enclosed by {}." },
+      },
       "call.date": {
         exists: { errorMessage: "required.", bail: true },
       },
@@ -379,6 +375,7 @@ export const Report = {
       "call.dateTime": {
         exists: { errorMessage: "required.", bail: true },
       },
+      // TODO: CHECK IF IS VALID PHONE NUMBER
       "call.phone": {
         exists: { errorMessage: "required.", bail: true },
         isString: { errorMessage: "should be a string." },
@@ -405,10 +402,19 @@ export const Report = {
        *    }
        *  }
        ******************************************/
+      store: {
+        exists: { errorMessage: "required.", bail: true },
+        isObject: { errorMessage: "has to be an object enclosed by {}." },
+      },
       "store.number": {
+        // TODO: CHECK IF VALID STORE NUMBER, MIGHT NEED TO CHANGE TO ARRAY DATA TYPE
         exists: { errorMessage: "required.", bail: true },
         notEmpty: { errorMessage: "can't be empty.", bail: true },
         isString: { errorMessage: "should be a string." },
+      },
+      "store.employee": {
+        exists: { errorMessage: "required.", bail: true },
+        isObject: { errorMessage: "has to be an object enclosed by {}." },
       },
       "store.employee.name": {
         exists: { errorMessage: "required.", bail: true },
@@ -425,6 +431,11 @@ export const Report = {
           errorMessage: "should be a boolean (true or false).",
         },
       },
+      "store.districtManager": {
+        exists: { errorMessage: "required.", bail: true },
+        isObject: { errorMessage: "has to be an object enclosed by {}." },
+      },
+      // TODO: CHECK IF VALID DISTRICT MANAGER (BY USERNAME)
       "store.districtManager.name": {
         exists: { errorMessage: "required.", bail: true },
         notEmpty: { errorMessage: "can't be empty.", bail: true },
@@ -434,6 +445,7 @@ export const Report = {
           errorMessage: "invalid length, max of 50 characters allowed.",
         },
       },
+      // TODO: CHECK IF VALID DISTRICT MANAGER (BY USERNAME)
       "store.districtManager.username": {
         exists: { errorMessage: "required.", bail: true },
         notEmpty: { errorMessage: "can't be empty.", bail: true },
@@ -466,6 +478,10 @@ export const Report = {
        *    "details": ""
        *  }
        ********************************************/
+      incident: {
+        exists: { errorMessage: "required.", bail: true },
+        isObject: { errorMessage: "has to be an object enclosed by {}." },
+      },
       "incident.title": {
         exists: { errorMessage: "required.", bail: true },
         notEmpty: { errorMessage: "can't be empty.", bail: true },
@@ -507,14 +523,14 @@ export const Report = {
               "Other",
             ],
           ],
-          errorMessage: `only 'Bug', 'Update', 'Outage', 'Software', 'Hardware', 'Networking', 'Authentication', 'Employee Mistake', 'Other' are allowed.`,
+          errorMessage: `only 'Bug', 'Update', 'Outage', 'Software', 'Hardware', 'Networking', 'Authentication', 'Employee Mistake', and 'Other' are allowed.`,
         },
       },
       "incident.pos": {
         exists: { errorMessage: "required.", bail: true },
         isIn: {
           options: [["", "1", "2", "3"]],
-          errorMessage: `only '1', '2', '3' are allowed.`,
+          errorMessage: "only '1', '2', and '3' are allowed.",
         },
       },
       "incident.isProcedural": {
@@ -532,19 +548,41 @@ export const Report = {
           errorMessage: "invalid length, max of 100 characters allowed.",
         },
       },
-      "incident.transaction.*": {
-        optional: true,
+      "incident.transaction": {
+        exists: { errorMessage: "required.", bail: true },
+        isObject: { errorMessage: "has to be an object enclosed by {}." },
       },
       "incident.transaction.type": {
-        notEmpty: { errorMessage: "can't be empty.", bail: true },
-        isString: { errorMessage: "should be a string." },
+        optional: true,
+        isIn: {
+          options: [
+            [
+              "",
+              "Sale",
+              "Refund",
+              "Variance",
+              "Exchange",
+              "Correction",
+              "Promotion",
+              "Employee Sale",
+              "Other",
+            ],
+          ],
+          errorMessage: `only 'Sale', 'Refund', 'Variance', 'Exchange', 'Correction', 'Promotion', 'Employee Sale', and 'Other' are allowed.`,
+        },
       },
       "incident.transaction.number": {
+        optional: true,
         isString: {
           errorMessage: "should be a string.",
         },
+        isLength: {
+          options: { max: 50 },
+          errorMessage: "invalid length, max of 50 characters allowed.",
+        },
       },
       "incident.transaction.isIRCreated": {
+        optional: true,
         isBoolean: {
           options: { strict: true },
           errorMessage: "should be a boolean (true or false).",
@@ -564,13 +602,15 @@ export const Report = {
        *    "isOnCall": true
        *  }
        ******************************************/
+      tech: {
+        exists: { errorMessage: "required.", bail: true },
+        isObject: { errorMessage: "has to be an object enclosed by {}." },
+      },
       "tech.name": {
-        exists: { errorMessage: "tech.name is required.", bail: true },
-        notEmpty: {
-          errorMessage: "tech.name can't be empty.",
-          bail: true,
-        },
-        isString: { errorMessage: "tech.name should be a string." },
+        // TODO: CHECK IF VALID USERNAME
+        exists: { errorMessage: "required.", bail: true },
+        notEmpty: { errorMessage: "can't be empty.", bail: true },
+        isString: { errorMessage: "should be a string." },
       },
       "tech.username": {
         // TODO: CHECK IF VALID USERNAME

@@ -519,7 +519,7 @@ export const createUserObject = function (form) {
     initials: form.initials?.value.trim(),
     password: form.password?.value.trim(),
     passwordConfirmation: form["password-confirmation"]?.value.trim(),
-    profilePictureURL: form["profile-picture-url"]?.value.trim(),
+    profilePictureURI: form["profile-picture-uri"]?.value.trim(),
     tableRowEl: {},
   };
 };
@@ -541,7 +541,7 @@ export const updateUserObject = function (userObjectOrId, form) {
   clone.fullName = form["full-name"]?.value.trim();
   clone.username = form.username?.value.trim();
   clone.initials = form.initials?.value.trim();
-  clone.profilePictureURL = form["profile-picture-url"]?.value.trim();
+  clone.profilePictureURI = form["profile-picture-uri"]?.value.trim();
 
   // Check validity of the clone. If not valid, an error will be thrown here.
   checkUserValidity(DEFAULT_USER_UPDATE, clone);
@@ -553,7 +553,7 @@ export const updateUserObject = function (userObjectOrId, form) {
   user.fullName = clone.fullName;
   user.username = clone.username;
   user.initials = clone.initials;
-  // user.profilePictureURL = clone.profilePictureURL;
+  // user.profilePictureURI = clone.profilePictureURI;
   user.tableRowEl = tableRowEl;
 
   return user;
@@ -599,8 +599,8 @@ export const checkUserValidity = (configObject, user) => {
     // If the default object key value types !== the target (user) object key value types
     if (typeof defaultKeyValue !== typeof targetKeyValue) {
 
-      // if key "initials" & "profilePictureURL" is null stop the iteration by returning nothing. "initials" & "profilePictureURL" can === null.
-      if(key === "initials" || "profilePictureURL") {
+      // if key "initials" & "profilePictureURI" is null stop the iteration by returning nothing. "initials" & "profilePictureURI" can === null.
+      if(key === "initials" || "profilePictureURI") {
         if (targetKeyValue === null || typeof targetKeyValue === "string") return;
 
         // Else keep it in memory, and return nothing to stop the iteration.
@@ -764,8 +764,8 @@ export const DB = {
     state.users = data;
 
     state.users.forEach((user) => {
-      if (!user.profilePictureURL)
-        user.profilePictureURL = "/img/default_profile_picture.jpg";
+      if (!user.profilePictureURI)
+        user.profilePictureURI = "/img/default_profile_picture.jpg";
     });
 
     return data;

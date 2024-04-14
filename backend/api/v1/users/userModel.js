@@ -38,15 +38,15 @@ export const User = {
     byId: "SELECT * FROM users WHERE id = @id;",
     byEmail: "SELECT * FROM users WHERE email = @email;",
     byUsername: "SELECT * FROM users WHERE username = @username;",
-    all: "SELECT id, role, isEnabled, email, profilePictureURL, fullName, username, initials FROM users;",
+    all: "SELECT id, role, isEnabled, email, profilePictureURI, fullName, username, initials FROM users;",
 
     // CREATE USER
     insert() {
       return `
         INSERT INTO users
-          (id, role, isEnabled, email, password, profilePictureURL, fullName, username, initials)
+          (id, role, isEnabled, email, password, profilePictureURI, fullName, username, initials)
         VALUES
-          (@id, @role, @isEnabled, @email, @password, @profilePictureURL, @fullName, @username, @initials);
+          (@id, @role, @isEnabled, @email, @password, @profilePictureURI, @fullName, @username, @initials);
 
         ${this.byId}
       `;
@@ -63,7 +63,7 @@ export const User = {
           role = ISNULL(json.role, users.role),
           isEnabled = ISNULL(json.isEnabled, users.isEnabled),
           email = ISNULL(json.email, users.email),
-          profilePictureURL = ISNULL(json.profilePictureURL, users.profilePictureURL),
+          profilePictureURI = ISNULL(json.profilePictureURI, users.profilePictureURI),
           fullName = ISNULL(json.fullName, users.fullName),
           username = ISNULL(json.username, users.username),
           initials = ISNULL(json.initials, users.initials)
@@ -74,7 +74,7 @@ export const User = {
           role VARCHAR(64),
           isEnabled BIT,
           email VARCHAR(64),
-          profilePictureURL NVARCHAR(MAX),
+          profilePictureURI NVARCHAR(MAX),
           fullName VARCHAR(64),
           username VARCHAR(20),
           initials VARCHAR(2)
@@ -166,7 +166,7 @@ export const User = {
           errorMessage: "Passwords do not match.",
         },
       },
-      profilePictureURL: {
+      profilePictureURI: {
         optional: true,
         // isURL: { errorMessage: "Invalid profile picture URL" },
         isDataURI: { errorMessage: "Invalid profile picture data URI" },
@@ -230,7 +230,7 @@ export const User = {
           errorMessage: "Email is already in use.",
         },
       },
-      profilePictureURL: {
+      profilePictureURI: {
         optional: true,
         // isURL: { errorMessage: "Invalid profile picture URL" },
         isDataURI: { errorMessage: "Invalid profile picture data URI" },

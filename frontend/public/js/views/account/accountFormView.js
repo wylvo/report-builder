@@ -19,7 +19,7 @@ export class AccountFormView extends FormView {
     // Id tag
     this._idTag = this._form.querySelector(".tag")
 
-    this._profilePictureURL = this._fields.get("profile-picture-url");
+    this._profilePictureURL = this._fields.get("profile-picture-uri");
     this._imgProfilePicture = this._form.querySelector(".form-profile-picture");
 
 
@@ -71,8 +71,8 @@ export class AccountFormView extends FormView {
     this.updateTextInputsLength();
 
     // Update form profile picture
-    if (user.profilePictureURL)
-      this._imgProfilePicture.src = user.profilePictureURL;
+    if (user.profilePictureURI)
+      this._imgProfilePicture.src = user.profilePictureURI;
     else this._imgProfilePicture.src = this.#defaultProfilePicturePath;
 
     this._all(this._accordions).forEach((accordion) =>

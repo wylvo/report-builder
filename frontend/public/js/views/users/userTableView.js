@@ -39,8 +39,8 @@ class UserTableView extends TableView {
       ? { btnClassAndIcon: "disable", class: `class="good"`, text: "Enabled" }
       : { btnClassAndIcon: "enable", class: `class="attention"`, text: "Disabled" };
 
-    const profilePicture = user.profilePictureURL
-      ? user.profilePictureURL
+    const profilePicture = user.profilePictureURI
+      ? user.profilePictureURI
       : "/img/default_profile_picture.jpg";
 
     return `

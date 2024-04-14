@@ -7,7 +7,7 @@ export const DEFAULT_USER_CREATE = Object.freeze({
   fullName: "string",
   username: "string",
   initials: "string", // Can be "null"
-  profilePictureURL: "string", // Can be "null"
+  profilePictureURI: "string", // Can be "null"
   tableRowEl: {},
 });
 
@@ -19,7 +19,7 @@ export const DEFAULT_USER_UPDATE = Object.freeze({
   fullName: "string",
   username: "string",
   initials: "string", // Can be "null"
-  profilePictureURL: "string", // Can be "null"
+  profilePictureURI: "string", // Can be "null"
   tableRowEl: {},
 });
 

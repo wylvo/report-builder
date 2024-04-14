@@ -21,7 +21,7 @@ export class UserFormView extends FormView {
     // Tags
     this._tags = this._form.querySelectorAll(".tag");
 
-    this._profilePictureURL = this._fields.get("profile-picture-url");
+    this._profilePictureURL = this._fields.get("profile-picture-uri");
     this._imgProfilePicture = this._form.querySelector(".form-profile-picture");
 
     // Label Password (will be modified)
@@ -150,7 +150,7 @@ export class UserFormView extends FormView {
     fields.get("initials").value = user.initials;
     fields.get("email").value = user.email;
     fields.get("username").value = user.username;
-    fields.get("profile-picture-url").value = user.profilePictureURL;
+    fields.get("profile-picture-uri").value = user.profilePictureURI;
     selects.get("role").value = user.role;
     selects.get("status").value = user.isEnabled ? "1" : "0";
 
@@ -164,7 +164,7 @@ export class UserFormView extends FormView {
     this._snapshot = this.takeSnapshot();
 
     // Update form profile picture
-    this._imgProfilePicture.src = user.profilePictureURL;
+    this._imgProfilePicture.src = user.profilePictureURI;
 
     // Password inputs not required
     this._password.required = false;

@@ -16,8 +16,8 @@
   <!-- <input type="checkbox" id="theme-toggle" hidden />
         <label for="theme-toggle" class="theme-toggle"></label> -->
   <a href="/me" class="profile">
-    <img <%= locals?.user?.profilePictureURL ?
-    `src=${locals.user.profilePictureURL}` :
+    <img <%= locals?.user?.profilePictureURI ?
+    `src=${locals.user.profilePictureURI}` :
     `src=/img/default_profile_picture.jpg` %> />
   </a>
 </nav>

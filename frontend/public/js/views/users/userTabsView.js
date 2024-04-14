@@ -150,12 +150,12 @@ class UserTabsView extends TabsView {
             <div class="form-grouping-col ">
               <input
                 type="url"
-                id="profile-picture-url_${index}"
-                name="profile-picture-url"
-                class="profile-picture-url"
-                placeholder="Image URL"
+                id="profile-picture-uri_${index}"
+                name="profile-picture-uri"
+                class="profile-picture-uri"
+                placeholder="data:image/png;base64,..."
               />
-              <label for="profile-picture-url_${index}">Profile Picture URL:</label>
+              <label for="profile-picture-uri_${index}">Profile Picture URI:</label>
             </div>
           </div>
         </div>

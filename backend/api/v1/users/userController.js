@@ -38,7 +38,7 @@ export const filterUserData = (
         "role",
         "isEnabled",
         "email",
-        "profilePictureURL",
+        "profilePictureURI",
         "fullName",
         "username",
         "initials"
@@ -80,7 +80,7 @@ export const createUser = catchAsync(async (req, res, next) => {
     isEnabled,
     email,
     password,
-    profilePictureURL,
+    profilePictureURI,
     fullName,
     username,
     initials,
@@ -95,7 +95,7 @@ export const createUser = catchAsync(async (req, res, next) => {
     .input("isEnabled", isEnabled ?? true)
     .input("email", email)
     .input("password", await hashPassword(password))
-    .input("profilePictureURL", profilePictureURL)
+    .input("profilePictureURI", profilePictureURI)
     .input("fullName", fullName)
     .input("username", username)
     .input("initials", initials.toUpperCase() ?? null)

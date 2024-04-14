@@ -1,6 +1,6 @@
 import { ExpressValidator } from "express-validator";
 
-import { Report, isDateTime, isPOSNumber } from "./reportModel.js";
+import { Report, isDateTime } from "./reportModel.js";
 import { mssql, mssqlDataTypes } from "../../../config/db.config.js";
 import GlobalError from "../../../errors/globalError.js";
 import catchAsync from "../../../errors/catchAsync.js";
@@ -10,7 +10,7 @@ import ValidationError, {
   isEmpty,
 } from "../../../errors/validationError.js";
 
-const { checkSchema } = new ExpressValidator({ isDateTime, isPOSNumber });
+const { checkSchema } = new ExpressValidator({ isDateTime });
 
 export const getAllReports = catchAsync(async (req, res, next) => {
   const {
