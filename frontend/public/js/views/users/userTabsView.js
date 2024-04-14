@@ -146,7 +146,7 @@ class UserTabsView extends TabsView {
               </div>
             </div>
             
-            <!-- PROFILE PICTURE URL -->
+            <!-- PROFILE PICTURE URI -->
             <div class="form-grouping-col ">
               <input
                 type="url"

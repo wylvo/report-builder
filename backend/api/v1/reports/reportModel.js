@@ -24,6 +24,24 @@ export const isDateTime = (value) => {
   return true;
 };
 
+export const isTimeCustom = (value) => {
+  const hour12 = validator.isTime(value, { hourFormat: "hour12" });
+  if (hour12) return true;
+
+  // prettier-ignore
+  const hour12WithSeconds = validator.isTime(value, { hourFormat: "hour12", mode: "withSeconds" });
+  if (hour12WithSeconds) return true;
+
+  const hour24 = validator.isTime(value, { hourFormat: "hour24" });
+  if (hour24) return true;
+
+  // prettier-ignore
+  const hour24withSeconds = validator.isTime(value, { hourFormat: "hour24", mode: "withSeconds" });
+  if (hour24withSeconds) return true;
+
+  return false;
+};
+
 export const Report = {
   findBy: async (input, value, query) => {
     const {
@@ -283,7 +301,11 @@ export const Report = {
 
       "**.time": {
         trim: {},
-        isTime: { errorMessage: "invalid time, format is: HH:mm." },
+        toUpperCase: {},
+        isTimeCustom: {
+          errorMessage:
+            "invalid time, format is: HH:mm[:ss] or HH:mm[:ss] AM|PM.",
+        },
       },
 
       "**.dateTime": {
@@ -311,7 +333,12 @@ export const Report = {
         },
       },
       lastModifiedDateTime: {
-        exists: { errorMessage: "required.", bail: true },
+        exists: {
+          bail: true,
+          errorMessage: "required.",
+          // if lastModifiedDateTime is NOT null, check if: is ISO 8601
+          if: (lastModifiedDateTime) => lastModifiedDateTime !== null,
+        },
         isISO8601: {
           options: { strict: true, strictSeparator: true },
           errorMessage: "invalid date (see ISO 8601).",
@@ -325,7 +352,13 @@ export const Report = {
       },
       updatedBy: {
         // TODO: CHECK IF VALID USERNAME
-        exists: { errorMessage: "required.", bail: true },
+        exists: {
+          errorMessage: "required.",
+          bail: true,
+          // if updatedBy is NOT null, check if is: not empty & is string
+          if: (updatedBy) => updatedBy !== null,
+        },
+        notEmpty: { errorMessage: "can't be empty.", bail: true },
         isString: { errorMessage: "should be a string." },
       },
       isDeleted: {

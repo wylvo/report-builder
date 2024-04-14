@@ -360,11 +360,13 @@ export class ReportFormView extends FormView {
   _transactionIssueSwitch() {
     if (this._transactionIssue) {
       this._selects.get("transaction-type").disabled = false;
+      this._selects.get("transaction-type").setAttribute("required", "");
       this._fields.get("transaction-number").disabled = false;
       this._checkBoxes.get("transaction-incident-report").disabled = false;
     } else {
       this._selects.get("transaction-type").disabled = true;
       this._fields.get("transaction-number").disabled = true;
+      this._selects.get("transaction-type").removeAttribute("required");
       this._checkBoxes.get("transaction-incident-report").disabled = true;
     }
     return (this._transactionIssue = !this._transactionIssue);

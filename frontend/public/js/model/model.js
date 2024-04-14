@@ -178,7 +178,7 @@ export const createReportObject = function (report, form) {
   return {
     id: report?.id ?? utils.generateUUID(),
     version: state.version,
-    createdDateTime: utils.formatDate(report?.createdDateTime).iso ?? new Date().toISOString(),
+    createdDateTime: utils.formatDate(report?.createdDateTime)?.iso ?? new Date().toISOString(),
     lastModifiedDateTime: null,
     createdBy:
       report?.createdBy ??
@@ -553,7 +553,7 @@ export const updateUserObject = function (userObjectOrId, form) {
   user.fullName = clone.fullName;
   user.username = clone.username;
   user.initials = clone.initials;
-  // user.profilePictureURI = clone.profilePictureURI;
+  user.profilePictureURI = clone.profilePictureURI;
   user.tableRowEl = tableRowEl;
 
   return user;
@@ -670,6 +670,8 @@ export const DB = {
   createReport: async (tabReport, form) => {
     // Create a report object
     const reportObject = createReportObject(tabReport, form);
+
+    console.log(reportObject);
 
     // Check validity of the report object
     checkValidity(reportObject);

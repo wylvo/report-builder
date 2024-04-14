@@ -148,7 +148,7 @@ class ReportTabsView extends TabsView {
           <!-- STORE NUMBER, STORE EMPLOYEE, STORE MANAGER -->
           <div class="form-grouping-content">
             <div class="grid columns-37-37-25 mt-36">
-              <div class="form-grouping-col">
+              <div class="form-grouping-col gc-span-2-switch">
                 <input
                   type="number"
                   id="store-number_${index}"
@@ -187,8 +187,8 @@ class ReportTabsView extends TabsView {
             </div>
 
             <!-- STORE DISTRICT MANAGER, DM CONTACTED -->
-            <div class="grid columns-75-25">
-              <div class="form-grouping-col">
+            <div class="grid columns-37-37-25">
+              <div class="form-grouping-col gc-span-2">
                 <select 
                   id="store-dm_${index}" 
                   name="store-dm" 
@@ -204,7 +204,7 @@ class ReportTabsView extends TabsView {
                 </select>
                 <label for="store-dm_${index}">Distric Manager:</label>
               </div>
-              <div class="form-grouping-col self-end">
+              <div class="form-grouping-col gc-3 self-end">
                 <label for="store-dm-contacted_${index}">DM Contacted</label>
                 <label class="switch">
                   <input
@@ -294,7 +294,7 @@ class ReportTabsView extends TabsView {
 
             <!-- INCIDENT TYPE, INCIDENT POS NUMBER, INCIDENT PROCEDURAL  -->
             <div class="grid columns-37-37-25">
-              <div class="form-grouping-col">
+              <div class="form-grouping-col gc-span-2-switch">
                 <select
                   id="incident-type_${index}"
                   name="incident-type"
@@ -341,8 +341,8 @@ class ReportTabsView extends TabsView {
             </div>
 
             <!-- INCIDENT ERROR CODE, TRRANSACTION ISSUE -->
-            <div class="grid columns-75-25">
-              <div class="form-grouping-col">
+            <div class="grid columns-37-37-25">
+              <div class="form-grouping-col gc-span-2">
                 <input
                   type="text"
                   id="incident-error-code_${index}"
@@ -354,7 +354,7 @@ class ReportTabsView extends TabsView {
                 <label for="incident-error-code_${index}">Error Code:</label>
                 <p class="max-length"><span id="incident-error-code_${index}-length">0</span>/<span class="max-length-text"></span></p>
               </div>
-              <div class="form-grouping-col self-end">
+              <div class="form-grouping-col gc-3 self-end">
                 <label for="transaction-issue_${index}">Transaction</label>
                 <label class="switch">
                   <input
@@ -370,7 +370,7 @@ class ReportTabsView extends TabsView {
 
             <!-- TRANSACTION TYPE, TRANSACTION NUMBER, TRANSACTION INCIDENT REPORT -->
             <div class="grid columns-37-37-25 transaction-details">
-              <div class="form-grouping-col">
+              <div class="form-grouping-col gc-span-2-switch">
                 <select
                   id="transaction-type_${index}"
                   name="transaction-type"

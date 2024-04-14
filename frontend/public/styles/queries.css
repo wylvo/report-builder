@@ -135,6 +135,10 @@
     text-wrap: wrap;
   }
 
+  .gc-span-2-switch {
+    grid-column: span 2;
+  }
+
   .form-meta-data {
     flex-direction: column;
     gap: 3.6rem;
