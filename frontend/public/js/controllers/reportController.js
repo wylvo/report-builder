@@ -172,7 +172,10 @@ const controlDeleteReport = async function (id) {
     const report = model.findObjectById(model.state.reports, id);
   
     let isDeleteConfirmed = true;
-    isDeleteConfirmed = await modalView.confirmDelete(report);
+    if(model.state.user.role === "admin")
+      isDeleteConfirmed = await modalView.confirmDeleteOrHardDelete(report);
+    else isDeleteConfirmed = await modalView.confirmDelete(report);
+
     if(!isDeleteConfirmed) return;
     if(id === window.location.hash.slice(1)) reportTabsView.removeLocationHash();
   
@@ -181,8 +184,10 @@ const controlDeleteReport = async function (id) {
       model.clearTab(tabIndex)
       reportTabsView.tabs.get(tabIndex).newReport((takeSnapshot = true))
     }
-  
-    await model.DB.deleteReport(id);
+
+    const password = isDeleteConfirmed?.value
+    if(password) await model.DB.hardDeleteReport(id, password);
+    else await model.DB.deleteReport(id);
     reportTableView.updateTotalCount(model.state.reports);
     notificationView.success(`Report successfully deleted: ${report.incident.title} [${report.id}]`);
 

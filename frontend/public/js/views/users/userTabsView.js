@@ -72,7 +72,7 @@ class UserTabsView extends TabsView {
 
           <div class="form-grouping-content">
             
-          <!-- PROFILE PICTURE -->
+            <!-- PROFILE PICTURE -->
             <img class="form-profile-picture mt-36" src="/img/default_profile_picture.jpg" alt="Profile picture" />
             <div class="grid columns-50-50">
 

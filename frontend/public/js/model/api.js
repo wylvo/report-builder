@@ -52,6 +52,12 @@ export default {
       async deleteReport(id) {
         return await fetchJSON(`${this.url}/${id}`, "DELETE", {});
       },
+      async hardDeleteReport(id, password) {
+        return await fetchJSON(`${this.url}/${id}`, "DELETE", {
+          isHardDelete: true,
+          password,
+        });
+      },
       async undoSoftDeleteReport(id) {
         return await fetchJSON(`${this.url}/${id}/undoSoftDelete`, "PUT", {});
       },

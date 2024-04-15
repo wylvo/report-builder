@@ -12,11 +12,7 @@ export const state = {
   version: null,
   theme: localStorage.getItem("theme") || "light",
 
-  user: {
-    account: {},
-    reports: [],
-    reportsDeleted: [],
-  },
+  user: {},
 
   users: [],
 
@@ -716,6 +712,23 @@ export const DB = {
   deleteReport: async (id) => {
     // API request to delete a report from the database
     const { response } = await api.v1.reports.deleteReport(id);
+
+    // Find & check if report is in the state object
+    const index = findObjectIndexById(state.reports, id, false);
+
+    // If found, remove the row element and report object
+    if (index !== -1) {
+      state.reports[index].tableRowEl.remove();
+      state.reports.splice(index, 1);
+    }
+
+    return response;
+  },
+
+  hardDeleteReport: async (id, password) => {
+    // API request to hard delete a report from the database
+    // Requires elevated permission + password
+    const { response } = await api.v1.reports.hardDeleteReport(id, password);
 
     // Find & check if report is in the state object
     const index = findObjectIndexById(state.reports, id, false);

@@ -341,6 +341,7 @@ input:checked + .slider:before {
 .form-now-btn:disabled,
 .form-submit-btn:disabled,
 .form-reset-password-btn:disabled,
+.form-hard-delete-btn:disabled,
 .form-teams-btn:disabled,
 .form-paste-btn:disabled .icons,
 .form-copy-btn:disabled .icons,
@@ -348,6 +349,7 @@ input:checked + .slider:before {
 .form-now-btn:disabled .icons,
 .form-submit-btn:disabled .icons,
 .form-reset-password-btn .icons,
+.form-hard-delete-btn:disabled .icons,
 .form-teams-btn:disabled .icons {
   scale: 1;
   background-color: var(--buttons-disabled-background-color);
@@ -369,6 +371,7 @@ input:checked + .slider:before {
 .form-now-btn:disabled:active,
 .form-submit-btn:disabled:active,
 .form-reset-password-btn:disabled:active,
+.form-hard-delete-btn:disabled:active,
 .form-teams-btn:disabled:active {
   scale: 1;
 }
@@ -380,6 +383,7 @@ input:checked + .slider:before {
 
 .form-submit-btn,
 .form-reset-password-btn,
+.form-hard-delete-btn,
 .form-teams-btn {
   width: 100%;
   height: 100%;
@@ -405,18 +409,21 @@ input:checked + .slider:before {
 
 .form-submit-btn:hover,
 .form-reset-password-btn:hover,
+.form-hard-delete-btn:hover,
 .form-teams-btn:hover {
   filter: brightness(135%);
 }
 
 .form-submit-btn:active,
 .form-reset-password-btn:active,
+.form-hard-delete-btn:active,
 .form-teams-btn:active {
   scale: 0.95;
 }
 
 .form-submit-btn:disabled:hover,
 .form-reset-password-btn:disabled:hover,
+.form-hard-delete-btn:disabled:hover,
 .form-teams-btn:disabled:hover {
   filter: brightness(100%);
 }
