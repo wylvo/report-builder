@@ -4,25 +4,15 @@ import { User } from "../userModel.js";
 import { filterUserData } from "../userController.js";
 import { mssql, mssqlDataTypes } from "../../../../config/db.config.js";
 import { hashPassword } from "../../../../auth/authController.js";
+import { validateBody } from "../../../../validation/validation.js";
 import GlobalError from "../../../../errors/globalError.js";
-import ValidationError, {
-  errorValidationResult,
-  formatErrors,
-  isEmpty,
-} from "../../../../errors/validationError.js";
 import catchAsync from "../../../../errors/catchAsync.js";
 import resetUserPasswordSQL from "./resetPasswordModel.js";
 
-export const validateResetPassword = catchAsync(async (req, res, next) => {
-  await checkSchema(User.schema.resetPassword(), ["body"]).run(req);
-  const result = errorValidationResult(req);
-  const errors = result.mapped();
-
-  if (!isEmpty(errors)) {
-    return next(new ValidationError(formatErrors(errors), errors, 400));
-  }
-  next();
-});
+export const validateResetPassword = validateBody(
+  checkSchema,
+  User.schema.resetPassword
+);
 
 export const resetUserPassword = catchAsync(async (req, res, next) => {
   const { NVarChar } = mssqlDataTypes;

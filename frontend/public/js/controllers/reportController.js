@@ -186,7 +186,7 @@ const controlDeleteReport = async function (id) {
     reportTableView.updateTotalCount(model.state.reports);
     notificationView.success(`Report successfully deleted: ${report.incident.title} [${report.id}]`);
 
-    await model.DB.getSoftDeletedReports();
+    await model.DB.getAllSoftDeletedReports();
     if(reportTableView.isDeletedViewActive)
       reportTableView.renderAll(model.state.reportsDeleted)
 

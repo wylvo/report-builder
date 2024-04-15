@@ -729,11 +729,11 @@ export const DB = {
     return response;
   },
 
-  getSoftDeletedReports: async () => {
+  getAllSoftDeletedReports: async () => {
     // API request to get all reports from the database
     const {
       data: { data },
-    } = await api.v1.reports.getSoftDeletedReports();
+    } = await api.v1.reports.getAllSoftDeletedReports();
     console.log(data);
 
     // Add all reports in the model state
@@ -898,7 +898,7 @@ export const init = async function () {
   await Promise.all([
     DB.getCurrentUserAccount(),
     DB.getReports(),
-    DB.getSoftDeletedReports(),
+    DB.getAllSoftDeletedReports(),
     DB.getUsers(),
   ]);
   state.version = await api.v1.version.getVersion();

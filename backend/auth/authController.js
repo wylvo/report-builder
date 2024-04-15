@@ -14,10 +14,10 @@ import ValidationError, {
 } from "../errors/validationError.js";
 
 export const hashPassword = (password) => {
-  return bcrypt.hash(password, 12);
+  return bcrypt.hash(password, 14);
 };
 
-const comparePasswords = (password, hash) => {
+export const comparePasswords = (password, hash) => {
   return bcrypt.compare(password, hash);
 };
 

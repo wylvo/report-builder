@@ -37,7 +37,7 @@ export default {
       async getReports() {
         return await fetchJSON(this.url);
       },
-      async getSoftDeletedReports() {
+      async getAllSoftDeletedReports() {
         return await fetchJSON(`${this.url}/softDeleted`);
       },
       async createReport(report) {
