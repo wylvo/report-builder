@@ -1,23 +1,19 @@
-import { checkSchema } from "express-validator";
-
 import { promisify } from "util";
+import { checkSchema } from "express-validator";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+
+import { User } from "../api/v1/users/userModel.js";
+import { validateBody } from "../validation/validation.js";
 import config from "../config/app.config.js";
 import catchAsync from "../errors/catchAsync.js";
 import GlobalError from "../errors/globalError.js";
-import { User } from "../api/v1/users/userModel.js";
-import ValidationError, {
-  errorValidationResult,
-  formatErrors,
-  isEmpty,
-} from "../errors/validationError.js";
 
 export const hashPassword = (password) => {
   return bcrypt.hash(password, 14);
 };
 
-export const comparePasswords = (password, hash) => {
+const comparePasswords = (password, hash) => {
   return bcrypt.compare(password, hash);
 };
 
@@ -63,15 +59,7 @@ const createJWT = (user, res, statusCode) => {
   });
 };
 
-export const validateSignIn = async (req, res, next) => {
-  await checkSchema(User.schema.signIn, ["body"]).run(req);
-  const result = errorValidationResult(req);
-  const errors = result.mapped();
-
-  if (!isEmpty(errors))
-    return next(new ValidationError(formatErrors(errors), errors, 400));
-  next();
-};
+export const validateSignIn = validateBody(checkSchema, User.schema.signIn);
 
 export const signIn = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;

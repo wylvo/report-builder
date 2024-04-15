@@ -1,11 +1,11 @@
 import { ExpressValidator } from "express-validator";
+import bcrypt from "bcrypt";
 
 import { Report, isDateTime, isTimeCustom } from "./reportModel.js";
 import { mssql, mssqlDataTypes } from "../../../config/db.config.js";
 import { validateBody } from "../../../validation/validation.js";
 import GlobalError from "../../../errors/globalError.js";
 import catchAsync from "../../../errors/catchAsync.js";
-import { comparePasswords } from "../../../auth/authController.js";
 
 const { checkSchema } = new ExpressValidator({ isDateTime, isTimeCustom });
 
@@ -52,7 +52,7 @@ export const createReport = catchAsync(async (req, res, next) => {
   const rawJSON = JSON.stringify(body);
 
   const {
-    recordset: [report],
+    recordset: [[report]],
   } = await mssql()
     .input("id", id)
     // .input("username", username)
@@ -68,7 +68,7 @@ export const createReport = catchAsync(async (req, res, next) => {
 export const getReport = catchAsync(async (req, res, next) => {
   const id = req.params.id;
 
-  const report = await Report.findById(id);
+  const [report] = await Report.findById(id);
 
   if (!report)
     return next(new GlobalError(`Report not found with id: ${id}.`, 404));
@@ -82,19 +82,21 @@ export const getReport = catchAsync(async (req, res, next) => {
 export const validateUpdate = validateBody(checkSchema, Report.schema.update);
 
 export const updateReport = catchAsync(async (req, res, next) => {
-  const { NVarChar } = mssqlDataTypes;
-
   const id = req.body.id;
-  // const username = req.user.username;
-  const body = [req.body];
-  const rawJSON = JSON.stringify(body);
 
-  const report = await Report.findById(id);
+  const [report] = await Report.findById(id);
 
   if (!report)
     return next(new GlobalError(`Report not found with id: ${id}.`, 404));
 
-  await mssql()
+  const { NVarChar } = mssqlDataTypes;
+  // const username = req.user.username;
+  const body = [req.body];
+  const rawJSON = JSON.stringify(body);
+
+  const {
+    recordset: [[reportUpdated]],
+  } = await mssql()
     .input("id", report.id)
     // .input("username", username)
     .input("rawJSON", NVarChar, rawJSON)
@@ -102,7 +104,7 @@ export const updateReport = catchAsync(async (req, res, next) => {
 
   res.status(201).json({
     status: "success",
-    data: req.body,
+    data: reportUpdated,
   });
 });
 
@@ -122,7 +124,7 @@ const softDeleteReport = async (report) => {
 export const deleteReport = catchAsync(async (req, res, next) => {
   const id = req.params.id;
 
-  const report = await Report.findById(id);
+  const [report] = await Report.findById(id);
 
   if (!report)
     return next(new GlobalError(`Report not found with id: ${id}.`, 404));
@@ -134,9 +136,14 @@ export const deleteReport = catchAsync(async (req, res, next) => {
   if (req.user.role === "admin" && req.body.isHardDelete) {
     const password = await Report.superPassword();
 
-    // For security reasons, check for a password
-    if (!(await comparePasswords(req.body.password, password)))
-      return next(new GlobalError("Incorrect password", 401));
+    // For additional security, require for a password
+    if (!(await bcrypt.compare(req.body.password, password)))
+      return next(
+        new GlobalError(
+          "You do not have permission to perform this operation.",
+          403
+        )
+      );
 
     hardDeleteReport(report);
   } else softDeleteReport(report);
@@ -150,7 +157,7 @@ export const deleteReport = catchAsync(async (req, res, next) => {
 export const undoSoftDeleteReport = async (req, res, next) => {
   const id = req.params.id;
 
-  const report = await Report.findById(id);
+  const [report] = await Report.findById(id);
 
   if (!report)
     return next(new GlobalError(`Report not found with id: ${id}.`, 404));
@@ -160,11 +167,12 @@ export const undoSoftDeleteReport = async (req, res, next) => {
       new GlobalError(`Report is not marked as deleted with id: ${id}.`, 400)
     );
 
-  await mssql().input("id", report.id).query(Report.query.undoSoftDelete);
-  report.isDeleted = false;
+  const {
+    recordset: [[reportUpdated]],
+  } = await mssql().input("id", report.id).query(Report.query.undoSoftDelete());
 
   res.status(200).json({
     status: "success",
-    data: report,
+    data: reportUpdated,
   });
 };

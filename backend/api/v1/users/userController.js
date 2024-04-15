@@ -9,13 +9,9 @@ import {
 import { hashPassword } from "../../../auth/authController.js";
 import { generateUUID } from "../router.js";
 import { mssql, mssqlDataTypes } from "../../../config/db.config.js";
+import { validateBody } from "../../../validation/validation.js";
 import catchAsync from "../../../errors/catchAsync.js";
 import GlobalError from "../../../errors/globalError.js";
-import ValidationError, {
-  errorValidationResult,
-  formatErrors,
-  isEmpty,
-} from "../../../errors/validationError.js";
 
 export const filterObject = (obj, ...allowedFields) => {
   const newObj = {};
@@ -64,15 +60,7 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
   });
 });
 
-export const validateCreate = catchAsync(async (req, res, next) => {
-  await checkSchema(User.schema.create, ["body"]).run(req);
-  const result = errorValidationResult(req);
-  const errors = result.mapped();
-
-  if (!isEmpty(errors))
-    return next(new ValidationError(formatErrors(errors), errors, 400));
-  next();
-});
+export const validateCreate = validateBody(checkSchema, User.schema.create);
 
 export const createUser = catchAsync(async (req, res, next) => {
   const {
@@ -132,27 +120,19 @@ export const getUser = catchAsync(async (req, res, next) => {
   });
 });
 
-export const validateUpdate = catchAsync(async (req, res, next) => {
-  await checkSchema(User.schema.update, ["body"]).run(req);
-  const result = errorValidationResult(req);
-  const errors = result.mapped();
-
-  if (!isEmpty(errors))
-    return next(new ValidationError(formatErrors(errors), errors, 400));
-  next();
-});
+export const validateUpdate = validateBody(checkSchema, User.schema.update);
 
 export const updateUser = catchAsync(async (req, res, next) => {
-  const { NVarChar } = mssqlDataTypes;
-
   const id = req.params.id;
-  const body = [req.body];
-  const rawJSON = JSON.stringify(body);
 
   const user = await User.findById(id);
 
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
+
+  const { NVarChar } = mssqlDataTypes;
+  const body = [req.body];
+  const rawJSON = JSON.stringify(body);
 
   const {
     recordset: [userUpdated],

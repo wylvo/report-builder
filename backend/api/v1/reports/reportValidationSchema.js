@@ -1,4 +1,7 @@
 export default {
+  /**
+   *  VALIDATION TO CREATE A REPORT
+   **/
   create: {
     "**.date": {
       trim: {},
@@ -375,10 +378,16 @@ export default {
     },
   },
 
+  /**
+   *  VALIDATION TO UPDATE A REPORT (SAME AS CREATE)
+   **/
   update() {
     return this.create;
   },
 
+  /**
+   *  VALIDATION TO HARD DELETE A REPORT
+   **/
   hardDelete: {
     isHardDelete: {
       optional: true,
@@ -387,6 +396,14 @@ export default {
         errorMessage: "should be a boolean (true or false).",
       },
     },
-    password: {},
+    password: {
+      exists: {
+        errorMessage: "required.",
+        bail: true,
+        if: (_, { req }) => req.body.isHardDelete === true,
+      },
+      notEmpty: { errorMessage: "can't be empty.", bail: true },
+      isString: { errorMessage: "should be a string" },
+    },
   },
 };

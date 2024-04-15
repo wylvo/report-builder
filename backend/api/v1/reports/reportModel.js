@@ -68,15 +68,15 @@ export const Report = {
 
   findById: async (id) => {
     const {
-      recordset: [[report]],
+      recordset: [report],
     } = await mssql().input("id", id).query(Report.query.byId());
 
-    return report;
+    return report ? report : [];
   },
 
   superPassword: async () => {
     const {
-      recordset: [password],
+      recordset: [{ password }],
     } = await mssql().query(Report.query.getSuperPassword);
 
     return password;
@@ -291,6 +291,8 @@ export const Report = {
           ${this.withClause}
         ) AS json
         WHERE reports.id = @id;
+
+        ${this.byId()}
       `;
     },
 
@@ -303,12 +305,16 @@ export const Report = {
       WHERE id = @id;
     `,
 
-    undoSoftDelete: `
-      UPDATE reports
-      SET isDeleted = 0,
-      lastModifiedDateTime = GETDATE()
-      WHERE id = @id;
-    `,
+    undoSoftDelete() {
+      return `
+        UPDATE reports
+        SET isDeleted = 0,
+        lastModifiedDateTime = GETDATE()
+        WHERE id = @id;
+
+        ${this.byId()}
+      `;
+    },
 
     getSuperPassword: "SELECT password FROM super;",
   },
