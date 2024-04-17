@@ -14,7 +14,7 @@ export default class FormView extends View {
   constructor(tabElement, formElement) {
     super();
     this._tab = tabElement;
-    this._form = formElement;
+    this._form = formElement ? formElement : this.generateFormElement();
 
     // Initialize inputs (includes checkboxes, selects & text areas)
     this._inputs = this.initializeAllInputs(this._form);

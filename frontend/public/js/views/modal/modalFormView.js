@@ -1,16 +1,30 @@
 import FormView from "../formView.js";
 
 export class ModalFormView extends FormView {
-  constructor(tabElement = undefined, formElement) {
+  constructor(tabElement = undefined, formElement = undefined) {
     super(tabElement, formElement);
 
-    this.password = this._fields.get("hard-delete-password");
-    this._btnHardDelete = this._form.querySelector(".form-hard-delete-btn");
+    this._btnHardDelete = this._form.querySelector(".modal-btn-confirm-hard");
+  }
+
+  #password() {
+    return this._fields.get("hard-delete-password").value;
   }
 
   #clearPassword() {
-    this.password.value = "";
-    this.password.textContext = "";
+    this._fields.get("hard-delete-password").value = "";
+  }
+
+  #resolvePromise(id, handler) {
+    return new Promise((resolve) => {});
+  }
+
+  addHandlerConfirmPassword(id, handler) {
+    this._form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      await handler(id, this.#password());
+      this.#clearPassword();
+    });
   }
 
   _generateFormHtml() {
@@ -19,38 +33,21 @@ export class ModalFormView extends FormView {
         <button class="modal-close-btn">&times;</button>
         <div class="form-header">
           <div>
-            <h1>Please confirm. This action is irreversible</h1>
+            <h1>This operation is irreversible</h1>
           </div>
         </div>
         <form class="form" id="form-hard-delete">
-          
+
           <!-- HARD DELETE PASSWORD -->
-          <div class="form-grouping-col ">
-            <input
-              type="password"
-              id="hard-delete-password"
-              name="hard-delete-password"
-              class="hard-delete-password"
-              placeholder="Confirm With Password"
-              required
-            />
+          <div class="form-grouping-col mt-36">
+            <input type="password" id="hard-delete-password" name="hard-delete-password" class="hard-delete-password" placeholder="Confirm With Password" required />
             <label for="hard-delete-password">Password:</label>
           </div>
 
           <!-- CALL TO ACTION BUTTON -->
-          <div class="grid form-buttons">
-            <label for="form-hard-delete-btn" class="cta-button">
-              <button
-                type="submit"
-                id="form-hard-delete-btn"
-                class="form-hard-delete-btn"
-              >
-                <svg class="icons">
-                  <use href="/img/icons.svg#icon-delete"></use>
-                </svg>
-                <p class="form-hard-delete-btn-text">Hard Delete Report</p>
-              </button>
-            </label>
+          <div class="modal-btns">
+            <button type="submit" id="form-hard-delete-btn" class="modal-btn-confirm-hard error">Hard Delete Report</button>
+            <button type="button" class="modal-btn-cancel">No, Cancel</button>
           </div>
         </form>
       </div>
@@ -59,17 +56,5 @@ export class ModalFormView extends FormView {
 
   generateFormElement() {
     return this.htmlStringToElement(this._generateFormHtml());
-  }
-
-  render() {
-    console.log("I RAN");
-    return this.generateFormElement();
-  }
-
-  addHandlerHardDelete(handler) {
-    this._form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      handler();
-    });
   }
 }

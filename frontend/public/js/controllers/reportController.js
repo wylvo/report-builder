@@ -9,8 +9,11 @@ import reportTableView from "../views/reports/reportTableView.js";
 
 import notificationView from "../views/notifications/notificationView.js";
 import modalView from "../views/notifications/modalView.js";
+import { ModalFormView } from "../views/modal/modalFormView.js";
+import { ReportFormView } from "../views/reports/reportFormView.js";
 
-let reportFormView,
+let reportFormView = new ModalFormView(),
+  modalFormView = new ModalFormView(),
   takeSnapshot = false;
 
 const controlTabs = function (tabIndex, id = undefined) {
@@ -168,26 +171,32 @@ const controlSendReport = async function (id = undefined) {
 
 // prettier-ignore
 const controlDeleteReport = async function (id) {
-  try {    
+  try {
     const report = model.findObjectById(model.state.reports, id);
-  
-    let isDeleteConfirmed = true;
-    if(model.state.user.role === "admin")
-      isDeleteConfirmed = await modalView.confirmDeleteOrHardDelete(report);
-    else isDeleteConfirmed = await modalView.confirmDelete(report);
+    const isAdmin = model.state.user.role === "admin"
 
+    if(isAdmin) {
+      modalFormView = await modalView.confirmDeleteOrHardDelete(report);
+      if(!modalFormView) return;
+      return modalFormView.addHandlerConfirmPassword(id, controlHardDeleteReport);
+    } 
+
+    let isDeleteConfirmed = true;
+    isDeleteConfirmed = await modalView.confirmDelete(report);
     if(!isDeleteConfirmed) return;
+
+    // Remove id if in hash
     if(id === window.location.hash.slice(1)) reportTabsView.removeLocationHash();
   
+    // Clear report if in tab
     const tabIndex = model.findTabIndexByObjectId(id);
     if (tabIndex !== -1) {
       model.clearTab(tabIndex)
       reportTabsView.tabs.get(tabIndex).newReport((takeSnapshot = true))
     }
 
-    const password = isDeleteConfirmed?.value
-    if(password) await model.DB.hardDeleteReport(id, password);
-    else await model.DB.deleteReport(id);
+    await model.DB.deleteReport(id);
+    
     reportTableView.updateTotalCount(model.state.reports);
     notificationView.success(`Report successfully deleted: ${report.incident.title} [${report.id}]`);
 
@@ -197,7 +206,34 @@ const controlDeleteReport = async function (id) {
 
   } catch (error) {
     console.error(error);
-    notificationView.error(error, 60);
+    notificationView.error(error.message, 60);
+  }
+};
+
+// prettier-ignore
+const controlHardDeleteReport = async function (id, password) {
+  try {
+    const report = model.findObjectById(model.state.reports, id);
+  
+    // Remove id if in hash
+    if(id === window.location.hash.slice(1)) reportTabsView.removeLocationHash();
+  
+    // Clear report if in tab
+    const tabIndex = model.findTabIndexByObjectId(id);
+    if (tabIndex !== -1) {
+      model.clearTab(tabIndex)
+      reportTabsView.tabs.get(tabIndex).newReport((takeSnapshot = true))
+    }
+
+    await model.DB.hardDeleteReport(id, password);
+
+    modalView.closeModal();
+    reportTableView.updateTotalCount(model.state.reports);
+    notificationView.success(`Report successfully hard deleted: ${report.incident.title} [${report.id}]`);
+
+  } catch (error) {
+    console.error(error);
+    notificationView.error(error.message, 60);
   }
 };
 

@@ -60,11 +60,9 @@ class ModalView extends NotificationView {
   }
 
   #resolvePromise(timeoutSeconds) {
-    return new Promise((resolve, _) => {
-      // prettier-ignore
-      document.addEventListener("click", this.clear.bind(this, resolve, this.#timeout));
-      // prettier-ignore
-      document.addEventListener("keydown", this.clear.bind(this, resolve, this.#timeout));
+    return new Promise((resolve) => {
+      this.addHandlerCloseModal(this.clear.bind(this, resolve, this.#timeout));
+      this.addHandlerEscapeModal(this.clear.bind(this, resolve, this.#timeout));
 
       // this.#timeout = setTimeout(() => {
       //   this.closeModal(this.#timeout);
@@ -98,15 +96,10 @@ class ModalView extends NotificationView {
         resolve(true);
       }
       if (e.target.closest(".modal-btn-confirm-hard")) {
-        this._modalElement = this.htmlStringToElement(`<div class="modal"> <button class="modal-close-btn">&times;</button> <div class="form-header"> <div> <h1>This operation is irreversible</h1> </div> </div> <form class="form" id="form-hard-delete"> <!-- HARD DELETE PASSWORD --> <div class="form-grouping-col mt-36"> <input type="password" id="hard-delete-password" name="hard-delete-password" class="hard-delete-password" placeholder="Confirm With Password" required /> <label for="hard-delete-password">Password:</label> </div> <!-- CALL TO ACTION BUTTON --> <div class="grid"> <label for="form-hard-delete-btn" class="cta-button"> <button type="submit" id="form-hard-delete-btn" class="form-hard-delete-btn" > <svg class="icons"> <use href="/img/icons.svg#icon-delete"></use> </svg> <p class="form-hard-delete-btn-text">Hard Delete Report</p> </button> </label> </div> </form> </div>`);
-        this.#modalContainer.removeChild(this.#modalContainer.firstElementChild);
-        this.#modalContainer.appendChild(this._modalElement);
-        const modalFormView = new ModalFormView(undefined, this._modalElement);
-
-        modalFormView.addHandlerHardDelete(() => {
-          this.closeModal(timeout);
-          resolve(modalFormView.password);
-        })
+        const modalFormView = new ModalFormView();
+        this._modalElement.replaceWith(modalFormView._form);
+        
+        resolve(modalFormView);
       }
     }
   }
@@ -206,6 +199,16 @@ class ModalView extends NotificationView {
     if (type === "success") return this.success(null, timeoutSeconds);
     if (type === "info") return this.info(null, timeoutSeconds);
     throw new TypeError("Invalid modal type. Choose between: ['error', 'warning' , 'success', 'info']");
+  }
+
+  addHandlerCloseModal(handler) {
+    [this._modalElement, this.#overlay].forEach((element) => {
+      element.addEventListener("click", handler);
+    });
+  }
+
+  addHandlerEscapeModal(handler) {
+    this._modalElement.addEventListener("keydown", handler);
   }
 }
 
