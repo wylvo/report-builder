@@ -34,9 +34,8 @@
 }
 
 .main .header .report {
-  height: 3.2rem;
-  padding: 0 1.6rem;
-  border-radius: 3.2rem;
+  padding: 0.4rem 1.6rem;
+  border-radius: 0.4rem;
   background: var(--primary-color);
   color: var(--on-primary);
   display: flex;
@@ -44,6 +43,14 @@
   justify-content: center;
   gap: 1.2rem;
   font-weight: 500;
+}
+
+.main .header .report:active {
+  scale: 0.95;
+}
+
+.main .header .report:hover {
+  filter: brightness(135%);
 }
 
 .section-col {

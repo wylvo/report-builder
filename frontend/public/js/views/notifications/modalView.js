@@ -61,8 +61,14 @@ class ModalView extends NotificationView {
 
   #resolvePromise(timeoutSeconds) {
     return new Promise((resolve) => {
-      this.addHandlerCloseModal(this.clear.bind(this, resolve, this.#timeout));
-      this.addHandlerEscapeModal(this.clear.bind(this, resolve, this.#timeout));
+      this.addHandlerCloseModal(
+        [this._modalElement, this.#overlay],
+        this.clear.bind(this, resolve, this.#timeout)
+      );
+      this.addHandlerEscapeModal(
+        this._modalElement,
+        this.clear.bind(this, resolve, this.#timeout)
+      );
 
       // this.#timeout = setTimeout(() => {
       //   this.closeModal(this.#timeout);
@@ -98,6 +104,9 @@ class ModalView extends NotificationView {
       if (e.target.closest(".modal-btn-confirm-hard")) {
         const modalFormView = new ModalFormView();
         this._modalElement.replaceWith(modalFormView._form);
+
+        this.addHandlerCloseModal([modalFormView._form], this.clear.bind(this, resolve, this.#timeout));
+        this.addHandlerEscapeModal(modalFormView._form, this.clear.bind(this, resolve, this.#timeout));
         
         resolve(modalFormView);
       }
@@ -187,6 +196,8 @@ class ModalView extends NotificationView {
     return this.info(null, timeoutSeconds);
   }
 
+  confirmImport;
+
   // prettier-ignore
   confirmCustom(type, headerText, contentText, btnConfirmText, btnCancelText, timeoutSeconds = 120) {
     this.#isTrusted = false;
@@ -201,14 +212,14 @@ class ModalView extends NotificationView {
     throw new TypeError("Invalid modal type. Choose between: ['error', 'warning' , 'success', 'info']");
   }
 
-  addHandlerCloseModal(handler) {
-    [this._modalElement, this.#overlay].forEach((element) => {
+  addHandlerCloseModal(elements = [], handler) {
+    elements.forEach((element) => {
       element.addEventListener("click", handler);
     });
   }
 
-  addHandlerEscapeModal(handler) {
-    this._modalElement.addEventListener("keydown", handler);
+  addHandlerEscapeModal(element, handler) {
+    element.addEventListener("keydown", handler);
   }
 }
 

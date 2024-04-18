@@ -5,6 +5,7 @@ export class ModalFormView extends FormView {
     super(tabElement, formElement);
 
     this._btnHardDelete = this._form.querySelector(".modal-btn-confirm-hard");
+    this._btnImport = this._form.querySelector(".modal-btn-import");
   }
 
   #password() {
@@ -15,15 +16,18 @@ export class ModalFormView extends FormView {
     this._fields.get("hard-delete-password").value = "";
   }
 
-  #resolvePromise(id, handler) {
-    return new Promise((resolve) => {});
-  }
-
   addHandlerConfirmPassword(id, handler) {
     this._form.addEventListener("submit", async (e) => {
       e.preventDefault();
       await handler(id, this.#password());
       this.#clearPassword();
+    });
+  }
+
+  addHandlerImportReports() {
+    this._form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      await handler(id, this.#password());
     });
   }
 

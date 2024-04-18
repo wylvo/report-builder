@@ -351,6 +351,14 @@ const controlBeforeUnload = function () {
   return hasChanges;
 };
 
+const controlImportReports = async function () {
+  try {
+  } catch (error) {
+    notificationView.error(error.message, 60);
+    console.error(error);
+  }
+};
+
 /*
  *************************************************************
  * INITIALIZE ALL HANDLERS, AND RENDER ALL EXISTING REPORTS  *
