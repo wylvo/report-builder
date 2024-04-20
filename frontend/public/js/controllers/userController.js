@@ -4,7 +4,9 @@ import userTableView from "../views/users/userTableView.js";
 import paginationView from "../views/paginationView.js";
 
 import notificationView from "../views/notifications/notificationView.js";
-import modalView from "../views/notifications/modalView.js";
+import ModalView from "../views/notifications/modalView.js";
+
+const modalView = new ModalView();
 
 let userFormView,
   takeSnapshot = false;

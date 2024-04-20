@@ -19,10 +19,6 @@
   z-index: 10;
 }
 
-.modal.hard-delete {
-  z-index: 11;
-}
-
 .modal .error {
   color: var(--attention-background-color-alt);
   fill: var(--attention-background-color-alt);
@@ -94,9 +90,7 @@
   gap: 3.2rem;
 }
 
-.modal-btn-confirm,
-.modal-btn-confirm-hard,
-.modal-btn-cancel {
+.modal-btn {
   width: 100%;
   padding: 1.2rem;
   font-weight: 700;
@@ -104,40 +98,35 @@
   border: 0.1rem solid transparent;
 }
 
-.modal-btn-confirm:active,
-.modal-btn-confirm-hard:active,
-.modal-btn-cancel:active {
+.modal-btn:active {
   scale: 0.95;
 }
 
-.modal-btn-confirm:hover,
-.modal-btn-confirm-hard:hover,
-.modal-btn-cancel:hover {
+.modal-btn:hover {
   filter: brightness(135%);
 }
 
-.modal-btn-confirm.error,
-.modal-btn-confirm-hard.error {
+.modal-btn.error {
   background-color: var(--attention-background-color-alt);
   color: var(--on-primary);
 }
 
-.modal-btn-confirm.warning {
+.modal-btn.warning {
   background-color: var(--warning-on-background-alt);
   color: var(--on-primary);
 }
 
-.modal-btn-confirm.success {
+.modal-btn.success {
   background-color: var(--good-on-background);
   color: var(--on-primary);
 }
 
-.modal-btn-confirm.info {
+.modal-btn.info {
   background-color: var(--primary-color);
   color: var(--on-primary);
 }
 
-.modal-btn-cancel {
+.modal-btn.cancel {
   background-color: var(--background-primary-color);
   color: var(--primary-color);
   border-color: var(--primary-color);

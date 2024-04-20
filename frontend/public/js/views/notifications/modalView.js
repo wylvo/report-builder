@@ -1,7 +1,7 @@
-import { ModalFormView } from "../modal/modalFormView.js";
 import { NotificationView } from "./notificationView.js";
+import ModalFormView from "../modal/modalFormView.js";
 
-class ModalView extends NotificationView {
+export default class ModalView extends NotificationView {
   #modalContainer = document.querySelector(".modal-ctn");
   #overlay = document.querySelector(".overlay");
   #timeout;
@@ -40,13 +40,13 @@ class ModalView extends NotificationView {
             <span>${contentText}</span>
           </div>
           <div class="modal-btns">
-            <button class="modal-btn-confirm ${type}">${this.#btnConfirmText}</button>
+            <button class="modal-btn confirm ${type}">${this.#btnConfirmText}</button>
             ${
               this.#btnConfirmAltText
-                ? `<button class="modal-btn-confirm-hard ${type}">${this.#btnConfirmAltText}</button>`
+                ? `<button class="modal-btn hard-delete ${type}">${this.#btnConfirmAltText}</button>`
                 : ""
             }
-            <button class="modal-btn-cancel">${this.#btnCancelText}</button>
+            <button class="modal-btn cancel">${this.#btnCancelText}</button>
           </div>
         </div>
       </div>
@@ -54,7 +54,7 @@ class ModalView extends NotificationView {
 
     this._modalElement = this.htmlStringToElement(modalHtml);
     this.#modalContainer.appendChild(this._modalElement);
-    this._modalElement.querySelector(".modal-btn-cancel").focus();
+    this._modalElement.querySelector(".modal-btn.cancel").focus();
     this.#overlay.classList.remove("hidden");
     return this.#resolvePromise(timeoutSeconds);
   }
@@ -79,35 +79,59 @@ class ModalView extends NotificationView {
   }
 
   closeModal(timeout) {
-    clearTimeout(timeout);
+    if (timeout) clearTimeout(timeout);
     this.#modalContainer.innerHTML = "";
     this.#overlay.classList.add("hidden");
     this.#timeout = undefined;
+    this.#btnConfirmAltText = undefined;
     this._modalElement = undefined;
   }
 
-  // prettier-ignore
-  clear (resolve, timeout, e) {
-    if (e.type === "keydown" && e.key === "Escape") {
+  // Close modal and resolve the promise
+  clear(resolve, timeout, e) {
+    const pressedOnEscapeKey = e.type === "keydown" && e.key === "Escape";
+
+    // If pressed on escape key
+    if (pressedOnEscapeKey) {
       this.closeModal(timeout);
       resolve(false);
     }
+
     if (e.type === "click" && e.target) {
-      if (e.target.closest(".modal-close-btn") || e.target.closest(".modal-btn-cancel") || e.target.closest(".overlay")) {
-        this.closeModal(timeout);
-        resolve(false);
-      }
-      if (e.target.closest(".modal-btn-confirm")) {
+      const clickedOnConfirm = e.target.closest(".confirm");
+      const clickedOnHardDelete = e.target.closest(".hard-delete");
+      const clickedOnCancelOrCloseOrOverlay =
+        e.target.closest(".modal-close-btn") ||
+        e.target.closest(".cancel") ||
+        e.target.closest(".overlay");
+
+      // If clicked on confirm button
+      if (clickedOnConfirm) {
         this.closeModal(timeout);
         resolve(true);
       }
-      if (e.target.closest(".modal-btn-confirm-hard")) {
-        const modalFormView = new ModalFormView();
-        this._modalElement.replaceWith(modalFormView._form);
 
-        this.addHandlerCloseModal([modalFormView._form], this.clear.bind(this, resolve, this.#timeout));
-        this.addHandlerEscapeModal(modalFormView._form, this.clear.bind(this, resolve, this.#timeout));
-        
+      // If clicked on close button, cancel button, or overlay
+      if (clickedOnCancelOrCloseOrOverlay) {
+        this.closeModal(timeout);
+        resolve(false);
+      }
+
+      // If clicked on confirm hard delete button
+      if (clickedOnHardDelete) {
+        const modalFormView = new ModalFormView(this._modalElement);
+        const newModalElement = modalFormView.hardDeleteForm();
+        this._modalElement = newModalElement;
+
+        this.addHandlerCloseModal(
+          [newModalElement],
+          this.clear.bind(this, resolve, this.#timeout)
+        );
+        this.addHandlerEscapeModal(
+          newModalElement,
+          this.clear.bind(this, resolve, this.#timeout)
+        );
+
         resolve(modalFormView);
       }
     }
@@ -196,7 +220,15 @@ class ModalView extends NotificationView {
     return this.info(null, timeoutSeconds);
   }
 
-  confirmImport;
+  confirmImport() {
+    this.#isTrusted = true;
+
+    const modalFormView = new ModalFormView(this._modalElement);
+    modalFormView.importReportsForm();
+    this.#overlay.classList.remove("hidden");
+
+    return this.render();
+  }
 
   // prettier-ignore
   confirmCustom(type, headerText, contentText, btnConfirmText, btnCancelText, timeoutSeconds = 120) {
@@ -205,11 +237,15 @@ class ModalView extends NotificationView {
     this._contentText = contentText;
     this.#btnConfirmText = btnConfirmText;
     this.#btnCancelText = btnCancelText;
+    if (type === "delete") return this.delete(null, timeoutSeconds);
     if (type === "error") return this.error(null, timeoutSeconds);
     if (type === "warning") return this.warning(null, timeoutSeconds);
+    if (type === "undo") return this.undo(null, timeoutSeconds);
     if (type === "success") return this.success(null, timeoutSeconds);
     if (type === "info") return this.info(null, timeoutSeconds);
-    throw new TypeError("Invalid modal type. Choose between: ['error', 'warning' , 'success', 'info']");
+    throw new TypeError(
+      "Invalid modal type. Choose between: ['delete', 'error', 'warning', 'undo', 'success', 'info']"
+    );
   }
 
   addHandlerCloseModal(elements = [], handler) {
@@ -222,5 +258,3 @@ class ModalView extends NotificationView {
     element.addEventListener("keydown", handler);
   }
 }
-
-export default new ModalView();

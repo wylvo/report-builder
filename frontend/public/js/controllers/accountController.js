@@ -6,7 +6,9 @@ import searchView from "../views/searchView.js";
 import paginationView from "../views/paginationView.js";
 
 import notificationView from "../views/notifications/notificationView.js";
-import modalView from "../views/notifications/modalView.js";
+import ModalView from "../views/notifications/modalView.js";
+
+const modalView = new ModalView();
 
 let accountFormView,
   takeSnapshot = false;

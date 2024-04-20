@@ -33,7 +33,7 @@
   color: var(--on-background-header);
 }
 
-.main .header .report {
+.main .header .btn-import-reports {
   padding: 0.4rem 1.6rem;
   border-radius: 0.4rem;
   background: var(--primary-color);
@@ -45,11 +45,11 @@
   font-weight: 500;
 }
 
-.main .header .report:active {
+.main .header .btn-import-reports:active {
   scale: 0.95;
 }
 
-.main .header .report:hover {
+.main .header .btn-import-reports:hover {
   filter: brightness(135%);
 }
 

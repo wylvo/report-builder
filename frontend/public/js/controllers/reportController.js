@@ -1,19 +1,19 @@
 import * as model from "../model/model.js";
 import api from "../model/api.js";
-import sidebarView from "../views/sidebar/sidebarView.js";
 
 import reportTabsView from "../views/reports/reportTabsView.js";
 import paginationView from "../views/paginationView.js";
 import searchView from "../views/searchView.js";
 import reportTableView from "../views/reports/reportTableView.js";
-
 import notificationView from "../views/notifications/notificationView.js";
-import modalView from "../views/notifications/modalView.js";
-import { ModalFormView } from "../views/modal/modalFormView.js";
-import { ReportFormView } from "../views/reports/reportFormView.js";
 
-let reportFormView = new ModalFormView(),
-  modalFormView = new ModalFormView(),
+import ModalFormView from "../views/modal/modalFormView.js";
+import ModalView from "../views/notifications/modalView.js";
+
+const modalView = new ModalView();
+
+let modalFormView = new ModalFormView(),
+  reportFormView,
   takeSnapshot = false;
 
 const controlTabs = function (tabIndex, id = undefined) {
@@ -174,19 +174,21 @@ const controlDeleteReport = async function (id) {
   try {
     const report = model.findObjectById(model.state.reports, id);
     const isAdmin = model.state.user.role === "admin"
-
-    if(isAdmin) {
-      modalFormView = await modalView.confirmDeleteOrHardDelete(report);
-      if(!modalFormView) return;
-      return modalFormView.addHandlerConfirmPassword(id, controlHardDeleteReport);
-    } 
-
     let isDeleteConfirmed = true;
-    isDeleteConfirmed = await modalView.confirmDelete(report);
-    if(!isDeleteConfirmed) return;
+
+    // if current user is admin, propose hard delete option
+    if (isAdmin) {
+      modalFormView = await modalView.confirmDeleteOrHardDelete(report);
+      
+      if (modalFormView instanceof ModalFormView)
+        return modalFormView.addHandlerConfirmPassword(id, controlHardDeleteReport);
+
+    } else isDeleteConfirmed = await modalView.confirmDelete(report);
+
+    if (!isDeleteConfirmed || !modalFormView) return;
 
     // Remove id if in hash
-    if(id === window.location.hash.slice(1)) reportTabsView.removeLocationHash();
+    if (id === window.location.hash.slice(1)) reportTabsView.removeLocationHash();
   
     // Clear report if in tab
     const tabIndex = model.findTabIndexByObjectId(id);
@@ -195,6 +197,7 @@ const controlDeleteReport = async function (id) {
       reportTabsView.tabs.get(tabIndex).newReport((takeSnapshot = true))
     }
 
+    // Api call to soft delete a report in the database
     await model.DB.deleteReport(id);
     
     reportTableView.updateTotalCount(model.state.reports);
@@ -225,6 +228,7 @@ const controlHardDeleteReport = async function (id, password) {
       reportTabsView.tabs.get(tabIndex).newReport((takeSnapshot = true))
     }
 
+    // Api call to hard delete a report in the database
     await model.DB.hardDeleteReport(id, password);
 
     modalView.closeModal();
@@ -431,6 +435,9 @@ export const init = async function () {
   // Pagination view handlers
   paginationView.addHandlerOnChangeRowsPerPage(controlRowsPerPage);
   paginationView.addHandlerClickPage(controlPages);
+
+  // Model form view handler
+  modalFormView.addHandlerClickImportReports();
 
   // const version = await api.v1.version.getVersion();
   // console.log("Version", version);
