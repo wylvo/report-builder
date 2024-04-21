@@ -197,6 +197,7 @@ export default class ModalView extends NotificationView {
 
   confirmSave(timeoutSeconds = 3) {
     this.#isTrusted = true;
+
     this._headerText = "You have unsaved changes";
     this._contentText =
       "Please save your changes before switching tabs or before rendering data. Save changes?";
@@ -221,13 +222,20 @@ export default class ModalView extends NotificationView {
   }
 
   confirmImport() {
+    if (this.#modalContainer.firstChild) return;
     this.#isTrusted = true;
 
     const modalFormView = new ModalFormView(this._modalElement);
-    modalFormView.importReportsForm();
+    const newModalElement = modalFormView.importReportsForm();
+    this._modalElement = newModalElement;
+
+    if (!this.#modalContainer.firstChild)
+      this.#modalContainer.appendChild(this._modalElement);
+
+    this._modalElement.querySelector(".modal-btn.cancel").focus();
     this.#overlay.classList.remove("hidden");
 
-    return this.render();
+    return this.#resolvePromise();
   }
 
   // prettier-ignore
@@ -240,6 +248,7 @@ export default class ModalView extends NotificationView {
     if (type === "delete") return this.delete(null, timeoutSeconds);
     if (type === "error") return this.error(null, timeoutSeconds);
     if (type === "warning") return this.warning(null, timeoutSeconds);
+    if (type === "import") return this.import(null, timeoutSeconds);
     if (type === "undo") return this.undo(null, timeoutSeconds);
     if (type === "success") return this.success(null, timeoutSeconds);
     if (type === "info") return this.info(null, timeoutSeconds);

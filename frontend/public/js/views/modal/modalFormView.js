@@ -8,20 +8,18 @@ export default class ModalFormView extends ModalView {
 
   #btnImportReports = document.querySelector(".btn-import-reports");
 
-  #modalForm = () => this._modalElement.querySelector("#form-modal");
-
-  #btnHardDeleteReports = () =>
-    this._modalElement.querySelector(".modal-btn-hard-delete");
   #password = () =>
     this._modalElement.querySelector(".hard-delete-password").value;
   #clearPassword() {
-    const passwordField = this.#password();
-    passwordField = "";
+    this._modalElement.querySelector(".hard-delete-password").value = "";
   }
 
-  #reports = () => this._modalElement.querySelector(".import-reports");
+  #reports = () => this._modalElement.querySelector(".import-reports").value;
+  #clearReports() {
+    this._modalElement.querySelector(".import-reports").value = "";
+  }
 
-  render(formHtml, headerText) {
+  render(formHtml, headerText, replaceElement = true) {
     const modalFormHtml = `
       <div class="modal">
         <button class="modal-close-btn">&times;</button>
@@ -33,14 +31,8 @@ export default class ModalFormView extends ModalView {
     `;
 
     const newModalElement = this.htmlStringToElement(modalFormHtml);
-    this._modalElement.replaceWith(newModalElement);
+    if (replaceElement) this._modalElement.replaceWith(newModalElement);
     this._modalElement = newModalElement;
-    this._modalElement
-      .querySelector(".form")
-      .addEventListener("submit", async (e) => {
-        e.preventDefault();
-        console.log("SUBMITTED");
-      });
     return newModalElement;
   }
 
@@ -78,6 +70,7 @@ export default class ModalFormView extends ModalView {
   }
 
   importReportsForm() {
+    const replaceElement = false;
     const headerText = "Import Reports";
     const formHtml = `
       <form class="form" id="form-modal">
@@ -88,7 +81,14 @@ export default class ModalFormView extends ModalView {
             id="import-reports"
             name="import-reports"
             class="import-reports"
-            placeholder="{ "id": "", "version": "", ... }"
+            placeholder=
+              '[
+  { "id": "xxxxxxxx-xxxx-4xxx...", "version": "x.x.x", <...> },
+  { "id": "xxxxxxxx-xxxx-4xxx...", "version": "x.x.x", <...> },
+  { "id": "xxxxxxxx-xxxx-4xxx...", "version": "x.x.x", <...> },
+  { <...> }
+]
+'
             spellcheck="false"
             autocorrect="off"
             autocapitalize="off"
@@ -103,40 +103,37 @@ export default class ModalFormView extends ModalView {
           <button
             type="submit"
             id="modal-btn-import"
-            class="modal-btn-import success"
+            class="modal-btn import info"
           >
             Import Reports
           </button>
-          <button type="button" class="modal-btn-cancel">No, Cancel</button>
+          <button type="button" class="modal-btn cancel">No, Cancel</button>
         </div>
       </form>
     `;
-    return this.render(formHtml, headerText);
+    return this.render(formHtml, headerText, replaceElement);
   }
 
   addHandlerConfirmPassword(id, handler) {
-    const form = this.#modalForm();
-    console.log(form);
-    console.log(this._modalElement);
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      await handler(id, this.#password());
-      this.#clearPassword();
-    });
+    this._modalElement
+      .querySelector("#form-modal")
+      .addEventListener("submit", async (e) => {
+        e.preventDefault();
+        await handler(id, this.#password());
+        this.#clearPassword();
+      });
   }
 
-  addHandlerClickImportReports() {
-    this.#btnImportReports.addEventListener(
-      "click",
-      this.confirmImport.bind(this)
-    );
-  }
+  addHandlerClickImportReports(handler) {
+    this.#btnImportReports.addEventListener("click", (e) => {
+      this.confirmImport.call(this);
 
-  addHandlerImportReports(handler) {
-    const form = this.#modalForm();
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      await handler(id, this.#reports());
+      this._modalElement
+        .querySelector("#form-modal")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          await handler(this.#reports());
+        });
     });
   }
 }

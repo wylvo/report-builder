@@ -4,6 +4,7 @@ import userTableView from "../views/users/userTableView.js";
 import paginationView from "../views/paginationView.js";
 
 import notificationView from "../views/notifications/notificationView.js";
+import ModalFormView from "../views/modal/modalFormView.js";
 import ModalView from "../views/notifications/modalView.js";
 
 const modalView = new ModalView();

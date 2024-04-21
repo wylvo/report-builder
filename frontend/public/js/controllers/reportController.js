@@ -344,6 +344,48 @@ const controlRenderAllReports = function () {
   return reports;
 };
 
+const controlImportReports = async function (rawJSON) {
+  try {
+    const reportsArray = JSON.parse(rawJSON);
+    let errors = false;
+
+    // Check if raw JSON is an array and is not empty
+    if (!Array.isArray(reportsArray) || reportsArray.length === 0)
+      return notificationView.warning(
+        "JSON can't be empty, and has to be enclosed by an array -> []"
+      );
+
+    // Check report validity of each values inside the non-empty array
+    reportsArray.forEach((report, i) => {
+      try {
+        model.checkValidity(report);
+      } catch (error) {
+        errors = true;
+        notificationView.error(`Report #${i + 1}: ${error.message}`);
+      }
+    });
+
+    if (errors) return;
+
+    // prettier-ignore
+    // Filter report objects with duplicate "id" values
+    const uniqueReportsArray = reportsArray.filter((value, i, array) =>
+      i === array.findIndex((obj) => obj.id === value.id));
+
+    console.log(uniqueReportsArray);
+
+    await model.DB.importReports(uniqueReportsArray);
+
+    notificationView.import(
+      `Report(s) successfully imported: ${uniqueReportsArray.length}`
+    );
+    modalView.closeModal();
+  } catch (error) {
+    notificationView.error(error.message, 60);
+    console.error(error);
+  }
+};
+
 const controlBeforeUnload = function () {
   let hasChanges;
   for (const [_, reportFormView] of reportTabsView.tabs) {
@@ -353,14 +395,6 @@ const controlBeforeUnload = function () {
     }
   }
   return hasChanges;
-};
-
-const controlImportReports = async function () {
-  try {
-  } catch (error) {
-    notificationView.error(error.message, 60);
-    console.error(error);
-  }
 };
 
 /*
@@ -436,8 +470,8 @@ export const init = async function () {
   paginationView.addHandlerOnChangeRowsPerPage(controlRowsPerPage);
   paginationView.addHandlerClickPage(controlPages);
 
-  // Model form view handler
-  modalFormView.addHandlerClickImportReports();
+  // Modal form view handler
+  modalFormView.addHandlerClickImportReports(controlImportReports);
 
   // const version = await api.v1.version.getVersion();
   // console.log("Version", version);

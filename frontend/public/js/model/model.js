@@ -67,7 +67,7 @@ export const checkValidity = (report) => {
     const target = typeof currentObject === "undefined" ? "root" : currentObject;
 
     // If the target object does not exist, throw an error. (For nested objects)
-    if (typeof targetObject === "undefined") throw new Error(`Failed to create report. The "${target}" object was not found.`)
+    if (typeof targetObject === "undefined") throw new Error(`Failed to validate report. The "${target}" object was not found.`)
 
     // Key Names. Sort by alphabetical order to compare them
     const defaultKeys = Object.keys(defaultObject).sort();
@@ -80,7 +80,7 @@ export const checkValidity = (report) => {
       if (target === "transaction" && !Object.hasOwn(targetObject, key)) return;
 
       // Else throw an error if none of the condition were met. In this case, it means that the 2 objects have different lengths.
-      throw new Error(`Failed to create a report object. The number of keys found inside the "${target}" object is invalid.`);
+      throw new Error(`Failed to validate a report object. The number of keys found inside the "${target}" object is invalid.`);
     }
 
     // Key Values
@@ -130,7 +130,7 @@ export const checkValidity = (report) => {
   // Parse errors into a single string message
   if (hasMissingKeys || hasinvalidTypes) {
     throw new Error(
-      `Failed to create a report object${
+      `Failed to validate a report object${
         hasMissingKeys
           ? `. You have ${missingKeys.length} missing key(s) "${missingKeys.join(", ")}"`
           : ""
@@ -565,7 +565,7 @@ export const checkUserValidity = (configObject, user) => {
     const target = typeof currentObject === "undefined" ? "root" : currentObject;
 
     // If the target object does not exist, throw an error. (For nested objects)
-    if (typeof targetObject === "undefined") throw new Error(`Failed to create user. The "${target}" object was not found.`)
+    if (typeof targetObject === "undefined") throw new Error(`Failed to validate user. The "${target}" object was not found.`)
 
     // Key Names. Sort by alphabetical order to compare them
     const defaultKeys = Object.keys(defaultObject).sort();
@@ -578,7 +578,7 @@ export const checkUserValidity = (configObject, user) => {
     if (defaultKeys.length !== userKeys.length) {
 
       // Throw an error. In this case, it means that the 2 objects have different lengths.
-      throw new Error(`Failed to create a user object. The number of keys found inside the "${target}" object is invalid.`);
+      throw new Error(`Failed to validate a user object. The number of keys found inside the "${target}" object is invalid.`);
     }
 
     // Key Values
@@ -618,7 +618,7 @@ export const checkUserValidity = (configObject, user) => {
   // Parse errors into a single string message
   if (hasMissingKeys || hasinvalidTypes) {
     throw new Error(
-      `Failed to create a user object${
+      `Failed to validate a user object${
         hasMissingKeys
           ? `. You have ${missingKeys.length} missing key(s) "${missingKeys.join(", ")}"`
           : ""
@@ -661,6 +661,13 @@ export const DB = {
     state.reports = data;
 
     return data;
+  },
+
+  importReports: async (uniqueReportsArray) => {
+    for (const report of uniqueReportsArray) {
+      // API request to create a report in the database
+      await api.v1.reports.createReport(report);
+    }
   },
 
   createReport: async (tabReport, form) => {

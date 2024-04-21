@@ -5,6 +5,7 @@ export class NotificationView extends View {
   #WARNING = "warning";
   #SUCCESS = "success";
   #DELETE = "delete";
+  #IMPORT = "import";
   #UNDO = "undo";
   #SAVE = "save";
   #INFO = "info";
@@ -75,13 +76,20 @@ export class NotificationView extends View {
   }
 
   // prettier-ignore
-  undo(message, timeoutSec) {
-    return this.render(this.#SUCCESS, this.#UNDO, timeoutSec, this.#SUCCESS, message);
+  warning(message, timeoutSec) {
+    return this.render(this.#WARNING, this.#WARNING, timeoutSec, this.#WARNING, message);
   }
 
   // prettier-ignore
-  warning(message, timeoutSec) {
-    return this.render(this.#WARNING, this.#WARNING, timeoutSec, this.#WARNING, message);
+  import(message, timeoutSec) {
+    if(message === null || message.includes("Failed"))
+      return this.render(this.#ERROR, this.#IMPORT, timeoutSec, this.#SUCCESS, message);
+    return this.render(this.#SUCCESS, this.#IMPORT, timeoutSec, this.#SUCCESS, message);
+  }
+
+  // prettier-ignore
+  undo(message, timeoutSec) {
+    return this.render(this.#SUCCESS, this.#UNDO, timeoutSec, this.#SUCCESS, message);
   }
 
   // prettier-ignore

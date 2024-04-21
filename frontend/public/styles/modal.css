@@ -52,7 +52,9 @@
 }
 
 .modal-header {
+  align-items: center;
   margin-bottom: 3.6rem;
+  text-align: center;
   gap: 3.6rem;
 }
 
@@ -64,16 +66,8 @@
   justify-content: center;
 }
 
-.modal-header {
-  align-items: center;
-}
-
 .modal-content {
   text-align: justify;
-}
-
-.modal-header {
-  text-align: center;
 }
 
 .modal-content-text {
