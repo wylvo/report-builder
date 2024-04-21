@@ -1,11 +1,13 @@
 import * as model from "../model/model.js";
-import userTabsView from "../views/users/userTabsView.js";
-import userTableView from "../views/users/userTableView.js";
-import paginationView from "../views/paginationView.js";
 
-import notificationView from "../views/notifications/notificationView.js";
-import ModalFormView from "../views/modal/modalFormView.js";
-import ModalView from "../views/notifications/modalView.js";
+import userTabsView from "./views/userTabsView.js";
+import userTableView from "./views/userTableView.js";
+
+import paginationView from "../paginationView.js";
+import notificationsView from "../notifiations/notificationsView.js";
+
+import ModalFormView from "../modal/modalFormView.js";
+import ModalView from "../modal/modalView.js";
 
 const modalView = new ModalView();
 
@@ -81,7 +83,7 @@ const controlPaste = function () {
     if (userInput.getAttribute("type") !== "checkbox")
       userInput.value = clipboardInput.value;
   });
-  notificationView.success(`User state pasted into tab ${model.state.tab + 1}`, 5);
+  notificationsView.success(`User state pasted into tab ${model.state.tab + 1}`, 5);
   userFormView._form.onchange();
 };
 
@@ -93,7 +95,7 @@ const controlCopy = function (inputs = undefined) {
   model.state.clipboard = inputs;
   if (model.state.clipboard.size > 0)
     userTabsView.tabs.forEach((userFormView) => userFormView._btnPaste.disabled = false);
-  notificationView.info(`User state copied from tab ${model.state.tab + 1}`, 5);
+  notificationsView.info(`User state copied from tab ${model.state.tab + 1}`, 5);
 };
 
 const controlNewUser = function () {
@@ -115,7 +117,7 @@ const controlRenderUser = function () {
     console.log(model.state);
   } catch (error) {
     controlNewUser();
-    notificationView.error(error.message, 60);
+    notificationsView.error(error.message, 60);
     console.error(error);
   }
 };
@@ -130,14 +132,14 @@ const controlSaveUser = async function (userId) {
       user = await model.DB.createUser(userFormView._form);
       userTableView.render(user);
       userTableView.updateTotalCount(model.state.users);
-      notificationView.success(`User successfully created: [${user.id}]`);
+      notificationsView.success(`User successfully created: [${user.id}]`);
     }
 
     // Update User
     if (id) {
       user = await model.DB.updateUser(id, userFormView._form);
       userTableView.update(user);
-      notificationView.success(`User successfully updated: [${user.id}]`);
+      notificationsView.success(`User successfully updated: [${user.id}]`);
     }
 
     userFormView.clearPasswordFields();
@@ -146,7 +148,7 @@ const controlSaveUser = async function (userId) {
     userTabsView.render(model.state.tab, user.fullName, user.id);
     model.loadTabWith(model.state.users, model.state.tab, user.id);
   } catch (error) {
-    notificationView.error(error.message, 60);
+    notificationsView.error(error.message, 60);
     console.error(error);
   }
 };
@@ -159,11 +161,11 @@ const controlResetUserPassword = async (userId) => {
     if (id) {
       const user = await model.DB.resetUserPassword(id, userFormView._form);
       
-      notificationView.success(`User password successfully reset: ${user.email}`);
+      notificationsView.success(`User password successfully reset: ${user.email}`);
       userFormView.clearPasswordFields();
     }
   } catch (error) {
-    notificationView.error(error.message, 60);
+    notificationsView.error(error.message, 60);
     console.error(error);
   }
 };
@@ -188,10 +190,10 @@ const controlDeleteUser = async function (id) {
   
     await model.DB.deleteUser(id);
     userTableView.updateTotalCount(model.state.users);
-    notificationView.success(`User successfully deleted: ${user.email} [${user.id}]`);
+    notificationsView.success(`User successfully deleted: ${user.email} [${user.id}]`);
 
   } catch (error) {
-    notificationView.error(error.message, 60);
+    notificationsView.error(error.message, 60);
     console.error(error);
   }
 };
@@ -205,11 +207,11 @@ const controlUserStatus = async function (id) {
     else user = await model.DB.enableUser(id, user);
 
     const statusMsg = user.isEnabled ? "enabled" : "disabled"
-    notificationView.success(`User successfully ${statusMsg}: ${user.email} [${user.id}]`, 3);
+    notificationsView.success(`User successfully ${statusMsg}: ${user.email} [${user.id}]`, 3);
 
     userTableView.update(user);
   } catch (error) {
-    notificationView.error(error.message, 60);
+    notificationsView.error(error.message, 60);
     console.error(error);
   }
 };

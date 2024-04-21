@@ -1,20 +1,20 @@
-import View from "./View.js";
+import View from "../../View.js";
 
-class SignInView extends View {
+class AuthView extends View {
   #email = document.querySelector("#email");
   #password = document.querySelector("#password");
-  #signInForm = document.querySelector("#sign-in");
+  #authForm = document.querySelector("#auth");
 
   constructor() {
     super();
   }
 
   addHandlerSignIn(handler) {
-    this.#signInForm.addEventListener("submit", (e) => {
+    this.#authForm.addEventListener("submit", (e) => {
       e.preventDefault();
       handler(this.#email.value, this.#password.value);
     });
   }
 }
 
-export default new SignInView();
+export default new AuthView();

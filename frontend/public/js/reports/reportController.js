@@ -1,14 +1,15 @@
 import * as model from "../model/model.js";
 import api from "../model/api.js";
 
-import reportTabsView from "../views/reports/reportTabsView.js";
-import paginationView from "../views/paginationView.js";
-import searchView from "../views/searchView.js";
-import reportTableView from "../views/reports/reportTableView.js";
-import notificationView from "../views/notifications/notificationView.js";
+import reportTabsView from "./views/reportTabsView.js";
+import reportTableView from "./views/reportTableView.js";
 
-import ModalFormView from "../views/modal/modalFormView.js";
-import ModalView from "../views/notifications/modalView.js";
+import paginationView from "../paginationView.js";
+import searchView from "../searchView.js";
+import notificationsView from "../notifiations/notificationsView.js";
+
+import ModalFormView from "../modal/modalFormView.js";
+import ModalView from "../modal/modalView.js";
 
 const modalView = new ModalView();
 
@@ -52,7 +53,7 @@ const controlPaste = function () {
     if (reportInput.getAttribute("type") !== "checkbox")
       reportInput.value = clipboardInput.value;
   });
-  notificationView.success(`Report state pasted into tab ${model.state.tab + 1}`, 5);
+  notificationsView.success(`Report state pasted into tab ${model.state.tab + 1}`, 5);
   reportFormView._form.onchange();
 };
 
@@ -61,7 +62,7 @@ const controlCopy = function (inputs = undefined) {
   model.state.clipboard = inputs;
   if (model.state.clipboard.size > 0)
     reportTabsView.tabs.forEach((reportFormView) => reportFormView._btnPaste.disabled = false);
-  notificationView.info(`Report state copied from tab ${model.state.tab + 1}`, 5);
+  notificationsView.info(`Report state copied from tab ${model.state.tab + 1}`, 5);
 };
 
 const controlNewReport = function () {
@@ -83,7 +84,7 @@ const controlRenderReport = function () {
     console.log(model.state);
   } catch (error) {
     controlNewReport();
-    notificationView.error(error.message, 60);
+    notificationsView.error(error.message, 60);
     console.error(error);
   }
 };
@@ -98,14 +99,14 @@ const controlSaveReport = async function (reportId) {
       report = await model.DB.createReport(model.state.tab, reportFormView._form);
       reportTableView.render(report);
       reportTableView.updateTotalCount(model.state.reports);
-      notificationView.success(`Report successfully created: [${report.id}]`);
+      notificationsView.success(`Report successfully created: [${report.id}]`);
     }
 
     // Save changes
     if (id) {
       report = await model.DB.updateReport(id, reportFormView._form);
       reportTableView.update(report);
-      notificationView.success(`Report changes were saved: [${report.id}]`);
+      notificationsView.success(`Report changes were saved: [${report.id}]`);
     }
 
     reportFormView.takeSnapshot(reportFormView.newClone());
@@ -115,7 +116,7 @@ const controlSaveReport = async function (reportId) {
     model.loadTabWith(model.state.reports, model.state.tab, report.id);
     // api.sendBackupReports(model.state.reports);
   } catch (error) {
-    notificationView.error(error.message, 60);
+    notificationsView.error(error.message, 60);
     console.error(error);
   }
 };
@@ -147,7 +148,7 @@ const controlSendReport = async function (id = undefined) {
 
     reportTableView.clearSpinner(tableViewBtnTeams, "success");
     tableViewBtnTeams.disabled = true;
-    notificationView.success(`Report successfully sent on Teams. Status code ${request.response.status} (${request.response.statusText})`);
+    notificationsView.success(`Report successfully sent on Teams. Status code ${request.response.status} (${request.response.statusText})`);
 
     model.updateIsWebhookSent(report);
     model.updateHasTriggeredWebhook(report);
@@ -157,14 +158,14 @@ const controlSendReport = async function (id = undefined) {
     console.log("Tab index:", tabIndex, model.state.tabs.get(tabIndex).report);
   } catch (error) {
     console.error(error);
-    notificationView.error(error, 60);
+    notificationsView.error(error, 60);
     if(reportViewInTab) reportViewInTab.clearSpinner(reportViewInTab._btnTeams);
     reportTableView.clearSpinner(tableViewBtnTeams);
 
     if (error.message.includes("Request failed")) {
       if(reportViewInTab) reportViewInTab.clearSpinner(reportViewInTab._btnTeams, "error");
       reportTableView.clearSpinner(tableViewBtnTeams, "error");
-      notificationView.warning("Make sure you have internet access.", 60);
+      notificationsView.warning("Make sure you have internet access.", 60);
     }
   }
 };
@@ -201,7 +202,7 @@ const controlDeleteReport = async function (id) {
     await model.DB.deleteReport(id);
     
     reportTableView.updateTotalCount(model.state.reports);
-    notificationView.success(`Report successfully deleted: ${report.incident.title} [${report.id}]`);
+    notificationsView.success(`Report successfully deleted: ${report.incident.title} [${report.id}]`);
 
     await model.DB.getAllSoftDeletedReports();
     if(reportTableView.isDeletedViewActive)
@@ -209,7 +210,7 @@ const controlDeleteReport = async function (id) {
 
   } catch (error) {
     console.error(error);
-    notificationView.error(error.message, 60);
+    notificationsView.error(error.message, 60);
   }
 };
 
@@ -233,11 +234,11 @@ const controlHardDeleteReport = async function (id, password) {
 
     modalView.closeModal();
     reportTableView.updateTotalCount(model.state.reports);
-    notificationView.success(`Report successfully hard deleted: ${report.incident.title} [${report.id}]`);
+    notificationsView.success(`Report successfully hard deleted: ${report.incident.title} [${report.id}]`);
 
   } catch (error) {
     console.error(error);
-    notificationView.error(error.message, 60);
+    notificationsView.error(error.message, 60);
   }
 };
 
@@ -252,7 +253,7 @@ const controlUndoDeleteReport = async function (id) {
 
     await model.DB.undoSoftDeleteReport(id);
     reportTableView.updateTotalCount(model.state.reportsDeleted);
-    notificationView.undo(
+    notificationsView.undo(
       `Deleted report successfully recovered: ${reportDeleted.incident.title} [${reportDeleted.id}]`
     );
 
@@ -262,7 +263,7 @@ const controlUndoDeleteReport = async function (id) {
 
   } catch (error) {
     console.error(error);
-    notificationView.error(error.message, 60);
+    notificationsView.error(error.message, 60);
   }
 };
 
@@ -351,7 +352,7 @@ const controlImportReports = async function (rawJSON) {
 
     // Check if raw JSON is an array and is not empty
     if (!Array.isArray(reportsArray) || reportsArray.length === 0)
-      return notificationView.warning(
+      return notificationsView.warning(
         "JSON can't be empty, and has to be enclosed by an array -> []"
       );
 
@@ -361,7 +362,7 @@ const controlImportReports = async function (rawJSON) {
         model.checkValidity(report);
       } catch (error) {
         errors = true;
-        notificationView.error(`Report #${i + 1}: ${error.message}`);
+        notificationsView.error(`Report #${i + 1}: ${error.message}`);
       }
     });
 
@@ -376,12 +377,12 @@ const controlImportReports = async function (rawJSON) {
 
     await model.DB.importReports(uniqueReportsArray);
 
-    notificationView.import(
+    notificationsView.import(
       `Report(s) successfully imported: ${uniqueReportsArray.length}`
     );
     modalView.closeModal();
   } catch (error) {
-    notificationView.error(error.message, 60);
+    notificationsView.error(error.message, 60);
     console.error(error);
   }
 };
@@ -407,7 +408,7 @@ export const init = async function () {
 
   // prettier-ignore
   if (model.migrateReport(model.state.reports)) {
-    notificationView.success(`Reports successfully migrated to v1.0.0-beta`, 60);
+    notificationsView.success(`Reports successfully migrated to v1.0.0-beta`, 60);
     model.saveReportsInLocalStorage();
   }
   // api.sendBackupReports(model.state.reports);

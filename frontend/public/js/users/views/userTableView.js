@@ -1,4 +1,4 @@
-import TableView from "../tableView.js";
+import TableView from "../../tableView.js";
 
 class UserTableView extends TableView {
   constructor() {

@@ -1,6 +1,6 @@
 import * as model from "../model/model.js";
-import sidebarView from "../views/sidebar/sidebarView.js";
-import themeView from "../views/theme/themeView.js";
+import sidebarView from "./views/sidebarView.js";
+import themeView from "../themeView.js";
 
 const controlTheme = function (theme) {
   if (!theme) return;
@@ -9,7 +9,7 @@ const controlTheme = function (theme) {
     model.saveThemeInLocalStorage();
   } catch (error) {
     console.error(error);
-    notificationView.error(error.message);
+    notificationsView.error(error.message);
   }
 };
 

@@ -2,7 +2,7 @@
 <html lang="en" data-theme="light">
   <head>
     <%- include('./partials/head.ejs') %>
-    <link rel="stylesheet" href="styles/signin.css" />
+    <link rel="stylesheet" href="styles/auth.css" />
   </head>
   <body>
     <header>
@@ -11,7 +11,7 @@
         <p>Call Log App</p>
       </div>
     </header>
-    <main class="main-signin">
+    <main class="main-auth">
       <!-- NOTIFICATIONS -->
       <div class="notifications"></div>
 
@@ -20,8 +20,8 @@
         <div class="container">
           <h1 class="heading">Welcome</h1>
           <p class="text">Please sign in into your account.</p>
-          <form id="sign-in">
-            <div class="form-grouping-signin">
+          <form id="auth">
+            <div class="form-grouping-auth">
               <label for="email">Email </label>
               <input
                 type="email"
@@ -31,7 +31,7 @@
                 required
               />
             </div>
-            <div class="form-grouping-signin">
+            <div class="form-grouping-auth">
               <label for="password">Password</label>
               <input
                 type="password"

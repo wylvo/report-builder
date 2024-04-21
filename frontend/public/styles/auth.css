@@ -24,14 +24,14 @@ header {
   color: var(--on-background-content);
 }
 
-.main-signin {
+.main-auth {
   min-height: 100vh;
   width: 100%;
   display: flex;
   justify-content: center;
 }
 
-.main-signin > .left {
+.main-auth > .left {
   width: 100%;
   max-width: 80rem;
   padding: 0 9.6rem;
@@ -59,7 +59,7 @@ header {
   margin-bottom: 2.4rem;
 }
 
-#sign-in {
+#auth {
   display: flex;
   flex-direction: column;
   gap: 1.6rem;
@@ -67,11 +67,11 @@ header {
   padding-top: 2.4rem;
 }
 
-#sign-in:first {
+#auth:first {
   margin-top: 1.2rem;
 }
 
-#sign-in .form-grouping-signin {
+#auth .form-grouping-auth {
   position: relative;
   width: 100%;
   height: 6.4rem;
@@ -80,7 +80,7 @@ header {
   /* border: 0.1rem solid var(--fields-border-color); */
 }
 
-.form-grouping-signin input {
+.form-grouping-auth input {
   margin-top: 0.4rem;
 
   font-size: 1.6rem;
@@ -95,35 +95,35 @@ header {
   transition: all 0.3s ease;
 }
 
-.form-grouping-signin input:hover {
+.form-grouping-auth input:hover {
   background-color: var(--fields-hover-color);
 }
 
-.form-grouping-signin input:focus {
+.form-grouping-auth input:focus {
   border-color: var(--on-background);
 }
 
-#sign-in .form-btn {
+#auth .form-btn {
   margin-top: 2.4rem;
   align-self: center;
 }
 
-#sign-in .form-btn button {
+#auth .form-btn button {
   padding: 1.2rem 4.8rem;
   color: var(--on-primary);
   background-color: var(--fields-on-background);
   transform: all 0.3s ease;
 }
 
-#sign-in .form-btn button:hover {
+#auth .form-btn button:hover {
   filter: brightness(150%);
 }
 
-#sign-in .form-btn button:active {
+#auth .form-btn button:active {
   scale: 0.95;
 }
 
-.main-signin > .right {
+.main-auth > .right {
   flex: 1;
   min-width: 64rem;
   flex-shrink: 0;
@@ -134,14 +134,14 @@ header {
 }
 
 @media screen and (max-width: 1408px) {
-  .main-signin > .left {
+  .main-auth > .left {
     padding: 0 4.8rem;
     max-width: 75%;
   }
 }
 
 @media screen and (max-width: 1152px) {
-  .main-signin > .left {
+  .main-auth > .left {
     padding: 0 9.6rem;
     max-width: 75%;
   }
@@ -150,17 +150,17 @@ header {
     width: 100%;
   }
 
-  .form-grouping-signin input {
+  .form-grouping-auth input {
     font-size: 1.2rem;
   }
 
-  .main-signin > .right {
+  .main-auth > .right {
     display: none;
   }
 }
 
 @media screen and (max-width: 576px) {
-  .main-signin > .left {
+  .main-auth > .left {
     padding: 0 4.8rem;
     max-width: 100%;
   }

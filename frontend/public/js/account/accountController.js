@@ -1,13 +1,14 @@
 import * as model from "../model/model.js";
-import accountTabsView from "../views/account/accountTabsView.js";
+import accountTabsView from "./views/accountTabsView.js";
 
-import reportTableView from "../views/reports/reportTableView.js";
-import searchView from "../views/searchView.js";
-import paginationView from "../views/paginationView.js";
+import reportTableView from "../reports/views/reportTableView.js";
+import searchView from "../searchView.js";
 
-import notificationView from "../views/notifications/notificationView.js";
-import ModalFormView from "../views/modal/modalFormView.js";
-import ModalView from "../views/notifications/modalView.js";
+import paginationView from "../paginationView.js";
+import notificationsView from "../notifiations/notificationsView.js";
+
+import ModalFormView from "../modal/modalFormView.js";
+import ModalView from "../modal/modalView.js";
 
 const modalView = new ModalView();
 
@@ -25,10 +26,10 @@ const controlDeleteReport = async function (id) {
   
     await model.DB.deleteReport(id);
     reportTableView.updateTotalCount(model.state.reports);
-    notificationView.success(`Report successfully deleted: ${report.incident.title} [${report.id}]`);
+    notificationsView.success(`Report successfully deleted: ${report.incident.title} [${report.id}]`);
 
   } catch (error) {
-    notificationView.error(error, 60);
+    notificationsView.error(error, 60);
   }
 };
 
@@ -38,7 +39,7 @@ const controlUndoDeleteReport = async function (id) {
     isUndoConfirmed = await modalView.confirmDelete(report);
     if (!isUndoConfirmed) return;
   } catch (error) {
-    notificationView.error(error.message, 60);
+    notificationsView.error(error.message, 60);
   }
 };
 

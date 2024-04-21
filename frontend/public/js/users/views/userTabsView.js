@@ -1,4 +1,4 @@
-import TabsView from "../tabsView.js";
+import TabsView from "../../tabsView.js";
 import { UserFormView } from "./userFormView.js";
 
 class UserTabsView extends TabsView {

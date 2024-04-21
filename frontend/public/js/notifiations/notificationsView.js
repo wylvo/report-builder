@@ -1,6 +1,6 @@
 import View from "../View.js";
 
-export class NotificationView extends View {
+export class NotificationsView extends View {
   #ERROR = "error";
   #WARNING = "warning";
   #SUCCESS = "success";
@@ -108,4 +108,4 @@ export class NotificationView extends View {
   }
 }
 
-export default new NotificationView();
+export default new NotificationsView();

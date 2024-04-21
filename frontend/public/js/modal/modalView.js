@@ -1,7 +1,7 @@
-import { NotificationView } from "./notificationView.js";
-import ModalFormView from "../modal/modalFormView.js";
+import { NotificationsView } from "../notifiations/notificationsView.js";
+import ModalFormView from "./modalFormView.js";
 
-export default class ModalView extends NotificationView {
+export default class ModalView extends NotificationsView {
   #modalContainer = document.querySelector(".modal-ctn");
   #overlay = document.querySelector(".overlay");
   #timeout;
