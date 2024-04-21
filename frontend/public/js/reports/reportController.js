@@ -1,5 +1,5 @@
-import * as model from "../model/model.js";
-import api from "../model/api.js";
+import * as model from "../model.js";
+import api from "../api.js";
 
 import reportTabsView from "./views/reportTabsView.js";
 import reportTableView from "./views/reportTableView.js";

@@ -1,4 +1,4 @@
-import auth from "../model/auth.js";
+import auth from "../auth.js";
 import notificationsView from "../notifiations/notificationsView.js";
 import authView from "./views/authView.js";
 

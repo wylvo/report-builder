@@ -2,7 +2,7 @@ import {
   DEFAULT_REPORT,
   DEFAULT_USER_CREATE,
   DEFAULT_USER_UPDATE,
-} from "../config.js";
+} from "./config.js";
 import { migrateReportData } from "./migrate.js";
 import api from "./api.js";
 import utils from "./utils.js";

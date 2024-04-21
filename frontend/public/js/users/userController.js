@@ -1,4 +1,4 @@
-import * as model from "../model/model.js";
+import * as model from "../model.js";
 
 import userTabsView from "./views/userTabsView.js";
 import userTableView from "./views/userTableView.js";
