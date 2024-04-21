@@ -1,4 +1,4 @@
-import View from "../../View.js";
+import View from "../../_views/View.js";
 
 class SidebarView extends View {
   constructor() {
@@ -82,4 +82,7 @@ class SidebarView extends View {
   }
 }
 
-export default new SidebarView();
+// If not at "/signin" DO NOT instantiate/create --> SidebarView
+export default window.location.pathname !== "/signin"
+  ? new SidebarView()
+  : null;

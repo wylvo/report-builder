@@ -1,6 +1,6 @@
 import * as model from "../model/model.js";
 import sidebarView from "./views/sidebarView.js";
-import themeView from "../themeView.js";
+import themeView from "../_views/themeView.js";
 
 const controlTheme = function (theme) {
   if (!theme) return;

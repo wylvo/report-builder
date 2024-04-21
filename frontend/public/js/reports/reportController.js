@@ -4,8 +4,8 @@ import api from "../model/api.js";
 import reportTabsView from "./views/reportTabsView.js";
 import reportTableView from "./views/reportTableView.js";
 
-import paginationView from "../paginationView.js";
-import searchView from "../searchView.js";
+import paginationView from "../_views/paginationView.js";
+import searchView from "../_views/searchView.js";
 import notificationsView from "../notifiations/notificationsView.js";
 
 import ModalFormView from "../modal/modalFormView.js";

@@ -2,9 +2,9 @@ import * as model from "../model/model.js";
 import accountTabsView from "./views/accountTabsView.js";
 
 import reportTableView from "../reports/views/reportTableView.js";
-import searchView from "../searchView.js";
+import searchView from "../_views/searchView.js";
 
-import paginationView from "../paginationView.js";
+import paginationView from "../_views/paginationView.js";
 import notificationsView from "../notifiations/notificationsView.js";
 
 import ModalFormView from "../modal/modalFormView.js";

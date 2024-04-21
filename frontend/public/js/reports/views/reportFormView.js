@@ -1,4 +1,4 @@
-import FormView from "../../formView.js";
+import FormView from "../../_views/formView.js";
 
 export class ReportFormView extends FormView {
   // Accordions keys

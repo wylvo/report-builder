@@ -3,7 +3,7 @@ import * as model from "../model/model.js";
 import userTabsView from "./views/userTabsView.js";
 import userTableView from "./views/userTableView.js";
 
-import paginationView from "../paginationView.js";
+import paginationView from "../_views/paginationView.js";
 import notificationsView from "../notifiations/notificationsView.js";
 
 import ModalFormView from "../modal/modalFormView.js";

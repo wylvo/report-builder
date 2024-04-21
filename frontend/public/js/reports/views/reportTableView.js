@@ -1,4 +1,4 @@
-import TableView from "../../tableView.js";
+import TableView from "../../_views/tableView.js";
 
 class ReportTableView extends TableView {
   #btnAllReports = document.querySelector("#table-reports");

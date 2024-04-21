@@ -1,4 +1,4 @@
-import View from "../../View.js";
+import View from "../../_views/View.js";
 
 class AuthView extends View {
   #email = document.querySelector("#email");

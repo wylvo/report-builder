@@ -1,4 +1,4 @@
-import TabsView from "../../tabsView.js";
+import TabsView from "../../_views/tabsView.js";
 import { AccountFormView } from "./accountFormView.js";
 
 class AccountTabsView extends TabsView {

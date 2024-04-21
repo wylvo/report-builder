@@ -224,17 +224,13 @@
   height: 3.2rem;
 }
 
-#theme,
-.scroll-top-btn,
-.scroll-bottom-btn {
+#theme {
   background-color: var(--primary-color);
   opacity: 0.5;
   transition: 0.3s;
 }
 
-#theme:hover,
-.scroll-top-btn:hover,
-.scroll-bottom-btn:hover {
+#theme:hover {
   opacity: 1;
 }
 

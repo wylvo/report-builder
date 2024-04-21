@@ -27,7 +27,7 @@ export const getAccount = (req, res) => {
 };
 
 export const getSignInForm = (req, res) => {
-  res.status(200).render("signin", {
+  res.status(200).render("auth", {
     title: "Sign In",
     scriptPath: "/js/auth/authController.js",
   });

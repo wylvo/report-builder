@@ -13,12 +13,9 @@ const controlSignIn = async function (email, password) {
       location.assign("/");
     }
   } catch (error) {
+    console.error(error);
     notificationsView.error(error.message);
   }
 };
 
-const init = async function () {
-  authView.addHandlerSignIn(controlSignIn);
-};
-
-init();
+authView.addHandlerSignIn(controlSignIn);
