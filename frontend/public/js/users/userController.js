@@ -4,10 +4,10 @@ import userTabsView from "./views/userTabsView.js";
 import userTableView from "./views/userTableView.js";
 
 import paginationView from "../_views/paginationView.js";
-import notificationsView from "../notifiations/notificationsView.js";
+import notificationsView from "../_views/notificationsView.js";
 
-import ModalFormView from "../modal/modalFormView.js";
-import ModalView from "../modal/modalView.js";
+import ModalFormView from "../_views/modalFormView.js";
+import ModalView from "../_views/modalView.js";
 
 const modalView = new ModalView();
 
@@ -116,9 +116,9 @@ const controlRenderUser = function () {
     userFormView.render(user);
     console.log(model.state);
   } catch (error) {
+    console.error(error);
     controlNewUser();
     notificationsView.error(error.message, 60);
-    console.error(error);
   }
 };
 
@@ -150,8 +150,8 @@ const controlSaveUser = async function (userId) {
     userTabsView.render(model.state.tab, user.fullName, user.id);
     model.loadTabWith(model.state.users, model.state.tab, user.id);
   } catch (error) {
-    notificationsView.error(error.message, 60);
     console.error(error);
+    notificationsView.error(error.message, 60);
   }
 };
 
@@ -167,8 +167,8 @@ const controlResetUserPassword = async (userId) => {
       userFormView.clearPasswordFields();
     }
   } catch (error) {
-    notificationsView.error(error.message, 60);
     console.error(error);
+    notificationsView.error(error.message, 60);
   }
 };
 
@@ -195,8 +195,8 @@ const controlDeleteUser = async function (id) {
     notificationsView.success(`User successfully deleted: ${user.email} [${user.id}]`);
 
   } catch (error) {
-    notificationsView.error(error.message, 60);
     console.error(error);
+    notificationsView.error(error.message, 60);
   }
 };
 
@@ -213,8 +213,8 @@ const controlUserStatus = async function (id) {
 
     userTableView.update(user);
   } catch (error) {
-    notificationsView.error(error.message, 60);
     console.error(error);
+    notificationsView.error(error.message, 60);
   }
 };
 

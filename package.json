@@ -9,7 +9,7 @@
     "start": "pm2 start ./backend/server.js --name report-builder",
     "stop": "pm2 stop report-builder && pm2 delete all",
     "monit": "pm2 monit",
-    "dev": "nodemon ./backend/server.js --watch backend --watch frontend --watch .env -e js,mjs,cjs,json,css"
+    "dev": "nodemon ./backend/server.js --watch backend --watch frontend --watch .env -e js,ejs,json,css"
   },
   "author": "William Evora",
   "license": "ISC",

@@ -48,7 +48,7 @@ export {
   filterSearch,
   findObjectById,
 
-  // from this local file -> ./reportModel.js
+  // from this local file -> ./accountModel.js
   DB,
   init,
 };

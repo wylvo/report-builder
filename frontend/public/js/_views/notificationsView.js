@@ -1,4 +1,4 @@
-import View from "../_views/View.js";
+import View from "./View.js";
 
 export class NotificationsView extends View {
   #ERROR = "error";

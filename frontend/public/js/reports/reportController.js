@@ -6,10 +6,10 @@ import reportTableView from "./views/reportTableView.js";
 
 import paginationView from "../_views/paginationView.js";
 import searchView from "../_views/searchView.js";
-import notificationsView from "../notifiations/notificationsView.js";
+import notificationsView from "../_views/notificationsView.js";
 
-import ModalFormView from "../modal/modalFormView.js";
-import ModalView from "../modal/modalView.js";
+import ModalFormView from "../_views/modalFormView.js";
+import ModalView from "../_views/modalView.js";
 
 const modalView = new ModalView();
 
@@ -83,9 +83,9 @@ const controlRenderReport = function () {
     reportFormView.render(report);
     console.log(model.state);
   } catch (error) {
+    console.error(error);
     controlNewReport();
     notificationsView.error(error.message, 60);
-    console.error(error);
   }
 };
 
@@ -115,8 +115,8 @@ const controlSaveReport = async function (reportId) {
     reportTabsView.render(model.state.tab, report.incident.title, report.id);
     model.loadTabWith(model.state.reports, model.state.tab, report.id);
   } catch (error) {
-    notificationsView.error(error.message, 60);
     console.error(error);
+    notificationsView.error(error.message, 60);
   }
 };
 
@@ -157,7 +157,7 @@ const controlSendReport = async function (id = undefined) {
     console.log("Tab index:", tabIndex, model.state.tabs.get(tabIndex).report);
   } catch (error) {
     console.error(error);
-    notificationsView.error(error, 60);
+    notificationsView.error(error.message, 60);
     if(reportViewInTab) reportViewInTab.clearSpinner(reportViewInTab._btnTeams);
     reportTableView.clearSpinner(tableViewBtnTeams);
 
@@ -381,8 +381,8 @@ const controlImportReports = async function (rawJSON) {
     );
     modalView.closeModal();
   } catch (error) {
-    notificationsView.error(error.message, 60);
     console.error(error);
+    notificationsView.error(error.message, 60);
   }
 };
 

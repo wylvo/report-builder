@@ -68,7 +68,4 @@ export default {
     dif + pad(Math.floor(Math.abs(tzo) / 60)) +
     ':' + pad(Math.abs(tzo) % 60);
   },
-
-  // var dt = new Date();
-  // console.log(toIsoString(dt));
 };

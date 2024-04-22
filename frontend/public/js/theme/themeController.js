@@ -1,6 +1,5 @@
 import * as model from "../model.js";
-import sidebarView from "./views/sidebarView.js";
-import themeView from "../_views/themeView.js";
+import themeView from "./views/themeView.js";
 
 const controlTheme = function (theme) {
   if (!theme) return;
@@ -16,5 +15,3 @@ const controlTheme = function (theme) {
 // Theme view handler
 themeView.addHandlerSwitchTheme(controlTheme);
 themeView.setTheme(model.state.theme);
-
-// sidebarView.addHandlerClickSidebarMenus();

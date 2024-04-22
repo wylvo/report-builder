@@ -5,16 +5,15 @@ import accountTabsView from "./views/accountTabsView.js";
 import searchView from "../_views/searchView.js";
 import paginationView from "../_views/paginationView.js";
 import reportTableView from "../reports/views/reportTableView.js";
-import notificationsView from "../notifiations/notificationsView.js";
+import notificationsView from "../_views/notificationsView.js";
 
-import ModalFormView from "../modal/modalFormView.js";
-import ModalView from "../modal/modalView.js";
+import ModalFormView from "../_views/modalFormView.js";
+import ModalView from "../_views/modalView.js";
 
 const modalView = new ModalView();
 
 let modalFormView = new ModalFormView(),
-  accountFormView,
-  takeSnapshot = false;
+  accountFormView;
 
 // prettier-ignore
 const controlDeleteReport = async function (id) {

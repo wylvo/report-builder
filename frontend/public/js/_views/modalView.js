@@ -1,4 +1,4 @@
-import { NotificationsView } from "../notifiations/notificationsView.js";
+import { NotificationsView } from "./notificationsView.js";
 import ModalFormView from "./modalFormView.js";
 
 export default class ModalView extends NotificationsView {
