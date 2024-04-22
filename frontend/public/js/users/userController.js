@@ -130,6 +130,7 @@ const controlSaveUser = async function (userId) {
     // Create user
     if (!id) {
       user = await model.DB.createUser(userFormView._form);
+      userFormView.render(user);
       userTableView.render(user);
       userTableView.updateTotalCount(model.state.users);
       notificationsView.success(`User successfully created: [${user.id}]`);
@@ -145,6 +146,7 @@ const controlSaveUser = async function (userId) {
     userFormView.clearPasswordFields();
     userFormView.takeSnapshot(userFormView.newClone());
     userFormView.updateTags(user);
+    userFormView._btnResetPassword.disabled = true;
     userTabsView.render(model.state.tab, user.fullName, user.id);
     model.loadTabWith(model.state.users, model.state.tab, user.id);
   } catch (error) {

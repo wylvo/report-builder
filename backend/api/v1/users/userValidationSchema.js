@@ -1,3 +1,5 @@
+import { User } from "./userModel.js";
+
 export default {
   /**
    *  VALIDATION TO CREATE A USER
@@ -31,7 +33,7 @@ export default {
     password: {
       exists: { errorMessage: "required.", bail: true },
       notEmpty: { errorMessage: "can't be empty.", bail: true },
-      isString: { errorMessage: "should be a string" },
+      isString: { errorMessage: "should be a string." },
     },
     passwordConfirmation: {
       exists: { errorMessage: "required.", bail: true },
@@ -45,17 +47,17 @@ export default {
     },
     profilePictureURI: {
       optional: true,
-      isDataURI: { errorMessage: "invalid data URI" },
+      isDataURI: { errorMessage: "invalid data URI." },
     },
     fullName: {
       exists: { errorMessage: "required.", bail: true },
       notEmpty: { errorMessage: "can't be empty.", bail: true },
-      isString: { errorMessage: "should be a string" },
+      isString: { errorMessage: "should be a string." },
     },
     username: {
       exists: { errorMessage: "required.", bail: true },
       notEmpty: { errorMessage: "can't be empty.", bail: true },
-      isString: { errorMessage: "should be a string", bail: true },
+      isString: { errorMessage: "should be a string.", bail: true },
       custom: {
         options: async (username, { req }) => {
           const user = await User.findByUsername(username);

@@ -123,14 +123,4 @@ export default {
       },
     },
   },
-
-  // Send Teams webhook data to local server. Local server will send webhook & handle webhook response
-  sendTeamsWebhook: async function (report) {
-    return await fetchJSON(`/api/v1/webhook/${report.id}`, report);
-  },
-
-  // Send a copy of reports to local server. Local server will write reports into a JSON file for backup
-  sendBackupReports: async function (reports) {
-    return await fetchJSON("/api/backup", reports);
-  },
 };

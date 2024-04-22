@@ -1,5 +1,4 @@
 import api from "./api.js";
-import utils from "./utils.js";
 
 export const state = {
   version: null,

@@ -151,7 +151,9 @@ export class UserFormView extends FormView {
     fields.get("initials").value = user.initials;
     fields.get("email").value = user.email;
     fields.get("username").value = user.username;
-    fields.get("profile-picture-uri").value = user.profilePictureURI;
+    if (user.profilePictureURI === this.#DEFAULT_PICTURE)
+      fields.get("profile-picture-uri").value = "";
+    else fields.get("profile-picture-uri").value = user.profilePictureURI;
     selects.get("role").value = user.role;
     selects.get("status").value = user.isEnabled ? "1" : "0";
 
@@ -260,7 +262,7 @@ export class UserFormView extends FormView {
   _addHandlerCheckPasswordsMatch() {
     [this._password, this._passwordConfirmation].forEach((el) =>
       el.addEventListener("input", () => {
-        if(this._password.value !== "" && this._passwordConfirmation.value !== "") {
+        if(this._password.value && this._passwordConfirmation.value) {
           if (this._password.value === this._passwordConfirmation.value)
             this._btnResetPassword.disabled = false;
           else this._btnResetPassword.disabled = true;

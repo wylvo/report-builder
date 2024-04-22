@@ -70,6 +70,10 @@
   text-align: justify;
 }
 
+.modal-content p {
+  margin-bottom: 1.2rem;
+}
+
 .modal-content-text {
   display: flex;
   flex-direction: column;

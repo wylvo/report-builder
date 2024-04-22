@@ -34,6 +34,9 @@ const config = {
       url: process.env.MS_TEAMS_WEBHOOK_URL,
     },
   },
+  misc: {
+    defaultProfilePicture: "/img/default_profile_picture.jpg",
+  },
   port,
   version: pjsonVersion,
 };

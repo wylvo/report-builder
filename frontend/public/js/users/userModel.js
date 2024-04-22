@@ -51,6 +51,8 @@ const DB = {
     // Check validity of the user object
     checkUserValidity(DEFAULT_USER_CREATE, userObject);
 
+    if (!userObject.profilePictureURI) delete userObject.profilePictureURI;
+
     // API request to create a user in the database
     const {
       data: {
@@ -80,7 +82,8 @@ const DB = {
     // Update a user object
     const user = updateUserObject(id, form);
     const tableRowEl = user.tableRowEl;
-    user.tableRowEl = undefined;
+    delete user.tableRowEl;
+    if (!user.profilePictureURI) delete user.profilePictureURI;
 
     // API request to update a user from the database
     await api.v1.users.updateUser(id, user);

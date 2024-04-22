@@ -73,9 +73,12 @@ export default class ModalFormView extends ModalView {
     const replaceElement = false;
     const headerText = "Import Reports";
     const formHtml = `
+      <div class="modal-content">
+        <p>Duplicate reports will be filtered out by report id. If there are duplicate report ids, only the first duplicate report will be kept.</p>
+      </div>
       <form class="form" id="form-modal">
         <!-- REPORTS RAW JSON -->
-        <div class="form-grouping-col mt-36">
+        <div class="form-grouping-col">
           <textarea
             type="password"
             id="import-reports"
@@ -95,7 +98,7 @@ export default class ModalFormView extends ModalView {
             wrap="off"
             required
           ></textarea>
-          <label for="import-reports">Reports Raw JSON:</label>
+          <label for="import-reports">Insert the raw JSON data of one or mutiple reports:</label>
         </div>
 
         <!-- CALL TO ACTION BUTTON -->

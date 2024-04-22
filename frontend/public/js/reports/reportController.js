@@ -114,7 +114,6 @@ const controlSaveReport = async function (reportId) {
     reportFormView._btnTeams.disabled = false;
     reportTabsView.render(model.state.tab, report.incident.title, report.id);
     model.loadTabWith(model.state.reports, model.state.tab, report.id);
-    // api.sendBackupReports(model.state.reports);
   } catch (error) {
     notificationsView.error(error.message, 60);
     console.error(error);
@@ -140,7 +139,7 @@ const controlSendReport = async function (id = undefined) {
     if(reportViewInTab) reportViewInTab.renderSpinner(reportViewInTab._btnTeams);
     reportTableView.renderSpinner(tableViewBtnTeams);
 
-    const request = await api.sendTeamsWebhook(report);
+    // const request = await api.sendTeamsWebhook(report);
     if(reportViewInTab) {
       reportViewInTab.clearSpinner(reportViewInTab._btnTeams, "success");
       reportViewInTab._btnTeams.disabled = true;

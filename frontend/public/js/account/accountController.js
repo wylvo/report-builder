@@ -12,33 +12,90 @@ import ModalView from "../modal/modalView.js";
 
 const modalView = new ModalView();
 
-let accountFormView,
+let modalFormView = new ModalFormView(),
+  accountFormView,
   takeSnapshot = false;
 
 // prettier-ignore
 const controlDeleteReport = async function (id) {
-  try {    
+  try {
     const report = model.findObjectById(model.state.reports, id);
-  
+    const isAdmin = model.state.user.role === "admin"
     let isDeleteConfirmed = true;
-    isDeleteConfirmed = await modalView.confirmDelete(report);
-    if(!isDeleteConfirmed) return;
-  
+
+    // if current user is admin, propose hard delete option
+    if (isAdmin) {
+      modalFormView = await modalView.confirmDeleteOrHardDelete(report);
+      
+      if (modalFormView instanceof ModalFormView)
+        return modalFormView.addHandlerConfirmPassword(id, controlHardDeleteReport);
+
+    } else isDeleteConfirmed = await modalView.confirmDelete(report);
+
+    if (!isDeleteConfirmed || !modalFormView) return;
+
+    // Remove id if in hash
+    if (id === window.location.hash.slice(1)) accountTabsView.removeLocationHash();
+
+    // Api call to soft delete a report in the database
     await model.DB.deleteReport(id);
+    
     reportTableView.updateTotalCount(model.state.reports);
     notificationsView.success(`Report successfully deleted: ${report.incident.title} [${report.id}]`);
 
+    await model.DB.getCurrentUserAccount();
+    model.state.reports = model.state.user.reports;
+    model.state.reportsDeleted = model.state.user.reportsDeleted;
+
+    controlRenderAllReports();
   } catch (error) {
-    notificationsView.error(error, 60);
+    console.error(error);
+    notificationsView.error(error.message, 60);
+  }
+};
+
+// prettier-ignore
+const controlHardDeleteReport = async function (id, password) {
+  try {
+    const report = model.findObjectById(model.state.reports, id);
+  
+    // Remove id if in hash
+    if(id === window.location.hash.slice(1)) accountTabsView.removeLocationHash();
+
+    // Api call to hard delete a report in the database
+    await model.DB.hardDeleteReport(id, password);
+
+    modalView.closeModal();
+    reportTableView.updateTotalCount(model.state.reports);
+    notificationsView.success(`Report successfully hard deleted: ${report.incident.title} [${report.id}]`);
+
+  } catch (error) {
+    console.error(error);
+    notificationsView.error(error.message, 60);
   }
 };
 
 const controlUndoDeleteReport = async function (id) {
   try {
+    const reportDeleted = model.findObjectById(model.state.reportsDeleted, id);
+
     let isUndoConfirmed = true;
-    isUndoConfirmed = await modalView.confirmDelete(report);
+    isUndoConfirmed = await modalView.confirmUndo(reportDeleted);
     if (!isUndoConfirmed) return;
+
+    await model.DB.undoSoftDeleteReport(id);
+    reportTableView.updateTotalCount(model.state.reportsDeleted);
+    notificationsView.undo(
+      `Deleted report successfully recovered: ${reportDeleted.incident.title} [${reportDeleted.id}]`
+    );
+
+    await model.DB.getCurrentUserAccount();
+    model.state.reports = model.state.user.reports;
+    model.state.reportsDeleted = model.state.user.reportsDeleted;
+
+    controlRenderAllReports();
   } catch (error) {
+    console.error(error);
     notificationsView.error(error.message, 60);
   }
 };

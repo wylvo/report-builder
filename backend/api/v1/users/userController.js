@@ -6,6 +6,7 @@ import {
   resetUserPassword,
   validateResetPassword,
 } from "./resetPassword/resetPasswordController.js";
+import config from "../../../config/app.config.js";
 import { hashPassword } from "../../../auth/authController.js";
 import { generateUUID } from "../router.js";
 import { mssql, mssqlDataTypes } from "../../../config/db.config.js";
@@ -83,7 +84,10 @@ export const createUser = catchAsync(async (req, res, next) => {
     .input("isEnabled", isEnabled ?? true)
     .input("email", email)
     .input("password", await hashPassword(password))
-    .input("profilePictureURI", profilePictureURI)
+    .input(
+      "profilePictureURI",
+      profilePictureURI ?? config.misc.defaultProfilePicture
+    )
     .input("fullName", fullName)
     .input("username", username)
     .input("initials", initials.toUpperCase() ?? null)
@@ -131,6 +135,8 @@ export const updateUser = catchAsync(async (req, res, next) => {
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
 
   const { NVarChar } = mssqlDataTypes;
+  if (!req.body.profilePictureURI)
+    req.body.profilePictureURI = config.misc.defaultProfilePicture;
   const body = [req.body];
   const rawJSON = JSON.stringify(body);
 
