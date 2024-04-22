@@ -3,7 +3,9 @@ const fetchJSON = async (url, jsonData = undefined) => {
   try {
     const response = jsonData
       ? await fetch(url, {
+          mode: "cors",
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
