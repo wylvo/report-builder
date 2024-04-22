@@ -1,4 +1,4 @@
-import * as model from "../model.js";
+import * as model from "./reportModel.js";
 import api from "../api.js";
 
 import reportTabsView from "./views/reportTabsView.js";
@@ -359,7 +359,7 @@ const controlImportReports = async function (rawJSON) {
     // Check report validity of each values inside the non-empty array
     reportsArray.forEach((report, i) => {
       try {
-        model.checkValidity(report);
+        REPORTS.checkReportValidity(report);
       } catch (error) {
         errors = true;
         notificationsView.error(`Report #${i + 1}: ${error.message}`);
@@ -405,13 +405,6 @@ const controlBeforeUnload = function () {
  */
 export const init = async function () {
   await model.init();
-
-  // prettier-ignore
-  if (model.migrateReport(model.state.reports)) {
-    notificationsView.success(`Reports successfully migrated to v1.0.0-beta`, 60);
-    model.saveReportsInLocalStorage();
-  }
-  // api.sendBackupReports(model.state.reports);
 
   // Initialize all tabs
   reportTabsView.renderAll(model.initNumberOfTabs(5));

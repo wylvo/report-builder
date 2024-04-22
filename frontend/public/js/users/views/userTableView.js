@@ -1,4 +1,5 @@
 import TableView from "../../_views/tableView.js";
+import { DEFAULT_PROFILE_PICTURE } from "../../config.js";
 
 class UserTableView extends TableView {
   constructor() {
@@ -41,7 +42,7 @@ class UserTableView extends TableView {
 
     const profilePicture = user.profilePictureURI
       ? user.profilePictureURI
-      : "/img/default_profile_picture.jpg";
+      : DEFAULT_PROFILE_PICTURE;
 
     return `
       <tr class="table-row">

@@ -1,10 +1,11 @@
 import FormView from "../../_views/formView.js";
+import { DEFAULT_PROFILE_PICTURE } from "../../config.js";
 
 export class UserFormView extends FormView {
   // Accordions keys
   #USER = "user-profile-accordion";
   #PASS = "user-password-accordion";
-  #DEFAULT_PICTURE = "/img/default_profile_picture.jpg";
+  #DEFAULT_PICTURE = DEFAULT_PROFILE_PICTURE;
 
   // Generic key
   #ALL = "*";

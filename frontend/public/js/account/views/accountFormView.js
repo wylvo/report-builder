@@ -1,9 +1,10 @@
 import FormView from "../../_views/formView.js";
+import { DEFAULT_PROFILE_PICTURE } from "../../config.js";
 
 export class AccountFormView extends FormView {
   // Accordions keys
   #USER = "user-profile-accordion";
-  #defaultProfilePicturePath = "/img/default_profile_picture.jpg";
+  #DEFAULT_PICTURE = DEFAULT_PROFILE_PICTURE;
 
   // Generic key
   #ALL = "*";
@@ -73,7 +74,7 @@ export class AccountFormView extends FormView {
     // Update form profile picture
     if (user.profilePictureURI)
       this._imgProfilePicture.src = user.profilePictureURI;
-    else this._imgProfilePicture.src = this.#defaultProfilePicturePath;
+    else this._imgProfilePicture.src = this.#DEFAULT_PICTURE;
 
     this._all(this._accordions).forEach((accordion) =>
       this._expandAccordion(accordion.header, accordion.content)
@@ -112,7 +113,7 @@ export class AccountFormView extends FormView {
   _addHandlerUpdateProfilePicture() {
     this._profilePictureURL.addEventListener("change", () => {
       if (this._profilePictureURL.value === "")
-        this._imgProfilePicture.src = this.#defaultProfilePicturePath;
+        this._imgProfilePicture.src = this.#DEFAULT_PICTURE;
       else this._imgProfilePicture.src = this._profilePictureURL.value;
     });
   }
