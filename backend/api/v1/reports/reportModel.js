@@ -301,7 +301,7 @@ export const Report = {
     softDelete: `
       UPDATE reports
       SET isDeleted = 1,
-      lastModifiedDateTime = GETDATE()
+      lastModifiedDateTime = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE 'Eastern Standard Time'
       WHERE id = @id;
     `,
 
@@ -309,7 +309,7 @@ export const Report = {
       return `
         UPDATE reports
         SET isDeleted = 0,
-        lastModifiedDateTime = GETDATE()
+        lastModifiedDateTime = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE 'Eastern Standard Time'
         WHERE id = @id;
 
         ${this.byId()}

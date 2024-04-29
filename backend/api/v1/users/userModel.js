@@ -24,10 +24,10 @@ export const User = {
     return user;
   },
 
-  findById: async (id) => {
+  findByUUID: async (uuid) => {
     const {
       recordset: [user],
-    } = await mssql().input("id", id).query(User.query.byId);
+    } = await mssql().input("uuid", uuid).query(User.query.byUUID);
 
     return user;
   },
@@ -53,20 +53,20 @@ export const User = {
    **/
   query: {
     // GET (READ) USER(S)
-    byId: "SELECT * FROM users WHERE id = @id;",
+    byUUID: "SELECT * FROM users WHERE uuid = @uuid;",
     byEmail: "SELECT * FROM users WHERE email = @email;",
     byUsername: "SELECT * FROM users WHERE username = @username;",
-    all: "SELECT id, role, isEnabled, email, profilePictureURI, fullName, username, initials FROM users;",
+    all: "SELECT uuid, role, isEnabled, email, profilePictureURI, fullName, username, initials FROM users;",
 
     // CREATE USER
     insert() {
       return `
         INSERT INTO users
-          (id, role, isEnabled, email, password, profilePictureURI, fullName, username, initials)
+          (uuid, role, isEnabled, email, password, profilePictureURI, fullName, username, initials)
         VALUES
-          (@id, @role, @isEnabled, @email, @password, @profilePictureURI, @fullName, @username, @initials);
+          (@uuid, @role, @isEnabled, @email, @password, @profilePictureURI, @fullName, @username, @initials);
 
-        ${this.byId}
+        ${this.byUUID}
       `;
     },
 
@@ -77,7 +77,7 @@ export const User = {
         DECLARE @json NVARCHAR(MAX) = @rawJSON;
 
         UPDATE users
-        SET lastModifiedDateTime = GETDATE(),
+        SET lastUpdatedDateTime = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE 'Eastern Standard Time',
           role = ISNULL(json.role, users.role),
           isEnabled = ISNULL(json.isEnabled, users.isEnabled),
           email = ISNULL(json.email, users.email),
@@ -87,8 +87,8 @@ export const User = {
           initials = ISNULL(json.initials, users.initials)
         FROM OPENJSON(@json)
         WITH (
-          id VARCHAR(36),
-          lastModifiedDateTime DATETIMEOFFSET,
+          uuid VARCHAR(36),
+          lastUpdatedDateTime DATETIMEOFFSET,
           role VARCHAR(64),
           isEnabled BIT,
           email VARCHAR(64),
@@ -97,24 +97,24 @@ export const User = {
           username VARCHAR(20),
           initials VARCHAR(2)
         ) AS json
-        WHERE users.id = @id;
+        WHERE users.uuid = @uuid;
         
-        ${this.byId}
+        ${this.byUUID}
       `;
     },
 
     // DELETE USER
-    delete: "DELETE FROM users WHERE id = @id;",
+    delete: "DELETE FROM users WHERE uuid = @uuid;",
 
     // ENABLE USER
     enable() {
       return `
         UPDATE users
         SET isEnabled = 1,
-        lastModifiedDateTime = GETDATE()
-        WHERE id = @id;
+        lastUpdatedDateTime = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE 'Eastern Standard Time'
+        WHERE uuid = @uuid;
 
-        ${this.byId}
+        ${this.byUUID}
       `;
     },
 
@@ -123,10 +123,10 @@ export const User = {
       return `
         UPDATE users
         SET isEnabled = 0,
-        lastModifiedDateTime = GETDATE()
-        WHERE id = @id;
+        lastUpdatedDateTime = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE 'Eastern Standard Time'
+        WHERE uuid = @uuid;
 
-        ${this.byId}
+        ${this.byUUID}
       `;
     },
   },

@@ -31,14 +31,14 @@ const hasResetPassword = function (user, JWTTimestamp) {
   return false;
 };
 
-const signJWT = (id) => {
-  return jwt.sign({ id }, config.jwt.secret, {
+const signJWT = (uuid) => {
+  return jwt.sign({ uuid }, config.jwt.secret, {
     expiresIn: config.jwt.expiresIn,
   });
 };
 
 const createJWT = (user, res, statusCode) => {
-  const token = signJWT(user.id);
+  const token = signJWT(user.uuid);
   const cookieOptions = {
     expires: new Date(
       Date.now() + config.jwt.cookie.expiresIn * 24 * 60 * 60 * 1000
@@ -109,7 +109,7 @@ export const protect = catchAsync(async (req, res, next) => {
   const decoded = await promisify(jwt.verify)(token, config.jwt.secret);
 
   // Check if user exists in DB
-  const currentUser = await User.findById(decoded.id);
+  const currentUser = await User.findByUUID(decoded.uuid);
 
   if (!currentUser) {
     return next(
@@ -149,7 +149,7 @@ export const isLoggedIn = async (req, res, next) => {
       );
 
       // Check if user still exists
-      const currentUser = await User.findById(decoded.id);
+      const currentUser = await User.findByUUID(decoded.uuid);
       if (!currentUser) {
         return next();
       }

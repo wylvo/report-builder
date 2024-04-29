@@ -19,7 +19,7 @@ export const resetUserPassword = catchAsync(async (req, res, next) => {
   const id = req.userId;
   req.userId = undefined;
 
-  const user = await User.findById(id);
+  const user = await User.findByUUID(id);
 
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
