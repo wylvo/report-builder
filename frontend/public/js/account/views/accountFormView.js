@@ -66,7 +66,7 @@ export class AccountFormView extends FormView {
     fields.get("email").value = user.email;
     fields.get("username").value = user.username;
     fields.get("role").value = user.role;
-    fields.get("status").value = user.isEnabled ? "Enabled" : "Disabled";
+    fields.get("status").value = user.active ? "Active" : "Inactive";
 
     // Update input length text indicator (only the ones with "maxlength" attribute)
     this.updateTextInputsLength();

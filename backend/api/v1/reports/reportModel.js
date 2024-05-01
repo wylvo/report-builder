@@ -1,6 +1,6 @@
 import validator from "validator";
 
-import { mssql } from "../../../config/db.config.js";
+import { mssql } from "../router.js";
 import reportValidationSchema from "./reportValidationSchema.js";
 
 // Custom date & time validation function for checkSchema in reportController.js

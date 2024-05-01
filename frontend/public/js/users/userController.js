@@ -205,11 +205,11 @@ const controlUserStatus = async function (id) {
   try {
     let user = model.findObjectById(model.state.users, id);
 
-    if (user.isEnabled) user = await model.DB.disableUser(id, user);
+    if (user.active) user = await model.DB.disableUser(id, user);
     else user = await model.DB.enableUser(id, user);
 
-    const statusMsg = user.isEnabled ? "enabled" : "disabled"
-    notificationsView.success(`User successfully ${statusMsg}: ${user.email} [${user.id}]`, 3);
+    const statusMsg = user.active ? "activated" : "inactivated"
+    notificationsView.success(`User successfully ${statusMsg}: ${user.email} [${user.uuid}]`, 3);
 
     userTableView.update(user);
   } catch (error) {

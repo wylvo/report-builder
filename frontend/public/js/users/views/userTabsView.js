@@ -139,8 +139,8 @@ class UserTabsView extends TabsView {
 
               <div class="form-grouping-col">
                 <select id="status_${index}" name="status" class="status">
-                  <option selected value="1">Enabled</option>
-                  <option value="0">Disabled</option>
+                  <option selected value="1">Active</option>
+                  <option value="0">Inactive</option>
                 </select>
                 <label for="status_${index}">Status:</label>
               </div>

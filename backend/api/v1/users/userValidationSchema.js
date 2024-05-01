@@ -12,7 +12,7 @@ export default {
         errorMessage: "only 'guest', 'user', or 'admin' are allowed.",
       },
     },
-    isEnabled: {
+    active: {
       optional: true,
       isBoolean: {
         options: { strict: true },
@@ -88,7 +88,7 @@ export default {
         errorMessage: "only 'guest', 'user', or 'admin' are allowed.",
       },
     },
-    isEnabled: {
+    active: {
       optional: true,
       isBoolean: {
         options: { strict: true },

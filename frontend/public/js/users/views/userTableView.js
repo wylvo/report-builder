@@ -36,9 +36,9 @@ class UserTableView extends TableView {
 
   // prettier-ignore
   _generatetHtml(user) {
-    const status = user.isEnabled
-      ? { btnClassAndIcon: "disable", class: `class="good"`, text: "Enabled" }
-      : { btnClassAndIcon: "enable", class: `class="attention"`, text: "Disabled" };
+    const status = user.active
+      ? { btnClassAndIcon: "disable", class: `class="good"`, text: "Active" }
+      : { btnClassAndIcon: "enable", class: `class="attention"`, text: "Inactive" };
 
     const profilePicture = user.profilePictureURI
       ? user.profilePictureURI

@@ -2,7 +2,7 @@ import { ExpressValidator } from "express-validator";
 import bcrypt from "bcrypt";
 
 import { Report, isDateTime, isTimeCustom } from "./reportModel.js";
-import { mssql, mssqlDataTypes } from "../../../config/db.config.js";
+import { mssql, mssqlDataTypes } from "../router.js";
 import { validateBody } from "../../../validation/validation.js";
 import GlobalError from "../../../errors/globalError.js";
 import catchAsync from "../../../errors/catchAsync.js";

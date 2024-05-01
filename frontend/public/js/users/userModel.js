@@ -118,7 +118,7 @@ const DB = {
     } = await api.v1.users.enableUser(id);
 
     // Update the status in the user object
-    userObject.isEnabled = user.isEnabled;
+    userObject.active = user.active;
 
     return userObject;
   },
@@ -132,7 +132,7 @@ const DB = {
     } = await api.v1.users.disableUser(id);
 
     // Update the status in the user object
-    userObject.isEnabled = user.isEnabled;
+    userObject.active = user.active;
 
     return userObject;
   },
@@ -166,7 +166,7 @@ const createUserObject = function (form) {
 
   return {
     role: form.role?.value.trim(),
-    isEnabled: form.status?.value.trim() === "1" ? true : false,
+    active: form.status?.value.trim() === "1" ? true : false,
     email: form.email?.value.trim(),
     fullName: form["full-name"]?.value.trim(),
     username: form.username?.value.trim(),
@@ -190,7 +190,7 @@ const updateUserObject = function (userObjectOrId, form) {
 
   // Update the clone separately with new data from the form
   clone.role = form.role?.value.trim();
-  clone.isEnabled = form.status?.value.trim() === "1" ? true : false;
+  clone.active = form.status?.value.trim() === "1" ? true : false;
   clone.email = form.email?.value.trim();
   clone.fullName = form["full-name"]?.value.trim();
   clone.username = form.username?.value.trim();
@@ -202,7 +202,7 @@ const updateUserObject = function (userObjectOrId, form) {
 
   // Update the user
   user.role = clone.role;
-  user.isEnabled = clone.isEnabled;
+  user.active = clone.active;
   user.email = clone.email;
   user.fullName = clone.fullName;
   user.username = clone.username;

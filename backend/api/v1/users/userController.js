@@ -6,10 +6,8 @@ import {
   resetUserPassword,
   validateResetPassword,
 } from "./resetPassword/resetPasswordController.js";
-import config from "../../../config/app.config.js";
 import { hashPassword } from "../../../auth/authController.js";
-import { generateUUID } from "../router.js";
-import { mssql, mssqlDataTypes } from "../../../config/db.config.js";
+import { config, generateUUID, mssql, mssqlDataTypes } from "../router.js";
 import { validateBody } from "../../../validation/validation.js";
 import catchAsync from "../../../errors/catchAsync.js";
 import GlobalError from "../../../errors/globalError.js";
@@ -33,7 +31,7 @@ export const filterUserData = (
         obj,
         "uuid",
         "role",
-        "isEnabled",
+        "active",
         "email",
         "profilePictureURI",
         "fullName",
@@ -66,7 +64,7 @@ export const validateCreate = validateBody(checkSchema, User.schema.create);
 export const createUser = catchAsync(async (req, res, next) => {
   const {
     role,
-    isEnabled,
+    active,
     email,
     password,
     profilePictureURI,
@@ -81,7 +79,7 @@ export const createUser = catchAsync(async (req, res, next) => {
   } = await mssql()
     .input("uuid", uuid)
     .input("role", role)
-    .input("isEnabled", isEnabled ?? true)
+    .input("active", active ?? true)
     .input("email", email)
     .input("password", await hashPassword(password))
     .input(
@@ -178,10 +176,8 @@ export const enableUser = async (req, res, next) => {
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
 
-  if (user.isEnabled === true)
-    return next(
-      new GlobalError(`User is already enabled with id: ${id}.`, 400)
-    );
+  if (user.active === true)
+    return next(new GlobalError(`User is already active with id: ${id}.`, 400));
 
   const {
     recordset: [userUpdated],
@@ -201,9 +197,9 @@ export const disableUser = async (req, res, next) => {
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
 
-  if (user.isEnabled === false)
+  if (user.active === false)
     return next(
-      new GlobalError(`User is already disabled with id: ${id}.`, 400)
+      new GlobalError(`User is already inactive with id: ${id}.`, 400)
     );
 
   const {

@@ -1,5 +1,5 @@
 import userValidationSchema from "./userValidationSchema.js";
-import { mssql } from "../../../config/db.config.js";
+import { mssql } from "../router.js";
 
 export const User = {
   /**
@@ -56,15 +56,15 @@ export const User = {
     byUUID: "SELECT * FROM users WHERE uuid = @uuid;",
     byEmail: "SELECT * FROM users WHERE email = @email;",
     byUsername: "SELECT * FROM users WHERE username = @username;",
-    all: "SELECT uuid, role, isEnabled, email, profilePictureURI, fullName, username, initials FROM users;",
+    all: "SELECT uuid, role, active, email, profilePictureURI, fullName, username, initials FROM users;",
 
     // CREATE USER
     insert() {
       return `
         INSERT INTO users
-          (uuid, role, isEnabled, email, password, profilePictureURI, fullName, username, initials)
+          (uuid, role, active, email, password, profilePictureURI, fullName, username, initials)
         VALUES
-          (@uuid, @role, @isEnabled, @email, @password, @profilePictureURI, @fullName, @username, @initials);
+          (@uuid, @role, @active, @email, @password, @profilePictureURI, @fullName, @username, @initials);
 
         ${this.byUUID}
       `;
@@ -77,9 +77,9 @@ export const User = {
         DECLARE @json NVARCHAR(MAX) = @rawJSON;
 
         UPDATE users
-        SET lastUpdatedDateTime = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE 'Eastern Standard Time',
+        SET updatedAt = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE 'Eastern Standard Time',
           role = ISNULL(json.role, users.role),
-          isEnabled = ISNULL(json.isEnabled, users.isEnabled),
+          active = ISNULL(json.active, users.active),
           email = ISNULL(json.email, users.email),
           profilePictureURI = ISNULL(json.profilePictureURI, users.profilePictureURI),
           fullName = ISNULL(json.fullName, users.fullName),
@@ -88,9 +88,9 @@ export const User = {
         FROM OPENJSON(@json)
         WITH (
           uuid VARCHAR(36),
-          lastUpdatedDateTime DATETIMEOFFSET,
+          updatedAt DATETIMEOFFSET,
           role VARCHAR(64),
-          isEnabled BIT,
+          active BIT,
           email VARCHAR(64),
           profilePictureURI NVARCHAR(MAX),
           fullName VARCHAR(64),
@@ -110,8 +110,8 @@ export const User = {
     enable() {
       return `
         UPDATE users
-        SET isEnabled = 1,
-        lastUpdatedDateTime = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE 'Eastern Standard Time'
+        SET active = 1,
+        updatedAt = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE 'Eastern Standard Time'
         WHERE uuid = @uuid;
 
         ${this.byUUID}
@@ -122,8 +122,8 @@ export const User = {
     disable() {
       return `
         UPDATE users
-        SET isEnabled = 0,
-        lastUpdatedDateTime = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE 'Eastern Standard Time'
+        SET active = 0,
+        updatedAt = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE 'Eastern Standard Time'
         WHERE uuid = @uuid;
 
         ${this.byUUID}

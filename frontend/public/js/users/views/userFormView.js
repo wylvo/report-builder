@@ -155,7 +155,7 @@ export class UserFormView extends FormView {
       fields.get("profile-picture-uri").value = "";
     else fields.get("profile-picture-uri").value = user.profilePictureURI;
     selects.get("role").value = user.role;
-    selects.get("status").value = user.isEnabled ? "1" : "0";
+    selects.get("status").value = user.active ? "1" : "0";
 
     // Update form tags
     this.updateTags(user);
@@ -194,13 +194,13 @@ export class UserFormView extends FormView {
 
   updateTags(user) {
     const tags = [...this._tags];
-    const isEnabled = user.isEnabled;
+    const isActive = user.active;
     const role = user.role;
     tags.forEach((tag) => {
-      // User Status: Enabled || Disabled
+      // User Status: Active || Inactive
       if (tag.classList.contains("user-status")) {
-        if (!isEnabled)
-          (tag.textContent = "DISABLED"), tag.classList.remove("hidden");
+        if (!isActive)
+          (tag.textContent = "INACTIVE"), tag.classList.remove("hidden");
         else tag.classList.add("hidden");
       }
 

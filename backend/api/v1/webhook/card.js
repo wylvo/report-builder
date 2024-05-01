@@ -1,4 +1,4 @@
-import config from "../../../config/app.config.js";
+import { config } from "../router.js";
 
 // Check if object is empty
 const isEmptyObject = (object) => {

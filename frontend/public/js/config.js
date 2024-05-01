@@ -2,7 +2,7 @@ export const DEFAULT_PROFILE_PICTURE = "/img/default_profile_picture.jpg";
 
 export const DEFAULT_USER_CREATE = Object.freeze({
   role: "string",
-  isEnabled: false,
+  active: false,
   email: "string",
   password: "string",
   passwordConfirmation: "string",
@@ -16,7 +16,7 @@ export const DEFAULT_USER_CREATE = Object.freeze({
 export const DEFAULT_USER_UPDATE = Object.freeze({
   id: "string",
   role: "string",
-  isEnabled: false,
+  active: false,
   email: "string",
   fullName: "string",
   username: "string",
