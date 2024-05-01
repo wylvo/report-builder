@@ -32,6 +32,14 @@ export const User = {
     return user;
   },
 
+  findById: async (id) => {
+    const {
+      recordset: [user],
+    } = await mssql().input("id", id).query(User.query.byId);
+
+    return user;
+  },
+
   findByEmail: async (email) => {
     const {
       recordset: [user],
@@ -53,6 +61,7 @@ export const User = {
    **/
   query: {
     // GET (READ) USER(S)
+    byId: "SELECT * FROM users WHERE id = @id;",
     byUUID: "SELECT * FROM users WHERE uuid = @uuid;",
     byEmail: "SELECT * FROM users WHERE email = @email;",
     byUsername: "SELECT * FROM users WHERE username = @username;",

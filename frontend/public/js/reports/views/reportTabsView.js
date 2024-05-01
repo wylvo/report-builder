@@ -428,19 +428,19 @@ class ReportTabsView extends TabsView {
               <p class="max-length"><span id="incident-details_${index}-length">0</span>/<span class="max-length-text"></span></p>
             </div>
 
-            <!-- TECH SIGNATURE, ON-CALL -->
+            <!-- ASSIGNED TO SIGNATURE, ON-CALL -->
             <div class="form-grouping-row">
               <div class="form-grouping-col">
                 <select
-                  id="tech-employee_${index}"
-                  name="tech-employee"
-                  class="tech-employee"
+                  id="assigned-to_${index}"
+                  name="assigned-to"
+                  class="assigned-to"
                   required
                 >
                   <option selected value="william.evora">William Evora</option>
                   <option value="carah.malcolm">Carah Malcolm</option>
                 </select>
-                <label for="tech-employee_${index}">TECH Signature:</label>
+                <label for="assigned-to_${index}">TECH Signature:</label>
               </div>
               <div class="form-grouping-col">
                 <label for="oncall_${index}">On-call</label>

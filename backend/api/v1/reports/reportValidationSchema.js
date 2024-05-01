@@ -35,20 +35,15 @@ export default {
       exists: { errorMessage: "required.", bail: true },
       isSemVer: { errorMessage: "invalid version." },
     },
-    createdDateTime: {
+    createdAt: {
       exists: { errorMessage: "required.", bail: true },
       isISO8601: {
         options: { strict: true, strictSeparator: true },
         errorMessage: "invalid date (see ISO 8601).",
       },
     },
-    lastModifiedDateTime: {
-      exists: {
-        bail: true,
-        errorMessage: "required.",
-        // if lastModifiedDateTime is NOT null, check if: is ISO 8601
-        if: (lastModifiedDateTime) => lastModifiedDateTime !== null,
-      },
+    updatedAt: {
+      exists: { errorMessage: "required.", bail: true },
       isISO8601: {
         options: { strict: true, strictSeparator: true },
         errorMessage: "invalid date (see ISO 8601).",
@@ -62,14 +57,22 @@ export default {
     },
     updatedBy: {
       // TODO: CHECK IF VALID USERNAME
-      exists: {
-        errorMessage: "required.",
-        bail: true,
-        // if updatedBy is NOT null, check if is: not empty & is string
-        if: (updatedBy) => updatedBy !== null,
-      },
+      exists: { errorMessage: "required.", bail: true },
       notEmpty: { errorMessage: "can't be empty.", bail: true },
       isString: { errorMessage: "should be a string." },
+    },
+    assignedTo: {
+      // TODO: CHECK IF VALID USERNAME
+      exists: { errorMessage: "required.", bail: true },
+      notEmpty: { errorMessage: "can't be empty.", bail: true },
+      isString: { errorMessage: "should be a string." },
+    },
+    isOnCall: {
+      exists: { errorMessage: "required.", bail: true },
+      isBoolean: {
+        options: { strict: true },
+        errorMessage: "should be a boolean (true or false).",
+      },
     },
     isDeleted: {
       exists: { errorMessage: "required.", bail: true },
@@ -335,46 +338,6 @@ export default {
       exists: { errorMessage: "required.", bail: true },
       notEmpty: { errorMessage: "can't be empty.", bail: true },
       isString: { errorMessage: "should be a string." },
-    },
-
-    /********************************************
-     *  "tech": {
-     *    "name": "William Evora",
-     *    "username": "william.evora",
-     *    "initials": "WE",
-     *    "isOnCall": true
-     *  }
-     ******************************************/
-    tech: {
-      exists: { errorMessage: "required.", bail: true },
-      isObject: { errorMessage: "has to be an object enclosed by {}." },
-    },
-    "tech.name": {
-      // TODO: CHECK IF VALID USERNAME
-      exists: { errorMessage: "required.", bail: true },
-      notEmpty: { errorMessage: "can't be empty.", bail: true },
-      isString: { errorMessage: "should be a string." },
-    },
-    "tech.username": {
-      // TODO: CHECK IF VALID USERNAME
-      exists: { errorMessage: "required.", bail: true },
-      notEmpty: { errorMessage: "can't be empty.", bail: true },
-      isString: { errorMessage: "should be a string." },
-    },
-    "tech.initials": {
-      exists: { errorMessage: "required.", bail: true },
-      isString: { errorMessage: "should be a string.", bail: true },
-      isLength: {
-        options: { max: 2 },
-        errorMessage: "invalid length, max 2 characters allowed.",
-      },
-    },
-    "tech.isOnCall": {
-      exists: { errorMessage: "required.", bail: true },
-      isBoolean: {
-        options: { strict: true },
-        errorMessage: "should be a boolean (true or false).",
-      },
     },
   },
 

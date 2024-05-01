@@ -44,7 +44,7 @@ export const getAllSoftDeletedReports = catchAsync(async (req, res, next) => {
 export const validateCreate = validateBody(checkSchema, Report.schema.create);
 
 export const createReport = catchAsync(async (req, res, next) => {
-  const { NVarChar } = mssqlDataTypes;
+  const { NVarChar, Int } = mssqlDataTypes;
 
   const id = req.body.id;
   // const username = req.user.username;
@@ -54,7 +54,8 @@ export const createReport = catchAsync(async (req, res, next) => {
   const {
     recordset: [[report]],
   } = await mssql()
-    .input("id", id)
+    .input("id", Int, id)
+    .input("uuid", uuid)
     // .input("username", username)
     .input("rawJSON", NVarChar, rawJSON)
     .query(Report.query.insert());
@@ -68,7 +69,7 @@ export const createReport = catchAsync(async (req, res, next) => {
 export const getReport = catchAsync(async (req, res, next) => {
   const id = req.params.id;
 
-  const [report] = await Report.findById(id);
+  const [report] = await Report.findByUUID(id);
 
   if (!report)
     return next(new GlobalError(`Report not found with id: ${id}.`, 404));
@@ -84,7 +85,7 @@ export const validateUpdate = validateBody(checkSchema, Report.schema.update);
 export const updateReport = catchAsync(async (req, res, next) => {
   const id = req.body.id;
 
-  const [report] = await Report.findById(id);
+  const [report] = await Report.findByUUID(id);
 
   if (!report)
     return next(new GlobalError(`Report not found with id: ${id}.`, 404));
@@ -124,7 +125,7 @@ const softDeleteReport = async (report) => {
 export const deleteReport = catchAsync(async (req, res, next) => {
   const id = req.params.id;
 
-  const [report] = await Report.findById(id);
+  const [report] = await Report.findByUUID(id);
 
   if (!report)
     return next(new GlobalError(`Report not found with id: ${id}.`, 404));
@@ -157,7 +158,7 @@ export const deleteReport = catchAsync(async (req, res, next) => {
 export const undoSoftDeleteReport = async (req, res, next) => {
   const id = req.params.id;
 
-  const [report] = await Report.findById(id);
+  const [report] = await Report.findByUUID(id);
 
   if (!report)
     return next(new GlobalError(`Report not found with id: ${id}.`, 404));

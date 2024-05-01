@@ -216,9 +216,9 @@ export class ReportFormView extends FormView {
     }
     textAreas.get("incident-details").value = report.incident.details;
 
-    // TECH Signature & On-Call
-    selects.get("tech-employee").value = report.tech.username;
-    report.tech.isOnCall && !checkBoxes.get("oncall").checked
+    // Assigned to Signature & On-Call
+    selects.get("assigned-to").value = report.assignedTo;
+    report.isOnCall && !checkBoxes.get("oncall").checked
       ? (checkBoxes.get("oncall").checked = true)
       : (checkBoxes.get("oncall").checked = false);
 
@@ -250,7 +250,7 @@ export class ReportFormView extends FormView {
   updateTags(report) {
     const tags = [...this._tags];
     const isProcedural = report.incident.isProcedural;
-    const isOnCall = report.tech.isOnCall;
+    const isOnCall = report.isOnCall;
     tags.forEach((tag) => {
       // Procedural
       if (tag.classList.contains("report-procedural")) {

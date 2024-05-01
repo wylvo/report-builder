@@ -196,23 +196,17 @@ const checkReportValidity = (report) => {
     // If the default object key value types !== the target (report) object key value types
     if (typeof defaultKeyValue !== typeof targetKeyValue) {
 
-      // if keys "lastModifiedDateTime" & "updatedBy" are null stop the iteration by returning nothing. "lastModifiedDateTime" & "updatedBy" can === null.
-      if(key === "lastModifiedDateTime" || key === "updatedBy") {
-        if (targetKeyValue === null || typeof targetKeyValue === "string") return;
-
-        // Else keep it in memory, and return nothing to stop the iteration.
-        return invalidTypes.push({ key: key, type: typeof defaultKeyValue, target: target });
-      }
-
       // Else keep it in memory, and return nothing to stop the iteration.
       return invalidTypes.push({ key: key, type: typeof defaultKeyValue, target: target });
     }
 
-    // If keys are "dateTime", "createdDateTime" & "lastModifiedDateTime".
-    if(key.toLowerCase().includes("datetime")) {
+    // If keys are "createdAt" OR "updatedAt".
+    if(key === "createdAt" || key === "updatedAt") {
+
+      // Check if valid date
       const date = new Date(targetObject[key]);
 
-      // If it is a invalid date, keep it in memory, and return nothing to stop the iteration.
+      // If it is an invalid date, keep it in memory, and return nothing to stop the iteration.
       if (isNaN(date)) {
         return invalidTypes.push({ key: key, type: "date object: string", target: target });
       } 
@@ -273,12 +267,12 @@ const createReportObject = (report, form) => {
   return {
     id: report?.id ?? utils.generateUUID(),
     version: state.version,
-    createdDateTime: utils.formatDate(report?.createdDateTime)?.iso ?? new Date().toISOString(),
-    lastModifiedDateTime: null,
-    createdBy:
-      report?.createdBy ??
-      form["tech-employee"].options[form["tech-employee"].selectedIndex].text.trim(),
-    updatedBy: null,
+    createdAt: utils.formatDate(report?.createdAt)?.iso ?? new Date().toISOString(),
+    updatedAt: utils.formatDate(report?.updatedAt)?.iso ?? new Date().toISOString(),
+    createdBy: report?.createdBy ?? state.user.username,
+    updatedBy: report?.updatedBy ?? state.user.username,
+    assignedTo: form["assigned-to"].value.trim(),
+    isOnCall: form.oncall.checked,
     isDeleted: false,
     isWebhookSent: report?.isWebhookSent ?? false,
     hasTriggeredWebhook: report?.hasTriggeredWebhook ?? false,
@@ -325,12 +319,6 @@ const createReportObject = (report, form) => {
         : {},
       details: form["incident-details"].value.trim(),
     },
-    tech: {
-      name: form["tech-employee"].options[form["tech-employee"].selectedIndex].text.trim(),
-      username: form["tech-employee"].value.trim(),
-      initials: `${form["tech-employee"].value.trim().split(".")[0][0] + form["tech-employee"].value.trim().split(".")[1][0]}`.toUpperCase(),
-      isOnCall: form.oncall.checked,
-    },
   };
 };
 
@@ -347,9 +335,8 @@ const updateReport = (reportOrId, form) => {
 
   // Update the clone separately with new data from the form
   clone = createReportObject(clone, form);
-  clone.lastModifiedDateTime = new Date().toISOString();
-  clone.updatedBy =
-    form["tech-employee"].options[form["tech-employee"].selectedIndex].text.trim();
+  clone.updatedAt = new Date().toISOString();
+  clone.updatedBy = state.user.username;
   clone.isWebhookSent = false;
   clone.isDeleted = false;
 
@@ -357,17 +344,18 @@ const updateReport = (reportOrId, form) => {
   checkReportValidity(clone);
 
   // Update the report
-  report.createdDateTime = clone.createdDateTime;
-  report.lastModifiedDateTime = clone.lastModifiedDateTime;
+  report.createdAt = clone.createdAt;
+  report.updatedAt = clone.updatedAt;
   report.createdBy = clone.createdBy;
   report.updatedBy = clone.updatedBy;
+  report.assignedTo = clone.assignedTo;
+  report.isOnCall = clone.isOnCall;
   report.isWebhookSent = clone.isWebhookSent;
   report.isDeleted = clone.isDeleted;
   report.tableRowEl = tableRowEl;
   report.call = clone.call;
   report.store = clone.store;
   report.incident = clone.incident;
-  report.tech = clone.tech;
 
   return report;
 };

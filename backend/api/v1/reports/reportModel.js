@@ -63,7 +63,15 @@ export const Report = {
       recordset: [report],
     } = await mssql().input(input, value).query(query);
 
-    return report;
+    return report ? report : [];
+  },
+
+  findByUUID: async (uuid) => {
+    const {
+      recordset: [report],
+    } = await mssql().input("uuid", uuid).query(Report.query.byUUID());
+
+    return report ? report : [];
   },
 
   findById: async (id) => {
@@ -89,12 +97,14 @@ export const Report = {
     // Source: https://learn.microsoft.com/en-us/sql/relational-databases/json/format-query-results-as-json-with-for-json-sql-server?view=sql-server-ver16&redirectedfrom=MSDN&tabs=json-path
     // Source: https://learn.microsoft.com/en-us/sql/relational-databases/json/convert-json-data-to-rows-and-columns-with-openjson-sql-server?view=sql-server-ver16
     JSONSelect: `
-      id AS [id],
+      uuid AS [uuid],
       version AS [version],
-      createdDateTime AS [createdDateTime],
-      lastModifiedDateTime AS [lastModifiedDateTime],
+      createdAt AS [createdAt],
+      updatedAt AS [updatedAt],
       createdBy AS [createdBy],
       updatedBy AS [updatedBy],
+      assignedTo AS [assignedTo],
+      isOnCall AS [isOnCall],
       isDeleted AS [isDeleted],
       isWebhookSent AS [isWebhookSent],
       hasTriggeredWebhook AS [hasTriggeredWebhook],
@@ -122,19 +132,17 @@ export const Report = {
       incidentTransactionNumber AS [incident.transaction.number],
       incidentTransactionIsIRCreated AS [incident.transaction.isIRCreated],
       incidentDetails AS [incident.details],
-      techName AS [tech.name],
-      techUsername AS [tech.username],
-      techInitials AS [tech.initials],
-      techIsOnCall AS [tech.isOnCall]
     `,
 
     withClause: `
-      id VARCHAR(36) 'strict $.id',
+      uuid VARCHAR(36) 'strict $.uuid',
       version VARCHAR(64) 'strict $.version',
-      createdDateTime DATETIMEOFFSET 'strict $.createdDateTime',
-      lastModifiedDateTime DATETIMEOFFSET '$.lastModifiedDateTime',
-      createdBy VARCHAR(64) 'strict $.createdBy',
-      updatedBy VARCHAR(64) '$.updatedBy',
+      createdAt DATETIMEOFFSET 'strict $.createdAt',
+      updatedAt DATETIMEOFFSET 'strict $.updatedAt',
+      createdBy VARCHAR(20) 'strict $.createdBy',
+      updatedBy VARCHAR(20) 'strict $.updatedBy',
+      assignedTo VARCHAR(20) 'strict $.assignedTo',
+      isOnCall BIT 'strict $.isOnCall',
       isDeleted BIT 'strict $.isDeleted',
       isWebhookSent BIT 'strict $.isWebhookSent',
       hasTriggeredWebhook BIT 'strict $.hasTriggeredWebhook',
@@ -162,12 +170,18 @@ export const Report = {
       incidentTransactionNumber VARCHAR(50) '$.incident.transaction.number',
       incidentTransactionIsIRCreated BIT '$.incident.transaction.isIRCreated',
       incidentDetails VARCHAR(2000) 'strict $.incident.details',
-      techName VARCHAR(64) 'strict $.tech.name',
-      techUsername VARCHAR(20) 'strict $.tech.username',
-      techInitials VARCHAR(2) 'strict $.tech.initials',
-      techIsOnCall BIT 'strict $.tech.isOnCall',
       rawJSON NVARCHAR(MAX) '$' AS JSON
     `,
+
+    byUUID() {
+      return `
+        SELECT 
+          ${this.JSONSelect}
+        FROM reports
+        WHERE uuid = @uuid
+        FOR JSON PATH;
+      `;
+    },
 
     byId() {
       return `
@@ -185,8 +199,8 @@ export const Report = {
         SELECT
           ${this.JSONSelect}
         FROM reports
-        WHERE isDeleted = 0 AND techUsername = @username
-        ORDER BY createdDateTime DESC
+        WHERE isDeleted = 0 AND assignedTo = @username
+        ORDER BY createdAt DESC
         FOR JSON PATH;
       `;
     },
@@ -197,8 +211,8 @@ export const Report = {
         SELECT 
           ${this.JSONSelect}
         FROM reports
-        WHERE isDeleted = 1 AND techUsername = @username
-        ORDER BY lastModifiedDateTime DESC
+        WHERE isDeleted = 1 AND assignedTo = @username
+        ORDER BY updatedAt DESC
         FOR JSON PATH;
       `;
     },
@@ -209,7 +223,7 @@ export const Report = {
           ${this.JSONSelect}
         FROM reports
         WHERE isDeleted = 0
-        ORDER BY createdDateTime DESC
+        ORDER BY createdAt DESC
         FOR JSON PATH;
       `;
     },
@@ -220,7 +234,7 @@ export const Report = {
           ${this.JSONSelect}
         FROM reports
         WHERE isDeleted = 1
-        ORDER BY lastModifiedDateTime DESC
+        ORDER BY updatedAt DESC
         FOR JSON PATH;
       `;
     },
@@ -250,10 +264,12 @@ export const Report = {
 
         UPDATE reports
         SET version = json.version,
-          createdDateTime = json.createdDateTime,
-          lastModifiedDateTime = json.lastModifiedDateTime,
+          createdAt = json.createdAt,
+          updatedAt = json.updatedAt,
           createdBy = json.createdBy,
           updatedBy = json.updatedBy,
+          assignedTo = json.assignedTo,
+          isOnCall = json.isOnCall,
           isDeleted = json.isDeleted,
           isWebhookSent = json.isWebhookSent,
           hasTriggeredWebhook = json.hasTriggeredWebhook,
@@ -281,10 +297,6 @@ export const Report = {
           incidentTransactionNumber = json.incidentTransactionNumber,
           incidentTransactionIsIRCreated = json.incidentTransactionIsIRCreated,
           incidentDetails = json.incidentDetails,
-          techName = json.techName,
-          techUsername = json.techUsername,
-          techInitials = json.techInitials,
-          techIsOnCall = json.techIsOnCall,
           rawJSON = json.rawJSON
         FROM OPENJSON(@json)
         WITH (
@@ -301,7 +313,7 @@ export const Report = {
     softDelete: `
       UPDATE reports
       SET isDeleted = 1,
-      lastModifiedDateTime = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE 'Eastern Standard Time'
+      updatedAt = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE 'Eastern Standard Time'
       WHERE id = @id;
     `,
 
@@ -309,7 +321,7 @@ export const Report = {
       return `
         UPDATE reports
         SET isDeleted = 0,
-        lastModifiedDateTime = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE 'Eastern Standard Time'
+        updatedAt = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE 'Eastern Standard Time'
         WHERE id = @id;
 
         ${this.byId()}

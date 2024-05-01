@@ -14,14 +14,14 @@ const isEmptyObject = (object) => {
 export const setAdaptiveCard = (report) => {
   // Meta Data
   const uuid = report.id;
-  const createdTime = report.createdDateTime.split(".")[0] + "Z";
-  const techName = report.tech.name;
+  const createdTime = report.createdAt.split(".")[0] + "Z";
+  const username = report.assignedTo;
   const techProfilePicture = () => {
-    if (techName.includes("Tam")) return process.env.TECH_PP1;
-    if (techName.includes("Nik")) return process.env.TECH_PP2;
-    if (techName.includes("Evo")) return process.env.TECH_PP3;
-    if (techName.includes("Lar")) return process.env.TECH_PP4;
-    if (techName.includes("Mal")) return process.env.TECH_PP5;
+    if (username.includes("tam")) return process.env.TECH_PP1;
+    if (username.includes("nik")) return process.env.TECH_PP2;
+    if (username.includes("evo")) return process.env.TECH_PP3;
+    if (username.includes("lar")) return process.env.TECH_PP4;
+    if (username.includes("mal")) return process.env.TECH_PP5;
   };
   const appVersion = `v${config.version}`;
 
@@ -35,7 +35,7 @@ export const setAdaptiveCard = (report) => {
     return "Accent";
   };
   const callPhone = report.call.phone;
-  const isOnCall = report.tech.isOnCall;
+  const isOnCall = report.isOnCall;
   const isProcedural = report.incident.isProcedural;
   const isProceduralText = report.incident.isProcedural ? "Yes" : "No";
 
@@ -147,7 +147,7 @@ export const setAdaptiveCard = (report) => {
                     {
                       "type": "TextBlock",
                       "weight": "Bolder",
-                      "text": `${techName}`,
+                      "text": `${username}`,
                       "wrap": true
                     },
                     {

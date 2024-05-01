@@ -28,10 +28,12 @@ export const DEFAULT_USER_UPDATE = Object.freeze({
 export const DEFAULT_REPORT = Object.freeze({
   id: "string",
   version: "string",
-  createdDateTime: "string (Date)",
-  lastModifiedDateTime: "string (Date)", // Can be "null"
+  createdAt: "string (Date)",
+  updatedAt: "string (Date)",
   createdBy: "string",
-  updatedBy: "string", // Can be "null"
+  updatedBy: "string",
+  assignedTo: "string",
+  isOnCall: false,
   isDeleted: false,
   isWebhookSent: false,
   hasTriggeredWebhook: false,
@@ -73,11 +75,5 @@ export const DEFAULT_REPORT = Object.freeze({
       isIRCreated: false,
     },
     details: "string",
-  },
-  tech: {
-    name: "string",
-    username: "string",
-    initials: "string",
-    isOnCall: false,
   },
 });

@@ -59,7 +59,7 @@ class ReportTableView extends TableView {
       ? { class: `class="attention"`, text: "Yes" }
       : { class: "", text: "No" };
 
-    const isOnCallClass = report.tech.isOnCall ? "on-call" : ""
+    const isOnCallClass = report.isOnCall ? "on-call" : ""
 
     const buttons = !report.isDeleted 
       ? `
@@ -89,7 +89,11 @@ class ReportTableView extends TableView {
     return `
     <tr class="table-row">
       <td data-cell="TECH">
-        <div><p class="table-row-cell-pp ${isOnCallClass}">${report.tech.initials}</p></div>
+        <div>
+          <p class="table-row-cell-pp ${isOnCallClass}">
+            ${report.assignedTo.split(" ")[0][0] + report.assignedTo.split(" ")[1][0]}
+          </p>
+        </div>
       </td>
       <td data-cell="Date"><div>${formattedDate}</div></td>
       <td data-cell="Title">
