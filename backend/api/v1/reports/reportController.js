@@ -72,26 +72,26 @@ export const validateCreate = validateBody(checkSchema, Report.schema.create);
 export const createReport = catchAsync(async (req, res, next) => {
   const { NVarChar } = mssqlDataTypes;
 
-  const uuid = req.body.id;
   req.body.version = config.version;
   req.body.createdAt = dateISO8601(new Date());
   req.body.updatedAt = dateISO8601(new Date());
   req.body.createdBy = req.user.username;
   req.body.updatedBy = req.user.username;
 
+  const uuid = req.body.uuid;
   const body = [req.body];
   const rawJSON = JSON.stringify(body);
 
-  const report = await mssql()
+  const {
+    recordset: [[report]],
+  } = await mssql()
     .input("rawJSON", NVarChar, rawJSON)
     .input("uuid", uuid)
     .query(Report.query.insert());
 
-  console.log(report);
-
   res.status(201).json({
     status: "success",
-    data: report,
+    data: filterReportData(report),
   });
 });
 
@@ -112,7 +112,7 @@ export const getReport = catchAsync(async (req, res, next) => {
 export const validateUpdate = validateBody(checkSchema, Report.schema.update);
 
 export const updateReport = catchAsync(async (req, res, next) => {
-  const id = req.body.id;
+  const id = req.body.uuid;
 
   const [report] = await Report.findByUUID(id);
 
@@ -122,7 +122,9 @@ export const updateReport = catchAsync(async (req, res, next) => {
   const { NVarChar } = mssqlDataTypes;
 
   req.body.version = config.version;
+  req.body.createdAt = report.createdAt;
   req.body.updatedAt = dateISO8601(new Date());
+  req.body.createdBy = report.createdBy;
   req.body.updatedBy = req.user.username;
 
   const body = [req.body];

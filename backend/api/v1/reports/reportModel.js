@@ -63,7 +63,7 @@ export const Report = {
    **/
   schema: {
     create: reportValidationSchema.create,
-    update: reportValidationSchema.update(),
+    update: reportValidationSchema.update,
     hardDelete: reportValidationSchema.hardDelete,
   },
 
@@ -275,7 +275,8 @@ export const Report = {
         DECLARE @json NVARCHAR(MAX) = @rawJSON;
 
         UPDATE reports
-        SET version = json.version,
+        SET uuid = json.uuid,
+          version = json.version,
           createdAt = json.createdAt,
           updatedAt = json.updatedAt,
           createdBy = json.createdBy,
