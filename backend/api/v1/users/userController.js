@@ -7,7 +7,13 @@ import {
   validateResetPassword,
 } from "./resetPassword/resetPasswordController.js";
 import { hashPassword } from "../../../auth/authController.js";
-import { config, generateUUID, mssql, mssqlDataTypes } from "../router.js";
+import {
+  config,
+  generateUUID,
+  mssql,
+  mssqlDataTypes,
+  dateISO8601,
+} from "../router.js";
 import { validateBody } from "../../../validation/validation.js";
 import catchAsync from "../../../errors/catchAsync.js";
 import GlobalError from "../../../errors/globalError.js";
@@ -50,7 +56,7 @@ export const getUserId = (req, res, next) => {
 };
 
 export const getAllUsers = catchAsync(async (req, res, next) => {
-  const { recordset: users } = await mssql().query(User.query.all);
+  const { recordset: users } = await mssql().query(User.query.all());
 
   res.status(200).json({
     status: "success",
@@ -134,15 +140,19 @@ export const updateUser = catchAsync(async (req, res, next) => {
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
 
   const { NVarChar } = mssqlDataTypes;
+
   if (!req.body.profilePictureURI)
     req.body.profilePictureURI = config.misc.defaultProfilePicture;
+  req.body.updatedAt = dateISO8601(new Date());
+
+  console.log(req.body);
   const body = [req.body];
   const rawJSON = JSON.stringify(body);
 
   const {
     recordset: [userUpdated],
   } = await mssql()
-    .input("uuid", user.uuid)
+    .input("id", user.id)
     .input("rawJSON", NVarChar, rawJSON)
     .query(User.query.update());
 

@@ -46,7 +46,7 @@ export const User = {
   findByUUID: async (uuid) => {
     const {
       recordset: [user],
-    } = await mssql().input("uuid", uuid).query(User.query.byUUID);
+    } = await mssql().input("uuid", uuid).query(User.query.byUUID());
 
     return user;
   },
@@ -54,7 +54,7 @@ export const User = {
   findById: async (id) => {
     const {
       recordset: [user],
-    } = await mssql().input("id", id).query(User.query.byId);
+    } = await mssql().input("id", id).query(User.query.byId());
 
     return user;
   },
@@ -62,7 +62,7 @@ export const User = {
   findByEmail: async (email) => {
     const {
       recordset: [user],
-    } = await mssql().input("email", email).query(User.query.byEmail);
+    } = await mssql().input("email", email).query(User.query.byEmail());
 
     return user;
   },
@@ -70,7 +70,9 @@ export const User = {
   findByUsername: async (username) => {
     const {
       recordset: [user],
-    } = await mssql().input("username", username).query(User.query.byUsername);
+    } = await mssql()
+      .input("username", username)
+      .query(User.query.byUsername());
 
     return user;
   },
@@ -79,40 +81,76 @@ export const User = {
    *  ALL MS SQL SERVER QUERIES RELATED TO USERS
    **/
   query: {
+    baseSelect: `
+      u.id, u.uuid, u.createdAt, u.updatedAt, u.authenticationAt,
+      u.passwordResetAt, r.name AS role, u.active, u.email,
+      u.password, u.failedAuthenticationAttempts, u.profilePictureURI,
+      u.fullName, u.username, u.initials
+    `,
+
     // GET (READ) USER(S)
-    byId: `
-      SELECT
-        u.uuid, u.createdAt, u.updatedAt, u.authenticationAt,
-        u.passwordResetAt, r.name AS role, u.active, u.email,
-        u.password, u.failedAuthenticationAttempts, u.profilePictureURI,
-        u.fullName, u.username, u.initials
-      FROM users u
-      JOIN roles r ON r.id = u.role_id
-      WHERE u.id = @id;
-    `,
-    byUUID: `
-      SELECT
-        u.uuid, u.createdAt, u.updatedAt, u.authenticationAt,
-        u.passwordResetAt, r.name AS role, u.active, u.email,
-        u.password, u.failedAuthenticationAttempts, u.profilePictureURI,
-        u.fullName, u.username, u.initials
-      FROM users u
-      JOIN roles r ON r.id = u.role_id
-      WHERE u.uuid = @uuid;
-    `,
-    byEmail: "SELECT * FROM users WHERE email = @email;",
-    byUsername: "SELECT * FROM users WHERE username = @username;",
-    all: "SELECT uuid, role_id, active, email, profilePictureURI, fullName, username, initials FROM users;",
+    byId() {
+      return `
+        SELECT
+          ${this.baseSelect}
+        FROM users u
+        JOIN roles r ON r.id = u.role_id
+        WHERE u.id = @id;
+      `;
+    },
+
+    byUUID() {
+      return `
+        SELECT
+          ${this.baseSelect}
+        FROM users u
+        JOIN roles r ON r.id = u.role_id
+        WHERE u.uuid = @uuid;
+      `;
+    },
+
+    byEmail() {
+      return `
+        SELECT
+          ${this.baseSelect}
+        FROM users u
+        JOIN roles r ON r.id = u.role_id
+        WHERE email = @email;`;
+    },
+
+    byUsername() {
+      return `
+        SELECT
+          ${this.baseSelect}
+        FROM users u
+        JOIN roles r ON r.id = u.role_id
+        WHERE u.username = @username;`;
+    },
+
+    all() {
+      return `
+        SELECT
+          u.uuid, r.name AS role, u.active, u.email, u.profilePictureURI, u.fullName, u.username, u.initials
+        FROM users u
+        JOIN roles r ON r.id = u.role_id;
+      `;
+    },
 
     // CREATE USER
     insert() {
       return `
+        DECLARE @role_id INT = (
+          SELECT id
+          FROM roles
+          WHERE name = @role
+        );
+        
         INSERT INTO users
           (uuid, role_id, active, email, password, profilePictureURI, fullName, username, initials)
         VALUES
-          (@uuid, @role, @active, @email, @password, @profilePictureURI, @fullName, @username, @initials);
+          (@uuid, @role_id, @active, @email, @password, @profilePictureURI, @fullName, @username, @initials);
 
-        ${this.byUUID}
+        ${this.byUUID()}
       `;
     },
 
@@ -120,11 +158,17 @@ export const User = {
     // Source: https://learn.microsoft.com/fr-fr/archive/blogs/sqlserverstorageengine/openjson-the-easiest-way-to-import-json-text-into-table#use-case-2-updating-table-row-using-json-object
     update() {
       return `
+        DECLARE @role_id INT = (
+          SELECT id
+          FROM roles
+          WHERE name = @role
+        );
+        
         DECLARE @json NVARCHAR(MAX) = @rawJSON;
 
         UPDATE users
         SET updatedAt = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE 'Eastern Standard Time',
-          role = ISNULL(json.role, users.role),
+          role_id = ISNULL(@role_id, users.role_id),
           active = ISNULL(json.active, users.active),
           email = ISNULL(json.email, users.email),
           profilePictureURI = ISNULL(json.profilePictureURI, users.profilePictureURI),
@@ -133,9 +177,8 @@ export const User = {
           initials = ISNULL(json.initials, users.initials)
         FROM OPENJSON(@json)
         WITH (
-          uuid VARCHAR(36),
           updatedAt DATETIMEOFFSET,
-          role VARCHAR(64),
+          role_id INT,
           active BIT,
           email VARCHAR(64),
           profilePictureURI NVARCHAR(MAX),
@@ -143,9 +186,9 @@ export const User = {
           username VARCHAR(20),
           initials VARCHAR(2)
         ) AS json
-        WHERE users.uuid = @uuid;
+        WHERE users.id = @id;
         
-        ${this.byUUID}
+        ${this.byId()}
       `;
     },
 
@@ -158,9 +201,9 @@ export const User = {
         UPDATE users
         SET active = 1,
         updatedAt = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE 'Eastern Standard Time'
-        WHERE uuid = @uuid;
+        WHERE id = @id;
 
-        ${this.byUUID}
+        ${this.byId()}
       `;
     },
 
@@ -170,9 +213,9 @@ export const User = {
         UPDATE users
         SET active = 0,
         updatedAt = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE 'Eastern Standard Time'
-        WHERE uuid = @uuid;
+        WHERE id = @id;
 
-        ${this.byUUID}
+        ${this.byId()}
       `;
     },
   },
