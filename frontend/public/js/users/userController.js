@@ -133,22 +133,22 @@ const controlSaveUser = async function (userId) {
       userFormView.render(user);
       userTableView.render(user);
       userTableView.updateTotalCount(model.state.users);
-      notificationsView.success(`User successfully created: [${user.id}]`);
+      notificationsView.success(`User successfully created: [${user.uuid}]`);
     }
 
     // Update User
     if (id) {
       user = await model.DB.updateUser(id, userFormView._form);
       userTableView.update(user);
-      notificationsView.success(`User successfully updated: [${user.id}]`);
+      notificationsView.success(`User successfully updated: [${user.uuid}]`);
     }
 
     userFormView.clearPasswordFields();
     userFormView.takeSnapshot(userFormView.newClone());
     userFormView.updateTags(user);
     userFormView._btnResetPassword.disabled = true;
-    userTabsView.render(model.state.tab, user.fullName, user.id);
-    model.loadTabWith(model.state.users, model.state.tab, user.id);
+    userTabsView.render(model.state.tab, user.fullName, user.uuid);
+    model.loadTabWith(model.state.users, model.state.tab, user.uuid);
   } catch (error) {
     console.error(error);
     notificationsView.error(error.message, 60);
@@ -192,7 +192,7 @@ const controlDeleteUser = async function (id) {
   
     await model.DB.deleteUser(id);
     userTableView.updateTotalCount(model.state.users);
-    notificationsView.success(`User successfully deleted: ${user.email} [${user.id}]`);
+    notificationsView.success(`User successfully deleted: ${user.email} [${user.uuid}]`);
 
   } catch (error) {
     console.error(error);

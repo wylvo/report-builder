@@ -40,7 +40,7 @@ const controlDeleteReport = async function (id) {
     await model.DB.deleteReport(id);
     
     reportTableView.updateTotalCount(model.state.reports);
-    notificationsView.success(`Report successfully deleted: ${report.incident.title} [${report.id}]`);
+    notificationsView.success(`Report successfully deleted: ${report.incident.title} [${report.uuid}]`);
 
     await model.DB.getCurrentUserAccount();
     model.state.reports = model.state.user.reports;
@@ -66,7 +66,7 @@ const controlHardDeleteReport = async function (id, password) {
 
     modalView.closeModal();
     reportTableView.updateTotalCount(model.state.reports);
-    notificationsView.success(`Report successfully hard deleted: ${report.incident.title} [${report.id}]`);
+    notificationsView.success(`Report successfully hard deleted: ${report.incident.title} [${report.uuid}]`);
 
   } catch (error) {
     console.error(error);

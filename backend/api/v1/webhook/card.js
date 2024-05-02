@@ -13,7 +13,7 @@ const isEmptyObject = (object) => {
 // Parse Report Data Into Readable Variables. Return Report Data & Adaptive Card As JSON
 export const setAdaptiveCard = (report) => {
   // Meta Data
-  const uuid = report.id;
+  const uuid = report.uuid;
   const createdTime = report.createdAt.split(".")[0] + "Z";
   const username = report.assignedTo;
   const techProfilePicture = () => {

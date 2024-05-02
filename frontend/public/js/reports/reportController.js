@@ -99,21 +99,21 @@ const controlSaveReport = async function (reportId) {
       report = await model.DB.createReport(model.state.tab, reportFormView._form);
       reportTableView.render(report);
       reportTableView.updateTotalCount(model.state.reports);
-      notificationsView.success(`Report successfully created: [${report.id}]`);
+      notificationsView.success(`Report successfully created: [${report.uuid}]`);
     }
 
     // Save changes
     if (id) {
       report = await model.DB.updateReport(id, reportFormView._form);
       reportTableView.update(report);
-      notificationsView.success(`Report changes were saved: [${report.id}]`);
+      notificationsView.success(`Report changes were saved: [${report.uuid}]`);
     }
 
     reportFormView.takeSnapshot(reportFormView.newClone());
     reportFormView.updateTags(report);
     reportFormView._btnTeams.disabled = false;
-    reportTabsView.render(model.state.tab, report.incident.title, report.id);
-    model.loadTabWith(model.state.reports, model.state.tab, report.id);
+    reportTabsView.render(model.state.tab, report.incident.title, report.uuid);
+    model.loadTabWith(model.state.reports, model.state.tab, report.uuid);
   } catch (error) {
     console.error(error);
     notificationsView.error(error.message, 60);
@@ -127,7 +127,7 @@ const controlSendReport = async function (id = undefined) {
   if (!id && hasIdInHash) id = hasIdInHash;
 
   const report = model.findObjectById(model.state.reports, id);
-  const tabIndex = model.findTabIndexByObjectId(report.id);
+  const tabIndex = model.findTabIndexByObjectId(report.uuid);
   const reportViewInTab = reportTabsView.tabs.get(tabIndex);
   const tableViewBtnTeams = report.tableRowEl.querySelector(".teams");
   
@@ -201,7 +201,7 @@ const controlDeleteReport = async function (id) {
     await model.DB.deleteReport(id);
     
     reportTableView.updateTotalCount(model.state.reports);
-    notificationsView.success(`Report successfully deleted: ${report.incident.title} [${report.id}]`);
+    notificationsView.success(`Report successfully deleted: ${report.incident.title} [${report.uuid}]`);
 
     await model.DB.getAllSoftDeletedReports();
     if(reportTableView.isDeletedViewActive)
@@ -233,7 +233,7 @@ const controlHardDeleteReport = async function (id, password) {
 
     modalView.closeModal();
     reportTableView.updateTotalCount(model.state.reports);
-    notificationsView.success(`Report successfully hard deleted: ${report.incident.title} [${report.id}]`);
+    notificationsView.success(`Report successfully hard deleted: ${report.incident.title} [${report.uuid}]`);
 
   } catch (error) {
     console.error(error);
@@ -412,6 +412,7 @@ export const init = async function () {
   // If id in hash render report
   if (window.location.hash.slice(1)) controlRenderReport();
 
+  console.log(model.state);
   // Initialize all table rows per page
   model.state.rowsPerPage = paginationView.rowsPerPage();
   reportTableView.renderAll(model.rowsPerPage(model.state.reports));

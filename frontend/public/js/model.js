@@ -32,19 +32,19 @@ export const state = {
   },
 };
 
-// Find report index or user index by ID
+// Find report index or user index by UUID
 // prettier-ignore
 export const findObjectIndexById = (array, targetObject, raiseErrorIfNotFound = true) => {
   const index = array.findIndex((object) =>
-    object.id === (typeof targetObject === "object" ? targetObject.id : targetObject));
+    object.uuid === (typeof targetObject === "object" ? targetObject.uuid : targetObject));
   if(index === -1 && raiseErrorIfNotFound)
     throw new TypeError(`Invalid target. Object index is undefined in provided array.`);
   return index;
 }
 
-// Find report or user by ID
+// Find report or user by UUID
 export const findObjectById = (array, id, raiseErrorIfNotFound = true) => {
-  const object = array.find((object) => object.id === id);
+  const object = array.find((object) => object.uuid === id);
   if (typeof object === "undefined" && raiseErrorIfNotFound)
     throw new TypeError(`Invalid id "${id}". Data object is undefined.`);
   return object;
@@ -67,11 +67,11 @@ export const clearTab = function (tabIndex) {
 // Find tab by the Map() object key
 const findTab = (index) => state.tabs.get(index);
 
-// Find tab index by id
+// Find tab index by UUID
 export const findTabIndexByObjectId = (id) => {
   let activeTabIndex = -1;
   state.tabs.forEach((tab, index) => {
-    if (tab.data.id === id) activeTabIndex = index;
+    if (tab.data.uuid === id) activeTabIndex = index;
   });
   return activeTabIndex;
 };

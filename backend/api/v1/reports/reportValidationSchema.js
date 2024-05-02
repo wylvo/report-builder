@@ -27,7 +27,7 @@ export default {
       },
     },
 
-    id: {
+    uuid: {
       exists: { errorMessage: "required.", bail: true },
       isUUID: { errorMessage: "invalid UUID." },
     },
@@ -54,18 +54,21 @@ export default {
       exists: { errorMessage: "required.", bail: true },
       notEmpty: { errorMessage: "can't be empty.", bail: true },
       isString: { errorMessage: "should be a string." },
+      isValidUsername: {},
     },
     updatedBy: {
       // TODO: CHECK IF VALID USERNAME
       exists: { errorMessage: "required.", bail: true },
       notEmpty: { errorMessage: "can't be empty.", bail: true },
       isString: { errorMessage: "should be a string." },
+      isValidUsername: {},
     },
     assignedTo: {
       // TODO: CHECK IF VALID USERNAME
       exists: { errorMessage: "required.", bail: true },
       notEmpty: { errorMessage: "can't be empty.", bail: true },
       isString: { errorMessage: "should be a string." },
+      isValidUsername: {},
     },
     isOnCall: {
       exists: { errorMessage: "required.", bail: true },

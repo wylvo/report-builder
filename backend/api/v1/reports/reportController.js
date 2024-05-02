@@ -1,13 +1,37 @@
 import { ExpressValidator } from "express-validator";
 import bcrypt from "bcrypt";
 
-import { Report, isDateTime, isTimeCustom } from "./reportModel.js";
+import {
+  Report,
+  isDateTime,
+  isTimeCustom,
+  isValidUsername,
+} from "./reportModel.js";
 import { mssql, mssqlDataTypes } from "../router.js";
 import { validateBody } from "../../../validation/validation.js";
 import GlobalError from "../../../errors/globalError.js";
 import catchAsync from "../../../errors/catchAsync.js";
 
-const { checkSchema } = new ExpressValidator({ isDateTime, isTimeCustom });
+const { checkSchema } = new ExpressValidator({
+  isDateTime,
+  isTimeCustom,
+  isValidUsername,
+});
+
+const filterReportData = (data) =>
+  Object.keys(data)
+    .filter((key) => !["id"].includes(key))
+    .reduce((obj, key) => {
+      obj[key] = data[key];
+      return obj;
+    }, {});
+
+const filterReportArrayData = (data) => {
+  const reports = [];
+  if (data && Array.isArray(data))
+    data.forEach((obj) => reports.push(filterReportData(obj)));
+  return reports;
+};
 
 export const getAllReports = catchAsync(async (req, res, next) => {
   const {
@@ -16,7 +40,7 @@ export const getAllReports = catchAsync(async (req, res, next) => {
 
   const { results, data } = !reports
     ? { results: 0, data: [] }
-    : { results: reports.length, data: reports };
+    : { results: reports.length, data: filterReportArrayData(reports) };
 
   res.status(200).json({
     status: "success",
@@ -32,7 +56,7 @@ export const getAllSoftDeletedReports = catchAsync(async (req, res, next) => {
 
   const { results, data } = !reports
     ? { results: 0, data: [] }
-    : { results: reports.length, data: reports };
+    : { results: reports.length, data: filterReportArrayData(reports) };
 
   res.status(200).json({
     status: "success",
@@ -44,21 +68,22 @@ export const getAllSoftDeletedReports = catchAsync(async (req, res, next) => {
 export const validateCreate = validateBody(checkSchema, Report.schema.create);
 
 export const createReport = catchAsync(async (req, res, next) => {
-  const { NVarChar, Int } = mssqlDataTypes;
+  const { NVarChar } = mssqlDataTypes;
 
-  const id = req.body.id;
+  const uuid = req.body.id;
   // const username = req.user.username;
   const body = [req.body];
   const rawJSON = JSON.stringify(body);
 
   const {
-    recordset: [[report]],
+    recordset: [report],
   } = await mssql()
-    .input("id", Int, id)
     .input("uuid", uuid)
     // .input("username", username)
     .input("rawJSON", NVarChar, rawJSON)
     .query(Report.query.insert());
+
+  console.log(report);
 
   res.status(201).json({
     status: "success",
@@ -76,7 +101,7 @@ export const getReport = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: "success",
-    data: report,
+    data: filterReportData(report),
   });
 });
 
@@ -105,7 +130,7 @@ export const updateReport = catchAsync(async (req, res, next) => {
 
   res.status(201).json({
     status: "success",
-    data: reportUpdated,
+    data: filterReportData(reportUpdated),
   });
 });
 
@@ -174,6 +199,6 @@ export const undoSoftDeleteReport = async (req, res, next) => {
 
   res.status(200).json({
     status: "success",
-    data: reportUpdated,
+    data: filterReportData(reportUpdated),
   });
 };

@@ -4,6 +4,8 @@ const reportMigration = (reports) => {
   reports.forEach((report) => {
     if (report?.version === "0.1.1-beta")
       reportsToMigrate.set(report.id, report);
+    if (report?.version === "1.0.0-beta")
+      reportsToMigrate.set(report.id, report);
   });
 
   return {

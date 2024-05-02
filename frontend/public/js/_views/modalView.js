@@ -167,7 +167,7 @@ export default class ModalView extends NotificationsView {
     this._contentText = `
       <p>Do you really want to delete the following report?</p><br>
       <p><strong>${report.incident.title.escapeHTML()}</strong><br>
-      ${report.id.escapeHTML()}</p>
+      ${report.uuid.escapeHTML()}</p>
     `;
     this.#btnConfirmText = "Yes, Delete";
     this.#btnConfirmAltText = "Yes, HARD Delete";

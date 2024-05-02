@@ -53,8 +53,8 @@ export class AccountFormView extends FormView {
     // prettier-ignore
     const tabTitle = `[${user.role.toUpperCase()}] - ${user.fullName} (${user.email})`;
     this._tab.firstElementChild.textContent = tabTitle;
-    this._tab.firstElementChild.setAttribute("href", `#${user.id}`);
-    this._idTag.textContent = user.id;
+    this._tab.firstElementChild.setAttribute("href", `#${user.uuid}`);
+    this._idTag.textContent = user.uuid;
 
     this._inputs.get(this.#ALL).forEach((input) => {
       input.setAttribute("readonly", "");

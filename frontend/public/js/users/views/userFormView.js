@@ -141,7 +141,7 @@ export class UserFormView extends FormView {
 
     console.log(user);
     this._tab.firstElementChild.textContent = user.fullName;
-    this._tab.firstElementChild.setAttribute("href", `#${user.id}`);
+    this._tab.firstElementChild.setAttribute("href", `#${user.uuid}`);
 
     const fields = this._fields;
     const checkBoxes = this._checkBoxes;
@@ -214,7 +214,7 @@ export class UserFormView extends FormView {
 
       // Id
       if (tag.classList.contains("data-id"))
-        (tag.textContent = user.id), tag.classList.remove("hidden");
+        (tag.textContent = user.uuid), tag.classList.remove("hidden");
     });
   }
 

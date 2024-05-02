@@ -59,6 +59,10 @@ class ReportTableView extends TableView {
       ? { class: `class="attention"`, text: "Yes" }
       : { class: "", text: "No" };
 
+    let initials;
+    const [firstName, lastName] = report.assignedTo.split(".")
+    if(lastName) initials = `${firstName[0].toUpperCase()}${lastName[0].toUpperCase()}`
+    if(!lastName) initials = `${firstName[0].toUpperCase()}${firstName[1].toUpperCase()}`
     const isOnCallClass = report.isOnCall ? "on-call" : ""
 
     const buttons = !report.isDeleted 
@@ -91,13 +95,13 @@ class ReportTableView extends TableView {
       <td data-cell="TECH">
         <div>
           <p class="table-row-cell-pp ${isOnCallClass}">
-            ${report.assignedTo.split(" ")[0][0] + report.assignedTo.split(" ")[1][0]}
+            ${initials}
           </p>
         </div>
       </td>
       <td data-cell="Date"><div>${formattedDate}</div></td>
       <td data-cell="Title">
-        <div><a class="table-row-link" href="#${report.id}">${report.incident.title}</a></div>
+        <div><a class="table-row-link" href="#${report.uuid}">${report.incident.title}</a></div>
       </td>
       <td data-cell="Status">
         <div><p class="${status.class}">${status.text}</p></div>
@@ -109,7 +113,7 @@ class ReportTableView extends TableView {
       <td data-cell="Procedural">
         <div><p ${isProcedural.class}>${isProcedural.text}</p></div>
       </td>
-      <td data-cell="Actions" data-id="${report.id}" class="table-row-buttons">
+      <td data-cell="Actions" data-uuid="${report.uuid}" class="table-row-buttons">
           ${buttons}
       </td>
     </tr>

@@ -1,6 +1,25 @@
 import userValidationSchema from "./userValidationSchema.js";
 import { mssql } from "../router.js";
 
+// Custom validation to check if username exists in DB & and user is active
+export const isValidUsername = async (value) => {
+  const user = await User.findByUsername(value);
+  if (!user) throw new Error("username does not exist.");
+  if (user && !user.active) throw new Error("user is inactive.");
+  return true;
+};
+
+// Custom validation to check if new username does not exists in DB
+export const isValidNewUsername = async (value) => {
+  const user = await User.findByUsername(value);
+
+  // If a user is found with the username value
+  // Then, the id present in the request has to match that exising user in the DB
+  // Otherwise, this would trigger an error as it would allow duplicate usernames in the DB
+  if (user && user.uuid !== req.params.id) return false;
+  return true;
+};
+
 export const User = {
   /**
    * MIDDLEWARE VALIDATION BEFORE:
@@ -61,17 +80,35 @@ export const User = {
    **/
   query: {
     // GET (READ) USER(S)
-    byId: "SELECT * FROM users WHERE id = @id;",
-    byUUID: "SELECT * FROM users WHERE uuid = @uuid;",
+    byId: `
+      SELECT
+        u.uuid, u.createdAt, u.updatedAt, u.authenticationAt,
+        u.passwordResetAt, r.name AS role, u.active, u.email,
+        u.password, u.failedAuthenticationAttempts, u.profilePictureURI,
+        u.fullName, u.username, u.initials
+      FROM users u
+      JOIN roles r ON r.id = u.role_id
+      WHERE u.id = @id;
+    `,
+    byUUID: `
+      SELECT
+        u.uuid, u.createdAt, u.updatedAt, u.authenticationAt,
+        u.passwordResetAt, r.name AS role, u.active, u.email,
+        u.password, u.failedAuthenticationAttempts, u.profilePictureURI,
+        u.fullName, u.username, u.initials
+      FROM users u
+      JOIN roles r ON r.id = u.role_id
+      WHERE u.uuid = @uuid;
+    `,
     byEmail: "SELECT * FROM users WHERE email = @email;",
     byUsername: "SELECT * FROM users WHERE username = @username;",
-    all: "SELECT uuid, role, active, email, profilePictureURI, fullName, username, initials FROM users;",
+    all: "SELECT uuid, role_id, active, email, profilePictureURI, fullName, username, initials FROM users;",
 
     // CREATE USER
     insert() {
       return `
         INSERT INTO users
-          (uuid, role, active, email, password, profilePictureURI, fullName, username, initials)
+          (uuid, role_id, active, email, password, profilePictureURI, fullName, username, initials)
         VALUES
           (@uuid, @role, @active, @email, @password, @profilePictureURI, @fullName, @username, @initials);
 

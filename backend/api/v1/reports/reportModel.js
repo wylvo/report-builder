@@ -3,6 +3,9 @@ import validator from "validator";
 import { mssql } from "../router.js";
 import reportValidationSchema from "./reportValidationSchema.js";
 
+// Custom validation to check if username exists in DB & and user is active
+export { isValidUsername } from "../users/userModel.js";
+
 // Custom date & time validation function for checkSchema in reportController.js
 export const isDateTime = (value) => {
   const dateTime = value.split(" ");
@@ -97,6 +100,7 @@ export const Report = {
     // Source: https://learn.microsoft.com/en-us/sql/relational-databases/json/format-query-results-as-json-with-for-json-sql-server?view=sql-server-ver16&redirectedfrom=MSDN&tabs=json-path
     // Source: https://learn.microsoft.com/en-us/sql/relational-databases/json/convert-json-data-to-rows-and-columns-with-openjson-sql-server?view=sql-server-ver16
     JSONSelect: `
+      id AS [id],
       uuid AS [uuid],
       version AS [version],
       createdAt AS [createdAt],
@@ -131,7 +135,7 @@ export const Report = {
       incidentTransactionType AS [incident.transaction.type],
       incidentTransactionNumber AS [incident.transaction.number],
       incidentTransactionIsIRCreated AS [incident.transaction.isIRCreated],
-      incidentDetails AS [incident.details],
+      incidentDetails AS [incident.details]
     `,
 
     withClause: `
@@ -253,7 +257,7 @@ export const Report = {
           ${this.withClause}
         );
 
-        ${this.byId()}
+        ${this.byUUID()}
       `;
     },
 

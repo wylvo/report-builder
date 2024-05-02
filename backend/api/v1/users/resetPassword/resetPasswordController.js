@@ -37,7 +37,7 @@ export const resetUserPassword = catchAsync(async (req, res, next) => {
   const rawJSON = JSON.stringify(user);
 
   await mssql()
-    .input("id", user.id)
+    .input("id", user.uuid)
     .input("rawJSON", NVarChar, rawJSON)
     .query(resetUserPasswordSQL.update);
 
