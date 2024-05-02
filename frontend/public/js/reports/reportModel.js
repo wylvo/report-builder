@@ -196,20 +196,8 @@ const checkReportValidity = (report) => {
     // If the default object key value types !== the target (report) object key value types
     if (typeof defaultKeyValue !== typeof targetKeyValue) {
 
-      // Else keep it in memory, and return nothing to stop the iteration.
+      // Keep it in memory, and return nothing to stop the iteration.
       return invalidTypes.push({ key: key, type: typeof defaultKeyValue, target: target });
-    }
-
-    // If keys are "createdAt" OR "updatedAt".
-    if(key === "createdAt" || key === "updatedAt") {
-
-      // Check if valid date
-      const date = new Date(targetObject[key]);
-
-      // If it is an invalid date, keep it in memory, and return nothing to stop the iteration.
-      if (isNaN(date)) {
-        return invalidTypes.push({ key: key, type: "date object: string", target: target });
-      } 
     }
   };
 
@@ -266,11 +254,6 @@ const checkReportValidity = (report) => {
 const createReportObject = (report, form) => {
   return {
     id: report?.id ?? utils.generateUUID(),
-    version: state.version,
-    createdAt: utils.formatDate(report?.createdAt)?.iso ?? new Date().toISOString(),
-    updatedAt: utils.formatDate(report?.updatedAt)?.iso ?? new Date().toISOString(),
-    createdBy: report?.createdBy ?? state.user.username,
-    updatedBy: report?.updatedBy ?? state.user.username,
     assignedTo: form["assigned-to"].value.trim(),
     isOnCall: form.oncall.checked,
     isDeleted: false,
@@ -344,10 +327,6 @@ const updateReport = (reportOrId, form) => {
   checkReportValidity(clone);
 
   // Update the report
-  report.createdAt = clone.createdAt;
-  report.updatedAt = clone.updatedAt;
-  report.createdBy = clone.createdBy;
-  report.updatedBy = clone.updatedBy;
   report.assignedTo = clone.assignedTo;
   report.isOnCall = clone.isOnCall;
   report.isWebhookSent = clone.isWebhookSent;

@@ -30,41 +30,9 @@ export default {
     uuid: {
       exists: { errorMessage: "required.", bail: true },
       isUUID: { errorMessage: "invalid UUID." },
-    },
-    version: {
-      exists: { errorMessage: "required.", bail: true },
-      isSemVer: { errorMessage: "invalid version." },
-    },
-    createdAt: {
-      exists: { errorMessage: "required.", bail: true },
-      isISO8601: {
-        options: { strict: true, strictSeparator: true },
-        errorMessage: "invalid date (see ISO 8601).",
-      },
-    },
-    updatedAt: {
-      exists: { errorMessage: "required.", bail: true },
-      isISO8601: {
-        options: { strict: true, strictSeparator: true },
-        errorMessage: "invalid date (see ISO 8601).",
-      },
-    },
-    createdBy: {
-      // TODO: CHECK IF VALID USERNAME
-      exists: { errorMessage: "required.", bail: true },
-      notEmpty: { errorMessage: "can't be empty.", bail: true },
-      isString: { errorMessage: "should be a string." },
-      isValidUsername: {},
-    },
-    updatedBy: {
-      // TODO: CHECK IF VALID USERNAME
-      exists: { errorMessage: "required.", bail: true },
-      notEmpty: { errorMessage: "can't be empty.", bail: true },
-      isString: { errorMessage: "should be a string." },
-      isValidUsername: {},
+      isNewReport: { errorMessage: "a report already exists with this id." },
     },
     assignedTo: {
-      // TODO: CHECK IF VALID USERNAME
       exists: { errorMessage: "required.", bail: true },
       notEmpty: { errorMessage: "can't be empty.", bail: true },
       isString: { errorMessage: "should be a string." },

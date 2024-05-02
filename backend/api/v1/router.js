@@ -28,3 +28,4 @@ router.use("/version", versionRouter); // - /api/v1/version
 export default router;
 export { mssql, mssqlDataTypes } from "../../config/db.config.js";
 export { default as config } from "../../config/app.config.js";
+export { default as dateISO8601 } from "../../date/dateISO8601.js";

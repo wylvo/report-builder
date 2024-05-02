@@ -6,6 +6,12 @@ import reportValidationSchema from "./reportValidationSchema.js";
 // Custom validation to check if username exists in DB & and user is active
 export { isValidUsername } from "../users/userModel.js";
 
+// Custom validation to check if report exists in DB
+export const isNewReport = async (value) => {
+  const [report] = await Report.findByUUID(value);
+  if (report) throw new Error();
+};
+
 // Custom date & time validation function for checkSchema in reportController.js
 export const isDateTime = (value) => {
   const dateTime = value.split(" ");
@@ -179,7 +185,7 @@ export const Report = {
 
     byUUID() {
       return `
-        SELECT 
+        SELECT
           ${this.JSONSelect}
         FROM reports
         WHERE uuid = @uuid
@@ -246,18 +252,20 @@ export const Report = {
     // Source: https://learn.microsoft.com/fr-fr/archive/blogs/sqlserverstorageengine/openjson-the-easiest-way-to-import-json-text-into-table#use-case-2-updating-table-row-using-json-object
     insert() {
       return `
-        DECLARE @json NVARCHAR(MAX) = @rawJSON;
-
         INSERT INTO
           reports
         SELECT
           *
-        FROM OPENJSON(@json)
+        FROM OPENJSON(@rawJSON)
         WITH (
           ${this.withClause}
         );
 
-        ${this.byUUID()}
+        SELECT
+          ${this.JSONSelect}
+        FROM reports
+        WHERE uuid = @uuid
+        FOR JSON PATH;
       `;
     },
 

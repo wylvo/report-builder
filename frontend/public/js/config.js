@@ -14,7 +14,7 @@ export const DEFAULT_USER_CREATE = Object.freeze({
 });
 
 export const DEFAULT_USER_UPDATE = Object.freeze({
-  id: "string",
+  uuid: "string",
   role: "string",
   active: false,
   email: "string",
@@ -26,12 +26,7 @@ export const DEFAULT_USER_UPDATE = Object.freeze({
 });
 
 export const DEFAULT_REPORT = Object.freeze({
-  id: "string",
-  version: "string",
-  createdAt: "string (Date)",
-  updatedAt: "string (Date)",
-  createdBy: "string",
-  updatedBy: "string",
+  uuid: "string",
   assignedTo: "string",
   isOnCall: false,
   isDeleted: false,

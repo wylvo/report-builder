@@ -10,13 +10,13 @@ export const isValidUsername = async (value) => {
 };
 
 // Custom validation to check if new username does not exists in DB
-export const isValidNewUsername = async (value) => {
+export const isValidNewUsername = async (value, { req }) => {
   const user = await User.findByUsername(value);
 
   // If a user is found with the username value
-  // Then, the id present in the request has to match that exising user in the DB
+  // Then, the id present in the request has to match that exising user id in the DB
   // Otherwise, this would trigger an error as it would allow duplicate usernames in the DB
-  if (user && user.uuid !== req.params.id) return false;
+  if (user && user.uuid !== req.params.id) throw new Error();
   return true;
 };
 

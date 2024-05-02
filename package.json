@@ -1,6 +1,6 @@
 {
   "name": "report-builder",
-  "version": "1.1.0-beta",
+  "version": "1.0.0",
   "description": "Web application for TECH related incidents reporting.",
   "private": "true",
   "main": "server.js",

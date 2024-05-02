@@ -3,16 +3,18 @@ import bcrypt from "bcrypt";
 
 import {
   Report,
+  isNewReport,
   isDateTime,
   isTimeCustom,
   isValidUsername,
 } from "./reportModel.js";
-import { mssql, mssqlDataTypes } from "../router.js";
+import { mssql, mssqlDataTypes, dateISO8601, config } from "../router.js";
 import { validateBody } from "../../../validation/validation.js";
 import GlobalError from "../../../errors/globalError.js";
 import catchAsync from "../../../errors/catchAsync.js";
 
 const { checkSchema } = new ExpressValidator({
+  isNewReport,
   isDateTime,
   isTimeCustom,
   isValidUsername,
@@ -71,16 +73,18 @@ export const createReport = catchAsync(async (req, res, next) => {
   const { NVarChar } = mssqlDataTypes;
 
   const uuid = req.body.id;
-  // const username = req.user.username;
+  req.body.version = config.version;
+  req.body.createdAt = dateISO8601(new Date());
+  req.body.updatedAt = dateISO8601(new Date());
+  req.body.createdBy = req.user.username;
+  req.body.updatedBy = req.user.username;
+
   const body = [req.body];
   const rawJSON = JSON.stringify(body);
 
-  const {
-    recordset: [report],
-  } = await mssql()
-    .input("uuid", uuid)
-    // .input("username", username)
+  const report = await mssql()
     .input("rawJSON", NVarChar, rawJSON)
+    .input("uuid", uuid)
     .query(Report.query.insert());
 
   console.log(report);
@@ -116,7 +120,11 @@ export const updateReport = catchAsync(async (req, res, next) => {
     return next(new GlobalError(`Report not found with id: ${id}.`, 404));
 
   const { NVarChar } = mssqlDataTypes;
-  // const username = req.user.username;
+
+  req.body.version = config.version;
+  req.body.updatedAt = dateISO8601(new Date());
+  req.body.updatedBy = req.user.username;
+
   const body = [req.body];
   const rawJSON = JSON.stringify(body);
 
@@ -124,10 +132,10 @@ export const updateReport = catchAsync(async (req, res, next) => {
     recordset: [[reportUpdated]],
   } = await mssql()
     .input("id", report.id)
-    // .input("username", username)
     .input("rawJSON", NVarChar, rawJSON)
     .query(Report.query.update());
 
+  console.log(reportUpdated);
   res.status(201).json({
     status: "success",
     data: filterReportData(reportUpdated),
