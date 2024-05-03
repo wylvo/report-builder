@@ -51,11 +51,6 @@ export const setAdaptiveCard = (report) => {
     : "No";
 
   // Incident Details
-  const incidentDate = new Date(report.incident.date).toDateString();
-  const incidentTime = report.incident.dateTime
-    .split(" ")
-    .slice(1, 3)
-    .join(" ");
   const incidentTitle = report.incident.title;
   const incidentType = report.incident.type;
   const incidentPos = report.incident.pos;
@@ -420,10 +415,6 @@ export const setAdaptiveCard = (report) => {
                       "type": "FactSet",
                       "facts": [
                         {
-                          "title": "Date:",
-                          "value": `${incidentDate}`
-                        },
-                        {
                           "title": "Type:",
                           "value": `${incidentType}`
                         },
@@ -444,10 +435,6 @@ export const setAdaptiveCard = (report) => {
                     {
                       "type": "FactSet",
                       "facts": [
-                        {
-                          "title": "Time:",
-                          "value": `${incidentTime}`
-                        },
                         {
                           "title": "POS #:",
                           "value": `${incidentPos}`

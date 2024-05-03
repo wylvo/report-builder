@@ -54,10 +54,6 @@ export const DEFAULT_REPORT = Object.freeze({
   },
   incident: {
     title: "string",
-    date: "string",
-    time: "string",
-    dateTime: "string (Date)",
-    copyTimestamp: false,
     type: "string",
     pos: "string",
     isProcedural: false,

@@ -23,7 +23,7 @@ const init = async () => {
   await Promise.all([
     DB.getReports(),
     DB.getAllSoftDeletedReports(),
-    accountModel.DB.getCurrentUserAccount(),
+    // accountModel.DB.getCurrentUserAccount(),
   ]);
   state.version = await api.v1.version.getVersion();
   initThemeInLocalStorage();
@@ -283,12 +283,6 @@ const createReportObject = (report, form) => {
     },
     incident: {
       title: form["incident-title"].value.trim(),
-      date: form["incident-date"].value.trim(),
-      time: form["incident-time"].value.trim(),
-      dateTime: utils.formatDate(
-        `${form["incident-date"].value.trim()} ${form["incident-time"].value.trim()}`
-      ).sharepoint,
-      copyTimestamp: form["copy-timestamp"].checked,
       type: form["incident-type"].value.trim(),
       pos: form["incident-pos-number"].value.trim(),
       isProcedural: form["incident-procedural"].checked,

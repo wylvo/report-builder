@@ -47,8 +47,6 @@ export class ReportFormView extends FormView {
   #defaultState() {
     this._snapshot = { taken: false };
     this._phoneNumberInitialValue = "";
-    this._incidentDateInitialValue = "";
-    this._incidentTimeInitialValue = "";
     this._transactionIssue = false;
   }
 
@@ -58,7 +56,6 @@ export class ReportFormView extends FormView {
     this._expandAllAccordions();
     this._addHandlerTimestampNow();
     this._addHandlerCollapseExpandOrAccordion();
-    this._addHandlerCopyDateTime();
     this._addHandlerNoCallerIdSwitch();
     this._addHandlerTransactionIssueSwitch();
     this._addHandlerOnChange();
@@ -129,9 +126,6 @@ export class ReportFormView extends FormView {
     this._checkBoxes.get("phone-no-caller-id").checked = false;
     this._fields.get("phone-number").disabled = false;
 
-    this._checkBoxes.get("copy-timestamp").checked = true;
-    this._fields.get("incident-date").disabled = true;
-    this._fields.get("incident-time").disabled = true;
 
     this._transactionIssueSwitch();
     this.updateTextInputsLength();
@@ -182,12 +176,6 @@ export class ReportFormView extends FormView {
 
     // Incident Details Accordion
     fields.get("incident-title").value = report.incident.title;
-    fields.get("incident-date").value = report.incident.date;
-    fields.get("incident-time").value = report.incident.time;
-
-    report.incident.copyTimestamp && !checkBoxes.get("copy-timestamp").checked
-      ? checkBoxes.get("copy-timestamp").click()
-      : "";
     selects.get("incident-type").value = report.incident.type;
     fields.get("incident-pos-number").value = report.incident.pos;
 
@@ -307,43 +295,6 @@ export class ReportFormView extends FormView {
   }
 
   // prettier-ignore
-  _copyDateTime(e) {
-    const copyDateTime = this._checkBoxes.get("copy-timestamp");
-    const isCopyChecked = copyDateTime.checked;
-    const incidentDate = this._fields.get("incident-date");
-    const incidentTime = this._fields.get("incident-time");
-    
-    if (isCopyChecked && e.target.name === "date") incidentDate.value = e.target.value;
-    if (isCopyChecked && e.target.name === "time") incidentTime.value = e.target.value;
-
-    if (!isCopyChecked && e.target.name === copyDateTime.name)
-      this._clearIncidentDateTime(isCopyChecked, this._fields)
-    else
-      this._clearIncidentDateTime(isCopyChecked, this._fields)
-  }
-
-  _clearIncidentDateTime(isChecked, inputFields) {
-    const incidentDate = inputFields.get("incident-date");
-    const incidentTime = inputFields.get("incident-time");
-    const callDate = inputFields.get("date");
-    const callTime = inputFields.get("time");
-
-    if (isChecked) {
-      this._incidentDateInitialValue = incidentDate.value;
-      this._incidentTimeInitialValue = incidentTime.value;
-      incidentDate.value = callDate.value;
-      incidentTime.value = callTime.value;
-      incidentDate.disabled = true;
-      incidentTime.disabled = true;
-      return;
-    }
-    incidentDate.value = this._incidentDateInitialValue;
-    incidentTime.value = this._incidentTimeInitialValue;
-    incidentDate.disabled = false;
-    incidentTime.disabled = false;
-  }
-
-  // prettier-ignore
   _noCallerId(e) {
     const noCallerID = this._checkBoxes.get("phone-no-caller-id");
     const phoneNumber = this._fields.get("phone-number");
@@ -393,10 +344,6 @@ export class ReportFormView extends FormView {
 
       this._fields.get("date").value = formattedDate[0];
       this._fields.get("time").value = formattedDate[1];
-      if (this._checkBoxes.get("copy-timestamp").checked) {
-        this._fields.get("incident-date").value = formattedDate[0];
-        this._fields.get("incident-time").value = formattedDate[1];
-      }
 
       if (this._snapshot.taken)
         this.hasStateChanged(this._snapshot.clone, this._snapshot.state);
@@ -408,19 +355,6 @@ export class ReportFormView extends FormView {
     this._all(this._accordions).forEach((accordion) => {
       accordion.header.addEventListener("click", this._collapseOrExpandAccordion.bind(this));
     });
-  }
-
-  // prettier-ignore
-  _addHandlerCopyDateTime() {
-    const callDate = this._fields.get("date");
-    const callTime = this._fields.get("time");
-
-    [callDate, callTime].forEach((field) =>
-      field.addEventListener("input", this._copyDateTime.bind(this))
-    );
-
-    const copyDateTimeCheckBox = this._checkBoxes.get("copy-timestamp");
-    copyDateTimeCheckBox.addEventListener("click", this._copyDateTime.bind(this));
   }
 
   // prettier-ignore

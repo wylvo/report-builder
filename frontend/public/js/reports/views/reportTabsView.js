@@ -254,44 +254,6 @@ class ReportTabsView extends TabsView {
               </div>
             </div>
 
-            <!-- INCIDENT DATE, INCIDENT TIME, SAME TIME -->
-            <div class="grid columns-37-37-25">
-              <div class="form-grouping-col">
-                <input
-                  type="date"
-                  id="incident-date_${index}"
-                  name="incident-date"
-                  class="incident-date"
-                  required
-                />
-                <label for="incident-date_${index}">Date:</label>
-              </div>
-              <div class="form-grouping-col">
-                <input
-                  type="time"
-                  id="incident-time_${index}"
-                  name="incident-time"
-                  class="incident-time"
-                  required
-                />
-                <label for="incident-time_${index}">Time:</label>
-              </div>
-
-              <div class="form-grouping-col self-end">
-                <label for="copy-timestamp_${index}">Same Time</label>
-                <label class="switch">
-                  <input
-                    type="checkbox"
-                    id="copy-timestamp_${index}"
-                    name="copy-timestamp"
-                    class="copy-timestamp"
-                    checked
-                  />
-                  <span class="slider"></span>
-                </label>
-              </div>
-            </div>
-
             <!-- INCIDENT TYPE, INCIDENT POS NUMBER, INCIDENT PROCEDURAL  -->
             <div class="grid columns-37-37-25">
               <div class="form-grouping-col gc-span-2-switch">

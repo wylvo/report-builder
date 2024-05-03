@@ -168,10 +168,6 @@ const DEFAULT_CREATE = {
   /********************************************
    *  "incident": {
    *    "title": "102 Transaction Error",
-   *    "date": "2023-11-05",
-   *    "time": "00:12",
-   *    "dateTime": "11/5/2023 12:12 AM",
-   *    "copyTimestamp": true,
    *    "type": "Bug",
    *    "pos": "",
    *    "isProcedural": false,
@@ -195,22 +191,6 @@ const DEFAULT_CREATE = {
     isLength: {
       options: { max: 100 },
       errorMessage: "invalid length, max of 100 characters allowed.",
-    },
-  },
-  "incident.date": {
-    exists: { errorMessage: "required.", bail: true },
-  },
-  "incident.time": {
-    exists: { errorMessage: "required.", bail: true },
-  },
-  "incident.dateTime": {
-    exists: { errorMessage: "required.", bail: true },
-  },
-  "incident.copyTimestamp": {
-    exists: { errorMessage: "required.", bail: true },
-    isBoolean: {
-      options: { strict: true },
-      errorMessage: "should be a boolean (true or false).",
     },
   },
   "incident.type": {
