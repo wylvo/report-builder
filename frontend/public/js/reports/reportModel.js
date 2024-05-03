@@ -226,15 +226,15 @@ const checkReportValidity = (report) => {
 
   const invalidInputLengths = [];
 
-  if (report.call.phone.length > 15) invalidInputLengths.push("phone number");
-  if (report.store.employee.name.length > 50)
+  if (report.call.phone.length > 20) invalidInputLengths.push("phone number");
+  if (report.store.employee.name.length > 100)
     invalidInputLengths.push("store employee name");
   if (report.incident.title.length > 100)
     invalidInputLengths.push("incident title");
   if (report.incident.error.length > 100)
     invalidInputLengths.push("incident error code");
   // prettier-ignore
-  if (report.incident.transaction.number && report.incident.transaction.number.length > 50)
+  if (report.incident.transaction.number && report.incident.transaction.number.length > 100)
     invalidInputLengths.push("incident transaction number");
   if (report.incident.details.length > 2000)
     invalidInputLengths.push("incident details");

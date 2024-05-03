@@ -107,7 +107,7 @@ class ReportTabsView extends TabsView {
                     class="phone-number"
                     placeholder="(123) 456-7890"
                     value=""
-                    maxlength="15"
+                    maxlength="20"
                   />
                   <label for="phone-number_${index}">Phone #:</label>
                 </div>
@@ -168,7 +168,7 @@ class ReportTabsView extends TabsView {
                   name="store-employee"
                   class="store-employee"
                   placeholder="John Doe"
-                  maxlength="50"
+                  maxlength="100"
                 />
                 <label for="store-employee_${index}">Employee Name:</label>
                 <p class="max-length"><span id="store-employee_${index}-length">0</span>/<span class="max-length-text"></span></p>
@@ -356,7 +356,7 @@ class ReportTabsView extends TabsView {
                   name="transaction-number"
                   class="transaction-number"
                   placeholder="1010203772"
-                  maxlength="50"
+                  maxlength="100"
                 />
                 <label for="transaction-number_${index}">Transaction #:</label>
                 <p class="max-length"><span id="transaction-number_${index}-length">0</span>/<span class="max-length-text"></span></p>
