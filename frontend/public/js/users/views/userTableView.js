@@ -53,14 +53,14 @@ class UserTableView extends TableView {
         </td>
         <td data-cell="Full Name"><div>${user.fullName}</div></td>
         <td data-cell="Email">
-          <div><a class="table-row-link" href="#${user.uuid}">${user.email}</a></div>
+          <div><a class="table-row-link" href="#${user.id}">${user.email}</a></div>
         </td>
         <td data-cell="Username"><div>${user.username}</div></td>
         <td data-cell="Role"><div>${user.role}</div></td>
         <td data-cell="Status">
           <div><p ${status.class}>${status.text}</p></div>
         </td>
-        <td data-cell="Actions" data-uuid="${user.uuid}" class="table-row-buttons">
+        <td data-cell="Actions" data-uuid="${user.id}" class="table-row-buttons">
           <div>
             <button class="btn status ${status.btnClassAndIcon}-user icons">
               <svg>

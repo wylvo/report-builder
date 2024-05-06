@@ -61,7 +61,7 @@ export default {
       custom: {
         options: async (username, { req }) => {
           const user = await User.findByUsername(username);
-          if (user && user.uuid !== req.params.id) throw new Error();
+          if (user && String(user.id) !== req.params.id) throw new Error();
           return user;
         },
         errorMessage: "already in use.",
@@ -101,7 +101,7 @@ export default {
       custom: {
         options: async (email, { req }) => {
           const user = await User.findByEmail(email);
-          if (user && user.uuid !== req.params.id) throw new Error();
+          if (user && String(user.id) !== req.params.id) throw new Error();
         },
         errorMessage: "already in use.",
       },
@@ -122,7 +122,7 @@ export default {
       custom: {
         options: async (username, { req }) => {
           const user = await User.findByUsername(username);
-          if (user && user.uuid !== req.params.id) throw new Error();
+          if (user && String(user.id) !== req.params.id) throw new Error();
           return user;
         },
         errorMessage: "already in use.",

@@ -35,7 +35,7 @@ export const filterUserData = (
     {
       ...filterObject(
         obj,
-        "uuid",
+        "id",
         "role",
         "active",
         "email",
@@ -105,27 +105,26 @@ export const createUser = catchAsync(async (req, res, next) => {
 
 export const getUser = catchAsync(async (req, res, next) => {
   const id = req.params.id;
-  console.log(id);
 
-  const user = await User.findByUUID(id);
+  const user = await User.findById(id);
 
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
 
   // prettier-ignore
-  const [{ recordset: [reports]}, {recordset: [reportsDeleted]}] =
-    await Promise.all([
-      mssql()
-        .input("username", user.username)
-        .query(Report.query.byUsername()),
-      mssql()
-        .input("username", user.username)
-        .query(Report.query.byUsernameSoftDeleted()),
-    ]);
+  // const [{ recordset: [reports]}, {recordset: [reportsDeleted]}] =
+  //   await Promise.all([
+  //     mssql()
+  //       .input("username", user.username)
+  //       .query(Report.query.byUsername()),
+  //     mssql()
+  //       .input("username", user.username)
+  //       .query(Report.query.byUsernameSoftDeleted()),
+  //   ]);
 
   res.status(200).json({
     status: "success",
-    data: filterUserData(user, reports, reportsDeleted),
+    data: filterUserData(user, /*reports, reportsDeleted*/),
   });
 });
 
@@ -134,7 +133,7 @@ export const validateUpdate = validateBody(checkSchema, User.schema.update);
 export const updateUser = catchAsync(async (req, res, next) => {
   const id = req.params.id;
 
-  const user = await User.findByUUID(id);
+  const user = await User.findById(id);
 
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
@@ -143,9 +142,7 @@ export const updateUser = catchAsync(async (req, res, next) => {
 
   if (!req.body.profilePictureURI)
     req.body.profilePictureURI = config.misc.defaultProfilePicture;
-  req.body.updatedAt = dateISO8601(new Date());
 
-  console.log(req.body);
   const body = [req.body];
   const rawJSON = JSON.stringify(body);
 
@@ -153,6 +150,7 @@ export const updateUser = catchAsync(async (req, res, next) => {
     recordset: [userUpdated],
   } = await mssql()
     .input("id", user.id)
+    .input("role", user.role)
     .input("rawJSON", NVarChar, rawJSON)
     .query(User.query.update());
 
@@ -165,12 +163,12 @@ export const updateUser = catchAsync(async (req, res, next) => {
 export const deleteUser = catchAsync(async (req, res, next) => {
   const id = req.params.id;
 
-  const user = await User.findByUUID(id);
+  const user = await User.findById(id);
 
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
 
-  await mssql().input("uuid", user.uuid).query(User.query.delete);
+  await mssql().input("id", user.id).query(User.query.delete);
 
   res.status(204).json({
     status: "success",
@@ -181,7 +179,7 @@ export const deleteUser = catchAsync(async (req, res, next) => {
 export const enableUser = async (req, res, next) => {
   const id = req.params.id;
 
-  const user = await User.findByUUID(id);
+  const user = await User.findById(id);
 
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
@@ -191,7 +189,7 @@ export const enableUser = async (req, res, next) => {
 
   const {
     recordset: [userUpdated],
-  } = await mssql().input("uuid", user.uuid).query(User.query.enable());
+  } = await mssql().input("id", user.id).query(User.query.enable());
 
   res.status(200).json({
     status: "success",
@@ -202,7 +200,7 @@ export const enableUser = async (req, res, next) => {
 export const disableUser = async (req, res, next) => {
   const id = req.params.id;
 
-  const user = await User.findByUUID(id);
+  const user = await User.findById(id);
 
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
@@ -214,7 +212,7 @@ export const disableUser = async (req, res, next) => {
 
   const {
     recordset: [userUpdated],
-  } = await mssql().input("uuid", user.uuid).query(User.query.disable());
+  } = await mssql().input("id", user.id).query(User.query.disable());
 
   res.status(200).json({
     status: "success",
@@ -223,7 +221,7 @@ export const disableUser = async (req, res, next) => {
 };
 
 export const getMe = (req, res, next) => {
-  req.params.id = req.user.uuid;
+  req.params.id = req.user.id;
   next();
 };
 

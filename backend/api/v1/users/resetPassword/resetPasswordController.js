@@ -19,7 +19,7 @@ export const resetUserPassword = catchAsync(async (req, res, next) => {
   const id = req.userId;
   req.userId = undefined;
 
-  const user = await User.findByUUID(id);
+  const user = await User.findById(id);
 
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
@@ -37,7 +37,7 @@ export const resetUserPassword = catchAsync(async (req, res, next) => {
   const rawJSON = JSON.stringify(user);
 
   await mssql()
-    .input("id", user.uuid)
+    .input("id", user.id)
     .input("rawJSON", NVarChar, rawJSON)
     .query(resetUserPasswordSQL.update);
 

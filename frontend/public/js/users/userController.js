@@ -133,22 +133,22 @@ const controlSaveUser = async function (userId) {
       userFormView.render(user);
       userTableView.render(user);
       userTableView.updateTotalCount(model.state.users);
-      notificationsView.success(`User successfully created: [${user.uuid}]`);
+      notificationsView.success(`User successfully created: [${user.id}]`);
     }
 
     // Update User
     if (id) {
       user = await model.DB.updateUser(id, userFormView._form);
       userTableView.update(user);
-      notificationsView.success(`User successfully updated: [${user.uuid}]`);
+      notificationsView.success(`User successfully updated: [${user.id}]`);
     }
 
     userFormView.clearPasswordFields();
     userFormView.takeSnapshot(userFormView.newClone());
     userFormView.updateTags(user);
     userFormView._btnResetPassword.disabled = true;
-    userTabsView.render(model.state.tab, user.fullName, user.uuid);
-    model.loadTabWith(model.state.users, model.state.tab, user.uuid);
+    userTabsView.render(model.state.tab, user.fullName, user.id);
+    model.loadTabWith(model.state.users, model.state.tab, user.id);
   } catch (error) {
     console.error(error);
     notificationsView.error(error.message, 60);
@@ -192,7 +192,7 @@ const controlDeleteUser = async function (id) {
   
     await model.DB.deleteUser(id);
     userTableView.updateTotalCount(model.state.users);
-    notificationsView.success(`User successfully deleted: ${user.email} [${user.uuid}]`);
+    notificationsView.success(`User successfully deleted: ${user.email} [${user.id}]`);
 
   } catch (error) {
     console.error(error);
@@ -209,7 +209,7 @@ const controlUserStatus = async function (id) {
     else user = await model.DB.enableUser(id, user);
 
     const statusMsg = user.active ? "activated" : "inactivated"
-    notificationsView.success(`User successfully ${statusMsg}: ${user.email} [${user.uuid}]`, 3);
+    notificationsView.success(`User successfully ${statusMsg}: ${user.email} [${user.id}]`, 3);
 
     userTableView.update(user);
   } catch (error) {

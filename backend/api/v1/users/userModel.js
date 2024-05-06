@@ -16,7 +16,7 @@ export const isValidNewUsername = async (value, { req }) => {
   // If a user is found with the username value
   // Then, the id present in the request has to match that exising user id in the DB
   // Otherwise, this would trigger an error as it would allow duplicate usernames in the DB
-  if (user && user.uuid !== req.params.id) throw new Error();
+  if (user && user.id !== req.params.id) throw new Error();
   return true;
 };
 
@@ -64,6 +64,7 @@ export const User = {
       recordset: [user],
     } = await mssql().input("email", email).query(User.query.byEmail());
 
+    console.log(user);
     return user;
   },
 
@@ -82,8 +83,8 @@ export const User = {
    **/
   query: {
     baseSelect: `
-      u.id, u.uuid, u.createdAt, u.updatedAt, u.authenticationAt,
-      u.passwordResetAt, r.name AS role, u.active, u.email,
+      u.id, u.createdAt, u.updatedAt, u.authenticationAt,
+      u.passwordResetAt, r.role AS role, u.active, u.email,
       u.password, u.failedAuthenticationAttempts, u.profilePictureURI,
       u.fullName, u.username, u.initials
     `,
@@ -115,7 +116,8 @@ export const User = {
           ${this.baseSelect}
         FROM users u
         JOIN roles r ON r.id = u.role_id
-        WHERE email = @email;`;
+        WHERE email = @email;
+      `;
     },
 
     byUsername() {
@@ -130,7 +132,7 @@ export const User = {
     all() {
       return `
         SELECT
-          u.uuid, r.name AS role, u.active, u.email, u.profilePictureURI, u.fullName, u.username, u.initials
+          u.id, r.role AS role, u.active, u.email, u.profilePictureURI, u.fullName, u.username, u.initials
         FROM users u
         JOIN roles r ON r.id = u.role_id;
       `;
@@ -142,15 +144,15 @@ export const User = {
         DECLARE @role_id INT = (
           SELECT id
           FROM roles
-          WHERE name = @role
+          WHERE role = @role
         );
         
         INSERT INTO users
-          (uuid, role_id, active, email, password, profilePictureURI, fullName, username, initials)
+          (role_id, active, email, password, profilePictureURI, fullName, username, initials)
         VALUES
-          (@uuid, @role_id, @active, @email, @password, @profilePictureURI, @fullName, @username, @initials);
+          (@role_id, @active, @email, @password, @profilePictureURI, @fullName, @username, @initials);
 
-        ${this.byUUID()}
+        ${this.byUsername()}
       `;
     },
 
@@ -161,7 +163,7 @@ export const User = {
         DECLARE @role_id INT = (
           SELECT id
           FROM roles
-          WHERE name = @role
+          WHERE role = @role
         );
         
         DECLARE @json NVARCHAR(MAX) = @rawJSON;
@@ -177,7 +179,6 @@ export const User = {
           initials = ISNULL(json.initials, users.initials)
         FROM OPENJSON(@json)
         WITH (
-          updatedAt DATETIMEOFFSET,
           role_id INT,
           active BIT,
           email VARCHAR(64),
@@ -193,7 +194,7 @@ export const User = {
     },
 
     // DELETE USER
-    delete: "DELETE FROM users WHERE uuid = @uuid;",
+    delete: "DELETE FROM users WHERE id = @id;",
 
     // ENABLE USER
     enable() {

@@ -103,38 +103,149 @@ export const Report = {
    *  ALL MS SQL SERVER QUERIES RELATED TO REPORTS
    **/
   query: {
+    dataArrays: `
+      -- Tables that contain different column values will produce duplicate rows on JOINs for the same report id
+      -- These JSON array variables will concatenate all the distinct same-column data into 1 final JSON array.
+      DECLARE @storeNumbers NVARCHAR(MAX) = N'[]'
+      DECLARE @dmFullNames NVARCHAR(MAX) = N'[]'
+      DECLARE @dmUsernames NVARCHAR(MAX) = N'[]'
+      DECLARE @incidentTypes NVARCHAR(MAX) = N'[]'
+      DECLARE @incidentTransactionTypes NVARCHAR(MAX) = N'[]'
+      
+      -- Join store numbers, district manager full names & usernames, incident types, and incident transaction types
+      DECLARE @data NVARCHAR(MAX) = (
+        SELECT
+          number = s.number,
+          dmFullName = dM.fullName,
+          dmUsername = dM.username,
+          incidentType = iT.type,
+          incidentTxnType = iTT.type
+        FROM reports r
+        JOIN reportStores rS ON rS.report_id = r.id
+        JOIN stores s ON s.id = rS.store_id
+        JOIN districtManagers dM ON dM.id = s.districtManager_id
+        JOIN reportIncidentTypes rIT ON rIT.report_id = r.id
+        JOIN incidentTypes iT ON iT.id = rIT.incidentType_id
+        JOIN reportIncidentTransactionTypes rITT ON rITT.report_id = r.id
+        JOIN incidentTransactionTypes iTT ON iTT.id = rITT.incidentTransactionType_id
+        WHERE r.id = @id
+        FOR JSON PATH
+      );
+      
+      -- Append the relevant joined data each into their separate variables (JSON arrays)
+      SELECT
+        @storeNumbers = JSON_MODIFY(@storeNumbers, 'append $', [data].number),
+        @dmFullNames = JSON_MODIFY(@dmFullNames, 'append $', [data].dmFullName),
+        @dmUsernames = JSON_MODIFY(@dmUsernames, 'append $', [data].dmUsername),
+        @incidentTypes = JSON_MODIFY(@incidentTypes, 'append $', [data].incidentType),
+        @incidentTransactionTypes = JSON_MODIFY(@incidentTransactionTypes, 'append $', [data].incidentTxnType)
+      FROM OPENJSON(@data)
+      WITH (
+        number VARCHAR(4) '$."number"',
+        item VARCHAR(4) '$."_"',
+        dmFullName VARCHAR(100) '$."dmFullName"',
+        dmUsername VARCHAR(20) '$."dmUsername"',
+        incidentType VARCHAR(100) '$."incidentType"',
+        incidentTxnType VARCHAR(100) '$."incidentTxnType"'
+      ) AS [data]
+    `,
+
     // Source: https://learn.microsoft.com/en-us/sql/relational-databases/json/format-query-results-as-json-with-for-json-sql-server?view=sql-server-ver16&redirectedfrom=MSDN&tabs=json-path
     // Source: https://learn.microsoft.com/en-us/sql/relational-databases/json/convert-json-data-to-rows-and-columns-with-openjson-sql-server?view=sql-server-ver16
     JSONSelect: `
-      id AS [id],
-      uuid AS [uuid],
+      r.id AS [id],
+      r.uuid AS [uuid],
       version AS [version],
-      createdAt AS [createdAt],
-      updatedAt AS [updatedAt],
-      createdBy AS [createdBy],
-      updatedBy AS [updatedBy],
-      assignedTo AS [assignedTo],
+      r.createdAt AS [createdAt],
+      r.updatedAt AS [updatedAt],
+      usr1.username AS [createdBy],
+      usr2.username AS [updatedBy],
+      usr3.username AS [assignedTo],
       isOnCall AS [isOnCall],
       isDeleted AS [isDeleted],
       isWebhookSent AS [isWebhookSent],
       hasTriggeredWebhook AS [hasTriggeredWebhook],
+
       callDate AS [call.date],
       callTime AS [call.time],
       callDateTime AS [call.dateTime],
       callPhone AS [call.phone],
       callStatus AS [call.status],
-      storeNumber AS [store.number],
-      storeEmployeeName AS [store.employee.name],
-      storeEmployeeIsStoreManager AS [store.employee.isStoreManager],
-      storeDistrictManagerName AS [store.districtManager.name],
-      storeDistrictManagerUsername AS [store.districtManager.username],
-      storeDistrictManagerIsContacted AS [store.districtManager.isContacted],
-      incidentTitle AS [incident.title],
-      incidentType AS [incident.type],
-      incidentPos AS [incident.pos],
-      incidentIsProcedural AS [incident.isProcedural],
-      incidentError AS [incident.error],
-      incidentTransactionType AS [incident.transaction.type],
+
+      -- Filter duplicate values from @storeNumbers
+      (SELECT JSON_QUERY(
+        (
+          SELECT 
+            CONCAT('["',STRING_AGG(value, '","'),'"]')
+          FROM (
+            SELECT value
+            FROM OPENJSON(@storeNumbers) AS j
+            GROUP BY value
+          ) j
+        )
+      )) AS [store.number],
+        storeEmployeeName AS [store.employee.name],
+        storeEmployeeIsStoreManager AS [store.employee.isStoreManager],
+
+      -- Filter duplicate values from @dmFullNames
+      (SELECT JSON_QUERY(
+        (
+          SELECT 
+            CONCAT('["',STRING_AGG(value, '","'),'"]')
+          FROM (
+            SELECT value
+            FROM OPENJSON(@dmFullNames) AS j
+            GROUP BY value
+          ) j
+        )
+      )) AS [store.districtManager.name],
+      
+      -- Filter duplicate values from @dmUsernames
+      (SELECT JSON_QUERY(
+        (
+          SELECT 
+            CONCAT('["',STRING_AGG(value, '","'),'"]')
+          FROM (
+            SELECT value
+            FROM OPENJSON(@dmUsernames) AS j
+            GROUP BY value
+          ) j
+        )
+      )) AS [store.districtManager.username],
+        storeDistrictManagerIsContacted AS [store.districtManager.isContacted],
+
+        incidentTitle AS [incident.title],
+
+      -- Filter duplicate values from @incidentTypes
+        (SELECT JSON_QUERY(
+        (
+          SELECT 
+            CONCAT('["',STRING_AGG(value, '","'),'"]')
+          FROM (
+            SELECT value
+            FROM OPENJSON(@incidentTypes) AS j
+            GROUP BY value
+          ) j
+        )
+      )) AS [incident.type],
+
+        incidentPos AS [incident.pos],
+        incidentIsProcedural AS [incident.isProcedural],
+        incidentError AS [incident.error],
+
+      -- Filter duplicate values from @incidentTransactionTypes
+        (SELECT JSON_QUERY(
+        (
+          SELECT 
+            CONCAT('["',STRING_AGG(value, '","'),'"]')
+          FROM (
+            SELECT value
+            FROM OPENJSON(@incidentTransactionTypes) AS j
+            GROUP BY value
+          ) j
+        )
+      )) AS [incident.transaction.type],
+
       incidentTransactionNumber AS [incident.transaction.number],
       incidentTransactionIsIRCreated AS [incident.transaction.isIRCreated],
       incidentDetails AS [incident.details]
@@ -177,20 +288,28 @@ export const Report = {
 
     byUUID() {
       return `
+        ${this.dataArrays}
         SELECT
           ${this.JSONSelect}
-        FROM reports
-        WHERE uuid = @uuid
+        FROM reports r
+        JOIN users usr1 ON usr1.id = r.createdBy
+        JOIN users usr2 ON usr2.id = r.updatedBy
+        JOIN users usr3 ON usr3.id = r.assignedTo
+        WHERE r.uuid = @uuid
         FOR JSON PATH;
       `;
     },
 
     byId() {
       return `
+        ${this.dataArrays}
         SELECT 
           ${this.JSONSelect}
-        FROM reports
-        WHERE id = @id
+        FROM reports r
+        JOIN users usr1 ON usr1.id = r.createdBy
+        JOIN users usr2 ON usr2.id = r.updatedBy
+        JOIN users usr3 ON usr3.id = r.assignedTo
+        WHERE r.id = @id
         FOR JSON PATH;
       `;
     },
@@ -198,11 +317,15 @@ export const Report = {
     // TODO: REFACTOR AFTER SETTING UP DB RELATIONSHIPS
     byUsername() {
       return `
+        ${this.dataArrays}
         SELECT
           ${this.JSONSelect}
-        FROM reports
-        WHERE isDeleted = 0 AND assignedTo = @username
-        ORDER BY createdAt DESC
+        FROM reports r
+        JOIN users usr1 ON usr1.id = r.createdBy
+        JOIN users usr2 ON usr2.id = r.updatedBy
+        JOIN users usr3 ON usr3.id = r.assignedTo
+        WHERE r.isDeleted = 0 AND r.assignedTo = @username
+        ORDER BY r.createdAt DESC
         FOR JSON PATH;
       `;
     },
@@ -210,32 +333,44 @@ export const Report = {
     // TODO: REFACTOR AFTER SETTING UP DB RELATIONSHIPS
     byUsernameSoftDeleted() {
       return `
+        ${this.dataArrays}
         SELECT 
           ${this.JSONSelect}
-        FROM reports
-        WHERE isDeleted = 1 AND assignedTo = @username
-        ORDER BY updatedAt DESC
+        FROM reports r
+        JOIN users usr1 ON usr1.id = r.createdBy
+        JOIN users usr2 ON usr2.id = r.updatedBy
+        JOIN users usr3 ON usr3.id = r.assignedTo
+        WHERE r.isDeleted = 1 AND r.assignedTo = @username
+        ORDER BY r.updatedAt DESC
         FOR JSON PATH;
       `;
     },
 
     all() {
       return `
+        ${this.dataArrays}
         SELECT
           ${this.JSONSelect}
-        FROM reports
-        WHERE isDeleted = 0
-        ORDER BY createdAt DESC
+        FROM reports r
+        JOIN users usr1 ON usr1.id = r.createdBy
+        JOIN users usr2 ON usr2.id = r.updatedBy
+        JOIN users usr3 ON usr3.id = r.assignedTo
+        WHERE r.isDeleted = 0
+        ORDER BY r.createdAt DESC
         FOR JSON PATH;
       `;
     },
 
     allSoftDeleted() {
       return `
+        ${this.dataArrays}
         SELECT 
           ${this.JSONSelect}
-        FROM reports
-        WHERE isDeleted = 1
+        FROM reports r
+        JOIN users usr1 ON usr1.id = r.createdBy
+        JOIN users usr2 ON usr2.id = r.updatedBy
+        JOIN users usr3 ON usr3.id = r.assignedTo
+        WHERE r.isDeleted = 1
         ORDER BY updatedAt DESC
         FOR JSON PATH;
       `;
