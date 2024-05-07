@@ -103,53 +103,6 @@ export const Report = {
    *  ALL MS SQL SERVER QUERIES RELATED TO REPORTS
    **/
   query: {
-    dataArrays: `
-      -- Tables that contain different column values will produce duplicate rows on JOINs for the same report id
-      -- These JSON array variables will concatenate all the distinct same-column data into 1 final JSON array.
-      DECLARE @storeNumbers NVARCHAR(MAX) = N'[]'
-      DECLARE @dmFullNames NVARCHAR(MAX) = N'[]'
-      DECLARE @dmUsernames NVARCHAR(MAX) = N'[]'
-      DECLARE @incidentTypes NVARCHAR(MAX) = N'[]'
-      DECLARE @incidentTransactionTypes NVARCHAR(MAX) = N'[]'
-      
-      -- Join store numbers, district manager full names & usernames, incident types, and incident transaction types
-      DECLARE @data NVARCHAR(MAX) = (
-        SELECT
-          number = s.number,
-          dmFullName = dM.fullName,
-          dmUsername = dM.username,
-          incidentType = iT.type,
-          incidentTxnType = iTT.type
-        FROM reports r
-        JOIN reportStores rS ON rS.report_id = r.id
-        JOIN stores s ON s.id = rS.store_id
-        JOIN districtManagers dM ON dM.id = s.districtManager_id
-        JOIN reportIncidentTypes rIT ON rIT.report_id = r.id
-        JOIN incidentTypes iT ON iT.id = rIT.incidentType_id
-        JOIN reportIncidentTransactionTypes rITT ON rITT.report_id = r.id
-        JOIN incidentTransactionTypes iTT ON iTT.id = rITT.incidentTransactionType_id
-        WHERE r.id = @id
-        FOR JSON PATH
-      );
-      
-      -- Append the relevant joined data each into their separate variables (JSON arrays)
-      SELECT
-        @storeNumbers = JSON_MODIFY(@storeNumbers, 'append $', [data].number),
-        @dmFullNames = JSON_MODIFY(@dmFullNames, 'append $', [data].dmFullName),
-        @dmUsernames = JSON_MODIFY(@dmUsernames, 'append $', [data].dmUsername),
-        @incidentTypes = JSON_MODIFY(@incidentTypes, 'append $', [data].incidentType),
-        @incidentTransactionTypes = JSON_MODIFY(@incidentTransactionTypes, 'append $', [data].incidentTxnType)
-      FROM OPENJSON(@data)
-      WITH (
-        number VARCHAR(4) '$."number"',
-        item VARCHAR(4) '$."_"',
-        dmFullName VARCHAR(100) '$."dmFullName"',
-        dmUsername VARCHAR(20) '$."dmUsername"',
-        incidentType VARCHAR(100) '$."incidentType"',
-        incidentTxnType VARCHAR(100) '$."incidentTxnType"'
-      ) AS [data]
-    `,
-
     // Source: https://learn.microsoft.com/en-us/sql/relational-databases/json/format-query-results-as-json-with-for-json-sql-server?view=sql-server-ver16&redirectedfrom=MSDN&tabs=json-path
     // Source: https://learn.microsoft.com/en-us/sql/relational-databases/json/convert-json-data-to-rows-and-columns-with-openjson-sql-server?view=sql-server-ver16
     JSONSelect: `
@@ -165,86 +118,113 @@ export const Report = {
       isDeleted AS [isDeleted],
       isWebhookSent AS [isWebhookSent],
       hasTriggeredWebhook AS [hasTriggeredWebhook],
-
+  
       callDate AS [call.date],
       callTime AS [call.time],
       callDateTime AS [call.dateTime],
       callPhone AS [call.phone],
       callStatus AS [call.status],
+  
+      -- SELECT DISTINCT store numbers into one single JSON array
+      (
+        SELECT 
+          JSON_QUERY(CONCAT('["',STRING_AGG(JSON_VALUE(value, '$.number'), '","'),'"]'))
+        FROM (
+          SELECT value
+          FROM OPENJSON(
+            (
+              SELECT s.number
+              FROM stores s
+              JOIN reportStores rS ON rS.report_id = r.id AND rS.store_id = s.id
+              FOR JSON PATH
+            )
+          ) AS j
+          GROUP BY value
+        ) j
+      ) AS [store.number],
+      storeEmployeeName AS [store.employee.name],
+      storeEmployeeIsStoreManager AS [store.employee.isStoreManager],
+    
+      -- SELECT DISTINCT district manager full names into one single JSON array
+      (
+        SELECT 
+          JSON_QUERY(CONCAT('["',STRING_AGG(JSON_VALUE(value, '$.fullName'), '","'),'"]'))
+        FROM (
+          SELECT value
+          FROM OPENJSON(
+            (
+              SELECT dM.fullName
+              FROM districtManagers dM
+              JOIN reportStores rS ON rS.report_id = r.id
+              JOIN stores s ON s.id = rS.store_id AND s.districtManager_id = dM.id
+              FOR JSON PATH
+            )
+          ) AS j
+          GROUP BY value
+        ) j
+      ) AS [store.districtManager.name],
+        
+      -- SELECT DISTINCT district manager usernames into one single JSON array
+      (
+        SELECT 
+          JSON_QUERY(CONCAT('["',STRING_AGG(JSON_VALUE(value, '$.username'), '","'),'"]'))
+        FROM (
+          SELECT value
+          FROM OPENJSON(
+            (
+              SELECT dM.username
+              FROM districtManagers dM
+              JOIN reportStores rS ON rS.report_id = r.id
+              JOIN stores s ON s.id = rS.store_id AND s.districtManager_id = dM.id
+              FOR JSON PATH
+            )
+          ) AS j
+          GROUP BY value
+        ) j
+      ) AS [store.districtManager.username],
+      storeDistrictManagerIsContacted AS [store.districtManager.isContacted],
 
-      -- Filter duplicate values from @storeNumbers
-      (SELECT JSON_QUERY(
-        (
-          SELECT 
-            CONCAT('["',STRING_AGG(value, '","'),'"]')
-          FROM (
-            SELECT value
-            FROM OPENJSON(@storeNumbers) AS j
-            GROUP BY value
-          ) j
-        )
-      )) AS [store.number],
-        storeEmployeeName AS [store.employee.name],
-        storeEmployeeIsStoreManager AS [store.employee.isStoreManager],
+      incidentTitle AS [incident.title],
 
-      -- Filter duplicate values from @dmFullNames
-      (SELECT JSON_QUERY(
-        (
-          SELECT 
-            CONCAT('["',STRING_AGG(value, '","'),'"]')
-          FROM (
-            SELECT value
-            FROM OPENJSON(@dmFullNames) AS j
-            GROUP BY value
-          ) j
-        )
-      )) AS [store.districtManager.name],
-      
-      -- Filter duplicate values from @dmUsernames
-      (SELECT JSON_QUERY(
-        (
-          SELECT 
-            CONCAT('["',STRING_AGG(value, '","'),'"]')
-          FROM (
-            SELECT value
-            FROM OPENJSON(@dmUsernames) AS j
-            GROUP BY value
-          ) j
-        )
-      )) AS [store.districtManager.username],
-        storeDistrictManagerIsContacted AS [store.districtManager.isContacted],
+      -- SELECT DISTINCT incident types into one single JSON array
+      (
+        SELECT 
+          JSON_QUERY(CONCAT('["',STRING_AGG(JSON_VALUE(value, '$.type'), '","'),'"]'))
+        FROM (
+          SELECT value
+          FROM OPENJSON(
+            (
+              SELECT iT.type
+              FROM incidentTypes iT
+              JOIN reportIncidentTypes rIT ON rIT.report_id = r.id AND iT.id = rIT.incidentType_id
+              FOR JSON PATH
+            )
+          ) AS j
+          GROUP BY value
+        ) j
+      ) AS [incident.type],
 
-        incidentTitle AS [incident.title],
+      incidentPos AS [incident.pos],
+      incidentIsProcedural AS [incident.isProcedural],
+      incidentError AS [incident.error],
 
-      -- Filter duplicate values from @incidentTypes
-        (SELECT JSON_QUERY(
-        (
-          SELECT 
-            CONCAT('["',STRING_AGG(value, '","'),'"]')
-          FROM (
-            SELECT value
-            FROM OPENJSON(@incidentTypes) AS j
-            GROUP BY value
-          ) j
-        )
-      )) AS [incident.type],
-
-        incidentPos AS [incident.pos],
-        incidentIsProcedural AS [incident.isProcedural],
-        incidentError AS [incident.error],
-
-      -- Filter duplicate values from @incidentTransactionTypes
-        (SELECT JSON_QUERY(
-        (
-          SELECT 
-            CONCAT('["',STRING_AGG(value, '","'),'"]')
-          FROM (
-            SELECT value
-            FROM OPENJSON(@incidentTransactionTypes) AS j
-            GROUP BY value
-          ) j
-        )
-      )) AS [incident.transaction.type],
+      -- SELECT DISTINCT incident transaction types into one single JSON array
+      (
+        SELECT 
+          JSON_QUERY(CONCAT('["',STRING_AGG(JSON_VALUE(value, '$.type'), '","'),'"]'))
+        FROM (
+          SELECT value
+          FROM OPENJSON(
+            (
+              SELECT iTT.type
+              FROM incidentTransactionTypes iTT
+              JOIN reportIncidentTransactionTypes rITT ON rITT.report_id = r.id AND iTT.id = rITT.incidentTransactionType_id
+              FOR JSON PATH
+            )
+          ) AS j
+          GROUP BY value
+        ) j
+      ) AS [incident.transaction.type],
 
       incidentTransactionNumber AS [incident.transaction.number],
       incidentTransactionIsIRCreated AS [incident.transaction.isIRCreated],
@@ -288,7 +268,6 @@ export const Report = {
 
     byUUID() {
       return `
-        ${this.dataArrays}
         SELECT
           ${this.JSONSelect}
         FROM reports r
@@ -302,7 +281,6 @@ export const Report = {
 
     byId() {
       return `
-        ${this.dataArrays}
         SELECT 
           ${this.JSONSelect}
         FROM reports r
@@ -317,7 +295,6 @@ export const Report = {
     // TODO: REFACTOR AFTER SETTING UP DB RELATIONSHIPS
     byUsername() {
       return `
-        ${this.dataArrays}
         SELECT
           ${this.JSONSelect}
         FROM reports r
@@ -333,7 +310,6 @@ export const Report = {
     // TODO: REFACTOR AFTER SETTING UP DB RELATIONSHIPS
     byUsernameSoftDeleted() {
       return `
-        ${this.dataArrays}
         SELECT 
           ${this.JSONSelect}
         FROM reports r
@@ -348,7 +324,6 @@ export const Report = {
 
     all() {
       return `
-        ${this.dataArrays}
         SELECT
           ${this.JSONSelect}
         FROM reports r
@@ -363,7 +338,6 @@ export const Report = {
 
     allSoftDeleted() {
       return `
-        ${this.dataArrays}
         SELECT 
           ${this.JSONSelect}
         FROM reports r

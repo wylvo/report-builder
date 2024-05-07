@@ -34,30 +34,6 @@ const DEFAULT_CREATE = {
       errorMessage: "should be a boolean (true or false).",
     },
   },
-  isDeleted: {
-    exists: { errorMessage: "required.", bail: true },
-    isBoolean: {
-      options: { strict: true },
-      errorMessage: "should be a boolean (true or false).",
-    },
-  },
-  isWebhookSent: {
-    exists: { errorMessage: "required.", bail: true },
-    isBoolean: {
-      options: { strict: true },
-      errorMessage: "should be a boolean (true or false).",
-    },
-  },
-  hasTriggeredWebhook: {
-    exists: {
-      errorMessage: "required.",
-      bail: true,
-    },
-    isBoolean: {
-      options: { strict: true },
-      errorMessage: "should be a boolean (true or false).",
-    },
-  },
 
   /********************************************
    *  "call": {
@@ -302,6 +278,30 @@ export default {
     uuid: {
       exists: { errorMessage: "required.", bail: true },
       isUUID: { errorMessage: "invalid UUID." },
+    },
+    isDeleted: {
+      exists: { errorMessage: "required.", bail: true },
+      isBoolean: {
+        options: { strict: true },
+        errorMessage: "should be a boolean (true or false).",
+      },
+    },
+    isWebhookSent: {
+      exists: { errorMessage: "required.", bail: true },
+      isBoolean: {
+        options: { strict: true },
+        errorMessage: "should be a boolean (true or false).",
+      },
+    },
+    hasTriggeredWebhook: {
+      exists: {
+        errorMessage: "required.",
+        bail: true,
+      },
+      isBoolean: {
+        options: { strict: true },
+        errorMessage: "should be a boolean (true or false).",
+      },
     },
   },
 

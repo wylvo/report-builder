@@ -64,7 +64,6 @@ export const User = {
       recordset: [user],
     } = await mssql().input("email", email).query(User.query.byEmail());
 
-    console.log(user);
     return user;
   },
 
