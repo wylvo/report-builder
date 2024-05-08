@@ -8,7 +8,13 @@ import {
   isTimeCustom,
   isValidUsername,
 } from "./reportModel.js";
-import { mssql, mssqlDataTypes, dateISO8601, config } from "../router.js";
+import {
+  mssql,
+  mssqlDataTypes,
+  dateISO8601,
+  config,
+  generateUUID,
+} from "../router.js";
 import { validateBody } from "../../../validation/validation.js";
 import GlobalError from "../../../errors/globalError.js";
 import catchAsync from "../../../errors/catchAsync.js";
@@ -72,21 +78,23 @@ export const validateCreate = validateBody(checkSchema, Report.schema.create);
 export const createReport = catchAsync(async (req, res, next) => {
   const { NVarChar } = mssqlDataTypes;
 
+  req.body.uuid = generateUUID();
   req.body.version = config.version;
   req.body.createdAt = dateISO8601(new Date());
   req.body.updatedAt = dateISO8601(new Date());
   req.body.createdBy = req.user.username;
   req.body.updatedBy = req.user.username;
 
-  const uuid = req.body.uuid;
   const body = [req.body];
   const rawJSON = JSON.stringify(body);
+
+  console.log(body);
 
   const {
     recordset: [[report]],
   } = await mssql()
     .input("rawJSON", NVarChar, rawJSON)
-    .input("uuid", uuid)
+    .input("uuid", req.body.uuid)
     .query(Report.query.insert());
 
   res.status(201).json({
@@ -212,3 +220,28 @@ export const undoSoftDeleteReport = async (req, res, next) => {
     data: filterReportData(reportUpdated),
   });
 };
+
+export const validateImport = validateBody(checkSchema, Report.schema.import);
+
+export const importReport = catchAsync(async (req, res, next) => {
+  const { NVarChar } = mssqlDataTypes;
+
+  req.body.version = config.version;
+  req.body.createdBy = req.user.username;
+  req.body.updatedBy = req.user.username;
+
+  const body = [req.body];
+  const rawJSON = JSON.stringify(body);
+
+  const {
+    recordset: [[report]],
+  } = await mssql()
+    .input("rawJSON", NVarChar, rawJSON)
+    .input("uuid", uuid)
+    .query(Report.query.insert());
+
+  res.status(201).json({
+    status: "success",
+    data: filterReportData(report),
+  });
+});

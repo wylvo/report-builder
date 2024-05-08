@@ -7,13 +7,7 @@ import {
   validateResetPassword,
 } from "./resetPassword/resetPasswordController.js";
 import { hashPassword } from "../../../auth/authController.js";
-import {
-  config,
-  generateUUID,
-  mssql,
-  mssqlDataTypes,
-  dateISO8601,
-} from "../router.js";
+import { config, mssql, mssqlDataTypes } from "../router.js";
 import { validateBody } from "../../../validation/validation.js";
 import catchAsync from "../../../errors/catchAsync.js";
 import GlobalError from "../../../errors/globalError.js";
@@ -78,12 +72,10 @@ export const createUser = catchAsync(async (req, res, next) => {
     username,
     initials,
   } = req.body;
-  const uuid = generateUUID();
 
   const {
     recordset: [user],
   } = await mssql()
-    .input("uuid", uuid)
     .input("role", role)
     .input("active", active ?? true)
     .input("email", email)

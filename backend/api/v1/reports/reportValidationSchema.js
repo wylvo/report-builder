@@ -78,8 +78,6 @@ const DEFAULT_CREATE = {
    *      "isStoreManager": false
    *    }
    *    "districtManager":  {
-   *      "name": "Carolane Brisebois",
-   *      "username": "carolane.brisebois",
    *      "isContacted": false
    *    }
    *  }
@@ -116,22 +114,6 @@ const DEFAULT_CREATE = {
   "store.districtManager": {
     exists: { errorMessage: "required.", bail: true },
     isObject: { errorMessage: "has to be an object enclosed by {}." },
-  },
-  // TODO: CHECK IF VALID DISTRICT MANAGER (BY USERNAME)
-  "store.districtManager.name": {
-    exists: { errorMessage: "required.", bail: true },
-    notEmpty: { errorMessage: "can't be empty.", bail: true },
-    isString: { errorMessage: "should be a string.", bail: true },
-    isLength: {
-      options: { max: 50 },
-      errorMessage: "invalid length, max of 50 characters allowed.",
-    },
-  },
-  // TODO: CHECK IF VALID DISTRICT MANAGER (BY USERNAME)
-  "store.districtManager.username": {
-    exists: { errorMessage: "required.", bail: true },
-    notEmpty: { errorMessage: "can't be empty.", bail: true },
-    isString: { errorMessage: "should be a string." },
   },
   "store.districtManager.isContacted": {
     exists: { errorMessage: "required.", bail: true },

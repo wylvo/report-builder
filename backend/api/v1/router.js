@@ -4,6 +4,7 @@ import { userRouter } from "./users/userRouter.js";
 import { reportRouter } from "./reports/reportRouter.js";
 import { webhookRouter } from "./webhook/webhookRouter.js";
 import { versionRouter } from "./version/versionRouter.js";
+import { formDataRouter } from "./formData/formDataRouter.js";
 import * as auth from "../../auth/authController.js";
 
 export const generateUUID = () => {
@@ -24,8 +25,10 @@ router.use("/users", userRouter); // - /api/v1/users
 router.use("/reports", reportRouter); // - /api/v1/reports
 router.use("/webhook", webhookRouter); // - /api/v1/webhook
 router.use("/version", versionRouter); // - /api/v1/version
+router.use("/formData", formDataRouter); // - /api/v1/formData
 
 export default router;
 export { mssql, mssqlDataTypes } from "../../config/db.config.js";
 export { default as config } from "../../config/app.config.js";
 export { default as dateISO8601 } from "../../date/dateISO8601.js";
+export { default as catchAsync } from "../../errors/catchAsync.js";

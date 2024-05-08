@@ -276,8 +276,6 @@ const createReportObject = (report, form) => {
         isStoreManager: form["store-manager"].checked,
       },
       districtManager: {
-        name: form["store-dm"].options[form["store-dm"].selectedIndex].text.trim(),
-        username: form["store-dm"].value.trim(),
         isContacted: form["store-dm-contacted"].checked,
       },
     },

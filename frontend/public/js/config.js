@@ -47,8 +47,6 @@ export const DEFAULT_REPORT = Object.freeze({
       isStoreManager: false,
     },
     districtManager: {
-      name: "string",
-      username: "string",
       isContacted: false,
     },
   },

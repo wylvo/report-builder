@@ -233,37 +233,28 @@ export const Report = {
 
     withClause: `
       uuid VARCHAR(36) 'strict $.uuid',
-      version VARCHAR(64) 'strict $.version',
+      version VARCHAR(255) 'strict $.version',
       createdAt DATETIMEOFFSET 'strict $.createdAt',
       updatedAt DATETIMEOFFSET 'strict $.updatedAt',
       createdBy VARCHAR(20) 'strict $.createdBy',
       updatedBy VARCHAR(20) 'strict $.updatedBy',
       assignedTo VARCHAR(20) 'strict $.assignedTo',
       isOnCall BIT 'strict $.isOnCall',
-      isDeleted BIT 'strict $.isDeleted',
-      isWebhookSent BIT 'strict $.isWebhookSent',
-      hasTriggeredWebhook BIT 'strict $.hasTriggeredWebhook',
       callDate DATE 'strict $.call.date',
       callTime TIME 'strict $.call.time',
-      callDateTime VARCHAR(64) 'strict $.call.dateTime',
-      callPhone VARCHAR(64) 'strict $.call.phone',
-      callStatus VARCHAR(64) 'strict $.call.status',
-      storeNumber VARCHAR(3) 'strict $.store.number',
-      storeEmployeeName VARCHAR(50) 'strict $.store.employee.name',
+      callDateTime VARCHAR(20) 'strict $.call.dateTime',
+      callPhone VARCHAR(20) 'strict $.call.phone',
+      callStatus VARCHAR(100) 'strict $.call.status',
+      storeEmployeeName VARCHAR(100) 'strict $.store.employee.name',
       storeEmployeeIsStoreManager BIT 'strict $.store.employee.isStoreManager',
-      storeDistrictManagerName VARCHAR(50) 'strict $.store.districtManager.name',
-      storeDistrictManagerUsername VARCHAR(20) 'strict $.store.districtManager.username',
       storeDistrictManagerIsContacted BIT 'strict $.store.districtManager.isContacted',
       incidentTitle VARCHAR(100) 'strict $.incident.title',
-      incidentType VARCHAR(64) 'strict $.incident.type',
-      incidentPos VARCHAR(1) 'strict $.incident.pos',
+      incidentPos VARCHAR(2) 'strict $.incident.pos',
       incidentIsProcedural BIT 'strict $.incident.isProcedural',
       incidentError VARCHAR(100) 'strict $.incident.error',
-      incidentTransactionType VARCHAR(64) '$.incident.transaction.type',
-      incidentTransactionNumber VARCHAR(50) '$.incident.transaction.number',
+      incidentTransactionNumber VARCHAR(100) '$.incident.transaction.number',
       incidentTransactionIsIRCreated BIT '$.incident.transaction.isIRCreated',
       incidentDetails VARCHAR(2000) 'strict $.incident.details',
-      rawJSON NVARCHAR(MAX) '$' AS JSON
     `,
 
     byUUID() {
@@ -365,7 +356,7 @@ export const Report = {
         SELECT
           ${this.JSONSelect}
         FROM reports
-        WHERE uuid = @uuid
+        WHERE id = SCOPE_IDENTITY()
         FOR JSON PATH;
       `;
     },
@@ -399,11 +390,9 @@ export const Report = {
           storeDistrictManagerUsername = json.storeDistrictManagerUsername,
           storeDistrictManagerIsContacted = json.storeDistrictManagerIsContacted,
           incidentTitle = json.incidentTitle,
-          incidentType = json.incidentType,
           incidentPos = json.incidentPos,
           incidentIsProcedural = json.incidentIsProcedural,
           incidentError = json.incidentError,
-          incidentTransactionType = json.incidentTransactionType,
           incidentTransactionNumber = json.incidentTransactionNumber,
           incidentTransactionIsIRCreated = json.incidentTransactionIsIRCreated,
           incidentDetails = json.incidentDetails,
