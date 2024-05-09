@@ -111,9 +111,9 @@ export const Report = {
       version AS [version],
       r.createdAt AS [createdAt],
       r.updatedAt AS [updatedAt],
-      usr1.username AS [createdBy],
-      usr2.username AS [updatedBy],
-      usr3.username AS [assignedTo],
+      usr1.fullName AS [createdBy],
+      usr2.fullName AS [updatedBy],
+      usr3.fullName AS [assignedTo],
       isOnCall AS [isOnCall],
       isDeleted AS [isDeleted],
       isWebhookSent AS [isWebhookSent],
@@ -240,6 +240,9 @@ export const Report = {
       updatedBy VARCHAR(20) 'strict $.updatedBy',
       assignedTo VARCHAR(20) 'strict $.assignedTo',
       isOnCall BIT 'strict $.isOnCall',
+      isDeleted BIT '$.isDeleted',
+      isWebhookSent BIT '$.isWebhookSent',
+      hasTriggeredWebhook BIT '$.hasTriggeredWebhook',
       callDate DATE 'strict $.call.date',
       callTime TIME 'strict $.call.time',
       callDateTime VARCHAR(20) 'strict $.call.dateTime',
@@ -254,7 +257,7 @@ export const Report = {
       incidentError VARCHAR(100) 'strict $.incident.error',
       incidentTransactionNumber VARCHAR(100) '$.incident.transaction.number',
       incidentTransactionIsIRCreated BIT '$.incident.transaction.isIRCreated',
-      incidentDetails VARCHAR(2000) 'strict $.incident.details',
+      incidentDetails VARCHAR(2000) 'strict $.incident.details'
     `,
 
     byUUID() {
@@ -283,8 +286,7 @@ export const Report = {
       `;
     },
 
-    // TODO: REFACTOR AFTER SETTING UP DB RELATIONSHIPS
-    byUsername() {
+    byCreatedBy() {
       return `
         SELECT
           ${this.JSONSelect}
@@ -292,14 +294,13 @@ export const Report = {
         JOIN users usr1 ON usr1.id = r.createdBy
         JOIN users usr2 ON usr2.id = r.updatedBy
         JOIN users usr3 ON usr3.id = r.assignedTo
-        WHERE r.isDeleted = 0 AND r.assignedTo = @username
+        WHERE r.isDeleted = 0 AND r.createdBy = @userId
         ORDER BY r.createdAt DESC
         FOR JSON PATH;
       `;
     },
 
-    // TODO: REFACTOR AFTER SETTING UP DB RELATIONSHIPS
-    byUsernameSoftDeleted() {
+    byCreatedBySoftDeleted() {
       return `
         SELECT 
           ${this.JSONSelect}
@@ -307,7 +308,7 @@ export const Report = {
         JOIN users usr1 ON usr1.id = r.createdBy
         JOIN users usr2 ON usr2.id = r.updatedBy
         JOIN users usr3 ON usr3.id = r.assignedTo
-        WHERE r.isDeleted = 1 AND r.assignedTo = @username
+        WHERE r.isDeleted = 1 AND r.createdBy = @userId
         ORDER BY r.updatedAt DESC
         FOR JSON PATH;
       `;
@@ -355,8 +356,11 @@ export const Report = {
 
         SELECT
           ${this.JSONSelect}
-        FROM reports
-        WHERE id = SCOPE_IDENTITY()
+        FROM reports r
+        JOIN users usr1 ON usr1.id = r.createdBy
+        JOIN users usr2 ON usr2.id = r.updatedBy
+        JOIN users usr3 ON usr3.id = r.assignedTo
+        WHERE r.id = SCOPE_IDENTITY()
         FOR JSON PATH;
       `;
     },

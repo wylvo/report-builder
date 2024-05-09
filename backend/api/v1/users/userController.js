@@ -104,19 +104,19 @@ export const getUser = catchAsync(async (req, res, next) => {
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
 
   // prettier-ignore
-  // const [{ recordset: [reports]}, {recordset: [reportsDeleted]}] =
-  //   await Promise.all([
-  //     mssql()
-  //       .input("username", user.username)
-  //       .query(Report.query.byUsername()),
-  //     mssql()
-  //       .input("username", user.username)
-  //       .query(Report.query.byUsernameSoftDeleted()),
-  //   ]);
+  const [{ recordset: [reports]}, {recordset: [reportsDeleted]}] =
+    await Promise.all([
+      mssql()
+        .input("userId", user.id)
+        .query(Report.query.byCreatedBy()),
+      mssql()
+        .input("userId", user.id)
+        .query(Report.query.byCreatedBySoftDeleted()),
+    ]);
 
   res.status(200).json({
     status: "success",
-    data: filterUserData(user, /*reports, reportsDeleted*/),
+    data: filterUserData(user, reports, reportsDeleted),
   });
 });
 

@@ -18,6 +18,7 @@ import {
 import { validateBody } from "../../../validation/validation.js";
 import GlobalError from "../../../errors/globalError.js";
 import catchAsync from "../../../errors/catchAsync.js";
+import { User } from "../users/userModel.js";
 
 const { checkSchema } = new ExpressValidator({
   isNewReport,
@@ -82,8 +83,12 @@ export const createReport = catchAsync(async (req, res, next) => {
   req.body.version = config.version;
   req.body.createdAt = dateISO8601(new Date());
   req.body.updatedAt = dateISO8601(new Date());
-  req.body.createdBy = req.user.username;
-  req.body.updatedBy = req.user.username;
+  req.body.createdBy = req.user.id;
+  req.body.updatedBy = req.user.id;
+  req.body.assignedTo = req.assignedTo;
+  req.body.isDeleted = false;
+  req.body.isWebhookSent = false;
+  req.body.hasTriggeredWebhook = false;
 
   const body = [req.body];
   const rawJSON = JSON.stringify(body);

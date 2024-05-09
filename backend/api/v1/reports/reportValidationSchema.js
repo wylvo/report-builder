@@ -244,11 +244,11 @@ export default {
    *  VALIDATION TO CREATE A REPORT
    **/
   create: {
-    uuid: {
-      exists: { errorMessage: "required.", bail: true },
-      isUUID: { errorMessage: "invalid UUID." },
-      isNewReport: { errorMessage: "a report already exists with this id." },
-    },
+    // uuid: {
+    //   exists: { errorMessage: "required.", bail: true },
+    //   isUUID: { errorMessage: "invalid UUID." },
+    //   isNewReport: { errorMessage: "a report already exists with this id." },
+    // },
     ...DEFAULT_CREATE,
   },
 
