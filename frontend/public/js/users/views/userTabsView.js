@@ -49,7 +49,7 @@ class UserTabsView extends TabsView {
             <p class="user-role tag">ON-CALL</p>
           </div>
           <div>
-            <p class="data-id tag"></p>
+          <p>User ID:<span class="data-id tag"></span></p>
           </div>
         </div>
 
@@ -239,7 +239,7 @@ class UserTabsView extends TabsView {
             <p class="user-role tag">ON-CALL</p>
           </div>
           <div>
-            <p class="data-id tag"></p>
+          <p>User ID:<span class="data-id tag"></span></p>
           </div>
         </div>
 

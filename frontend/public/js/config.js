@@ -14,7 +14,7 @@ export const DEFAULT_USER_CREATE = Object.freeze({
 });
 
 export const DEFAULT_USER_UPDATE = Object.freeze({
-  uuid: "string",
+  id: 0,
   role: "string",
   active: false,
   email: "string",
@@ -59,7 +59,6 @@ export const DEFAULT_REPORT = Object.freeze({
 
     // Can be empty object
     transaction: {
-      type: "string",
       number: "string",
       isIRCreated: false,
     },

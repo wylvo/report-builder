@@ -15,6 +15,7 @@ import {
   GlobalError,
   hashPassword,
 } from "../router.js";
+import { filterReportArrayData } from "../reports/reportController.js";
 
 export const filterObject = (obj, ...allowedFields) => {
   const newObj = {};
@@ -107,20 +108,27 @@ export const getUser = catchAsync(async (req, res, next) => {
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
 
-  // prettier-ignore
-  const [{ recordset: [reports]}, {recordset: [reportsDeleted]}] =
-    await Promise.all([
-      mssql()
-        .input("userId", user.id)
-        .query(Report.query.byCreatedBy()),
-      mssql()
-        .input("userId", user.id)
-        .query(Report.query.byCreatedBySoftDeleted()),
-    ]);
+  const [
+    {
+      recordset: [reports],
+    },
+    {
+      recordset: [reportsDeleted],
+    },
+  ] = await Promise.all([
+    mssql().input("userId", user.id).query(Report.query.byCreatedBy()),
+    mssql()
+      .input("userId", user.id)
+      .query(Report.query.byCreatedBySoftDeleted()),
+  ]);
 
   res.status(200).json({
     status: "success",
-    data: filterUserData(user, reports, reportsDeleted),
+    data: filterUserData(
+      user,
+      filterReportArrayData(reports),
+      filterReportArrayData(reportsDeleted)
+    ),
   });
 });
 

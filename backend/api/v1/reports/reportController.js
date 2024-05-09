@@ -18,7 +18,6 @@ import {
   catchAsync,
   GlobalError,
 } from "../router.js";
-import { User } from "../users/userModel.js";
 
 const { checkSchema } = new ExpressValidator({
   isNewReport,
@@ -27,7 +26,7 @@ const { checkSchema } = new ExpressValidator({
   isValidUsername,
 });
 
-const filterReportData = (data) =>
+export const filterReportData = (data) =>
   Object.keys(data)
     .filter((key) => !["id"].includes(key))
     .reduce((obj, key) => {
@@ -35,7 +34,7 @@ const filterReportData = (data) =>
       return obj;
     }, {});
 
-const filterReportArrayData = (data) => {
+export const filterReportArrayData = (data) => {
   const reports = [];
   if (data && Array.isArray(data))
     data.forEach((obj) => reports.push(filterReportData(obj)));
@@ -43,6 +42,7 @@ const filterReportArrayData = (data) => {
 };
 
 export const getAllReports = catchAsync(async (req, res, next) => {
+  console.log(res.locals);
   const {
     recordset: [reports],
   } = await mssql().query(Report.query.all());

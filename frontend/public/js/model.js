@@ -32,19 +32,24 @@ export const state = {
   },
 };
 
-// Find report index or user index by UUID
+// Find report index or user index by UUID or ID
 // prettier-ignore
 export const findObjectIndexById = (array, targetObject, raiseErrorIfNotFound = true) => {
   const index = array.findIndex((object) =>
-    object.uuid === (typeof targetObject === "object" ? targetObject.uuid : targetObject));
+    object.uuid
+      ? object.uuid === (typeof targetObject === "object" ? targetObject.uuid : targetObject)
+      : object.id === (typeof targetObject === "object" ? targetObject.id : Number(targetObject))
+  );
   if(index === -1 && raiseErrorIfNotFound)
     throw new TypeError(`Invalid target. Object index is undefined in provided array.`);
   return index;
 }
 
-// Find report or user by UUID
+// Find report or user by UUID or ID
 export const findObjectById = (array, id, raiseErrorIfNotFound = true) => {
-  const object = array.find((object) => object.uuid === id);
+  const object = array.find((object) =>
+    object.uuid ? object.uuid === id : object.id === Number(id)
+  );
   if (typeof object === "undefined" && raiseErrorIfNotFound)
     throw new TypeError(`Invalid id "${id}". Data object is undefined.`);
   return object;

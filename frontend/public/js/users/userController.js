@@ -286,6 +286,8 @@ export const init = async function () {
   // Pagination view handlers
   paginationView.addHandlerOnChangeRowsPerPage(controlRowsPerPage);
   paginationView.addHandlerClickPage(controlPages);
+
+  console.log(model.state);
 };
 
 init();

@@ -1,12 +1,12 @@
 import express from "express";
 
-import { getAllFormDropdownSelectionFields } from "./formDataController.js";
+import { synchonizeFormData } from "./formDataController.js";
 
 const router = express.Router();
 
 /** ROUTE
  * /api/v1/formData (GET)
  */
-router.get("/", getAllFormDropdownSelectionFields);
+router.get("/", synchonizeFormData);
 
 export { router as formDataRouter };
