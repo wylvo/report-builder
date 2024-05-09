@@ -1,30 +1,33 @@
 import { FormData } from "./formDataModel.js";
 import { config, catchAsync, mssql, GlobalError } from "../router.js";
 
-const updateFormData = (data) => {
-  config.formData.dropdowns.storeNumbers = data.storeNumbers;
-  config.formData.dropdowns.incidentTypes = data.incidentTypes;
-  config.formData.dropdowns.incidentTransactionTypes =
-    data.incidentTransactionTypes;
-};
+export const synchonizeFormData = catchAsync(async (req, res, next) => {
+  await getAllFormDropdownSelectionFields(res);
+  next();
+});
 
-export const getAllFormDropdownSelectionFields = async () => {
+const getAllFormDropdownSelectionFields = async (res) => {
   const {
     recordset: [FormDataDropdownSelectionFields],
   } = await mssql().query(FormData.query.allDropdownSelectionFields);
+
+  // Update local config
+  config.formData.selects.storeNumbers =
+    FormDataDropdownSelectionFields.storeNumbers;
+  config.formData.selects.incidentTypes =
+    FormDataDropdownSelectionFields.incidentTypes;
+  config.formData.selects.incidentTransactionTypes =
+    FormDataDropdownSelectionFields.incidentTransactionTypes;
+
+  res.locals.formData = config.formData;
   return FormDataDropdownSelectionFields;
 };
 
-export const synchonizeFormData = catchAsync(async (req, res, next) => {
-  const dropdowns = await getAllFormDropdownSelectionFields();
-
-  updateFormData(dropdowns);
-
-  res.locals.formData = config.formData;
-  console.log(res.locals);
+export const getFormData = catchAsync(async (req, res, next) => {
+  await getAllFormDropdownSelectionFields(res);
 
   res.status(200).json({
     status: "success",
-    data: config.formData.dropdowns,
+    data: config.formData,
   });
 });

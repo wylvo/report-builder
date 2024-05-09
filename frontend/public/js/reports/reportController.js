@@ -406,7 +406,7 @@ export const init = async function () {
   await model.init();
 
   // Initialize all tabs
-  reportTabsView.renderAll(model.initNumberOfTabs(5));
+  reportTabsView.renderAll(model.state.formData, model.initNumberOfTabs(5));
   reportFormView = reportTabsView.tabs.get(model.state.tab);
 
   // If id in hash render report

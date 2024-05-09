@@ -13,7 +13,8 @@ class ReportTabsView extends TabsView {
     `;
   }
 
-  _generateFormHtml(index) {
+  _generateFormHtml(formData, index) {
+    console.log(formData);
     const hidden = index !== 0 ? "hidden" : "";
     return `
       <form class="form" id="form_${index}" role="tabpanel" tabindex="0" ${hidden}>
@@ -456,6 +457,8 @@ class ReportTabsView extends TabsView {
       </form>
     `;
   }
+
+  generate;
 
   // Cancel the event and show an alert that the unsaved changes would be lost
   addHandlerBeforeUnload(handler) {

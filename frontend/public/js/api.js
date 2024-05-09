@@ -118,8 +118,18 @@ export default {
     webhook: {
       url: "/api/v1/webhook",
 
+      // Send report to Microsoft Teams Incoming Webhook
       async sendReportToIncomingWebhook(id) {
         return await fetchJSON(`${this.url}/${id}`, "POST", {});
+      },
+    },
+
+    formData: {
+      url: "/api/v1/formData",
+
+      // Get Form Data
+      async getFormData() {
+        return await fetchJSON(this.url);
       },
     },
   },

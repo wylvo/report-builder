@@ -42,7 +42,6 @@ export const filterReportArrayData = (data) => {
 };
 
 export const getAllReports = catchAsync(async (req, res, next) => {
-  console.log(res.locals);
   const {
     recordset: [reports],
   } = await mssql().query(Report.query.all());

@@ -25,7 +25,7 @@ const config = {
     },
   },
   formData: {
-    dropdowns: {
+    selects: {
       statuses: ["In Progress", "Completed"],
       storeNumbers: [],
       incidentTypes: [],

@@ -25,19 +25,23 @@ export default class TabsView extends View {
     return this.htmlStringToElement(this._generateTabHtml(index));
   }
 
-  generateFormElement(index) {
-    return this.htmlStringToElement(this._generateFormHtml(index));
+  generateFormElement(formData, index) {
+    return this.htmlStringToElement(this._generateFormHtml(formData, index));
   }
 
-  renderAll(numberOfTabs = [0, 1, 2, 3, 4]) {
+  renderAll(formData, numberOfTabs = [0, 1, 2, 3, 4]) {
     this.#clearTabs();
     const tabsList = document.querySelector(".tab-list");
     const tabFormContainer = document.querySelector(".tabs-forms");
 
+    formData.selects.map((select) => {
+      // select.
+    });
+
     this.tabs = new Map(
       numberOfTabs.map((_, tabIndex) => {
         const tabElement = this.generateTabElement(tabIndex);
-        const formElement = this.generateFormElement(tabIndex);
+        const formElement = this.generateFormElement(formData, tabIndex);
 
         tabsList.appendChild(tabElement);
         tabFormContainer.appendChild(formElement);
@@ -56,6 +60,8 @@ export default class TabsView extends View {
     currentView._tab.firstElementChild.textContent = title;
     currentView._tab.firstElementChild.setAttribute("href", `#${id}`);
   }
+
+  renderFormData(data) {}
 
   // prettier-ignore
   moveLeft(currentTab) {

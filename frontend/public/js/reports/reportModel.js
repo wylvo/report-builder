@@ -23,6 +23,7 @@ const init = async () => {
   await Promise.all([
     DB.getReports(),
     DB.getAllSoftDeletedReports(),
+    DB.getFormData(),
     // accountModel.DB.getCurrentUserAccount(),
   ]);
   state.version = await api.v1.version.getVersion();
@@ -153,6 +154,14 @@ const DB = {
     }
 
     return response;
+  },
+
+  getFormData: async () => {
+    const {
+      data: { data },
+    } = await api.v1.formData.getFormData();
+
+    state.formData.selects = data.selects;
   },
 };
 

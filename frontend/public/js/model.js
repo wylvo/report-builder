@@ -30,6 +30,10 @@ export const state = {
     results: [],
     page: 1,
   },
+
+  formData: {
+    selects: {},
+  },
 };
 
 // Find report index or user index by UUID or ID

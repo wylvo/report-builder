@@ -1,12 +1,12 @@
 import express from "express";
 
-import { synchonizeFormData } from "./formDataController.js";
+import { getFormData } from "./formDataController.js";
 
 const router = express.Router();
 
 /** ROUTE
  * /api/v1/formData (GET)
  */
-router.get("/", synchonizeFormData);
+router.get("/", getFormData);
 
 export { router as formDataRouter };
