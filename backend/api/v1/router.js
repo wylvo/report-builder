@@ -27,8 +27,11 @@ router.use("/webhook", webhookRouter); // - /api/v1/webhook
 router.use("/version", versionRouter); // - /api/v1/version
 router.use("/formData", formDataRouter); // - /api/v1/formData
 
-export default router;
 export { mssql, mssqlDataTypes } from "../../config/db.config.js";
+export { validateBody } from "../../validation/validation.js";
+export { hashPassword } from "../../auth/authController.js";
 export { default as config } from "../../config/app.config.js";
 export { default as dateISO8601 } from "../../date/dateISO8601.js";
 export { default as catchAsync } from "../../errors/catchAsync.js";
+export { default as GlobalError } from "../../errors/globalError.js";
+export default router;

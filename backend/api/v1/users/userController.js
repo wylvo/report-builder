@@ -6,11 +6,15 @@ import {
   resetUserPassword,
   validateResetPassword,
 } from "./resetPassword/resetPasswordController.js";
-import { hashPassword } from "../../../auth/authController.js";
-import { config, mssql, mssqlDataTypes } from "../router.js";
-import { validateBody } from "../../../validation/validation.js";
-import catchAsync from "../../../errors/catchAsync.js";
-import GlobalError from "../../../errors/globalError.js";
+import {
+  config,
+  mssql,
+  mssqlDataTypes,
+  validateBody,
+  catchAsync,
+  GlobalError,
+  hashPassword,
+} from "../router.js";
 
 export const filterObject = (obj, ...allowedFields) => {
   const newObj = {};

@@ -2,12 +2,15 @@ import { checkSchema } from "express-validator";
 
 import { User } from "../userModel.js";
 import { filterUserData } from "../userController.js";
-import { mssql, mssqlDataTypes } from "../../../../config/db.config.js";
-import { hashPassword } from "../../../../auth/authController.js";
+import {
+  mssql,
+  mssqlDataTypes,
+  hashPassword,
+  catchAsync,
+  GlobalError,
+} from "../../router.js";
+import ResetPassword from "./resetPasswordModel.js";
 import { validateBody } from "../../../../validation/validation.js";
-import GlobalError from "../../../../errors/globalError.js";
-import catchAsync from "../../../../errors/catchAsync.js";
-import resetUserPasswordSQL from "./resetPasswordModel.js";
 
 export const validateResetPassword = validateBody(
   checkSchema,
@@ -39,7 +42,7 @@ export const resetUserPassword = catchAsync(async (req, res, next) => {
   await mssql()
     .input("id", user.id)
     .input("rawJSON", NVarChar, rawJSON)
-    .query(resetUserPasswordSQL.update);
+    .query(ResetPassword.update);
 
   res.status(201).json({
     status: "success",

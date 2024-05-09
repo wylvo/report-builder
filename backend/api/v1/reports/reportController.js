@@ -14,10 +14,10 @@ import {
   dateISO8601,
   config,
   generateUUID,
+  validateBody,
+  catchAsync,
+  GlobalError,
 } from "../router.js";
-import { validateBody } from "../../../validation/validation.js";
-import GlobalError from "../../../errors/globalError.js";
-import catchAsync from "../../../errors/catchAsync.js";
 import { User } from "../users/userModel.js";
 
 const { checkSchema } = new ExpressValidator({
