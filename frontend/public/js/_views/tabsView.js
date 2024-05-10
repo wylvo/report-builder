@@ -34,8 +34,11 @@ export default class TabsView extends View {
     const tabsList = document.querySelector(".tab-list");
     const tabFormContainer = document.querySelector(".tabs-forms");
 
-    formData.selects.map((select) => {
-      // select.
+    Object.keys(formData.selects).forEach((key) => {
+      formData.selects[key] = formData.selects[key].map(
+        (selectValue) =>
+          `<option value="${selectValue.escapeHTML()}">${selectValue.escapeHTML()}</option>`
+      );
     });
 
     this.tabs = new Map(

@@ -94,8 +94,7 @@ class ReportTabsView extends TabsView {
                   class="status" 
                   required
                 >
-                  <option selected value="In Progress">In Progress</option>
-                  <option value="Completed">Completed</option>
+                  ${formData.selects.statuses.join("")}
                 </select>
                 <label for="status_${index}">Status:</label>
               </div>
@@ -150,16 +149,14 @@ class ReportTabsView extends TabsView {
           <div class="form-grouping-content">
             <div class="grid columns-37-37-25 mt-36">
               <div class="form-grouping-col gc-span-2-switch">
-                <input
-                  type="number"
-                  id="store-number_${index}"
-                  name="store-number"
-                  class="store-number"
-                  placeholder="101"
-                  min="101"
-                  max="710"
+                <select 
+                  id="store-number_${index}" 
+                  name="store-number" 
+                  class="store-number" 
                   required
-                />
+                >
+                  ${formData.selects.storeNumbers.join("")}
+                </select>
                 <label for="store-number_${index}">Number:</label>
               </div>
               <div class="form-grouping-col">
@@ -203,7 +200,7 @@ class ReportTabsView extends TabsView {
                   <option value="louis-philippe.dalpe">Louis-Philippe Dalpe (No more DM)</option>
                   <option value="">(None)</option>
                 </select>
-                <label for="store-dm_${index}">Distric Manager:</label>
+                <label for="store-dm_${index}">District Manager:</label>
               </div>
               <div class="form-grouping-col gc-3 self-end">
                 <label for="store-dm-contacted_${index}">DM Contacted</label>
@@ -264,17 +261,7 @@ class ReportTabsView extends TabsView {
                   class="incident-type"
                   required
                 >
-                  <option value="Bug">Bug</option>
-                  <option value="Update">Update</option>
-                  <option value="Outage">Outage</option>
-                  <option value="Software">Software</option>
-                  <option value="Hardware">Hardware</option>
-                  <option value="Networking">Networking</option>
-                  <option value="Authentication">Authentication</option>
-                  <option value="Employee Mistake">
-                    Employee Mistake
-                  </option>
-                  <option value="Other">Other (Non TECH)</option>
+                  ${formData.selects.incidentTypes.join("")}
                 </select>
                 <label for="incident-type_${index}">Incident Type:</label>
               </div>
@@ -339,14 +326,7 @@ class ReportTabsView extends TabsView {
                   name="transaction-type"
                   class="transaction-type"
                 >
-                  <option value="Sale">Sale</option>
-                  <option value="Refund">Refund</option>
-                  <option value="Variance">Variance</option>
-                  <option value="Exchange">Exchange</option>
-                  <option value="Correction">Correction</option>
-                  <option value="Promotion">Promotion</option>
-                  <option value="Employee Sale">Employee Sale</option>
-                  <option value="Other">Other (Fraud)</option>
+                  ${formData.selects.incidentTransactionTypes.join("")}
                 </select>
                 <label for="transaction-type_${index}">Transaction Type:</label>
               </div>
