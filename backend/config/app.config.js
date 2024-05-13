@@ -26,6 +26,8 @@ const config = {
   },
   formData: {
     selects: {
+      pos: [null, "1", "2", "3"],
+      roles: ["guest", "user", "admin"],
       statuses: ["In Progress", "Completed"],
       storeNumbers: [],
       incidentTypes: [],

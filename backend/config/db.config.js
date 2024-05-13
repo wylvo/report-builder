@@ -1,5 +1,4 @@
 import sql from "mssql/msnodesqlv8.js";
-import catchAsync from "../errors/catchAsync.js";
 import GlobalError from "../errors/globalError.js";
 
 const dbConfig = {
@@ -33,13 +32,13 @@ const dbConfig = {
 if (process.env.DB_AUTH_TYPE.toUpperCase() === "WINDOWS")
   dbConfig.options.trustedConnection = true;
 
-export const connectToDB = catchAsync(async () => {
+export const connectToDB = async () => {
   const pool = await new sql.ConnectionPool(dbConfig).connect();
   if (pool.connected) {
     console.log("MS SQL Server connection successful!");
     mssqlPool.push(pool);
   }
-});
+};
 
 export const mssqlPool = [];
 

@@ -11,8 +11,9 @@ process.on("uncaughtException", (err) => {
 });
 
 import app from "./app.js";
+import * as formData from "./api/v1/formData/formDataController.js";
 
-dbConfig.connectToDB();
+dbConfig.connectToDB().then(() => formData.updateFormDataConfig());
 
 const server = app.listen(config.port, () =>
   console.log(

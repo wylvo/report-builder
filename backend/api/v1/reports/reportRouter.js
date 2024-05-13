@@ -2,6 +2,7 @@ import express from "express";
 
 import * as report from "./reportController.js";
 import * as auth from "../../../auth/authController.js";
+import * as formData from "../formData/formDataController.js";
 
 const router = express.Router();
 
@@ -22,10 +23,14 @@ router.get("/softDeleted", report.getAllSoftDeletedReports);
 router
   .route("/")
   .get(report.getAllReports)
-  .post(report.validateCreate, report.createReport);
+  .post(
+    formData.synchonizeReportValidation,
+    report.validateCreate,
+    report.createReport
+  );
 router
   .route("/:id")
   .get(report.getReport)
-  .put(report.validateUpdate, report.updateReport);
+  .put(formData.synchonizeFormData, report.validateUpdate, report.updateReport);
 
 export { router as reportRouter };

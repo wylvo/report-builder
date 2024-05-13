@@ -1,4 +1,5 @@
 import { User } from "./userModel.js";
+import config from "../../../config/app.config.js";
 
 export default {
   /**
@@ -8,8 +9,10 @@ export default {
     role: {
       exists: { errorMessage: "required.", bail: true },
       isIn: {
-        options: [["guest", "user", "admin"]],
-        errorMessage: "only 'guest', 'user', or 'admin' are allowed.",
+        options: [config.formData.selects.roles],
+        errorMessage: `only '${config.formData.selects.roles.join(
+          "', '"
+        )}' are allowed.`,
       },
     },
     active: {
@@ -84,8 +87,10 @@ export default {
     role: {
       optional: true,
       isIn: {
-        options: [["guest", "user", "admin"]],
-        errorMessage: "only 'guest', 'user', or 'admin' are allowed.",
+        options: [config.formData.selects.roles],
+        errorMessage: `only '${config.formData.selects.roles.join(
+          "', '"
+        )}' are allowed.`,
       },
     },
     active: {

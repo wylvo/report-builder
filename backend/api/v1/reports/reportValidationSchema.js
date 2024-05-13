@@ -1,3 +1,5 @@
+import config from "../../../config/app.config.js";
+
 const DEFAULT_CREATE = {
   "**.date": {
     trim: {},
@@ -65,8 +67,10 @@ const DEFAULT_CREATE = {
   "call.status": {
     exists: { errorMessage: "required.", bail: true },
     isIn: {
-      options: [["In Progress", "Completed"]],
-      errorMessage: "only 'In Progress' or 'Completed' are allowed.",
+      options: [config.formData.selects.statuses],
+      errorMessage: `only '${config.formData.selects.statuses.join(
+        "', '"
+      )}' are allowed.`,
     },
   },
 
@@ -87,10 +91,11 @@ const DEFAULT_CREATE = {
     isObject: { errorMessage: "has to be an object enclosed by {}." },
   },
   "store.number": {
-    // TODO: CHECK IF VALID STORE NUMBER, MIGHT NEED TO CHANGE TO ARRAY DATA TYPE
     exists: { errorMessage: "required.", bail: true },
-    notEmpty: { errorMessage: "can't be empty.", bail: true },
-    isString: { errorMessage: "should be a string." },
+    isIn: {
+      options: [],
+      errorMessage: "",
+    },
   },
   "store.employee": {
     exists: { errorMessage: "required.", bail: true },
@@ -154,27 +159,17 @@ const DEFAULT_CREATE = {
   "incident.type": {
     exists: { errorMessage: "required.", bail: true },
     isIn: {
-      options: [
-        [
-          "Bug",
-          "Update",
-          "Outage",
-          "Software",
-          "Hardware",
-          "Networking",
-          "Authentication",
-          "Employee Mistake",
-          "Other",
-        ],
-      ],
-      errorMessage: `only 'Bug', 'Update', 'Outage', 'Software', 'Hardware', 'Networking', 'Authentication', 'Employee Mistake', and 'Other' are allowed.`,
+      options: [],
+      errorMessage: `${config.formData.selects.incidentTypes.join(", ")}`,
     },
   },
   "incident.pos": {
     exists: { errorMessage: "required.", bail: true },
     isIn: {
-      options: [["", "1", "2", "3"]],
-      errorMessage: "only '1', '2', and '3' are allowed.",
+      options: [config.formData.selects.pos],
+      errorMessage: `only '${config.formData.selects.pos.join(
+        "', '"
+      )}' are allowed.`,
     },
   },
   "incident.isProcedural": {
@@ -199,20 +194,8 @@ const DEFAULT_CREATE = {
   "incident.transaction.type": {
     optional: true,
     isIn: {
-      options: [
-        [
-          "",
-          "Sale",
-          "Refund",
-          "Variance",
-          "Exchange",
-          "Correction",
-          "Promotion",
-          "Employee Sale",
-          "Other",
-        ],
-      ],
-      errorMessage: `only 'Sale', 'Refund', 'Variance', 'Exchange', 'Correction', 'Promotion', 'Employee Sale', and 'Other' are allowed.`,
+      options: [],
+      errorMessage: "",
     },
   },
   "incident.transaction.number": {
