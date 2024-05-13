@@ -31,6 +31,10 @@ router
 router
   .route("/:id")
   .get(report.getReport)
-  .put(formData.synchonizeFormData, report.validateUpdate, report.updateReport);
+  .put(
+    formData.synchonizeReportValidation,
+    report.validateUpdate,
+    report.updateReport
+  );
 
 export { router as reportRouter };

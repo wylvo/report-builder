@@ -14,7 +14,6 @@ class ReportTabsView extends TabsView {
   }
 
   _generateFormHtml(formData, index) {
-    console.log(formData);
     const hidden = index !== 0 ? "hidden" : "";
     return `
       <form class="form" id="form_${index}" role="tabpanel" tabindex="0" ${hidden}>
@@ -191,7 +190,6 @@ class ReportTabsView extends TabsView {
                   id="store-dm_${index}" 
                   name="store-dm" 
                   class="store-dm"
-                  required
                 >
                   <option value="carolane.brisebois">Carolane Brisebois</option>
                   <option value="isabelle.hamel">Isabelle Hamel</option>
@@ -266,15 +264,13 @@ class ReportTabsView extends TabsView {
                 <label for="incident-type_${index}">Incident Type:</label>
               </div>
               <div class="form-grouping-col">
-                <input
-                  type="number"
+                <select
                   id="incident-pos-number_${index}"
                   name="incident-pos-number"
                   class="incident-pos-number"
-                  placeholder="1"
-                  min="1"
-                  max="3"
-                />
+                >
+                  ${formData.selects.pos.join("")}
+                </select>
                 <label for="incident-pos-number_${index}">POS #:</label>
               </div>
               <div class="form-grouping-col self-end">
@@ -383,7 +379,7 @@ class ReportTabsView extends TabsView {
                   <option selected value="william.evora">William Evora</option>
                   <option value="carah.malcolm">Carah Malcolm</option>
                 </select>
-                <label for="assigned-to_${index}">TECH Signature:</label>
+                <label for="assigned-to_${index}">Assigned To:</label>
               </div>
               <div class="form-grouping-col">
                 <label for="oncall_${index}">On-call</label>

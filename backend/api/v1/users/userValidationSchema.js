@@ -8,9 +8,10 @@ export default {
   create: {
     role: {
       exists: { errorMessage: "required.", bail: true },
+      isString: { errorMessage: "should be a string." },
       isIn: {
-        options: [config.formData.selects.roles],
-        errorMessage: `only '${config.formData.selects.roles.join(
+        options: [config.validation.selects.roles],
+        errorMessage: `only '${config.validation.selects.roles.join(
           "', '"
         )}' are allowed.`,
       },
@@ -86,9 +87,10 @@ export default {
   update: {
     role: {
       optional: true,
+      isString: { errorMessage: "should be a string." },
       isIn: {
-        options: [config.formData.selects.roles],
-        errorMessage: `only '${config.formData.selects.roles.join(
+        options: [config.validation.selects.roles],
+        errorMessage: `only '${config.validation.selects.roles.join(
           "', '"
         )}' are allowed.`,
       },

@@ -6,23 +6,22 @@ import reportValidationSchema from "../reports/reportValidationSchema.js";
 export const synchonizeReportValidation = catchAsync(async (req, res, next) => {
   // Store Numbers
   const storeNumbers = reportValidationSchema.create["store.number"].isIn;
-  storeNumbers.options = [config.formData.selects.storeNumbers];
-  console.log(storeNumbers.options);
+  storeNumbers.options = [config.validation.selects.storeNumbers];
   storeNumbers.errorMessage =
-    `only '${config.formData.selects.storeNumbers.join("', '")}' are allowed.`;
+    `only '${config.validation.selects.storeNumbers.join("', '")}' are allowed.`;
 
   // Incident Types
   const incidentTypes = reportValidationSchema.create["incident.type"].isIn;
-  incidentTypes.options = [config.formData.selects.incidentTypes];
+  incidentTypes.options = [config.validation.selects.incidentTypes];
   incidentTypes.errorMessage = 
-    `only '${config.formData.selects.incidentTypes.join("', '")}' are allowed.`;
+    `only '${config.validation.selects.incidentTypes.join("', '")}' are allowed.`;
 
   // Incident Transaction Types
   const incidentTransactionTypes =
     reportValidationSchema.create["incident.transaction.type"].isIn;
-  incidentTransactionTypes.options = [config.formData.selects.incidentTransactionTypes];
+  incidentTransactionTypes.options = [config.validation.selects.incidentTransactionTypes];
   incidentTransactionTypes.errorMessage = 
-    `only '${config.formData.selects.incidentTransactionTypes.join("', '")}' are allowed.`;
+    `only '${config.validation.selects.incidentTransactionTypes.join("', '")}' are allowed.`;
 
   next();
 });
@@ -36,22 +35,33 @@ const getFormDataSelectionOptions = async (type = "all") => {
 };
 
 export const updateFormDataConfig = async () => {
-  // prettier-ignore
-  const { storeNumbers, districtManagers, incidentTypes, incidentTransactionTypes, } =
-   await getFormDataSelectionOptions();
-  config.formData.selects.storeNumbers = storeNumbers;
-  config.formData.selects.districtManagers = districtManagers;
-  config.formData.selects.incidentTypes = incidentTypes;
-  config.formData.selects.incidentTransactionTypes = incidentTransactionTypes;
+  const {
+    storeNumbers,
+    districtManagers,
+    incidentTypes,
+    incidentTransactionTypes,
+  } = await getFormDataSelectionOptions();
 
-  return config.formData;
+  const other = "Other";
+  [incidentTypes, incidentTransactionTypes].forEach((elementArr) =>
+    elementArr.includes(other)
+      ? elementArr.push(elementArr.splice(elementArr.indexOf(other), 1)[0])
+      : elementArr
+  );
+
+  config.validation.selects.storeNumbers = storeNumbers;
+  config.validation.selects.districtManagers = districtManagers;
+  config.validation.selects.incidentTypes = incidentTypes;
+  config.validation.selects.incidentTransactionTypes = incidentTransactionTypes;
+
+  return config.validation;
 };
 
 export const synchonizeFormData = catchAsync(async (req, res, next) => {
-  const formData = await updateFormDataConfig();
+  await updateFormDataConfig();
 
   res.status(200).json({
     status: "success",
-    data: formData,
+    data: config.validation,
   });
 });

@@ -35,10 +35,14 @@ export default class TabsView extends View {
     const tabFormContainer = document.querySelector(".tabs-forms");
 
     Object.keys(formData.selects).forEach((key) => {
-      formData.selects[key] = formData.selects[key].map(
-        (selectValue) =>
-          `<option value="${selectValue.escapeHTML()}">${selectValue.escapeHTML()}</option>`
-      );
+      formData.selects[key] = formData.selects[key].map((selectValue) => {
+        if (!selectValue) return `<option value="">None</option>`;
+        if (selectValue) {
+          if (key === "districtManagers")
+            return `<option value="${selectValue.username.escapeHTML()}">${selectValue.fullName.escapeHTML()}</option>`;
+          return `<option value="${selectValue.escapeHTML()}">${selectValue.escapeHTML()}</option>`;
+        }
+      });
     });
 
     this.tabs = new Map(

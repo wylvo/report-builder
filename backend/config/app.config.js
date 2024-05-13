@@ -24,11 +24,11 @@ const config = {
       path: backupFilePath,
     },
   },
-  formData: {
+  validation: {
     selects: {
       pos: [null, "1", "2", "3"],
       roles: ["guest", "user", "admin"],
-      statuses: ["In Progress", "Completed"],
+      statuses: ["Completed", "In Progress"],
       storeNumbers: [],
       incidentTypes: [],
       incidentTransactionTypes: [],

@@ -66,9 +66,10 @@ const DEFAULT_CREATE = {
   },
   "call.status": {
     exists: { errorMessage: "required.", bail: true },
+    isString: { errorMessage: "should be a string." },
     isIn: {
-      options: [config.formData.selects.statuses],
-      errorMessage: `only '${config.formData.selects.statuses.join(
+      options: [config.validation.selects.statuses],
+      errorMessage: `only '${config.validation.selects.statuses.join(
         "', '"
       )}' are allowed.`,
     },
@@ -92,6 +93,7 @@ const DEFAULT_CREATE = {
   },
   "store.number": {
     exists: { errorMessage: "required.", bail: true },
+    isArray: { errorMessage: "should be an array." },
     isIn: {
       options: [],
       errorMessage: "",
@@ -158,16 +160,18 @@ const DEFAULT_CREATE = {
   },
   "incident.type": {
     exists: { errorMessage: "required.", bail: true },
+    isArray: { errorMessage: "should be an array." },
     isIn: {
       options: [],
-      errorMessage: `${config.formData.selects.incidentTypes.join(", ")}`,
+      errorMessage: `${config.validation.selects.incidentTypes.join(", ")}`,
     },
   },
   "incident.pos": {
     exists: { errorMessage: "required.", bail: true },
+    isString: { errorMessage: "should be a string." },
     isIn: {
-      options: [config.formData.selects.pos],
-      errorMessage: `only '${config.formData.selects.pos.join(
+      options: [config.validation.selects.pos],
+      errorMessage: `only '${config.validation.selects.pos.join(
         "', '"
       )}' are allowed.`,
     },
@@ -193,6 +197,7 @@ const DEFAULT_CREATE = {
   },
   "incident.transaction.type": {
     optional: true,
+    isArray: { errorMessage: "should be an array." },
     isIn: {
       options: [],
       errorMessage: "",

@@ -128,7 +128,7 @@ export default {
       url: "/api/v1/formData",
 
       // Get Form Data
-      async getFormData() {
+      async synchonizeFormData() {
         return await fetchJSON(this.url);
       },
     },
