@@ -56,9 +56,6 @@ const DEFAULT_CREATE = {
   "call.time": {
     exists: { errorMessage: "required.", bail: true },
   },
-  "call.dateTime": {
-    exists: { errorMessage: "required.", bail: true },
-  },
   // TODO: CHECK IF IS VALID PHONE NUMBER
   "call.phone": {
     exists: { errorMessage: "required.", bail: true },
@@ -97,6 +94,12 @@ const DEFAULT_CREATE = {
     isIn: {
       options: [],
       errorMessage: "",
+    },
+    // Keep unique values only
+    customSanitizer: {
+      options: (_, { req }) => {
+        return (req.body.store.number = [...new Set(req.body.store.number)]);
+      },
     },
   },
   "store.employee": {
@@ -165,6 +168,12 @@ const DEFAULT_CREATE = {
       options: [],
       errorMessage: `${config.validation.selects.incidentTypes.join(", ")}`,
     },
+    // Keep unique values only
+    customSanitizer: {
+      options: (_, { req }) => {
+        return (req.body.incident.type = [...new Set(req.body.incident.type)]);
+      },
+    },
   },
   "incident.pos": {
     exists: { errorMessage: "required.", bail: true },
@@ -201,6 +210,14 @@ const DEFAULT_CREATE = {
     isIn: {
       options: [],
       errorMessage: "",
+    },
+    // Keep unique values only
+    customSanitizer: {
+      options: (_, { req }) => {
+        return (req.body.store.number = [
+          ...new Set(req.body.incident.transaction.type),
+        ]);
+      },
     },
   },
   "incident.transaction.number": {

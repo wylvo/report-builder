@@ -19,7 +19,7 @@ let modalFormView = new ModalFormView(),
 const controlDeleteReport = async function (id) {
   try {
     const report = model.findObjectById(model.state.reports, id);
-    const isAdmin = model.state.user.role === "admin"
+    const isAdmin = model.state.user.role === "Admin"
     let isDeleteConfirmed = true;
 
     // if current user is admin, propose hard delete option

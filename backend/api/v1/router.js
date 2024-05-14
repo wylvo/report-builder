@@ -34,4 +34,5 @@ export { default as config } from "../../config/app.config.js";
 export { default as dateISO8601 } from "../../date/dateISO8601.js";
 export { default as catchAsync } from "../../errors/catchAsync.js";
 export { default as GlobalError } from "../../errors/globalError.js";
+export { default as dateMSSharePoint } from "../../date/dateMSSharePoint.js";
 export default router;

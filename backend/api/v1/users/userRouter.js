@@ -12,7 +12,7 @@ const router = express.Router();
 router.get("/me", user.getMe, user.getUser);
 
 // Restrict the following routes to admin role after this middleware
-// router.use(auth.restrictTo("admin"));
+// router.use(auth.restrictTo("Admin"));
 
 /** ROUTES restricted to "admin" role
  * /api/v1/users                    (GET & POST)

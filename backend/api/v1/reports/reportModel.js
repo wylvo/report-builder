@@ -343,7 +343,11 @@ export const Report = {
     },
 
     // Source: https://learn.microsoft.com/fr-fr/archive/blogs/sqlserverstorageengine/openjson-the-easiest-way-to-import-json-text-into-table#use-case-2-updating-table-row-using-json-object
-    insert() {
+    insert(
+      insertReportStores,
+      insertReportIncidentTypes,
+      insertReportIncidentTransactionTypes
+    ) {
       return `
         INSERT INTO
           reports
@@ -354,14 +358,62 @@ export const Report = {
           ${this.withClause}
         );
 
+        DECLARE @reportId INT = SCOPE_IDENTITY()
+
+        ${insertReportStores}
+        ${insertReportIncidentTypes}
+        ${insertReportIncidentTransactionTypes}
+
         SELECT
           ${this.JSONSelect}
         FROM reports r
         JOIN users usr1 ON usr1.id = r.createdBy
         JOIN users usr2 ON usr2.id = r.updatedBy
         JOIN users usr3 ON usr3.id = r.assignedTo
-        WHERE r.id = SCOPE_IDENTITY()
+        WHERE r.id = @reportId
         FOR JSON PATH;
+      `;
+    },
+
+    insertReportStores(numbers) {
+      return `
+        INSERT INTO
+          reportStores (report_id, store_id)
+        VALUES
+          ${numbers
+            .map(
+              (n) =>
+                `(@reportId, (SELECT id FROM stores WHERE number = '${n}'))`
+            )
+            .join(",")};
+      `;
+    },
+
+    insertReportIncidentTypes(types) {
+      return `
+        INSERT INTO
+          reportIncidentTypes (report_id, incidentType_id)
+        VALUES
+          ${types
+            .map(
+              (t) =>
+                `(@reportId, (SELECT id FROM incidentTypes WHERE type = '${t}'))`
+            )
+            .join(",")};
+      `;
+    },
+
+    insertReportIncidentTransactionTypes(types) {
+      return `
+        INSERT INTO
+          reportIncidentTransactionTypes (report_id, incidentTransactionType_id)
+        VALUES
+          ${types
+            .map(
+              (t) =>
+                `(@reportId, (SELECT id FROM incidentTransactionTypes WHERE type = '${t}'))`
+            )
+            .join(",")};
       `;
     },
 
@@ -390,8 +442,6 @@ export const Report = {
           storeNumber = json.storeNumber,
           storeEmployeeName = json.storeEmployeeName,
           storeEmployeeIsStoreManager = json.storeEmployeeIsStoreManager,
-          storeDistrictManagerName = json.storeDistrictManagerName,
-          storeDistrictManagerUsername = json.storeDistrictManagerUsername,
           storeDistrictManagerIsContacted = json.storeDistrictManagerIsContacted,
           incidentTitle = json.incidentTitle,
           incidentPos = json.incidentPos,
@@ -400,12 +450,14 @@ export const Report = {
           incidentTransactionNumber = json.incidentTransactionNumber,
           incidentTransactionIsIRCreated = json.incidentTransactionIsIRCreated,
           incidentDetails = json.incidentDetails,
-          rawJSON = json.rawJSON
         FROM OPENJSON(@json)
         WITH (
           ${this.withClause}
         ) AS json
         WHERE reports.id = @id;
+
+        DELETE FROM reportStores
+        WHERE reportStores.report_id = @id
 
         ${this.byId()}
       `;

@@ -19,7 +19,7 @@ router.get("/softDeleted", report.getAllSoftDeletedReports);
  * /api/v1/reports      (GET & POST)
  * /api/v1/reports/:id  (GET & PUT)
  */
-// router.use(auth.restrictTo("user"));
+// router.use(auth.restrictTo("User"));
 router
   .route("/")
   .get(report.getAllReports)

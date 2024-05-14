@@ -17,6 +17,7 @@ import {
   validateBody,
   catchAsync,
   GlobalError,
+  dateMSSharePoint,
 } from "../router.js";
 
 const { checkSchema } = new ExpressValidator({
@@ -88,22 +89,34 @@ export const createReport = catchAsync(async (req, res, next) => {
   req.body.isDeleted = false;
   req.body.isWebhookSent = false;
   req.body.hasTriggeredWebhook = false;
+  req.body.call.dateTime = dateMSSharePoint(
+    `${req.body.call.date} ${req.body.call.time}`
+  );
 
   const body = [req.body];
   const rawJSON = JSON.stringify(body);
-
-  console.log(body);
+  const insert = Report.query.insert(
+    Report.query.insertReportStores(req.body.store.number),
+    Report.query.insertReportIncidentTypes(req.body.incident.type),
+    req.body.incident.transaction.type
+      ? Report.query.insertReportIncidentTransactionTypes(
+          req.body.incident.transaction.type
+        )
+      : ""
+  );
 
   const {
     recordset: [[report]],
   } = await mssql()
     .input("rawJSON", NVarChar, rawJSON)
     .input("uuid", req.body.uuid)
-    .query(Report.query.insert());
+    .query(insert);
+
+  console.log(report);
 
   res.status(201).json({
     status: "success",
-    data: filterReportData(report),
+    data: report,
   });
 });
 
@@ -138,6 +151,9 @@ export const updateReport = catchAsync(async (req, res, next) => {
   req.body.updatedAt = dateISO8601(new Date());
   req.body.createdBy = report.createdBy;
   req.body.updatedBy = req.user.username;
+  req.body.call.dateTime = dateMSSharePoint(
+    `${req.body.call.date} ${req.body.call.time}`
+  );
 
   const body = [req.body];
   const rawJSON = JSON.stringify(body);
@@ -178,10 +194,10 @@ export const deleteReport = catchAsync(async (req, res, next) => {
     return next(new GlobalError(`Report not found with id: ${id}.`, 404));
 
   // If regular user, ONLY soft delete allowed
-  if (req.user.role === "user") softDeleteReport(report);
+  if (req.user.role === "User") softDeleteReport(report);
 
   // If admin, BOTH soft & hard delete allowed
-  if (req.user.role === "admin" && req.body.isHardDelete) {
+  if (req.user.role === "Admin" && req.body.isHardDelete) {
     const password = await Report.superPassword();
 
     // For additional security, require for a password
