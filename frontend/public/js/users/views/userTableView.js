@@ -60,7 +60,7 @@ class UserTableView extends TableView {
         <td data-cell="Status">
           <div><p ${status.class}>${status.text}</p></div>
         </td>
-        <td data-cell="Actions" data-uuid="${user.id}" class="table-row-buttons">
+        <td data-cell="Actions" data-id="${user.id}" class="table-row-buttons">
           <div>
             <button class="btn status ${status.btnClassAndIcon}-user icons">
               <svg>

@@ -26,7 +26,9 @@ export default class TabsView extends View {
   }
 
   generateFormElement(formData, index) {
-    return this.htmlStringToElement(this._generateFormHtml(formData, index));
+    if (formData)
+      return this.htmlStringToElement(this._generateFormHtml(formData, index));
+    return this.htmlStringToElement(this._generateFormHtml(index));
   }
 
   renderAll(formData, numberOfTabs = [0, 1, 2, 3, 4]) {
@@ -34,16 +36,18 @@ export default class TabsView extends View {
     const tabsList = document.querySelector(".tab-list");
     const tabFormContainer = document.querySelector(".tabs-forms");
 
-    Object.keys(formData.selects).forEach((key) => {
-      formData.selects[key] = formData.selects[key].map((selectValue) => {
-        if (!selectValue) return `<option value="">None</option>`;
-        if (selectValue) {
-          if (key === "districtManagers")
-            return `<option value="${selectValue.username.escapeHTML()}">${selectValue.fullName.escapeHTML()}</option>`;
-          return `<option value="${selectValue.escapeHTML()}">${selectValue.escapeHTML()}</option>`;
-        }
+    if (formData) {
+      Object.keys(formData.selects).forEach((key) => {
+        formData.selects[key] = formData.selects[key].map((selectValue) => {
+          if (!selectValue) return `<option value="">None</option>`;
+          if (selectValue) {
+            if (key === "districtManagers")
+              return `<option value="${selectValue.username.escapeHTML()}">${selectValue.fullName.escapeHTML()}</option>`;
+            return `<option value="${selectValue.escapeHTML()}">${selectValue.escapeHTML()}</option>`;
+          }
+        });
       });
-    });
+    }
 
     this.tabs = new Map(
       numberOfTabs.map((_, tabIndex) => {

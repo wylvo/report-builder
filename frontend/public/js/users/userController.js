@@ -243,7 +243,7 @@ export const init = async function () {
   await model.init();
 
   // Initialize all tabs
-  userTabsView.renderAll(model.initNumberOfTabs(5));
+  userTabsView.renderAll(null, model.initNumberOfTabs(5));
   userFormView = userTabsView.tabs.get(model.state.tab);
 
   // If id in hash render user
