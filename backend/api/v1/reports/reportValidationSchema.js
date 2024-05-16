@@ -60,6 +60,10 @@ const DEFAULT_CREATE = {
   "call.phone": {
     exists: { errorMessage: "required.", bail: true },
     isString: { errorMessage: "should be a string." },
+    isLength: {
+      options: { max: 20 },
+      errorMessage: "invalid length, max of 20 characters allowed.",
+    },
   },
   "call.status": {
     exists: { errorMessage: "required.", bail: true },
@@ -74,7 +78,7 @@ const DEFAULT_CREATE = {
 
   /********************************************
    *  "store": {
-   *    "number": "2023-11-05",
+   *    "number": ["101", "401", "201"],
    *    "employee": {
    *      "name": "John Doe",
    *      "isStoreManager": false
@@ -110,8 +114,8 @@ const DEFAULT_CREATE = {
     exists: { errorMessage: "required.", bail: true },
     isString: { errorMessage: "should be a string.", bail: true },
     isLength: {
-      options: { max: 50 },
-      errorMessage: "invalid length, max of 50 characters allowed.",
+      options: { max: 100 },
+      errorMessage: "invalid length, max of 100 characters allowed.",
     },
   },
   "store.employee.isStoreManager": {
@@ -136,12 +140,12 @@ const DEFAULT_CREATE = {
   /********************************************
    *  "incident": {
    *    "title": "102 Transaction Error",
-   *    "type": "Bug",
+   *    "type": ["Bug"],
    *    "pos": "",
    *    "isProcedural": false,
    *    "error": "",
    *    "transaction": {
-   *      "type": "Sale",
+   *      "type": ["Sale"],
    *      "number": "",
    *      "isIRCreated": false
    *    },
@@ -226,8 +230,8 @@ const DEFAULT_CREATE = {
       errorMessage: "should be a string.",
     },
     isLength: {
-      options: { max: 50 },
-      errorMessage: "invalid length, max of 50 characters allowed.",
+      options: { max: 100 },
+      errorMessage: "invalid length, max of 100 characters allowed.",
     },
   },
   "incident.transaction.isIRCreated": {
@@ -241,6 +245,10 @@ const DEFAULT_CREATE = {
     exists: { errorMessage: "required.", bail: true },
     notEmpty: { errorMessage: "can't be empty.", bail: true },
     isString: { errorMessage: "should be a string." },
+    isLength: {
+      options: { max: 2000 },
+      errorMessage: "invalid length, max of 2,000 characters allowed.",
+    },
   },
 };
 
@@ -262,10 +270,6 @@ export default {
    **/
   update: {
     ...DEFAULT_CREATE,
-    uuid: {
-      exists: { errorMessage: "required.", bail: true },
-      isUUID: { errorMessage: "invalid UUID." },
-    },
     isDeleted: {
       exists: { errorMessage: "required.", bail: true },
       isBoolean: {

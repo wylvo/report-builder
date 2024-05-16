@@ -137,7 +137,7 @@ export const getReport = catchAsync(async (req, res, next) => {
 export const validateUpdate = validateBody(checkSchema, Report.schema.update);
 
 export const updateReport = catchAsync(async (req, res, next) => {
-  const id = req.body.uuid;
+  const id = req.params.id;
 
   const [report] = await Report.findByUUID(id);
 
@@ -157,13 +157,22 @@ export const updateReport = catchAsync(async (req, res, next) => {
 
   const body = [req.body];
   const rawJSON = JSON.stringify(body);
+  const update = Report.query.update(
+    Report.query.insertStores(req.body.store.number),
+    Report.query.insertIncidentTypes(req.body.incident.type),
+    req.body.incident.transaction.type
+      ? Report.query.insertIncidentTransactionTypes(
+          req.body.incident.transaction.type
+        )
+      : ""
+  );
 
   const {
     recordset: [[reportUpdated]],
   } = await mssql()
     .input("id", report.id)
     .input("rawJSON", NVarChar, rawJSON)
-    .query(Report.query.update());
+    .query(update);
 
   console.log(reportUpdated);
   res.status(201).json({

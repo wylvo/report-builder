@@ -111,9 +111,9 @@ export const Report = {
       version AS [version],
       r.createdAt AS [createdAt],
       r.updatedAt AS [updatedAt],
-      usr1.fullName AS [createdBy],
-      usr2.fullName AS [updatedBy],
-      usr3.fullName AS [assignedTo],
+      usr1.username AS [createdBy],
+      usr2.username AS [updatedBy],
+      usr3.username AS [assignedTo],
       isOnCall AS [isOnCall],
       isDeleted AS [isDeleted],
       isWebhookSent AS [isWebhookSent],
@@ -354,7 +354,7 @@ export const Report = {
           ${this.withClause}
         );
 
-        DECLARE @reportId INT = SCOPE_IDENTITY()
+        DECLARE @id INT = SCOPE_IDENTITY()
 
         ${insertStores}
         ${insertIncidentTypes}
@@ -366,7 +366,7 @@ export const Report = {
         JOIN users usr1 ON usr1.id = r.createdBy
         JOIN users usr2 ON usr2.id = r.updatedBy
         JOIN users usr3 ON usr3.id = r.assignedTo
-        WHERE r.id = @reportId
+        WHERE r.id = @id
         FOR JSON PATH;
       `;
     },
@@ -377,10 +377,7 @@ export const Report = {
           reportStores (report_id, store_id)
         VALUES
           ${numbers
-            .map(
-              (n) =>
-                `(@reportId, (SELECT id FROM stores WHERE number = '${n}'))`
-            )
+            .map((n) => `(@id, (SELECT id FROM stores WHERE number = '${n}'))`)
             .join(",")};
       `;
     },
@@ -392,8 +389,7 @@ export const Report = {
         VALUES
           ${types
             .map(
-              (t) =>
-                `(@reportId, (SELECT id FROM incidentTypes WHERE type = '${t}'))`
+              (t) => `(@id, (SELECT id FROM incidentTypes WHERE type = '${t}'))`
             )
             .join(",")};
       `;
@@ -407,14 +403,14 @@ export const Report = {
           ${types
             .map(
               (t) =>
-                `(@reportId, (SELECT id FROM incidentTransactionTypes WHERE type = '${t}'))`
+                `(@id, (SELECT id FROM incidentTransactionTypes WHERE type = '${t}'))`
             )
             .join(",")};
       `;
     },
 
     // Source: https://learn.microsoft.com/fr-fr/archive/blogs/sqlserverstorageengine/openjson-the-easiest-way-to-import-json-text-into-table#use-case-2-updating-table-row-using-json-object
-    update() {
+    update(insertStores, insertIncidentTypes, insertIncidentTransactionTypes) {
       return `
         DECLARE @json NVARCHAR(MAX) = @rawJSON;
 
@@ -423,9 +419,9 @@ export const Report = {
           version = json.version,
           createdAt = json.createdAt,
           updatedAt = json.updatedAt,
-          createdBy = json.createdBy,
-          updatedBy = json.updatedBy,
-          assignedTo = json.assignedTo,
+          createdBy = (SELECT id FROM users WHERE username = json.createdBy),
+          updatedBy = (SELECT id FROM users WHERE username = json.updatedBy),
+          assignedTo = (SELECT id FROM users WHERE username = json.assignedTo),
           isOnCall = json.isOnCall,
           isDeleted = json.isDeleted,
           isWebhookSent = json.isWebhookSent,
@@ -435,7 +431,6 @@ export const Report = {
           callDateTime = json.callDateTime,
           callPhone = json.callPhone,
           callStatus = json.callStatus,
-          storeNumber = json.storeNumber,
           storeEmployeeName = json.storeEmployeeName,
           storeEmployeeIsStoreManager = json.storeEmployeeIsStoreManager,
           storeDistrictManagerIsContacted = json.storeDistrictManagerIsContacted,
@@ -445,7 +440,7 @@ export const Report = {
           incidentError = json.incidentError,
           incidentTransactionNumber = json.incidentTransactionNumber,
           incidentTransactionIsIRCreated = json.incidentTransactionIsIRCreated,
-          incidentDetails = json.incidentDetails,
+          incidentDetails = json.incidentDetails
         FROM OPENJSON(@json)
         WITH (
           ${this.withClause}
@@ -453,7 +448,17 @@ export const Report = {
         WHERE reports.id = @id;
 
         DELETE FROM reportStores
-        WHERE reportStores.report_id = @id
+        WHERE reportStores.report_id = @id;
+
+        DELETE FROM reportIncidentTypes
+        WHERE reportIncidentTypes.report_id = @id;
+
+        DELETE FROM reportIncidentTransactionTypes
+        WHERE reportIncidentTransactionTypes.report_id = @id;
+
+        ${insertStores}
+        ${insertIncidentTypes}
+        ${insertIncidentTransactionTypes}
 
         ${this.byId()}
       `;
