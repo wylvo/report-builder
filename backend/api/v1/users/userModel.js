@@ -1,5 +1,5 @@
 import userValidationSchema from "./userValidationSchema.js";
-import { mssql } from "../router.js";
+import { mssql, hashPassword, config } from "../router.js";
 
 // Custom validation to check if username exists in DB & and user is active
 export const isValidUsername = async (value, { req }) => {
@@ -74,6 +74,42 @@ export const User = {
     } = await mssql()
       .input("username", username)
       .query(User.query.byUsername());
+
+    return user;
+  },
+
+  async all() {
+    const { recordset: users } = await mssql().query(User.query.all());
+    return users;
+  },
+
+  async create(body) {
+    const {
+      role,
+      active,
+      email,
+      password,
+      profilePictureURI,
+      fullName,
+      username,
+      initials,
+    } = body;
+
+    const {
+      recordset: [user],
+    } = await mssql()
+      .input("role", role)
+      .input("active", active ?? true)
+      .input("email", email)
+      .input("password", await hashPassword(password))
+      .input(
+        "profilePictureURI",
+        profilePictureURI ?? config.misc.defaultProfilePicture
+      )
+      .input("fullName", fullName)
+      .input("username", username)
+      .input("initials", initials.toUpperCase() ?? null)
+      .query(this.query.insert());
 
     return user;
   },

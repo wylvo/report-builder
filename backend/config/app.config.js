@@ -27,7 +27,7 @@ const config = {
   validation: {
     selects: {
       pos: [null, "1", "2", "3"],
-      roles: ["guest", "user", "admin"],
+      roles: ["Guest", "User", "Admin"],
       statuses: ["Completed", "In Progress"],
       storeNumbers: [],
       incidentTypes: [],

@@ -13,7 +13,6 @@ import {
   validateBody,
   catchAsync,
   GlobalError,
-  hashPassword,
 } from "../router.js";
 import { filterReportArrayData } from "../reports/reportController.js";
 
@@ -55,7 +54,7 @@ export const getUserId = (req, res, next) => {
 };
 
 export const getAllUsers = catchAsync(async (req, res, next) => {
-  const { recordset: users } = await mssql().query(User.query.all());
+  const users = await User.all();
 
   res.status(200).json({
     status: "success",
@@ -67,32 +66,7 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
 export const validateCreate = validateBody(checkSchema, User.schema.create);
 
 export const createUser = catchAsync(async (req, res, next) => {
-  const {
-    role,
-    active,
-    email,
-    password,
-    profilePictureURI,
-    fullName,
-    username,
-    initials,
-  } = req.body;
-
-  const {
-    recordset: [user],
-  } = await mssql()
-    .input("role", role)
-    .input("active", active ?? true)
-    .input("email", email)
-    .input("password", await hashPassword(password))
-    .input(
-      "profilePictureURI",
-      profilePictureURI ?? config.misc.defaultProfilePicture
-    )
-    .input("fullName", fullName)
-    .input("username", username)
-    .input("initials", initials.toUpperCase() ?? null)
-    .query(User.query.insert());
+  const user = await User.create(req.body);
 
   res.status(201).json({
     status: "success",
@@ -116,10 +90,8 @@ export const getUser = catchAsync(async (req, res, next) => {
       recordset: [reportsDeleted],
     },
   ] = await Promise.all([
-    mssql().input("userId", user.id).query(Report.query.byCreatedBy()),
-    mssql()
-      .input("userId", user.id)
-      .query(Report.query.byCreatedBySoftDeleted()),
+    Report.createdBy(user.id),
+    Report.createdBySoftDeleted(user.id),
   ]);
 
   res.status(200).json({

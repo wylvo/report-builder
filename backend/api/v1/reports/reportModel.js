@@ -99,6 +99,16 @@ export const Report = {
     return password;
   },
 
+  async createdBy(userId) {
+    return mssql().input("userId", userId).query(this.query.byCreatedBy());
+  },
+
+  async createdBySoftDeleted(userId) {
+    return mssql()
+      .input("userId", userId)
+      .query(this.query.byCreatedBySoftDeleted());
+  },
+
   /**
    *  ALL MS SQL SERVER QUERIES RELATED TO REPORTS
    **/
@@ -464,7 +474,18 @@ export const Report = {
       `;
     },
 
-    delete: "DELETE FROM reports WHERE id = @id;",
+    delete: `
+      DELETE FROM reportStores
+      WHERE reportStores.report_id = @id;
+
+      DELETE FROM reportIncidentTypes
+      WHERE reportIncidentTypes.report_id = @id;
+
+      DELETE FROM reportIncidentTransactionTypes
+      WHERE reportIncidentTransactionTypes.report_id = @id;
+
+      DELETE FROM reports WHERE id = @id;
+    `,
 
     softDelete: `
       UPDATE reports
