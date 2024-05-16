@@ -343,11 +343,7 @@ export const Report = {
     },
 
     // Source: https://learn.microsoft.com/fr-fr/archive/blogs/sqlserverstorageengine/openjson-the-easiest-way-to-import-json-text-into-table#use-case-2-updating-table-row-using-json-object
-    insert(
-      insertReportStores,
-      insertReportIncidentTypes,
-      insertReportIncidentTransactionTypes
-    ) {
+    insert(insertStores, insertIncidentTypes, insertIncidentTransactionTypes) {
       return `
         INSERT INTO
           reports
@@ -360,9 +356,9 @@ export const Report = {
 
         DECLARE @reportId INT = SCOPE_IDENTITY()
 
-        ${insertReportStores}
-        ${insertReportIncidentTypes}
-        ${insertReportIncidentTransactionTypes}
+        ${insertStores}
+        ${insertIncidentTypes}
+        ${insertIncidentTransactionTypes}
 
         SELECT
           ${this.JSONSelect}
@@ -375,7 +371,7 @@ export const Report = {
       `;
     },
 
-    insertReportStores(numbers) {
+    insertStores(numbers) {
       return `
         INSERT INTO
           reportStores (report_id, store_id)
@@ -389,7 +385,7 @@ export const Report = {
       `;
     },
 
-    insertReportIncidentTypes(types) {
+    insertIncidentTypes(types) {
       return `
         INSERT INTO
           reportIncidentTypes (report_id, incidentType_id)
@@ -403,7 +399,7 @@ export const Report = {
       `;
     },
 
-    insertReportIncidentTransactionTypes(types) {
+    insertIncidentTransactionTypes(types) {
       return `
         INSERT INTO
           reportIncidentTransactionTypes (report_id, incidentTransactionType_id)

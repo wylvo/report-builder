@@ -96,10 +96,10 @@ export const createReport = catchAsync(async (req, res, next) => {
   const body = [req.body];
   const rawJSON = JSON.stringify(body);
   const insert = Report.query.insert(
-    Report.query.insertReportStores(req.body.store.number),
-    Report.query.insertReportIncidentTypes(req.body.incident.type),
+    Report.query.insertStores(req.body.store.number),
+    Report.query.insertIncidentTypes(req.body.incident.type),
     req.body.incident.transaction.type
-      ? Report.query.insertReportIncidentTransactionTypes(
+      ? Report.query.insertIncidentTransactionTypes(
           req.body.incident.transaction.type
         )
       : ""
