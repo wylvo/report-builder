@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 
 import {
   Report,
+  isNotEmptyArray,
   isNewReport,
   isDateTime,
   isTimeCustom,
@@ -21,19 +22,31 @@ import {
 } from "../router.js";
 
 const { checkSchema } = new ExpressValidator({
+  isNotEmptyArray,
   isNewReport,
   isDateTime,
   isTimeCustom,
   isValidUsername,
 });
 
-export const filterReportData = (data) =>
-  Object.keys(data)
+const isTransactionObjectEmpty = (transaction) =>
+  Object.keys(transaction).length === 1 &&
+  transaction.type &&
+  transaction.type.length === 1 &&
+  transaction.type[0] === ""
+    ? true
+    : false;
+
+export const filterReportData = (data) => {
+  const transaction = data.incident.transaction;
+  if (isTransactionObjectEmpty(transaction)) data.incident.transaction = {};
+  return Object.keys(data)
     .filter((key) => !["id"].includes(key))
     .reduce((obj, key) => {
       obj[key] = data[key];
       return obj;
     }, {});
+};
 
 export const filterReportArrayData = (data) => {
   const reports = [];
@@ -92,6 +105,7 @@ export const createReport = catchAsync(async (req, res, next) => {
   req.body.call.dateTime = dateMSSharePoint(
     `${req.body.call.date} ${req.body.call.time}`
   );
+  if (!req.body.incident.transaction.type) req.body.incident.transaction = {};
 
   const body = [req.body];
   const rawJSON = JSON.stringify(body);

@@ -5,22 +5,22 @@ import reportValidationSchema from "../reports/reportValidationSchema.js";
 // prettier-ignore
 export const synchonizeReportValidation = catchAsync(async (req, res, next) => {
   // Store Numbers
-  const storeNumbers = reportValidationSchema.create["store.number"].isIn;
-  storeNumbers.options = [config.validation.selects.storeNumbers];
-  storeNumbers.errorMessage =
+  const storeNumbers = reportValidationSchema.create["store.number"];
+  storeNumbers.isIn.options = [config.validation.selects.storeNumbers];
+  storeNumbers.isIn.errorMessage =
     `only '${config.validation.selects.storeNumbers.join("', '")}' are allowed.`;
 
   // Incident Types
-  const incidentTypes = reportValidationSchema.create["incident.type"].isIn;
-  incidentTypes.options = [config.validation.selects.incidentTypes];
-  incidentTypes.errorMessage = 
+  const incidentTypes = reportValidationSchema.create["incident.type"];
+  incidentTypes.isIn.options = [config.validation.selects.incidentTypes];
+  incidentTypes.isIn.errorMessage = 
     `only '${config.validation.selects.incidentTypes.join("', '")}' are allowed.`;
 
   // Incident Transaction Types
   const incidentTransactionTypes =
-    reportValidationSchema.create["incident.transaction.type"].isIn;
-  incidentTransactionTypes.options = [config.validation.selects.incidentTransactionTypes];
-  incidentTransactionTypes.errorMessage = 
+    reportValidationSchema.create["incident.transaction.type"];
+  incidentTransactionTypes.isIn.options = [config.validation.selects.incidentTransactionTypes];
+  incidentTransactionTypes.isIn.errorMessage = 
     `only '${config.validation.selects.incidentTransactionTypes.join("', '")}' are allowed.`;
 
   next();

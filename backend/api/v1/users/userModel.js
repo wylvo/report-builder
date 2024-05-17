@@ -32,16 +32,8 @@ export const User = {
   schema: {
     signIn: userValidationSchema.signIn,
     create: userValidationSchema.create,
-    update: userValidationSchema.update,
+    update: userValidationSchema.update(),
     resetPassword: userValidationSchema.resetPassword(),
-  },
-
-  findBy: async (input, value, query) => {
-    const {
-      recordset: [user],
-    } = await mssql().input(input, value).query(query);
-
-    return user;
   },
 
   findByUUID: async (uuid) => {
@@ -80,6 +72,11 @@ export const User = {
 
   async all() {
     const { recordset: users } = await mssql().query(User.query.all());
+    return users;
+  },
+
+  async allFiltered() {
+    const { recordset: users } = await mssql().query(User.query.allFiltered());
     return users;
   },
 
@@ -209,6 +206,16 @@ export const User = {
           u.id, r.role AS role, u.active, u.email, u.profilePictureURI, u.fullName, u.username, u.initials
         FROM users u
         JOIN roles r ON r.id = u.role_id;
+      `;
+    },
+
+    allFiltered() {
+      return `
+        SELECT
+          u.profilePictureURI, u.fullName, u.username, u.initials
+        FROM users u
+        JOIN roles r ON r.id = u.role_id
+        WHERE r.role = 'User';
       `;
     },
 

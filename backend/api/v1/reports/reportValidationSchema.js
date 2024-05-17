@@ -16,13 +16,6 @@ const DEFAULT_CREATE = {
     },
   },
 
-  "**.dateTime": {
-    trim: {},
-    toUpperCase: {},
-    isDateTime: {
-      errorMessage: "invalid date & time, format is: MM/DD/YYYY HH:mm AM|PM.",
-    },
-  },
   assignedTo: {
     exists: { errorMessage: "required.", bail: true },
     notEmpty: { errorMessage: "can't be empty.", bail: true },
@@ -41,7 +34,6 @@ const DEFAULT_CREATE = {
    *  "call": {
    *    "date": "2023-11-05",
    *    "time": "00:12",
-   *    "dateTime": "11/5/2023 12:12 AM",
    *    "phone": "No Caller ID",
    *    "status": "Completed"
    *  }
@@ -94,7 +86,8 @@ const DEFAULT_CREATE = {
   },
   "store.number": {
     exists: { errorMessage: "required.", bail: true },
-    isArray: { errorMessage: "should be an array." },
+    isArray: { errorMessage: "should be an array enclosed by [].", bail: true },
+    isNotEmptyArray: { errorMessage: "array can't be empty.", bail: true },
     isIn: {
       options: [],
       errorMessage: "",
@@ -149,7 +142,7 @@ const DEFAULT_CREATE = {
    *      "number": "",
    *      "isIRCreated": false
    *    },
-   *    "details": ""
+   *    "details": "Hello World!"
    *  }
    ********************************************/
   incident: {
@@ -167,7 +160,8 @@ const DEFAULT_CREATE = {
   },
   "incident.type": {
     exists: { errorMessage: "required.", bail: true },
-    isArray: { errorMessage: "should be an array." },
+    isArray: { errorMessage: "should be an array enclosed by [].", bail: true },
+    isNotEmptyArray: { errorMessage: "array can't be empty.", bail: true },
     isIn: {
       options: [],
       errorMessage: `${config.validation.selects.incidentTypes.join(", ")}`,
@@ -210,7 +204,8 @@ const DEFAULT_CREATE = {
   },
   "incident.transaction.type": {
     optional: true,
-    isArray: { errorMessage: "should be an array." },
+    isArray: { errorMessage: "should be an array enclosed by [].", bail: true },
+    isNotEmptyArray: { errorMessage: "array can't be empty.", bail: true },
     isIn: {
       options: [],
       errorMessage: "",
@@ -218,14 +213,18 @@ const DEFAULT_CREATE = {
     // Keep unique values only
     customSanitizer: {
       options: (_, { req }) => {
-        return (req.body.store.number = [
+        return (req.body.incident.transaction.type = [
           ...new Set(req.body.incident.transaction.type),
         ]);
       },
     },
   },
   "incident.transaction.number": {
-    optional: true,
+    exists: {
+      errorMessage: "required.",
+      bail: true,
+      if: (_, { req }) => req.body.incident.transaction.type,
+    },
     isString: {
       errorMessage: "should be a string.",
     },
@@ -235,7 +234,11 @@ const DEFAULT_CREATE = {
     },
   },
   "incident.transaction.isIRCreated": {
-    optional: true,
+    exists: {
+      errorMessage: "required.",
+      bail: true,
+      if: (_, { req }) => req.body.incident.transaction.type,
+    },
     isBoolean: {
       options: { strict: true },
       errorMessage: "should be a boolean (true or false).",
@@ -257,16 +260,12 @@ export default {
    *  VALIDATION TO CREATE A REPORT
    **/
   create: {
-    // uuid: {
-    //   exists: { errorMessage: "required.", bail: true },
-    //   isUUID: { errorMessage: "invalid UUID." },
-    //   isNewReport: { errorMessage: "a report already exists with this id." },
-    // },
     ...DEFAULT_CREATE,
   },
 
   /**
-   *  VALIDATION TO UPDATE A REPORT (SAME AS CREATE, EXCEPT UUID)
+   *  VALIDATION TO UPDATE A REPORT
+   *  (SAME AS CREATE, EXCEPT: isDeleted, isWebhookSent, hasTriggeredWebhook)
    **/
   update: {
     ...DEFAULT_CREATE,

@@ -6,6 +6,9 @@ import reportValidationSchema from "./reportValidationSchema.js";
 // Custom validation to check if username exists in DB & and user is active
 export { isValidUsername } from "../users/userModel.js";
 
+// Custom validation to check if a JSON is not empty
+export const isNotEmptyArray = (array) => array.length > 0;
+
 // Custom validation to check if report exists in DB
 export const isNewReport = async (value) => {
   const [report] = await Report.findByUUID(value);
@@ -65,14 +68,6 @@ export const Report = {
     create: reportValidationSchema.create,
     update: reportValidationSchema.update,
     hardDelete: reportValidationSchema.hardDelete,
-  },
-
-  findBy: async (input, value, query) => {
-    const {
-      recordset: [report],
-    } = await mssql().input(input, value).query(query);
-
-    return report ? report : [];
   },
 
   findByUUID: async (uuid) => {

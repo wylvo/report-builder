@@ -26,6 +26,10 @@ export default {
     email: {
       exists: { errorMessage: "required.", bail: true },
       isEmail: { errorMessage: "invalid email address.", bail: true },
+      isLength: {
+        options: { max: 254 },
+        errorMessage: "invalid length, max of 254 characters allowed.",
+      },
       custom: {
         options: async (email) => {
           const user = await User.findByEmail(email);
@@ -38,6 +42,10 @@ export default {
       exists: { errorMessage: "required.", bail: true },
       notEmpty: { errorMessage: "can't be empty.", bail: true },
       isString: { errorMessage: "should be a string." },
+      isLength: {
+        options: { max: 128 },
+        errorMessage: "invalid length, max of 128 characters allowed.",
+      },
     },
     passwordConfirmation: {
       exists: { errorMessage: "required.", bail: true },
@@ -57,11 +65,19 @@ export default {
       exists: { errorMessage: "required.", bail: true },
       notEmpty: { errorMessage: "can't be empty.", bail: true },
       isString: { errorMessage: "should be a string." },
+      isLength: {
+        options: { max: 100 },
+        errorMessage: "invalid length, max of 100 characters allowed.",
+      },
     },
     username: {
       exists: { errorMessage: "required.", bail: true },
       notEmpty: { errorMessage: "can't be empty.", bail: true },
       isString: { errorMessage: "should be a string.", bail: true },
+      isLength: {
+        options: { max: 20 },
+        errorMessage: "invalid length, max of 20 characters allowed.",
+      },
       custom: {
         options: async (username, { req }) => {
           const user = await User.findByUsername(username);
@@ -84,65 +100,61 @@ export default {
   /**
    *  VALIDATION TO UPDATE A USER
    **/
-  update: {
-    role: {
-      optional: true,
-      isString: { errorMessage: "should be a string." },
-      isIn: {
-        options: [config.validation.selects.roles],
-        errorMessage: `only '${config.validation.selects.roles.join(
-          "', '"
-        )}' are allowed.`,
+  update() {
+    return {
+      role: {
+        ...this.create.role,
+        optional: true,
       },
-    },
-    active: {
-      optional: true,
-      isBoolean: {
-        options: { strict: true },
-        errorMessage: "should be a boolean (true or false).",
+      active: {
+        ...this.create.active,
+        optional: true,
       },
-    },
-    email: {
-      optional: true,
-      isEmail: { errorMessage: "invalid email address.", bail: true },
-      custom: {
-        options: async (email, { req }) => {
-          const user = await User.findByEmail(email);
-          if (user && String(user.id) !== req.params.id) throw new Error();
+      email: {
+        optional: true,
+        isEmail: { errorMessage: "invalid email address.", bail: true },
+        isLength: {
+          options: { max: 254 },
+          errorMessage: "invalid length, max of 254 characters allowed.",
         },
-        errorMessage: "already in use.",
-      },
-    },
-    profilePictureURI: {
-      optional: true,
-      isDataURI: { errorMessage: "invalid data URI" },
-    },
-    fullName: {
-      optional: true,
-      notEmpty: { errorMessage: "can't be empty.", bail: true },
-      isString: { errorMessage: "should be a string" },
-    },
-    username: {
-      optional: true,
-      notEmpty: { errorMessage: "can't be empty.", bail: true },
-      isString: { errorMessage: "should be a string", bail: true },
-      custom: {
-        options: async (username, { req }) => {
-          const user = await User.findByUsername(username);
-          if (user && String(user.id) !== req.params.id) throw new Error();
-          return user;
+        custom: {
+          options: async (email, { req }) => {
+            const user = await User.findByEmail(email);
+            if (user && String(user.id) !== req.params.id) throw new Error();
+          },
+          errorMessage: "already in use.",
         },
-        errorMessage: "already in use.",
       },
-    },
-    initials: {
-      optional: true,
-      isString: { errorMessage: "should be a string.", bail: true },
-      isLength: {
-        options: { max: 2 },
-        errorMessage: "invalid length, max 2 characters allowed.",
+      profilePictureURI: {
+        ...this.create.profilePictureURI,
+        optional: true,
       },
-    },
+      username: {
+        optional: true,
+        notEmpty: { errorMessage: "can't be empty.", bail: true },
+        isString: { errorMessage: "should be a string", bail: true },
+        isLength: {
+          options: { max: 20 },
+          errorMessage: "invalid length, max of 20 characters allowed.",
+        },
+        custom: {
+          options: async (username, { req }) => {
+            const user = await User.findByUsername(username);
+            if (user && String(user.id) !== req.params.id) throw new Error();
+            return user;
+          },
+          errorMessage: "already in use.",
+        },
+      },
+      username: {
+        ...this.create.username,
+        optional: true,
+      },
+      initials: {
+        ...this.create.initials,
+        optional: true,
+      },
+    };
   },
 
   /**
