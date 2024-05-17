@@ -29,40 +29,8 @@ const { checkSchema } = new ExpressValidator({
   isValidUsername,
 });
 
-const isTransactionObjectEmpty = (transaction) =>
-  Object.keys(transaction).length === 1 &&
-  transaction.type &&
-  transaction.type.length === 1 &&
-  transaction.type[0] === ""
-    ? true
-    : false;
-
-export const filterReportData = (data) => {
-  const transaction = data.incident.transaction;
-  if (isTransactionObjectEmpty(transaction)) data.incident.transaction = {};
-  return Object.keys(data)
-    .filter((key) => !["id"].includes(key))
-    .reduce((obj, key) => {
-      obj[key] = data[key];
-      return obj;
-    }, {});
-};
-
-export const filterReportArrayData = (data) => {
-  const reports = [];
-  if (data && Array.isArray(data))
-    data.forEach((obj) => reports.push(filterReportData(obj)));
-  return reports;
-};
-
 export const getAllReports = catchAsync(async (req, res, next) => {
-  const {
-    recordset: [reports],
-  } = await mssql().query(Report.query.all());
-
-  const { results, data } = !reports
-    ? { results: 0, data: [] }
-    : { results: reports.length, data: filterReportArrayData(reports) };
+  const { results, data } = await Report.all();
 
   res.status(200).json({
     status: "success",
@@ -72,13 +40,8 @@ export const getAllReports = catchAsync(async (req, res, next) => {
 });
 
 export const getAllSoftDeletedReports = catchAsync(async (req, res, next) => {
-  const {
-    recordset: [reports],
-  } = await mssql().query(Report.query.allSoftDeleted());
-
-  const { results, data } = !reports
-    ? { results: 0, data: [] }
-    : { results: reports.length, data: filterReportArrayData(reports) };
+  const softDeleted = true;
+  const { results, data } = await Report.all(softDeleted);
 
   res.status(200).json({
     status: "success",
@@ -90,43 +53,12 @@ export const getAllSoftDeletedReports = catchAsync(async (req, res, next) => {
 export const validateCreate = validateBody(checkSchema, Report.schema.create);
 
 export const createReport = catchAsync(async (req, res, next) => {
-  const { NVarChar } = mssqlDataTypes;
-
-  req.body.uuid = generateUUID();
-  req.body.version = config.version;
-  req.body.createdAt = dateISO8601(new Date());
-  req.body.updatedAt = dateISO8601(new Date());
-  req.body.createdBy = req.user.id;
-  req.body.updatedBy = req.user.id;
-  req.body.assignedTo = req.assignedTo;
-  req.body.isDeleted = false;
-  req.body.isWebhookSent = false;
-  req.body.hasTriggeredWebhook = false;
-  req.body.call.dateTime = dateMSSharePoint(
-    `${req.body.call.date} ${req.body.call.time}`
+  const report = await Report.create(
+    req.body,
+    req.user.id,
+    req.user.id,
+    req.assignedTo
   );
-  if (!req.body.incident.transaction.type) req.body.incident.transaction = {};
-
-  const body = [req.body];
-  const rawJSON = JSON.stringify(body);
-  const insert = Report.query.insert(
-    Report.query.insertStores(req.body.store.number),
-    Report.query.insertIncidentTypes(req.body.incident.type),
-    req.body.incident.transaction.type
-      ? Report.query.insertIncidentTransactionTypes(
-          req.body.incident.transaction.type
-        )
-      : ""
-  );
-
-  const {
-    recordset: [[report]],
-  } = await mssql()
-    .input("rawJSON", NVarChar, rawJSON)
-    .input("uuid", req.body.uuid)
-    .query(insert);
-
-  console.log(report);
 
   res.status(201).json({
     status: "success",
@@ -137,14 +69,14 @@ export const createReport = catchAsync(async (req, res, next) => {
 export const getReport = catchAsync(async (req, res, next) => {
   const id = req.params.id;
 
-  const [report] = await Report.findByUUID(id);
+  const [report] = await Report.findByUUID(id, true);
 
   if (!report)
     return next(new GlobalError(`Report not found with id: ${id}.`, 404));
 
   res.status(200).json({
     status: "success",
-    data: filterReportData(report),
+    data: report,
   });
 });
 
@@ -158,40 +90,16 @@ export const updateReport = catchAsync(async (req, res, next) => {
   if (!report)
     return next(new GlobalError(`Report not found with id: ${id}.`, 404));
 
-  const { NVarChar } = mssqlDataTypes;
-
-  req.body.version = config.version;
-  req.body.createdAt = report.createdAt;
-  req.body.updatedAt = dateISO8601(new Date());
-  req.body.createdBy = report.createdBy;
-  req.body.updatedBy = req.user.username;
-  req.body.call.dateTime = dateMSSharePoint(
-    `${req.body.call.date} ${req.body.call.time}`
+  const reportUpdated = await Report.update(
+    req.body,
+    report,
+    req.user.username
   );
-
-  const body = [req.body];
-  const rawJSON = JSON.stringify(body);
-  const update = Report.query.update(
-    Report.query.insertStores(req.body.store.number),
-    Report.query.insertIncidentTypes(req.body.incident.type),
-    req.body.incident.transaction.type
-      ? Report.query.insertIncidentTransactionTypes(
-          req.body.incident.transaction.type
-        )
-      : ""
-  );
-
-  const {
-    recordset: [[reportUpdated]],
-  } = await mssql()
-    .input("id", report.id)
-    .input("rawJSON", NVarChar, rawJSON)
-    .query(update);
 
   console.log(reportUpdated);
   res.status(201).json({
     status: "success",
-    data: filterReportData(reportUpdated),
+    data: reportUpdated,
   });
 });
 
@@ -199,14 +107,6 @@ export const validateHardDelete = validateBody(
   checkSchema,
   Report.schema.hardDelete
 );
-
-const hardDeleteReport = async (report) => {
-  await mssql().input("id", report.id).query(Report.query.delete);
-};
-
-const softDeleteReport = async (report) => {
-  await mssql().input("id", report.id).query(Report.query.softDelete);
-};
 
 export const deleteReport = catchAsync(async (req, res, next) => {
   const id = req.params.id;
@@ -217,10 +117,10 @@ export const deleteReport = catchAsync(async (req, res, next) => {
     return next(new GlobalError(`Report not found with id: ${id}.`, 404));
 
   // If regular user, ONLY soft delete allowed
-  if (req.user.role === "User") softDeleteReport(report);
+  if (req.user.role === "User") await Report.softDelete(report);
 
   // If admin, BOTH soft & hard delete allowed
-  if (req.user.role === "Admin" && req.body.isHardDelete) {
+  if (req.user.role === "Admin" && req.body.isHardDelete === true) {
     const password = await Report.superPassword();
 
     // For additional security, require for a password
@@ -232,8 +132,8 @@ export const deleteReport = catchAsync(async (req, res, next) => {
         )
       );
 
-    hardDeleteReport(report);
-  } else softDeleteReport(report);
+    await Report.hardDelete(report);
+  } else await Report.softDelete(report);
 
   res.status(204).json({
     status: "success",
@@ -254,13 +154,11 @@ export const undoSoftDeleteReport = async (req, res, next) => {
       new GlobalError(`Report is not marked as deleted with id: ${id}.`, 400)
     );
 
-  const {
-    recordset: [[reportUpdated]],
-  } = await mssql().input("id", report.id).query(Report.query.undoSoftDelete());
+  const reportUpdated = await Report.undoSoftDelete(report);
 
   res.status(200).json({
     status: "success",
-    data: filterReportData(reportUpdated),
+    data: reportUpdated,
   });
 };
 

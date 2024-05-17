@@ -1,7 +1,7 @@
 import { checkSchema } from "express-validator";
 
 import { User } from "./userModel.js";
-import { Report } from "../reports/reportModel.js";
+import { Report, filterReportArrayData } from "../reports/reportModel.js";
 import {
   resetUserPassword,
   validateResetPassword,
@@ -14,7 +14,6 @@ import {
   catchAsync,
   GlobalError,
 } from "../router.js";
-import { filterReportArrayData } from "../reports/reportController.js";
 
 export const filterObject = (obj, ...allowedFields) => {
   const newObj = {};

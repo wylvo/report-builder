@@ -1,6 +1,13 @@
 import validator from "validator";
 
-import { mssql } from "../router.js";
+import {
+  mssql,
+  mssqlDataTypes,
+  generateUUID,
+  config,
+  dateISO8601,
+  dateMSSharePoint,
+} from "../router.js";
 import reportValidationSchema from "./reportValidationSchema.js";
 
 // Custom validation to check if username exists in DB & and user is active
@@ -57,6 +64,42 @@ export const isTimeCustom = (value) => {
   return false;
 };
 
+const isTransactionObjectEmpty = (transaction) =>
+  Object.keys(transaction).length === 1 &&
+  transaction.type &&
+  transaction.type.length === 1 &&
+  transaction.type[0] === ""
+    ? true
+    : false;
+
+export const filterReportData = (data) => {
+  const transaction = data.incident.transaction;
+  if (isTransactionObjectEmpty(transaction)) data.incident.transaction = {};
+  return Object.keys(data)
+    .filter((key) => !["id"].includes(key))
+    .reduce((obj, key) => {
+      obj[key] = data[key];
+      return obj;
+    }, {});
+};
+
+export const filterReportArrayData = (data) => {
+  const reports = [];
+  if (data && Array.isArray(data))
+    data.forEach((obj) => reports.push(filterReportData(obj)));
+  return reports;
+};
+
+const insertManyToMany = (body) => ({
+  insertStores: Report.query.insertStores(body.store.number),
+  insertIncidentTypes: Report.query.insertIncidentTypes(body.incident.type),
+  insertIncidentTransactionTypes: body.incident.transaction.type
+    ? Report.query.insertIncidentTransactionTypes(
+        body.incident.transaction.type
+      )
+    : "",
+});
+
 export const Report = {
   /**
    * MIDDLEWARE VALIDATION BEFORE:
@@ -70,26 +113,26 @@ export const Report = {
     hardDelete: reportValidationSchema.hardDelete,
   },
 
-  findByUUID: async (uuid) => {
+  async findByUUID(uuid) {
     const {
       recordset: [report],
-    } = await mssql().input("uuid", uuid).query(Report.query.byUUID());
+    } = await mssql().input("uuid", uuid).query(this.query.byUUID());
 
     return report ? report : [];
   },
 
-  findById: async (id) => {
+  async findById(id) {
     const {
       recordset: [report],
-    } = await mssql().input("id", id).query(Report.query.byId());
+    } = await mssql().input("id", id).query(this.query.byId());
 
-    return report ? report : [];
+    return report ? filterReportData(report[0]) : [];
   },
 
-  superPassword: async () => {
+  async superPassword() {
     const {
       recordset: [{ password }],
-    } = await mssql().query(Report.query.getSuperPassword);
+    } = await mssql().query(this.query.getSuperPassword);
 
     return password;
   },
@@ -102,6 +145,110 @@ export const Report = {
     return mssql()
       .input("userId", userId)
       .query(this.query.byCreatedBySoftDeleted());
+  },
+
+  async all(softDeleted = false) {
+    const {
+      recordset: [reports],
+    } = await mssql().query(
+      softDeleted ? this.query.allSoftDeleted() : this.query.all()
+    );
+
+    return !reports
+      ? { results: 0, data: [] }
+      : { results: reports.length, data: filterReportArrayData(reports) };
+  },
+
+  async create(body, createdBy, updatedBy, assignedTo) {
+    const { NVarChar } = mssqlDataTypes;
+
+    body.uuid = generateUUID();
+    body.version = config.version;
+    body.createdAt = dateISO8601(new Date());
+    body.updatedAt = dateISO8601(new Date());
+    body.createdBy = createdBy;
+    body.updatedBy = updatedBy;
+    body.assignedTo = assignedTo;
+    body.isDeleted = false;
+    body.isWebhookSent = false;
+    body.hasTriggeredWebhook = false;
+    body.call.dateTime = dateMSSharePoint(
+      `${body.call.date} ${body.call.time}`
+    );
+    if (!body.incident.transaction.type) body.incident.transaction = {};
+
+    const rawJSON = JSON.stringify([body]);
+    const {
+      insertStores,
+      insertIncidentTypes,
+      insertIncidentTransactionTypes,
+    } = insertManyToMany(body);
+    const insert = this.query.insert(
+      insertStores,
+      insertIncidentTypes,
+      insertIncidentTransactionTypes
+    );
+
+    const {
+      recordset: [[report]],
+    } = await mssql()
+      .input("rawJSON", NVarChar, rawJSON)
+      .input("uuid", body.uuid)
+      .query(insert);
+
+    return filterReportData(report);
+  },
+
+  async update(body, report, updatedBy) {
+    const { NVarChar } = mssqlDataTypes;
+
+    body.version = config.version;
+    body.createdAt = report.createdAt;
+    body.updatedAt = dateISO8601(new Date());
+    body.createdBy = report.createdBy;
+    body.updatedBy = updatedBy;
+    body.call.dateTime = dateMSSharePoint(
+      `${body.call.date} ${body.call.time}`
+    );
+
+    const rawJSON = JSON.stringify([body]);
+    const {
+      insertStores,
+      insertIncidentTypes,
+      insertIncidentTransactionTypes,
+    } = insertManyToMany(body);
+    const update = this.query.update(
+      insertStores,
+      insertIncidentTypes,
+      insertIncidentTransactionTypes
+    );
+
+    console.log(update);
+
+    const {
+      recordset: [[reportUpdated]],
+    } = await mssql()
+      .input("id", report.id)
+      .input("rawJSON", NVarChar, rawJSON)
+      .query(update);
+
+    return filterReportData(reportUpdated);
+  },
+
+  async hardDelete(report) {
+    return await mssql().input("id", report.id).query(this.query.delete);
+  },
+
+  async softDelete(report) {
+    return await mssql().input("id", report.id).query(this.query.softDelete);
+  },
+
+  async undoSoftDelete(report) {
+    const {
+      recordset: [[reportUpdated]],
+    } = await mssql().input("id", report.id).query(this.query.undoSoftDelete());
+
+    return filterReportData(reportUpdated);
   },
 
   /**
