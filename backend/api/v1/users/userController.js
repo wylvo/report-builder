@@ -113,22 +113,9 @@ export const updateUser = catchAsync(async (req, res, next) => {
 
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
+  console.log(user);
 
-  const { NVarChar } = mssqlDataTypes;
-
-  if (!req.body.profilePictureURI)
-    req.body.profilePictureURI = config.misc.defaultProfilePicture;
-
-  const body = [req.body];
-  const rawJSON = JSON.stringify(body);
-
-  const {
-    recordset: [userUpdated],
-  } = await mssql()
-    .input("id", user.id)
-    .input("role", user.role)
-    .input("rawJSON", NVarChar, rawJSON)
-    .query(User.query.update());
+  const userUpdated = await User.update(req.body, user);
 
   res.status(201).json({
     status: "success",
@@ -144,7 +131,7 @@ export const deleteUser = catchAsync(async (req, res, next) => {
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
 
-  await mssql().input("id", user.id).query(User.query.delete);
+  await User.delete(user);
 
   res.status(204).json({
     status: "success",
@@ -163,9 +150,7 @@ export const enableUser = async (req, res, next) => {
   if (user.active === true)
     return next(new GlobalError(`User is already active with id: ${id}.`, 400));
 
-  const {
-    recordset: [userUpdated],
-  } = await mssql().input("id", user.id).query(User.query.enable());
+  const userUpdated = await User.enable(user);
 
   res.status(200).json({
     status: "success",
@@ -186,9 +171,7 @@ export const disableUser = async (req, res, next) => {
       new GlobalError(`User is already inactive with id: ${id}.`, 400)
     );
 
-  const {
-    recordset: [userUpdated],
-  } = await mssql().input("id", user.id).query(User.query.disable());
+  const userUpdated = await User.disable(user);
 
   res.status(200).json({
     status: "success",

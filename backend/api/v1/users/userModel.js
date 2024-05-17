@@ -1,5 +1,5 @@
 import userValidationSchema from "./userValidationSchema.js";
-import { mssql, hashPassword, config } from "../router.js";
+import { mssql, hashPassword, config, mssqlDataTypes } from "../router.js";
 
 // Custom validation to check if username exists in DB & and user is active
 export const isValidUsername = async (value, { req }) => {
@@ -112,6 +112,44 @@ export const User = {
       .query(this.query.insert());
 
     return user;
+  },
+
+  async update(body, user) {
+    const { NVarChar } = mssqlDataTypes;
+
+    if (!body.profilePictureURI)
+      body.profilePictureURI = config.misc.defaultProfilePicture;
+
+    const rawJSON = JSON.stringify([body]);
+
+    const {
+      recordset: [userUpdated],
+    } = await mssql()
+      .input("id", user.id)
+      .input("role", body.role)
+      .input("rawJSON", NVarChar, rawJSON)
+      .query(this.query.update());
+
+    return userUpdated;
+  },
+
+  async delete(user) {
+    return await mssql().input("id", user.id).query(this.query.delete);
+  },
+
+  async enable(user) {
+    const {
+      recordset: [userUpdated],
+    } = await mssql().input("id", user.id).query(this.query.enable());
+
+    return userUpdated;
+  },
+  async disable(user) {
+    const {
+      recordset: [userUpdated],
+    } = await mssql().input("id", user.id).query(this.query.disable());
+
+    return userUpdated;
   },
 
   /**

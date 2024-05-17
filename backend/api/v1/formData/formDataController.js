@@ -43,6 +43,8 @@ export const updateFormDataConfig = async () => {
   } = await getFormDataSelectionOptions();
 
   const other = "Other";
+
+  // If type includes "Other" push the element to the end of the array
   [incidentTypes, incidentTransactionTypes].forEach((elementArr) =>
     elementArr.includes(other)
       ? elementArr.push(elementArr.splice(elementArr.indexOf(other), 1)[0])

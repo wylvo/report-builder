@@ -8,9 +8,10 @@ import {
   hashPassword,
   catchAsync,
   GlobalError,
+  validateBody,
+  dateISO8601,
 } from "../../router.js";
 import ResetPassword from "./resetPasswordModel.js";
-import { validateBody } from "../../../../validation/validation.js";
 
 export const validateResetPassword = validateBody(
   checkSchema,
@@ -27,15 +28,16 @@ export const resetUserPassword = catchAsync(async (req, res, next) => {
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
 
-  let { password, passwordConfirmation } = req.body;
+  let { password } = req.body;
 
   // Set new password
   const newPassword = await hashPassword(password);
   password = undefined;
-  passwordConfirmation = undefined;
+  req.body.password = undefined;
+  req.body.passwordConfirmation = undefined;
 
   user.password = newPassword;
-  user.passwordResetAt = Date.now() - 1000;
+  user.passwordResetAt = dateISO8601(new Date(Date.now() - 1000));
 
   const rawJSON = JSON.stringify(user);
 

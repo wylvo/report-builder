@@ -46,7 +46,7 @@ export default {
         options: (value, { req }) => {
           return value === req.body.password;
         },
-        errorMessage: "Passwords do not match.",
+        errorMessage: "passwords do not match.",
       },
     },
     profilePictureURI: {
