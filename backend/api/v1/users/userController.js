@@ -100,7 +100,7 @@ export const getUser = catchAsync(async (req, res, next) => {
     },
   ] = await Promise.all([
     Report.createdBy(user.id),
-    Report.createdBySoftDeleted(user.id),
+    Report.softDeletedCreatedBy(user.id),
   ]);
 
   res.status(200).json({

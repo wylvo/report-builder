@@ -18,7 +18,7 @@ export const isNotEmptyArray = (array) => array.length > 0;
 
 // Custom validation to check if report exists in DB
 export const isNewReport = async (value) => {
-  const [report] = await Report.findByUUID(value);
+  const report = await Report.findByUUID(value);
   if (report) throw new Error();
 };
 
@@ -116,42 +116,47 @@ export const Report = {
   async findByUUID(uuid) {
     const {
       recordset: [report],
-    } = await mssql().input("uuid", uuid).query(this.query.byUUID());
+    } = await mssql().input("uuid", uuid).execute("API_V1_getReportByUUID");
 
-    return report ? report : [];
+    return report ? report : undefined;
   },
 
   async findById(id) {
+    const { Int } = mssqlDataTypes;
     const {
       recordset: [report],
-    } = await mssql().input("id", id).query(this.query.byId());
+    } = await mssql().input("id", Int, id).execute("API_V1_getReportById");
 
-    return report ? filterReportData(report[0]) : [];
+    return report ? report : undefined;
   },
 
   async superPassword() {
     const {
       recordset: [{ password }],
-    } = await mssql().query(this.query.getSuperPassword);
+    } = await mssql().execute("API_V1_getSuperPassword");
 
     return password;
   },
 
   async createdBy(userId) {
-    return mssql().input("userId", userId).query(this.query.byCreatedBy());
+    const { Int } = mssqlDataTypes;
+    return mssql()
+      .input("userId", Int, userId)
+      .execute("API_V1_getReportsCreatedByUserId");
   },
 
-  async createdBySoftDeleted(userId) {
+  async softDeletedCreatedBy(userId) {
+    const { Int } = mssqlDataTypes;
     return mssql()
-      .input("userId", userId)
-      .query(this.query.byCreatedBySoftDeleted());
+      .input("userId", Int, userId)
+      .execute("API_V1_getReportsSoftDeletedCreatedByUserId");
   },
 
   async all(softDeleted = false) {
     const {
       recordset: [reports],
-    } = await mssql().query(
-      softDeleted ? this.query.allSoftDeleted() : this.query.all()
+    } = await mssql().execute(
+      softDeleted ? "API_V1_getReportsSoftDeleted" : "API_V1_getReports"
     );
 
     return !reports
@@ -164,18 +169,24 @@ export const Report = {
 
     body.uuid = generateUUID();
     body.version = config.version;
-    body.createdAt = dateISO8601(new Date());
-    body.updatedAt = dateISO8601(new Date());
     body.createdBy = createdBy;
     body.updatedBy = updatedBy;
     body.assignedTo = assignedTo;
-    body.isDeleted = false;
-    body.isWebhookSent = false;
-    body.hasTriggeredWebhook = false;
     body.call.dateTime = dateMSSharePoint(
       `${body.call.date} ${body.call.time}`
     );
     if (!body.incident.transaction.type) body.incident.transaction = {};
+
+    const transaction = mssql("transaction");
+    try {
+      await transaction.begin();
+
+      transaction.pre;
+
+      await transaction.commit();
+    } catch (error) {
+      await transaction.rollback();
+    }
 
     const rawJSON = JSON.stringify([body]);
     const {
@@ -236,17 +247,27 @@ export const Report = {
   },
 
   async hardDelete(report) {
-    return await mssql().input("id", report.id).query(this.query.delete);
+    return await mssql("transaction")
+      .input("id", report.id)
+      .query(this.query.delete);
   },
 
   async softDelete(report) {
-    return await mssql().input("id", report.id).query(this.query.softDelete);
+    const {
+      recordset: [reportUpdated],
+    } = await mssql()
+      .input("id", report.id)
+      .execute("API_V1_softDeleteReportById");
+
+    return filterReportData(reportUpdated);
   },
 
   async undoSoftDelete(report) {
     const {
-      recordset: [[reportUpdated]],
-    } = await mssql().input("id", report.id).query(this.query.undoSoftDelete());
+      recordset: [reportUpdated],
+    } = await mssql()
+      .input("id", report.id)
+      .execute("API_V1_undoSoftDeleteReportById");
 
     return filterReportData(reportUpdated);
   },
@@ -412,84 +433,9 @@ export const Report = {
       incidentDetails VARCHAR(2000) 'strict $.incident.details'
     `,
 
-    byUUID() {
-      return `
-        SELECT
-          ${this.JSONSelect}
-        FROM reports r
-        JOIN users usr1 ON usr1.id = r.createdBy
-        JOIN users usr2 ON usr2.id = r.updatedBy
-        JOIN users usr3 ON usr3.id = r.assignedTo
-        WHERE r.uuid = @uuid
-        FOR JSON PATH;
-      `;
-    },
-
     byId() {
       return `
-        SELECT 
-          ${this.JSONSelect}
-        FROM reports r
-        JOIN users usr1 ON usr1.id = r.createdBy
-        JOIN users usr2 ON usr2.id = r.updatedBy
-        JOIN users usr3 ON usr3.id = r.assignedTo
-        WHERE r.id = @id
-        FOR JSON PATH;
-      `;
-    },
-
-    byCreatedBy() {
-      return `
-        SELECT
-          ${this.JSONSelect}
-        FROM reports r
-        JOIN users usr1 ON usr1.id = r.createdBy
-        JOIN users usr2 ON usr2.id = r.updatedBy
-        JOIN users usr3 ON usr3.id = r.assignedTo
-        WHERE r.isDeleted = 0 AND r.createdBy = @userId
-        ORDER BY r.createdAt DESC
-        FOR JSON PATH;
-      `;
-    },
-
-    byCreatedBySoftDeleted() {
-      return `
-        SELECT 
-          ${this.JSONSelect}
-        FROM reports r
-        JOIN users usr1 ON usr1.id = r.createdBy
-        JOIN users usr2 ON usr2.id = r.updatedBy
-        JOIN users usr3 ON usr3.id = r.assignedTo
-        WHERE r.isDeleted = 1 AND r.createdBy = @userId
-        ORDER BY r.updatedAt DESC
-        FOR JSON PATH;
-      `;
-    },
-
-    all() {
-      return `
-        SELECT
-          ${this.JSONSelect}
-        FROM reports r
-        JOIN users usr1 ON usr1.id = r.createdBy
-        JOIN users usr2 ON usr2.id = r.updatedBy
-        JOIN users usr3 ON usr3.id = r.assignedTo
-        WHERE r.isDeleted = 0
-        ORDER BY r.createdAt DESC
-        FOR JSON PATH;
-      `;
-    },
-
-    allSoftDeleted() {
-      return `
-        SELECT 
-          ${this.JSONSelect}
-        FROM reports r
-        JOIN users usr1 ON usr1.id = r.createdBy
-        JOIN users usr2 ON usr2.id = r.updatedBy
-        JOIN users usr3 ON usr3.id = r.assignedTo
-        WHERE r.isDeleted = 1
-        ORDER BY updatedAt DESC
+        SELECT * FROM dbo.getReportById(@id)
         FOR JSON PATH;
       `;
     },
@@ -498,12 +444,50 @@ export const Report = {
     insert(insertStores, insertIncidentTypes, insertIncidentTransactionTypes) {
       return `
         INSERT INTO
-          reports
-        SELECT
-          *
-        FROM OPENJSON(@rawJSON)
-        WITH (
-          ${this.withClause}
+        reports (
+          version,
+          createdBy,
+          updatedBy,
+          assignedTo,
+          isOnCall,
+          callDate,
+          callTime,
+          callDateTime,
+          callPhone,
+          callStatus,
+          storeEmployeeName,
+          storeEmployeeIsStoreManager,
+          storeDistrictManagerIsContacted,
+          incidentTitle,
+          incidentPos,
+          incidentIsProcedural,
+          incidentError,
+          incidentTransactionNumber,
+          incidentTransactionIsIRCreated,
+          incidentDetails
+        )
+        VALUES
+        (
+          @version,
+          @createdBy,
+          @updatedBy,
+          @assignedTo,
+          @isOnCall,
+          @callDate,
+          @callTime,
+          @callDateTime,
+          @callPhone,
+          @callStatus,
+          @storeEmployeeName,
+          @storeEmployeeIsStoreManager,
+          @storeDistrictManagerIsContacted,
+          @incidentTitle,
+          @incidentPos,
+          @incidentIsProcedural,
+          @incidentError,
+          @incidentTransactionNumber,
+          @incidentTransactionIsIRCreated,
+          @incidentDetails
         );
 
         DECLARE @id INT = SCOPE_IDENTITY()
@@ -512,14 +496,7 @@ export const Report = {
         ${insertIncidentTypes}
         ${insertIncidentTransactionTypes}
 
-        SELECT
-          ${this.JSONSelect}
-        FROM reports r
-        JOIN users usr1 ON usr1.id = r.createdBy
-        JOIN users usr2 ON usr2.id = r.updatedBy
-        JOIN users usr3 ON usr3.id = r.assignedTo
-        WHERE r.id = @id
-        FOR JSON PATH;
+        ${this.byId()}
       `;
     },
 
@@ -628,25 +605,5 @@ export const Report = {
 
       DELETE FROM reports WHERE id = @id;
     `,
-
-    softDelete: `
-      UPDATE reports
-      SET isDeleted = 1,
-      updatedAt = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE 'Eastern Standard Time'
-      WHERE id = @id;
-    `,
-
-    undoSoftDelete() {
-      return `
-        UPDATE reports
-        SET isDeleted = 0,
-        updatedAt = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE 'Eastern Standard Time'
-        WHERE id = @id;
-
-        ${this.byId()}
-      `;
-    },
-
-    getSuperPassword: "SELECT password FROM super;",
   },
 };

@@ -67,12 +67,12 @@ export const createReport = catchAsync(async (req, res, next) => {
 });
 
 export const getReport = catchAsync(async (req, res, next) => {
-  const id = req.params.id;
+  const uuid = req.params.id;
 
-  const [report] = await Report.findByUUID(id, true);
+  const report = await Report.findByUUID(uuid);
 
   if (!report)
-    return next(new GlobalError(`Report not found with id: ${id}.`, 404));
+    return next(new GlobalError(`Report not found with id: ${uuid}.`, 404));
 
   res.status(200).json({
     status: "success",
@@ -83,12 +83,12 @@ export const getReport = catchAsync(async (req, res, next) => {
 export const validateUpdate = validateBody(checkSchema, Report.schema.update);
 
 export const updateReport = catchAsync(async (req, res, next) => {
-  const id = req.params.id;
+  const uuid = req.params.id;
 
-  const [report] = await Report.findByUUID(id);
+  const report = await Report.findByUUID(uuid);
 
   if (!report)
-    return next(new GlobalError(`Report not found with id: ${id}.`, 404));
+    return next(new GlobalError(`Report not found with id: ${uuid}.`, 404));
 
   const reportUpdated = await Report.update(
     req.body,
@@ -109,12 +109,12 @@ export const validateHardDelete = validateBody(
 );
 
 export const deleteReport = catchAsync(async (req, res, next) => {
-  const id = req.params.id;
+  const uuid = req.params.id;
 
-  const [report] = await Report.findByUUID(id);
+  const report = await Report.findByUUID(uuid);
 
   if (!report)
-    return next(new GlobalError(`Report not found with id: ${id}.`, 404));
+    return next(new GlobalError(`Report not found with id: ${uuid}.`, 404));
 
   // If regular user, ONLY soft delete allowed
   if (req.user.role === "User") await Report.softDelete(report);
@@ -142,12 +142,12 @@ export const deleteReport = catchAsync(async (req, res, next) => {
 });
 
 export const undoSoftDeleteReport = async (req, res, next) => {
-  const id = req.params.id;
+  const uuid = req.params.id;
 
-  const [report] = await Report.findByUUID(id);
+  const report = await Report.findByUUID(uuid);
 
   if (!report)
-    return next(new GlobalError(`Report not found with id: ${id}.`, 404));
+    return next(new GlobalError(`Report not found with id: ${uuid}.`, 404));
 
   if (report.isDeleted === false)
     return next(

@@ -42,7 +42,7 @@ export const connectToDB = async () => {
 
 export const mssqlPool = [];
 
-export const mssql = () => {
+export const mssql = (type) => {
   if (mssqlPool.length === 0)
     new GlobalError(
       "No connection pool found. Please make sure DB connection has established.",
@@ -51,10 +51,13 @@ export const mssql = () => {
 
   const [pool] = mssqlPool;
 
+  if (type === "preparedStatement") return new sql.PreparedStatement(pool);
+  if (type === "transaction") return new sql.Transaction(pool);
   return new sql.Request(pool);
 };
 
 export const mssqlDataTypes = {
+  UniqueIdentifier: sql.UniqueIdentifier,
   NVarChar: sql.NVarChar,
   Int: sql.Int,
   Bit: sql.Bit,
