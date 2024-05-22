@@ -36,8 +36,16 @@ export const connectToDB = async () => {
   const pool = await new sql.ConnectionPool(dbConfig).connect();
   if (pool.connected) {
     console.log("MS SQL Server connection successful!");
-    console.log("Pool Max Size:", pool.pool.max);
+    console.log("Pool max size:", pool.pool.max);
     mssqlPool.push(pool);
+
+    console.time("Pool warmed in");
+    await Promise.all(
+      Array.from(new Array(pool.pool.max)).map(() =>
+        pool.request().query("SELECT 1")
+      )
+    );
+    console.timeEnd("Pool warmed in");
 
     // const row = {
     //   password: "''); DROP TABLE reportIncidentTransactionTypes;--",

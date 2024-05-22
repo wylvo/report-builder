@@ -67,13 +67,14 @@ export const createReport = catchAsync(async (req, res, next) => {
     await transaction.commit();
 
     console.timeEnd("Insert");
-    console.log(report);
+    // console.log(report);
 
     res.status(201).json({
       status: "success",
       data: report,
     });
   } catch (error) {
+    console.error(error);
     await transaction.rollback();
     return next(
       new GlobalError(
@@ -183,7 +184,7 @@ export const undoSoftDeleteReport = async (req, res, next) => {
 export const validateImport = validateBody(checkSchema, Report.schema.import);
 
 export const importReport = catchAsync(async (req, res, next) => {
-  const transaction = mssql("transaction");
+  const transaction = mssql().transaction;
 
   try {
     await transaction.begin();

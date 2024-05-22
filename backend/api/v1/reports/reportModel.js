@@ -178,6 +178,7 @@ export const Report = {
       : { results: reports.length, data: filterReportArrayData(reports) };
   },
 
+  // prettier-ignore
   async create(body, createdByAndUpdatedBy, assignedTo, transaction) {
     const { UniqueIdentifier, VarChar, Int, Bit, Date, Time } = mssqlDataTypes;
 
@@ -206,17 +207,13 @@ export const Report = {
     report.input("callPhone", VarChar, body.call.phone);
     report.input("callStatus", VarChar, body.call.status);
     report.input("storeEmployeeName", VarChar, body.store.employee.name);
-    // prettier-ignore
     report.input("storeEmployeeIsStoreManager", Bit, body.store.employee.isStoreManager);
-    // prettier-ignore
     report.input("storeDistrictManagerIsContacted", Bit, body.store.districtManager.isContacted);
     report.input("incidentTitle", VarChar, body.incident.title);
     report.input("incidentPos", VarChar, body.incident.pos);
     report.input("incidentIsProcedural", Bit, body.incident.isProcedural);
     report.input("incidentError", VarChar, body.incident.error);
-    // prettier-ignore
     report.input("incidentTransactionNumber", VarChar, body.incident.transaction.number);
-    // prettier-ignore
     report.input("incidentTransactionIsIRCreated", Bit, body.incident.transaction.isIRCreated);
     report.input("incidentDetails", VarChar, body.incident.details);
     report.input("returnNewReport", Bit, 0);
@@ -226,31 +223,20 @@ export const Report = {
     );
 
     const stores = mssql(transaction).request;
-    const insertStores = insertManyToMany(
-      body.store.number,
-      reportId,
-      stores,
-      this.insertStores
-    );
+    const insertStores =
+      insertManyToMany(body.store.number, reportId, stores, this.insertStores);
+
+    const incidentTypes = mssql(transaction).request;
+    const insertIncidentTypes =
+      insertManyToMany(body.incident.type, reportId, incidentTypes, this.insertIncidentTypes);
+
+    const incidentTransactionTypes = mssql(transaction).request;
+    const insertIncidentTransactionTypes =
+      insertManyToMany(body.incident.transaction.type, reportId, incidentTransactionTypes, this.insertIncidentTransactionTypes);
+
     await stores.query(insertStores);
-
-    const incTypes = mssql(transaction).request;
-    const insertIncTypes = insertManyToMany(
-      body.incident.type,
-      reportId,
-      incTypes,
-      this.insertIncidentTypes
-    );
-    await incTypes.query(insertIncTypes);
-
-    const incTxnTypes = mssql(transaction).request;
-    const insertIncTxnTypes = insertManyToMany(
-      body.incident.transaction.type,
-      reportId,
-      incTxnTypes,
-      this.insertIncidentTransactionTypes
-    );
-    await incTxnTypes.query(insertIncTxnTypes);
+    await incidentTypes.query(insertIncidentTypes);
+    await incidentTransactionTypes.query(insertIncidentTransactionTypes);
 
     const getNewReport = mssql(transaction).request;
 
@@ -327,33 +313,33 @@ export const Report = {
 
   // prettier-ignore
   insertStores() {
-        return {
-          row: (param) =>
-            `(@reportId, (SELECT id FROM stores WHERE number = ${"@" + param}))`,
-          query: (rows) =>
-            `INSERT INTO reportStores (report_id, store_id) VALUES ${rows.join(", ")};`,
-        };
-      },
+    return {
+      row: (param) =>
+        `(@reportId, (SELECT id FROM stores WHERE number = ${"@" + param}))`,
+      query: (rows) =>
+        `INSERT INTO reportStores (report_id, store_id) VALUES ${rows.join(", ")};`,
+    };
+  },
 
   // prettier-ignore
   insertIncidentTypes() {
-        return {
-          row: (param) =>
-            `(@reportId, (SELECT id FROM incidentTypes WHERE type = ${"@" + param}))`,
-          query: (rows) =>
-            `INSERT INTO reportIncidentTypes (report_id, incidentType_id) VALUES ${rows.join(", ")};`,
-        };
-      },
+    return {
+      row: (param) =>
+        `(@reportId, (SELECT id FROM incidentTypes WHERE type = ${"@" + param}))`,
+      query: (rows) =>
+        `INSERT INTO reportIncidentTypes (report_id, incidentType_id) VALUES ${rows.join(", ")};`,
+    };
+  },
 
   // prettier-ignore
   insertIncidentTransactionTypes() {
-        return {
-          row: (param) =>
-            `(@reportId, (SELECT id FROM incidentTransactionTypes WHERE type = ${"@" + param}))`,
-          query: (rows) =>
-            `INSERT INTO reportIncidentTransactionTypes (report_id, incidentTransactionType_id) VALUES ${rows.join(", ")};`,
-        };
-      },
+    return {
+      row: (param) =>
+        `(@reportId, (SELECT id FROM incidentTransactionTypes WHERE type = ${"@" + param}))`,
+      query: (rows) =>
+        `INSERT INTO reportIncidentTransactionTypes (report_id, incidentTransactionType_id) VALUES ${rows.join(", ")};`,
+    };
+  },
 
   /**
    *  ALL MS SQL SERVER QUERIES RELATED TO REPORTS
@@ -472,7 +458,7 @@ export const Report = {
     req.body.updatedBy = createdByAndUpdatedBy;
     if (!body.incident.transaction.type) body.incident.transaction = {};
 
-    const preparedStatement = mssql("preparedStatement", transaction);
+    const preparedStatement = mssql().preparedStatement;
 
     preparedStatement.input("uuid", UniqueIdentifier);
     preparedStatement.input("version", VarChar);
