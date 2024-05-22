@@ -36,13 +36,24 @@ export const connectToDB = async () => {
   const pool = await new sql.ConnectionPool(dbConfig).connect();
   if (pool.connected) {
     console.log("MS SQL Server connection successful!");
+    console.log("Pool Max Size:", pool.pool.max);
     mssqlPool.push(pool);
+
+    // const row = {
+    //   password: "''); DROP TABLE reportIncidentTransactionTypes;--",
+    // };
+    // const pInserts = await pool.request()
+    //   .query`INSERT INTO [super] ([password]) VALUES (${row.password})`;
+    // const users = await pool.request()
+    //   .query`SELECT * FROM reportIncidentTransactionTypes`;
+    // console.log(pInserts);
+    // console.log(users.recordset);
   }
 };
 
 export const mssqlPool = [];
 
-export const mssql = (type) => {
+export const mssql = (existingPool = undefined) => {
   if (mssqlPool.length === 0)
     new GlobalError(
       "No connection pool found. Please make sure DB connection has established.",
@@ -51,14 +62,26 @@ export const mssql = (type) => {
 
   const [pool] = mssqlPool;
 
-  if (type === "preparedStatement") return new sql.PreparedStatement(pool);
-  if (type === "transaction") return new sql.Transaction(pool);
-  return new sql.Request(pool);
+  return {
+    preparedStatement: new sql.PreparedStatement(
+      existingPool ? existingPool : pool
+    ),
+    transaction: new sql.Transaction(existingPool ? existingPool : pool),
+    request: new sql.Request(existingPool ? existingPool : pool),
+  };
+  // if (type === "preparedStatement")
+  //   return new sql.PreparedStatement(existingPool ? existingPool : pool);
+  // if (type === "transaction")
+  //   return new sql.Transaction(existingPool ? existingPool : pool);
+  // return new sql.Request(existingPool ? existingPool : pool);
 };
 
 export const mssqlDataTypes = {
   UniqueIdentifier: sql.UniqueIdentifier,
   NVarChar: sql.NVarChar,
+  VarChar: sql.VarChar,
+  Date: sql.Date,
+  Time: sql.Time,
   Int: sql.Int,
   Bit: sql.Bit,
   DateTimeOffset: sql.DateTimeOffset,

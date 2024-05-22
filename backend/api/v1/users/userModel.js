@@ -39,7 +39,7 @@ export const User = {
   findByUUID: async (uuid) => {
     const {
       recordset: [user],
-    } = await mssql().input("uuid", uuid).query(User.query.byUUID());
+    } = await mssql().request.input("uuid", uuid).query(User.query.byUUID());
 
     return user;
   },
@@ -47,7 +47,7 @@ export const User = {
   findById: async (id) => {
     const {
       recordset: [user],
-    } = await mssql().input("id", id).query(User.query.byId());
+    } = await mssql().request.input("id", id).query(User.query.byId());
 
     return user;
   },
@@ -55,7 +55,7 @@ export const User = {
   findByEmail: async (email) => {
     const {
       recordset: [user],
-    } = await mssql().input("email", email).query(User.query.byEmail());
+    } = await mssql().request.input("email", email).query(User.query.byEmail());
 
     return user;
   },
@@ -64,19 +64,21 @@ export const User = {
     const {
       recordset: [user],
     } = await mssql()
-      .input("username", username)
+      .request.input("username", username)
       .query(User.query.byUsername());
 
     return user;
   },
 
   async all() {
-    const { recordset: users } = await mssql().query(User.query.all());
+    const { recordset: users } = await mssql().request.query(User.query.all());
     return users;
   },
 
   async allFiltered() {
-    const { recordset: users } = await mssql().query(User.query.allFiltered());
+    const { recordset: users } = await mssql().request.query(
+      User.query.allFiltered()
+    );
     return users;
   },
 
@@ -95,7 +97,7 @@ export const User = {
     const {
       recordset: [user],
     } = await mssql()
-      .input("role", role)
+      .request.input("role", role)
       .input("active", active ?? true)
       .input("email", email)
       .input("password", await hashPassword(password))
@@ -122,7 +124,7 @@ export const User = {
     const {
       recordset: [userUpdated],
     } = await mssql()
-      .input("id", user.id)
+      .request.input("id", user.id)
       .input("role", body.role)
       .input("rawJSON", NVarChar, rawJSON)
       .query(this.query.update());
@@ -131,20 +133,20 @@ export const User = {
   },
 
   async delete(user) {
-    return await mssql().input("id", user.id).query(this.query.delete);
+    return await mssql().request.input("id", user.id).query(this.query.delete);
   },
 
   async enable(user) {
     const {
       recordset: [userUpdated],
-    } = await mssql().input("id", user.id).query(this.query.enable());
+    } = await mssql().request.input("id", user.id).query(this.query.enable());
 
     return userUpdated;
   },
   async disable(user) {
     const {
       recordset: [userUpdated],
-    } = await mssql().input("id", user.id).query(this.query.disable());
+    } = await mssql().request.input("id", user.id).query(this.query.disable());
 
     return userUpdated;
   },

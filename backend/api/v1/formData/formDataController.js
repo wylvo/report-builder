@@ -29,7 +29,7 @@ export const synchonizeReportValidation = catchAsync(async (req, res, next) => {
 const getFormDataSelectionOptions = async (type = "all") => {
   const {
     recordset: [formData],
-  } = await mssql().query(FormData.query.getSelectionOptions(type));
+  } = await mssql().request.query(FormData.query.getSelectionOptions(type));
 
   return formData;
 };

@@ -53,17 +53,35 @@ export const getAllSoftDeletedReports = catchAsync(async (req, res, next) => {
 export const validateCreate = validateBody(checkSchema, Report.schema.create);
 
 export const createReport = catchAsync(async (req, res, next) => {
-  const report = await Report.create(
-    req.body,
-    req.user.id,
-    req.user.id,
-    req.assignedTo
-  );
+  console.time("Insert");
+  const transaction = mssql().transaction;
 
-  res.status(201).json({
-    status: "success",
-    data: report,
-  });
+  try {
+    await transaction.begin();
+    const report = await Report.create(
+      req.body,
+      req.user.id,
+      req.assignedTo,
+      transaction
+    );
+    await transaction.commit();
+
+    console.timeEnd("Insert");
+    console.log(report);
+
+    res.status(201).json({
+      status: "success",
+      data: report,
+    });
+  } catch (error) {
+    await transaction.rollback();
+    return next(
+      new GlobalError(
+        `An error occured while creating a report: ${error.stack}.`,
+        401
+      )
+    );
+  }
 });
 
 export const getReport = catchAsync(async (req, res, next) => {
@@ -165,24 +183,28 @@ export const undoSoftDeleteReport = async (req, res, next) => {
 export const validateImport = validateBody(checkSchema, Report.schema.import);
 
 export const importReport = catchAsync(async (req, res, next) => {
-  const { NVarChar } = mssqlDataTypes;
+  const transaction = mssql("transaction");
 
-  req.body.version = config.version;
-  req.body.createdBy = req.user.username;
-  req.body.updatedBy = req.user.username;
+  try {
+    await transaction.begin();
+    const report = await Report.import(
+      req.body,
+      req.user.username,
+      transaction
+    );
+    await transaction.commit();
 
-  const body = [req.body];
-  const rawJSON = JSON.stringify(body);
-
-  const {
-    recordset: [[report]],
-  } = await mssql()
-    .input("rawJSON", NVarChar, rawJSON)
-    .input("uuid", uuid)
-    .query(Report.query.insert());
-
-  res.status(201).json({
-    status: "success",
-    data: filterReportData(report),
-  });
+    res.status(201).json({
+      status: "success",
+      data: filterReportData(report),
+    });
+  } catch (error) {
+    await transaction.rollback();
+    return next(
+      new GlobalError(
+        `An error occured while creating a report: ${error.message}.`,
+        401
+      )
+    );
+  }
 });
