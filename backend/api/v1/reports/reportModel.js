@@ -124,22 +124,31 @@ export const Report = {
   },
 
   async findByUUID(uuid) {
+    const { NVarChar, UniqueIdentifier } = mssqlDataTypes;
+
     const {
-      recordset: [report],
+      output: { report: rawJSON },
     } = await mssql()
-      .request.input("uuid", uuid)
-      .execute("API_V1_getReportByUUID");
+      .request.input("uuid", UniqueIdentifier, uuid)
+      .output("report", NVarChar)
+      .execute("api_v1_reports_getByUUID");
+
+    const report = JSON.parse(rawJSON);
 
     return report ? report : undefined;
   },
 
   async findById(id) {
-    const { Int } = mssqlDataTypes;
+    const { NVarChar, Int } = mssqlDataTypes;
+
     const {
-      recordset: [report],
+      output: { report: rawJSON },
     } = await mssql()
       .request.input("id", Int, id)
-      .execute("API_V1_getReportById");
+      .output("report", NVarChar)
+      .execute("api_v1_reports_getById");
+
+    const report = JSON.parse(rawJSON);
 
     return report ? report : undefined;
   },
@@ -147,32 +156,73 @@ export const Report = {
   async superPassword() {
     const {
       recordset: [{ password }],
-    } = await mssql().request.execute("API_V1_getSuperPassword");
+    } = await mssql().request.execute("api_v1_super_getPassword");
 
     return password;
   },
 
   async createdBy(userId) {
-    const { Int } = mssqlDataTypes;
+    const { NVarChar, Int } = mssqlDataTypes;
+
     return mssql()
       .request.input("userId", Int, userId)
-      .execute("API_V1_getReportsCreatedByUserId");
+      .output("report", NVarChar)
+      .execute("api_v1_reports_getCreatedByUserId");
   },
 
   async softDeletedCreatedBy(userId) {
-    const { Int } = mssqlDataTypes;
+    const { NVarChar, Int } = mssqlDataTypes;
+
     return mssql()
       .request.input("userId", Int, userId)
-      .execute("API_V1_getReportsSoftDeletedCreatedByUserId");
+      .output("report", NVarChar)
+      .execute("api_v1_reports_getCreatedByUserIdSoftDeleted");
+  },
+
+  async softDelete(report) {
+    const { NVarChar, Int } = mssqlDataTypes;
+
+    const {
+      output: { report: rawJSON },
+    } = await mssql()
+      .request.input("id", Int, report.id)
+      .output("report", NVarChar)
+      .execute("api_v1_reports_softDeleteById");
+
+    const reportUpdated = JSON.parse(rawJSON);
+
+    return filterReportData(reportUpdated);
+  },
+
+  async undoSoftDelete(report) {
+    const { NVarChar, Int } = mssqlDataTypes;
+
+    const {
+      output: { report: rawJSON },
+    } = await mssql()
+      .request.input("id", Int, report.id)
+      .output("report", NVarChar)
+      .execute("api_V1_reports_softDeleteUndoById");
+
+    const reportUpdated = JSON.parse(rawJSON);
+
+    return filterReportData(reportUpdated);
   },
 
   async all(softDeleted = false) {
+    const { NVarChar } = mssqlDataTypes;
     const {
-      recordset: [reports],
-    } = await mssql().request.execute(
-      softDeleted ? "API_V1_getReportsSoftDeleted" : "API_V1_getReports"
-    );
+      output: { report: rawJSON },
+    } = await mssql()
+      .request.output("report", NVarChar)
+      .execute(
+        softDeleted
+          ? "api_v1_reports_getAllSoftDeleted"
+          : "api_v1_reports_getAll"
+      );
 
+    const reports = JSON.parse(rawJSON);
+    console.log(reports);
     return !reports
       ? { results: 0, data: [] }
       : { results: reports.length, data: filterReportArrayData(reports) };
@@ -180,7 +230,9 @@ export const Report = {
 
   // prettier-ignore
   async create(body, createdByAndUpdatedBy, assignedTo, transaction) {
-    const { UniqueIdentifier, VarChar, Int, Bit, Date, Time } = mssqlDataTypes;
+    const { UniqueIdentifier, NVarChar, VarChar, Int, Bit, Date, Time } = mssqlDataTypes;
+
+    console.time("--CREATE");
 
     body.uuid = generateUUID();
     body.version = config.version;
@@ -193,64 +245,79 @@ export const Report = {
     );
     if (!body.incident.transaction.type) body.incident.transaction = {};
 
-    const report = mssql(transaction).request;
+    const reportCreate = mssql(transaction).request;
 
-    report.input("uuid", UniqueIdentifier, body.uuid);
-    report.input("version", VarChar, body.version);
-    report.input("createdBy", Int, body.createdBy);
-    report.input("updatedBy", Int, body.updatedBy);
-    report.input("assignedTo", Int, body.assignedTo);
-    report.input("isOnCall", Bit, body.isOnCall);
-    report.input("callDate", Date, body.call.date);
-    report.input("callTime", Time, body.call.time);
-    report.input("callDateTime", VarChar, body.call.dateTime);
-    report.input("callPhone", VarChar, body.call.phone);
-    report.input("callStatus", VarChar, body.call.status);
-    report.input("storeEmployeeName", VarChar, body.store.employee.name);
-    report.input("storeEmployeeIsStoreManager", Bit, body.store.employee.isStoreManager);
-    report.input("storeDistrictManagerIsContacted", Bit, body.store.districtManager.isContacted);
-    report.input("incidentTitle", VarChar, body.incident.title);
-    report.input("incidentPos", VarChar, body.incident.pos);
-    report.input("incidentIsProcedural", Bit, body.incident.isProcedural);
-    report.input("incidentError", VarChar, body.incident.error);
-    report.input("incidentTransactionNumber", VarChar, body.incident.transaction.number);
-    report.input("incidentTransactionIsIRCreated", Bit, body.incident.transaction.isIRCreated);
-    report.input("incidentDetails", VarChar, body.incident.details);
-    report.input("returnNewReport", Bit, 0);
+    reportCreate.input("uuid", UniqueIdentifier, body.uuid);
+    reportCreate.input("version", VarChar, body.version);
+    reportCreate.input("createdBy", Int, body.createdBy);
+    reportCreate.input("updatedBy", Int, body.updatedBy);
+    reportCreate.input("assignedTo", Int, body.assignedTo);
+    reportCreate.input("isOnCall", Bit, body.isOnCall);
+    reportCreate.input("callDate", Date, body.call.date);
+    reportCreate.input("callTime", Time, body.call.time);
+    reportCreate.input("callDateTime", VarChar, body.call.dateTime);
+    reportCreate.input("callPhone", VarChar, body.call.phone);
+    reportCreate.input("callStatus", VarChar, body.call.status);
+    reportCreate.input("storeEmployeeName", VarChar, body.store.employee.name);
+    reportCreate.input("storeEmployeeIsStoreManager", Bit, body.store.employee.isStoreManager);
+    reportCreate.input("storeDistrictManagerIsContacted", Bit, body.store.districtManager.isContacted);
+    reportCreate.input("incidentTitle", VarChar, body.incident.title);
+    reportCreate.input("incidentPos", VarChar, body.incident.pos);
+    reportCreate.input("incidentIsProcedural", Bit, body.incident.isProcedural);
+    reportCreate.input("incidentError", VarChar, body.incident.error);
+    reportCreate.input("incidentTransactionNumber", VarChar, body.incident.transaction.number);
+    reportCreate.input("incidentTransactionIsIRCreated", Bit, body.incident.transaction.isIRCreated);
+    reportCreate.input("incidentDetails", VarChar, body.incident.details);
 
-    const { returnValue: reportId } = await report.execute(
-      "API_V1_createReport"
-    );
+    console.log(body.uuid);
+    const { output: { id: id } } = await reportCreate
+      .output("id", Int)
+      .execute("api_v1_reports_create");
+    console.timeEnd("--CREATE");
 
-    const stores = mssql(transaction).request;
+    console.time("FORMAT");
+    const stores = mssql(transaction).request,
+      incidentTypes = mssql(transaction).request,
+      incidentTransactionTypes = mssql(transaction).request;
+
     const insertStores =
-      insertManyToMany(body.store.number, reportId, stores, this.insertStores);
-
-    const incidentTypes = mssql(transaction).request;
-    const insertIncidentTypes =
-      insertManyToMany(body.incident.type, reportId, incidentTypes, this.insertIncidentTypes);
-
-    const incidentTransactionTypes = mssql(transaction).request;
-    const insertIncidentTransactionTypes =
-      insertManyToMany(body.incident.transaction.type, reportId, incidentTransactionTypes, this.insertIncidentTransactionTypes);
-
+        insertManyToMany(body.store.number, id, stores, this.insertStores),
+      insertIncidentTypes =
+        insertManyToMany(body.incident.type, id, incidentTypes, this.insertIncidentTypes),
+      insertIncidentTransactionTypes =
+        insertManyToMany(body.incident.transaction.type, id, incidentTransactionTypes, this.insertIncidentTransactionTypes);
+    console.timeEnd("FORMAT");
+    
+    console.time("--STORES");
     await stores.query(insertStores);
+    console.timeEnd("--STORES");
+    
+    console.time("--INC TYPES");
     await incidentTypes.query(insertIncidentTypes);
+    console.timeEnd("--INC TYPES");
+
+    console.time("--INC TXN TYPES");
     await incidentTransactionTypes.query(insertIncidentTransactionTypes);
+    console.timeEnd("--INC TXN TYPES");
 
-    const getNewReport = mssql(transaction).request;
 
+    console.time("--GET REPORT");
     const {
-      recordset: [reportCreated],
-    } = await getNewReport
-      .input("id", Int, reportId)
-      .execute("API_V1_getReportById");
+      output: { report: rawJSON },
+    } = await mssql(transaction)
+      .request.input("id", Int, id)
+      .output("report", NVarChar)
+      .execute("api_v1_reports_getById");
+      
+    const reportCreated = JSON.parse(rawJSON);
+    console.timeEnd("--GET REPORT");
 
     return filterReportData(reportCreated);
   },
 
+  // prettier-ignore
   async update(body, report, updatedBy) {
-    const { NVarChar } = mssqlDataTypes;
+    const { NVarChar, VarChar, Int, Bit, Date, Time } = mssqlDataTypes;
 
     body.version = config.version;
     body.createdAt = report.createdAt;
@@ -260,27 +327,64 @@ export const Report = {
     body.call.dateTime = dateMSSharePoint(
       `${body.call.date} ${body.call.time}`
     );
+    
+    console.log("createdBy:", body.createdBy, "updatedBy:", body.updatedBy);
+    
+    const reportUpdate = mssql(transaction).request;
 
-    const rawJSON = JSON.stringify([body]);
+    reportUpdate.input("reportId", Int, report.id);
+    reportUpdate.input("version", VarChar, body.version);
+    reportUpdate.input("createdBy", VarChar, body.createdBy);
+    reportUpdate.input("updatedBy", VarChar, body.updatedBy);
+    reportUpdate.input("assignedTo", VarChar, body.assignedTo);
+    reportUpdate.input("isOnCall", Bit, body.isOnCall);
+    reportUpdate.input("isDeleted", Bit, body.isDeleted);
+    reportUpdate.input("isWebhookSent", Bit, body.isWebhookSent);
+    reportUpdate.input("hasTriggeredWebhook", Bit, body.hasTriggeredWebhook);
+    reportUpdate.input("callDate", Date, body.call.date);
+    reportUpdate.input("callTime", Time, body.call.time);
+    reportUpdate.input("callDateTime", VarChar, body.call.dateTime);
+    reportUpdate.input("callPhone", VarChar, body.call.phone);
+    reportUpdate.input("callStatus", VarChar, body.call.status);
+    reportUpdate.input("storeEmployeeName", VarChar, body.store.employee.name);
+    reportUpdate.input("storeEmployeeIsStoreManager", Bit, body.store.employee.isStoreManager);
+    reportUpdate.input("storeDistrictManagerIsContacted", Bit, body.store.districtManager.isContacted);
+    reportUpdate.input("incidentTitle", VarChar, body.incident.title);
+    reportUpdate.input("incidentPos", VarChar, body.incident.pos);
+    reportUpdate.input("incidentIsProcedural", Bit, body.incident.isProcedural);
+    reportUpdate.input("incidentError", VarChar, body.incident.error);
+    reportUpdate.input("incidentTransactionNumber", VarChar, body.incident.transaction.number);
+    reportUpdate.input("incidentTransactionIsIRCreated", Bit, body.incident.transaction.isIRCreated);
+    reportUpdate.input("incidentDetails", VarChar, body.incident.details);
+
+    await reportUpdate.execute("api_v1_reports_update");
+
+    await this.deleteStoreIncidentTypeIncidentTransactionType(report.id);
+
+    const stores = mssql(transaction).request;
+    const insertStores =
+      insertManyToMany(body.store.number, report.id, stores, this.insertStores);
+
+    const incidentTypes = mssql(transaction).request;
+    const insertIncidentTypes =
+      insertManyToMany(body.incident.type, report.id, incidentTypes, this.insertIncidentTypes);
+
+    const incidentTransactionTypes = mssql(transaction).request;
+    const insertIncidentTransactionTypes =
+      insertManyToMany(body.incident.transaction.type, report.id, incidentTransactionTypes, this.insertIncidentTransactionTypes);
+
+    await stores.query(insertStores);
+    await incidentTypes.query(insertIncidentTypes);
+    await incidentTransactionTypes.query(insertIncidentTransactionTypes);
+
     const {
-      insertStores,
-      insertIncidentTypes,
-      insertIncidentTransactionTypes,
-    } = insertManyToMany(body);
-    const update = this.query.update(
-      insertStores,
-      insertIncidentTypes,
-      insertIncidentTransactionTypes
-    );
+      output: { report: rawJSON },
+    } = await mssql(transaction).request
+      .input("id", Int, report.id)
+      .output("report", NVarChar)
+      .execute("api_v1_reports_getById");
 
-    console.log(update);
-
-    const {
-      recordset: [[reportUpdated]],
-    } = await mssql()
-      .request.input("id", report.id)
-      .input("rawJSON", NVarChar, rawJSON)
-      .query(update);
+    const reportUpdated = JSON.parse(rawJSON);
 
     return filterReportData(reportUpdated);
   },
@@ -289,26 +393,6 @@ export const Report = {
     return await mssql("transaction")
       .input("id", report.id)
       .query(this.query.delete);
-  },
-
-  async softDelete(report) {
-    const {
-      recordset: [reportUpdated],
-    } = await mssql()
-      .request.input("id", report.id)
-      .execute("API_V1_softDeleteReportById");
-
-    return filterReportData(reportUpdated);
-  },
-
-  async undoSoftDelete(report) {
-    const {
-      recordset: [reportUpdated],
-    } = await mssql()
-      .request.input("id", report.id)
-      .execute("API_V1_undoSoftDeleteReportById");
-
-    return filterReportData(reportUpdated);
   },
 
   // prettier-ignore
@@ -341,113 +425,12 @@ export const Report = {
     };
   },
 
-  /**
-   *  ALL MS SQL SERVER QUERIES RELATED TO REPORTS
-   **/
-  query: {
-    withClause: `
-      uuid VARCHAR(36) 'strict $.uuid',
-      version VARCHAR(255) 'strict $.version',
-      createdAt DATETIMEOFFSET 'strict $.createdAt',
-      updatedAt DATETIMEOFFSET 'strict $.updatedAt',
-      createdBy VARCHAR(20) 'strict $.createdBy',
-      updatedBy VARCHAR(20) 'strict $.updatedBy',
-      assignedTo VARCHAR(20) 'strict $.assignedTo',
-      isOnCall BIT 'strict $.isOnCall',
-      isDeleted BIT '$.isDeleted',
-      isWebhookSent BIT '$.isWebhookSent',
-      hasTriggeredWebhook BIT '$.hasTriggeredWebhook',
-      callDate DATE 'strict $.call.date',
-      callTime TIME 'strict $.call.time',
-      callDateTime VARCHAR(20) 'strict $.call.dateTime',
-      callPhone VARCHAR(20) 'strict $.call.phone',
-      callStatus VARCHAR(100) 'strict $.call.status',
-      storeEmployeeName VARCHAR(100) 'strict $.store.employee.name',
-      storeEmployeeIsStoreManager BIT 'strict $.store.employee.isStoreManager',
-      storeDistrictManagerIsContacted BIT 'strict $.store.districtManager.isContacted',
-      incidentTitle VARCHAR(100) 'strict $.incident.title',
-      incidentPos VARCHAR(2) 'strict $.incident.pos',
-      incidentIsProcedural BIT 'strict $.incident.isProcedural',
-      incidentError VARCHAR(100) 'strict $.incident.error',
-      incidentTransactionNumber VARCHAR(100) '$.incident.transaction.number',
-      incidentTransactionIsIRCreated BIT '$.incident.transaction.isIRCreated',
-      incidentDetails VARCHAR(2000) 'strict $.incident.details'
-    `,
-
-    byId() {
-      return `
-        SELECT * FROM dbo.getReportById(@id)
-        FOR JSON PATH;
-      `;
-    },
-
-    // Source: https://learn.microsoft.com/fr-fr/archive/blogs/sqlserverstorageengine/openjson-the-easiest-way-to-import-json-text-into-table#use-case-2-updating-table-row-using-json-object
-    update(insertStores, insertIncidentTypes, insertIncidentTransactionTypes) {
-      return `
-        DECLARE @json NVARCHAR(MAX) = @rawJSON;
-
-        UPDATE reports
-        SET uuid = json.uuid,
-          version = json.version,
-          createdAt = json.createdAt,
-          updatedAt = json.updatedAt,
-          createdBy = (SELECT id FROM users WHERE username = json.createdBy),
-          updatedBy = (SELECT id FROM users WHERE username = json.updatedBy),
-          assignedTo = (SELECT id FROM users WHERE username = json.assignedTo),
-          isOnCall = json.isOnCall,
-          isDeleted = json.isDeleted,
-          isWebhookSent = json.isWebhookSent,
-          hasTriggeredWebhook = json.hasTriggeredWebhook,
-          callDate = json.callDate,
-          callTime = json.callTime,
-          callDateTime = json.callDateTime,
-          callPhone = json.callPhone,
-          callStatus = json.callStatus,
-          storeEmployeeName = json.storeEmployeeName,
-          storeEmployeeIsStoreManager = json.storeEmployeeIsStoreManager,
-          storeDistrictManagerIsContacted = json.storeDistrictManagerIsContacted,
-          incidentTitle = json.incidentTitle,
-          incidentPos = json.incidentPos,
-          incidentIsProcedural = json.incidentIsProcedural,
-          incidentError = json.incidentError,
-          incidentTransactionNumber = json.incidentTransactionNumber,
-          incidentTransactionIsIRCreated = json.incidentTransactionIsIRCreated,
-          incidentDetails = json.incidentDetails
-        FROM OPENJSON(@json)
-        WITH (
-          ${this.withClause}
-        ) AS json
-        WHERE reports.id = @id;
-
-        DELETE FROM reportStores
-        WHERE reportStores.report_id = @id;
-
-        DELETE FROM reportIncidentTypes
-        WHERE reportIncidentTypes.report_id = @id;
-
-        DELETE FROM reportIncidentTransactionTypes
-        WHERE reportIncidentTransactionTypes.report_id = @id;
-
-        ${insertStores}
-        ${insertIncidentTypes}
-        ${insertIncidentTransactionTypes}
-
-        ${this.byId()}
-      `;
-    },
-
-    delete: `
-      DELETE FROM reportStores
-      WHERE reportStores.report_id = @id;
-
-      DELETE FROM reportIncidentTypes
-      WHERE reportIncidentTypes.report_id = @id;
-
-      DELETE FROM reportIncidentTransactionTypes
-      WHERE reportIncidentTransactionTypes.report_id = @id;
-
-      DELETE FROM reports WHERE id = @id;
-    `,
+  async deleteStoreIncidentTypeIncidentTransactionType(reportId) {
+    return mssql()
+      .request.input("reportId", Int, reportId)
+      .execute(
+        "api_v1_reports_delete_store_incidentType_incidentTransactionType"
+      );
   },
 
   async import(body, createdByAndUpdatedBy, transaction) {
@@ -484,7 +467,7 @@ export const Report = {
 
     await preparedStatement.prepare(`
       DECLARE @reportId INT;
-      EXEC @reportId = [dbo].[API_V1_createReport]
+      EXEC @reportId = [dbo].[api_v1_reports_create]
         @uuid = @uuid,
         @version = @version,
         @createdBy = @createdBy,

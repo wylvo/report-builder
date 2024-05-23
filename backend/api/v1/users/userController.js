@@ -93,15 +93,19 @@ export const getUser = catchAsync(async (req, res, next) => {
 
   const [
     {
-      recordset: [reports],
+      output: { report: rawJSON1 },
     },
     {
-      recordset: [reportsDeleted],
+      output: { report: rawJSON2 },
     },
   ] = await Promise.all([
     Report.createdBy(user.id),
     Report.softDeletedCreatedBy(user.id),
   ]);
+
+  const reports = JSON.parse(rawJSON1);
+  const reportsDeleted = JSON.parse(rawJSON2);
+  console.log(reports);
 
   res.status(200).json({
     status: "success",

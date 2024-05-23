@@ -53,7 +53,7 @@ export const getAllSoftDeletedReports = catchAsync(async (req, res, next) => {
 export const validateCreate = validateBody(checkSchema, Report.schema.create);
 
 export const createReport = catchAsync(async (req, res, next) => {
-  console.time("Insert");
+  console.time("TOTAL CREATE");
   const transaction = mssql().transaction;
 
   try {
@@ -66,7 +66,7 @@ export const createReport = catchAsync(async (req, res, next) => {
     );
     await transaction.commit();
 
-    console.timeEnd("Insert");
+    console.timeEnd("TOTAL CREATE");
     // console.log(report);
 
     res.status(201).json({
@@ -74,14 +74,8 @@ export const createReport = catchAsync(async (req, res, next) => {
       data: report,
     });
   } catch (error) {
-    console.error(error);
     await transaction.rollback();
-    return next(
-      new GlobalError(
-        `An error occured while creating a report: ${error.stack}.`,
-        401
-      )
-    );
+    throw error;
   }
 });
 
@@ -109,17 +103,27 @@ export const updateReport = catchAsync(async (req, res, next) => {
   if (!report)
     return next(new GlobalError(`Report not found with id: ${uuid}.`, 404));
 
-  const reportUpdated = await Report.update(
-    req.body,
-    report,
-    req.user.username
-  );
+  console.time("Update");
+  const transaction = mssql().transaction;
 
-  console.log(reportUpdated);
-  res.status(201).json({
-    status: "success",
-    data: reportUpdated,
-  });
+  try {
+    const reportUpdated = await Report.update(
+      req.body,
+      report,
+      req.user.username
+    );
+
+    await transaction.commit();
+    // console.log(reportUpdated);
+    console.timeEnd("Update");
+    res.status(201).json({
+      status: "success",
+      data: reportUpdated,
+    });
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
 });
 
 export const validateHardDelete = validateBody(
