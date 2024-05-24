@@ -1,3 +1,5 @@
+import { checkExact } from "express-validator";
+
 import catchAsync from "../errors/catchAsync.js";
 import ValidationError, {
   errorValidationResult,
@@ -5,13 +7,15 @@ import ValidationError, {
   formatErrors,
 } from "../errors/validationError.js";
 
-export const validateBody = (
-  checkSchema,
-  schemaToApply,
-  errorType = "mapped"
-) =>
+// prettier-ignore
+export const validateBody = (checkSchema, schemaToApply, errorType = "mapped") =>
   catchAsync(async (req, res, next) => {
-    await checkSchema(schemaToApply, ["body"]).run(req);
+    await checkExact(checkSchema(schemaToApply, ["body"]), {
+      message: fields => {
+        const [field] = fields;
+        return `Unknown field '${field.path}' in request ${field.location} with value '${field.value}'`;
+      },
+    }).run(req);
     const result = errorValidationResult(req);
     const errors = errorType !== "mapped" ? result.array() : result.mapped();
 

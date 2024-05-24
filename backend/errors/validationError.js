@@ -1,7 +1,8 @@
 import { validationResult } from "express-validator";
 
 export const errorValidationResult = validationResult.withDefaults({
-  formatter: (error) => `${error.path}: ${error.msg}`,
+  formatter: (error) =>
+    error.path ? `${error.path}: ${error.msg}` : error.msg,
 });
 
 export const formatErrors = (objectOrArray) => {

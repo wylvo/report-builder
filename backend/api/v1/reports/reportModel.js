@@ -92,6 +92,8 @@ export const filterReportArrayData = (data) => {
 };
 
 const insertManyToMany = (array, reportId, mssql, insert) => {
+  if (!array || !Array.isArray(array) || array.length === 0) return;
+
   const params = {},
     rows = [];
 
@@ -153,10 +155,16 @@ export const Report = {
     return report ? report : undefined;
   },
 
-  async superPassword() {
+  async superPassword(userId, transaction = undefined) {
+    const { Int, VarChar } = mssqlDataTypes;
+    const request = transaction ? mssql(transaction).request : mssql().request;
+
     const {
-      recordset: [{ password }],
-    } = await mssql().request.execute("api_v1_super_getPassword");
+      output: { hash: password },
+    } = await request
+      .input("userId", Int, userId)
+      .output("hash", VarChar)
+      .execute("api_v1_super_getPassword");
 
     return password;
   },
@@ -222,7 +230,7 @@ export const Report = {
       );
 
     const reports = JSON.parse(rawJSON);
-    console.log(reports);
+
     return !reports
       ? { results: 0, data: [] }
       : { results: reports.length, data: filterReportArrayData(reports) };
@@ -231,8 +239,6 @@ export const Report = {
   // prettier-ignore
   async create(body, createdByAndUpdatedBy, assignedTo, transaction) {
     const { UniqueIdentifier, NVarChar, VarChar, Int, Bit, Date, Time } = mssqlDataTypes;
-
-    console.time("--CREATE");
 
     body.uuid = generateUUID();
     body.version = config.version;
@@ -269,13 +275,10 @@ export const Report = {
     reportCreate.input("incidentTransactionIsIRCreated", Bit, body.incident.transaction.isIRCreated);
     reportCreate.input("incidentDetails", VarChar, body.incident.details);
 
-    console.log(body.uuid);
     const { output: { id: id } } = await reportCreate
       .output("id", Int)
       .execute("api_v1_reports_create");
-    console.timeEnd("--CREATE");
 
-    console.time("FORMAT");
     const stores = mssql(transaction).request,
       incidentTypes = mssql(transaction).request,
       incidentTransactionTypes = mssql(transaction).request;
@@ -283,25 +286,17 @@ export const Report = {
     const insertStores =
         insertManyToMany(body.store.number, id, stores, this.insertStores),
       insertIncidentTypes =
-        insertManyToMany(body.incident.type, id, incidentTypes, this.insertIncidentTypes),
-      insertIncidentTransactionTypes =
-        insertManyToMany(body.incident.transaction.type, id, incidentTransactionTypes, this.insertIncidentTransactionTypes);
-    console.timeEnd("FORMAT");
+        insertManyToMany(body.incident.type, id, incidentTypes, this.insertIncidentTypes);
     
-    console.time("--STORES");
     await stores.query(insertStores);
-    console.timeEnd("--STORES");
-    
-    console.time("--INC TYPES");
     await incidentTypes.query(insertIncidentTypes);
-    console.timeEnd("--INC TYPES");
-
-    console.time("--INC TXN TYPES");
-    await incidentTransactionTypes.query(insertIncidentTransactionTypes);
-    console.timeEnd("--INC TXN TYPES");
-
-
-    console.time("--GET REPORT");
+    
+    if(body.incident.transaction.type) {
+      const insertIncidentTransactionTypes =
+        insertManyToMany(body.incident.transaction.type, id, incidentTransactionTypes, this.insertIncidentTransactionTypes);
+      await incidentTransactionTypes.query(insertIncidentTransactionTypes);
+    }
+    
     const {
       output: { report: rawJSON },
     } = await mssql(transaction)
@@ -310,25 +305,22 @@ export const Report = {
       .execute("api_v1_reports_getById");
       
     const reportCreated = JSON.parse(rawJSON);
-    console.timeEnd("--GET REPORT");
 
     return filterReportData(reportCreated);
   },
 
   // prettier-ignore
-  async update(body, report, updatedBy) {
+  async update(body, report, updatedBy, transaction) {
     const { NVarChar, VarChar, Int, Bit, Date, Time } = mssqlDataTypes;
 
     body.version = config.version;
-    body.createdAt = report.createdAt;
-    body.updatedAt = dateISO8601(new Date());
     body.createdBy = report.createdBy;
     body.updatedBy = updatedBy;
-    body.call.dateTime = dateMSSharePoint(
-      `${body.call.date} ${body.call.time}`
-    );
-    
-    console.log("createdBy:", body.createdBy, "updatedBy:", body.updatedBy);
+    if(body.call.date !== report.call.date || body.call.time !== report.call.time)
+      body.call.dateTime = dateMSSharePoint(
+        `${body.call.date} ${body.call.time}`
+      );
+    if (!body.incident.transaction.type) body.incident.transaction = {};
     
     const reportUpdate = mssql(transaction).request;
 
@@ -359,23 +351,25 @@ export const Report = {
 
     await reportUpdate.execute("api_v1_reports_update");
 
-    await this.deleteStoreIncidentTypeIncidentTransactionType(report.id);
+    await this.deleteStoresIncidentTypesIncidentTransactionTypes(report.id);
 
-    const stores = mssql(transaction).request;
+    const stores = mssql(transaction).request,
+      incidentTypes = mssql(transaction).request,
+      incidentTransactionTypes = mssql(transaction).request;
+
     const insertStores =
-      insertManyToMany(body.store.number, report.id, stores, this.insertStores);
-
-    const incidentTypes = mssql(transaction).request;
-    const insertIncidentTypes =
-      insertManyToMany(body.incident.type, report.id, incidentTypes, this.insertIncidentTypes);
-
-    const incidentTransactionTypes = mssql(transaction).request;
-    const insertIncidentTransactionTypes =
-      insertManyToMany(body.incident.transaction.type, report.id, incidentTransactionTypes, this.insertIncidentTransactionTypes);
-
+        insertManyToMany(body.store.number, report.id, stores, this.insertStores),
+      insertIncidentTypes =
+        insertManyToMany(body.incident.type, report.id, incidentTypes, this.insertIncidentTypes);
+    
     await stores.query(insertStores);
     await incidentTypes.query(insertIncidentTypes);
-    await incidentTransactionTypes.query(insertIncidentTransactionTypes);
+    
+    if(body.incident.transaction.type) {
+      const insertIncidentTransactionTypes =
+        insertManyToMany(body.incident.transaction.type, report.id, incidentTransactionTypes, this.insertIncidentTransactionTypes);
+      await incidentTransactionTypes.query(insertIncidentTransactionTypes);
+    }
 
     const {
       output: { report: rawJSON },
@@ -389,10 +383,10 @@ export const Report = {
     return filterReportData(reportUpdated);
   },
 
-  async hardDelete(report) {
-    return await mssql("transaction")
-      .input("id", report.id)
-      .query(this.query.delete);
+  hardDelete(report, transaction) {
+    return mssql(transaction)
+      .request.input("reportId", report.id)
+      .execute("api_v1_reports_delete");
   },
 
   // prettier-ignore
@@ -425,7 +419,8 @@ export const Report = {
     };
   },
 
-  async deleteStoreIncidentTypeIncidentTransactionType(reportId) {
+  async deleteStoresIncidentTypesIncidentTransactionTypes(reportId) {
+    const { Int } = mssqlDataTypes;
     return mssql()
       .request.input("reportId", Int, reportId)
       .execute(

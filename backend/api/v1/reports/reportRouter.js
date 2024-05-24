@@ -8,11 +8,13 @@ const router = express.Router();
 
 /** ROUTES
  * /api/v1/reports/:id                (DELETE)
+ * /api/v1/reports/:id/softDelete     (PUT)
  * /api/v1/reports/:id/undoSoftDelete (PUT)
  * /api/v1/reports/softDeleted        (GET)
  */
 router.delete("/:id", report.validateHardDelete, report.deleteReport);
-router.put("/:id/undoSoftDelete", report.undoSoftDeleteReport);
+router.put("/:id/softDelete", report.softDeleteReport);
+router.put("/:id/softDeleteUndo", report.undoSoftDeleteReport);
 router.get("/softDeleted", report.getAllSoftDeletedReports);
 
 /** ROUTES restricted to "user" role

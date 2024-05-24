@@ -53,7 +53,6 @@ export const getAllSoftDeletedReports = catchAsync(async (req, res, next) => {
 export const validateCreate = validateBody(checkSchema, Report.schema.create);
 
 export const createReport = catchAsync(async (req, res, next) => {
-  console.time("TOTAL CREATE");
   const transaction = mssql().transaction;
 
   try {
@@ -65,9 +64,6 @@ export const createReport = catchAsync(async (req, res, next) => {
       transaction
     );
     await transaction.commit();
-
-    console.timeEnd("TOTAL CREATE");
-    // console.log(report);
 
     res.status(201).json({
       status: "success",
@@ -103,10 +99,10 @@ export const updateReport = catchAsync(async (req, res, next) => {
   if (!report)
     return next(new GlobalError(`Report not found with id: ${uuid}.`, 404));
 
-  console.time("Update");
   const transaction = mssql().transaction;
 
   try {
+    await transaction.begin();
     const reportUpdated = await Report.update(
       req.body,
       report,
@@ -114,8 +110,7 @@ export const updateReport = catchAsync(async (req, res, next) => {
     );
 
     await transaction.commit();
-    // console.log(reportUpdated);
-    console.timeEnd("Update");
+
     res.status(201).json({
       status: "success",
       data: reportUpdated,
@@ -134,35 +129,72 @@ export const validateHardDelete = validateBody(
 export const deleteReport = catchAsync(async (req, res, next) => {
   const uuid = req.params.id;
 
+  console.log(uuid);
   const report = await Report.findByUUID(uuid);
 
   if (!report)
     return next(new GlobalError(`Report not found with id: ${uuid}.`, 404));
 
-  // If regular user, ONLY soft delete allowed
-  if (req.user.role === "User") await Report.softDelete(report);
+  // If user is not an admin return an error
+  if (req.user.role !== "Admin")
+    return next(
+      new GlobalError(
+        "You do not have permission to perform this operation.",
+        403
+      )
+    );
 
-  // If admin, BOTH soft & hard delete allowed
-  if (req.user.role === "Admin" && req.body.isHardDelete === true) {
-    const password = await Report.superPassword();
+  const transaction = mssql().transaction;
+
+  try {
+    await transaction.begin();
+    const password = await Report.superPassword(req.user.id, transaction);
 
     // For additional security, require for a password
     if (!(await bcrypt.compare(req.body.password, password)))
       return next(
         new GlobalError(
-          "You do not have permission to perform this operation.",
+          "You do not have permission to perform this operation. Please contact your administrator.",
           403
         )
       );
 
-    await Report.hardDelete(report);
-  } else await Report.softDelete(report);
+    await Report.hardDelete(report, transaction);
+    await transaction.commit();
 
-  res.status(204).json({
-    status: "success",
-    data: null,
-  });
+    res.status(204).json({
+      status: "success",
+      data: null,
+    });
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
 });
+
+export const softDeleteReport = async (req, res, next) => {
+  const uuid = req.params.id;
+
+  const report = await Report.findByUUID(uuid);
+
+  if (!report)
+    return next(new GlobalError(`Report not found with id: ${uuid}.`, 404));
+
+  if (report.isDeleted === true)
+    return next(
+      new GlobalError(
+        `Report is already marked as deleted with id: ${uuid}.`,
+        400
+      )
+    );
+
+  const reportUpdated = await Report.softDelete(report);
+
+  res.status(200).json({
+    status: "success",
+    data: reportUpdated,
+  });
+};
 
 export const undoSoftDeleteReport = async (req, res, next) => {
   const uuid = req.params.id;
@@ -174,7 +206,7 @@ export const undoSoftDeleteReport = async (req, res, next) => {
 
   if (report.isDeleted === false)
     return next(
-      new GlobalError(`Report is not marked as deleted with id: ${id}.`, 400)
+      new GlobalError(`Report is not marked as deleted with id: ${uuid}.`, 400)
     );
 
   const reportUpdated = await Report.undoSoftDelete(report);

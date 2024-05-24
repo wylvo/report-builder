@@ -36,14 +36,6 @@ export const User = {
     resetPassword: userValidationSchema.resetPassword(),
   },
 
-  findByUUID: async (uuid) => {
-    const {
-      recordset: [user],
-    } = await mssql().request.input("uuid", uuid).query(User.query.byUUID());
-
-    return user;
-  },
-
   findById: async (id) => {
     const {
       recordset: [user],
@@ -170,16 +162,6 @@ export const User = {
         FROM users u
         JOIN roles r ON r.id = u.role_id
         WHERE u.id = @id;
-      `;
-    },
-
-    byUUID() {
-      return `
-        SELECT
-          ${this.baseSelect}
-        FROM users u
-        JOIN roles r ON r.id = u.role_id
-        WHERE u.uuid = @uuid;
       `;
     },
 

@@ -66,8 +66,11 @@ export default {
           password,
         });
       },
+      async softDeleteReport(id) {
+        return await fetchJSON(`${this.url}/${id}/softDelete`, "PUT", {});
+      },
       async undoSoftDeleteReport(id) {
-        return await fetchJSON(`${this.url}/${id}/undoSoftDelete`, "PUT", {});
+        return await fetchJSON(`${this.url}/${id}/softDeleteUndo`, "PUT", {});
       },
     },
 

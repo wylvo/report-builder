@@ -299,18 +299,10 @@ export default {
    *  VALIDATION TO HARD DELETE A REPORT
    **/
   hardDelete: {
-    isHardDelete: {
-      optional: true,
-      isBoolean: {
-        options: { strict: true },
-        errorMessage: "should be a boolean (true or false).",
-      },
-    },
     password: {
       exists: {
         errorMessage: "required.",
         bail: true,
-        if: (_, { req }) => req.body.isHardDelete === true,
       },
       notEmpty: { errorMessage: "can't be empty.", bail: true },
       isString: { errorMessage: "should be a string" },
