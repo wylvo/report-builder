@@ -53,6 +53,7 @@ export const getAllSoftDeletedReports = catchAsync(async (req, res, next) => {
 export const validateCreate = validateBody(checkSchema, Reports.schema.create);
 
 export const createReport = catchAsync(async (req, res, next) => {
+  console.time("CREATE");
   const transaction = mssql().transaction;
 
   try {
@@ -65,6 +66,7 @@ export const createReport = catchAsync(async (req, res, next) => {
     );
     await transaction.commit();
 
+    console.timeEnd("CREATE");
     res.status(201).json({
       status: "success",
       data: report,
@@ -99,6 +101,7 @@ export const updateReport = catchAsync(async (req, res, next) => {
   if (!report)
     return next(new GlobalError(`Report not found with id: ${uuid}.`, 404));
 
+  console.time("UPDATE");
   const transaction = mssql().transaction;
 
   try {
@@ -111,6 +114,7 @@ export const updateReport = catchAsync(async (req, res, next) => {
 
     await transaction.commit();
 
+    console.timeEnd("UPDATE");
     res.status(201).json({
       status: "success",
       data: reportUpdated,
@@ -135,7 +139,7 @@ export const deleteReport = catchAsync(async (req, res, next) => {
   if (!report)
     return next(new GlobalError(`Report not found with id: ${uuid}.`, 404));
 
-  // If user is not an admin return an error
+  // EXTRA check if user is not an admin return an error
   if (req.user.role !== "Admin")
     return next(
       new GlobalError(

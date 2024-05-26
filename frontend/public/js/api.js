@@ -86,6 +86,9 @@ export default {
       async getUsers() {
         return await fetchJSON(this.url);
       },
+      async getUsersFrontend() {
+        return await fetchJSON(`${this.url}/frontend`);
+      },
       async createUser(user) {
         return await fetchJSON(this.url, "POST", user);
       },

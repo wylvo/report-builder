@@ -1,6 +1,6 @@
 import { FormData } from "./formData.model.js";
 import { config, catchAsync, mssql, GlobalError } from "../router.js";
-import reportValidationSchema from "../reports/reportValidationSchema.js";
+import reportValidationSchema from "../reports/report.schema.js";
 
 // prettier-ignore
 export const synchonizeReportValidation = catchAsync(async (req, res, next) => {

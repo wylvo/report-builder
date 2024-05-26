@@ -8,6 +8,7 @@ import { validateBody } from "../validation/validation.js";
 import config from "../config/app.config.js";
 import catchAsync from "../errors/catchAsync.js";
 import GlobalError from "../errors/globalError.js";
+import { filterUserData } from "../api/v1/users/user.controller.js";
 
 export const hashPassword = (password) => {
   return bcrypt.hash(password, 14);
@@ -19,11 +20,12 @@ const comparePasswords = (password, hash) => {
 
 const hasResetPassword = function (user, JWTTimestamp) {
   if (user.passwordResetAt) {
+    const d = new Date(user.passwordResetAt);
+    const tz = 4;
     const changedTimestamp = parseInt(
-      new Date(+user.passwordResetAt).getTime() / 1000,
+      new Date(d.setHours(d.getHours() + tz)).getTime() / 1000,
       10
     );
-
     return JWTTimestamp < changedTimestamp;
   }
 
@@ -49,13 +51,10 @@ const createJWT = (user, res, statusCode) => {
   if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
   res.cookie("jwt", token, cookieOptions);
 
-  user.password = undefined;
-  user.passwordResetAt = undefined;
-
   res.status(statusCode).json({
     status: "success",
     token,
-    data: user,
+    data: filterUserData(user),
   });
 };
 

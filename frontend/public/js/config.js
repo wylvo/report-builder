@@ -26,7 +26,6 @@ export const DEFAULT_USER_UPDATE = Object.freeze({
 });
 
 export const DEFAULT_REPORT = Object.freeze({
-  uuid: "string",
   assignedTo: "string",
   isOnCall: false,
   isDeleted: false,
@@ -41,7 +40,7 @@ export const DEFAULT_REPORT = Object.freeze({
     status: "string",
   },
   store: {
-    number: "string",
+    number: ["string"],
     employee: {
       name: "string",
       isStoreManager: false,
@@ -52,7 +51,7 @@ export const DEFAULT_REPORT = Object.freeze({
   },
   incident: {
     title: "string",
-    type: "string",
+    type: ["string"],
     pos: "string",
     isProcedural: false,
     error: "string",

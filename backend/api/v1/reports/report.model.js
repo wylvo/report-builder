@@ -9,7 +9,7 @@ import {
   dateMSSharePoint,
   GlobalError,
 } from "../router.js";
-import reportValidationSchema from "./reportValidationSchema.js";
+import reportValidationSchema from "./report.schema.js";
 
 // Custom validation to check if username exists in DB & and user is active
 export { isValidUsername } from "../users/user.model.js";
@@ -65,6 +65,7 @@ export const isTimeCustom = (value) => {
   return false;
 };
 
+// Check if the "incident.transaction" object is empty from a report
 const isTransactionObjectEmpty = (transaction) =>
   Object.keys(transaction).length === 1 &&
   transaction.type &&
@@ -73,6 +74,7 @@ const isTransactionObjectEmpty = (transaction) =>
     ? true
     : false;
 
+// Filter a single report by filtering the "id" key from a report
 export const filterReportData = (data) => {
   const transaction = data.incident.transaction;
   if (isTransactionObjectEmpty(transaction)) data.incident.transaction = {};
@@ -84,6 +86,7 @@ export const filterReportData = (data) => {
     }, {});
 };
 
+// Filter many reports using the filterReportData() function
 export const filterReportArrayData = (data) => {
   const reports = [];
   if (data && Array.isArray(data))
@@ -91,25 +94,28 @@ export const filterReportArrayData = (data) => {
   return reports;
 };
 
-const insertManyToMany = (array, reportId, mssql, insert) => {
+// Placeholder function to insert data into many to many SQL tables tied to reports
+// Data is escaped to prevent SQL injection
+const insertManyToMany = (array, reportId, mssql, insertFunction) => {
   if (!array || !Array.isArray(array) || array.length === 0) return;
 
   const params = {},
-    rows = [];
+    rows = [],
+    { Int } = mssqlDataTypes;
 
   array.forEach((value, i) => {
     const param = "param_" + i;
     params[param] = value;
-    rows.push(insert().row(param));
+    rows.push(insertFunction().row(param));
   });
 
   for (const [param, value] of Object.entries(params)) {
     // console.log("param:", param, typeof param, ", value:", value, typeof value);
     mssql.input(param, value);
   }
-  mssql.input("reportId", reportId);
+  mssql.input("reportId", Int, reportId);
 
-  return insert().query(rows);
+  return insertFunction().query(rows);
 };
 
 export const Reports = {
@@ -125,6 +131,7 @@ export const Reports = {
     hardDelete: reportValidationSchema.hardDelete,
   },
 
+  // GET SINGLE REPORT BY UUID
   async findByUUID(uuid) {
     const { NVarChar, UniqueIdentifier } = mssqlDataTypes;
 
@@ -140,6 +147,7 @@ export const Reports = {
     return report ? report : undefined;
   },
 
+  // GET SINGLE REPORT BY ID
   async findById(id) {
     const { NVarChar, Int } = mssqlDataTypes;
 
@@ -155,6 +163,7 @@ export const Reports = {
     return report ? report : undefined;
   },
 
+  // GET SUPER PASSWORD
   async superPassword(userId, transaction = undefined) {
     const { Int, VarChar } = mssqlDataTypes;
     const request = transaction ? mssql(transaction).request : mssql().request;
@@ -169,6 +178,7 @@ export const Reports = {
     return password;
   },
 
+  // GET ALL REPORTS CREATED BY A USER
   async createdBy(userId) {
     const { NVarChar, Int } = mssqlDataTypes;
 
@@ -178,6 +188,7 @@ export const Reports = {
       .execute("api_v1_reports_getCreatedByUserId");
   },
 
+  // GET ALL SOFT DELETED REPORTS CREATED BY A USER
   async softDeletedCreatedBy(userId) {
     const { NVarChar, Int } = mssqlDataTypes;
 
@@ -187,6 +198,7 @@ export const Reports = {
       .execute("api_v1_reports_getCreatedByUserIdSoftDeleted");
   },
 
+  // SOFT DELETE SINGLE REPORT BY ID
   async softDelete(report) {
     const { NVarChar, Int } = mssqlDataTypes;
 
@@ -202,6 +214,7 @@ export const Reports = {
     return filterReportData(reportUpdated);
   },
 
+  // UNDO SOFT DELETE SINGLE REPORT BY ID
   async undoSoftDelete(report) {
     const { NVarChar, Int } = mssqlDataTypes;
 
@@ -217,6 +230,7 @@ export const Reports = {
     return filterReportData(reportUpdated);
   },
 
+  // GET ALL REPORTS, OR GET ALL SOFT DELETED REPORTS
   async all(softDeleted = false) {
     const { NVarChar } = mssqlDataTypes;
     const {
@@ -236,6 +250,7 @@ export const Reports = {
       : { results: reports.length, data: filterReportArrayData(reports) };
   },
 
+  // CREATE A NEW REPORT
   // prettier-ignore
   async create(body, createdByAndUpdatedBy, assignedTo, transaction) {
     const { UniqueIdentifier, NVarChar, VarChar, Int, Bit, Date, Time } = mssqlDataTypes;
@@ -309,6 +324,7 @@ export const Reports = {
     return filterReportData(reportCreated);
   },
 
+  // UPDATE AN EXISTING REPORT
   // prettier-ignore
   async update(body, report, updatedBy, transaction) {
     const { NVarChar, VarChar, Int, Bit, Date, Time } = mssqlDataTypes;
@@ -383,12 +399,15 @@ export const Reports = {
     return filterReportData(reportUpdated);
   },
 
+  // DELETE AN EXISTING REPORT **THIS ACTION IS IRREVERSIBLE**
   hardDelete(report, transaction) {
+    const { Int } = mssqlDataTypes;
     return mssql(transaction)
-      .request.input("reportId", report.id)
+      .request.input("reportId", Int, report.id)
       .execute("api_v1_reports_delete");
   },
 
+  // INSERT/ASSIGN A STORE TO A REPORT
   // prettier-ignore
   insertStores() {
     return {
@@ -399,6 +418,7 @@ export const Reports = {
     };
   },
 
+  // INSERT/ASSIGN AN INCIDENT TYPE TO A REPORT
   // prettier-ignore
   insertIncidentTypes() {
     return {
@@ -409,6 +429,7 @@ export const Reports = {
     };
   },
 
+  // INSERT/ASSIGN AN INCIDENT TRANSACTION TYPE TO A REPORT
   // prettier-ignore
   insertIncidentTransactionTypes() {
     return {
@@ -419,6 +440,7 @@ export const Reports = {
     };
   },
 
+  // DELETE ALL STORES, INCIDENT TYPES, & INCIDENT TRANSACTION TYPES ASSIGNED TO A REPORT
   async deleteStoresIncidentTypesIncidentTransactionTypes(reportId) {
     const { Int } = mssqlDataTypes;
     return mssql()

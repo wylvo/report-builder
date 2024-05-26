@@ -20,6 +20,7 @@ export const filterObject = (obj, ...allowedFields) => {
   Object.keys(obj).forEach((el) => {
     if (allowedFields.includes(el)) newObj[el] = obj[el];
   });
+  if (!newObj.initials) newObj.initials = null;
   return newObj;
 };
 

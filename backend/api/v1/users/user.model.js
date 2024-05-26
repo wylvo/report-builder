@@ -1,6 +1,5 @@
-import userValidationSchema from "./userValidationSchema.js";
+import userValidationSchema from "./user.schema.js";
 import { mssql, hashPassword, config, mssqlDataTypes } from "../router.js";
-import { NVarChar } from "msnodesqlv8";
 
 // Custom validation to check if username exists in DB & and user is active
 export const isValidUsername = async (value, { req }) => {
@@ -37,6 +36,7 @@ export const Users = {
     resetPassword: userValidationSchema.resetPassword(),
   },
 
+  // GET SINGLE USER BY ID
   async findById(id) {
     const { Int, NVarChar } = mssqlDataTypes;
 
@@ -50,6 +50,7 @@ export const Users = {
     return JSON.parse(user);
   },
 
+  // GET SINGLE USER BY EMAIL
   async findByEmail(email) {
     const { VarChar, NVarChar } = mssqlDataTypes;
 
@@ -63,6 +64,7 @@ export const Users = {
     return JSON.parse(user);
   },
 
+  // GET SINGLE USER BY USERNAME
   async findByUsername(username) {
     const { VarChar, NVarChar } = mssqlDataTypes;
 
@@ -76,6 +78,7 @@ export const Users = {
     return JSON.parse(user);
   },
 
+  // GET ALL USERS
   async all(frontend = false) {
     const { NVarChar } = mssqlDataTypes;
 
@@ -92,61 +95,65 @@ export const Users = {
     return users;
   },
 
+  // CREATE A NEW USER
   async create(body) {
-    const {
-      role,
-      active,
-      email,
-      password,
-      profilePictureURI,
-      fullName,
-      username,
-      initials,
-    } = body;
+    const { VarChar, Bit, NVarChar } = mssqlDataTypes;
+
+    body.password = await hashPassword(body.password);
+    body.active = body.active ?? true;
+    body.profilePictureURI =
+      body.profilePictureURI ?? config.misc.defaultProfilePicture;
+    body.initials = body.initials?.toUpperCase() ?? null;
 
     const {
-      recordset: [user],
+      output: { user },
     } = await mssql()
-      .request.input("role", role)
-      .input("active", active ?? true)
-      .input("email", email)
-      .input("password", await hashPassword(password))
-      .input(
-        "profilePictureURI",
-        profilePictureURI ?? config.misc.defaultProfilePicture
-      )
-      .input("fullName", fullName)
-      .input("username", username)
-      .input("initials", initials.toUpperCase() ?? null)
-      .query(this.query.insert());
+      .request.input("role", VarChar, body.role)
+      .input("active", Bit, body.active)
+      .input("email", VarChar, body.email)
+      .input("password", VarChar, body.password)
+      .input("profilePictureURI", NVarChar, body.profilePictureURI)
+      .input("fullName", VarChar, body.fullName)
+      .input("username", VarChar, body.username)
+      .input("initials", VarChar, body.initials)
+      .output("user", NVarChar)
+      .execute("api_v1_users_create");
 
-    return user;
+    return JSON.parse(user);
   },
 
+  // UPDATE EXISTING USER
   async update(body, user) {
-    const { NVarChar } = mssqlDataTypes;
+    const { Int, VarChar, Bit, NVarChar } = mssqlDataTypes;
 
-    if (!body.profilePictureURI)
-      body.profilePictureURI = config.misc.defaultProfilePicture;
-
-    const rawJSON = JSON.stringify([body]);
+    body.profilePictureURI =
+      body.profilePictureURI ?? config.misc.defaultProfilePicture;
 
     const {
       output: { user: userUpdated },
     } = await mssql()
-      .request.input("id", user.id)
-      .input("role", body.role)
-      .input("rawJSON", NVarChar, rawJSON)
+      .request.input("userId", Int, user.id)
+      .input("role", VarChar, body.role)
+      .input("active", Bit, body.active)
+      .input("email", VarChar, body.email)
+      .input("profilePictureURI", NVarChar, body.profilePictureURI)
+      .input("fullName", VarChar, body.fullName)
+      .input("username", VarChar, body.username)
+      .input("initials", VarChar, body.initials)
       .output("user", NVarChar)
-      .query(this.query.update());
+      .execute("api_v1_users_update");
 
-    return userUpdated;
+    return JSON.parse(userUpdated);
   },
 
-  async delete(user) {
-    return await mssql().request.input("id", user.id).query(this.query.delete);
+  // DELETE AN EXISTING USER **THIS ACTION IS IRREVERSIBLE**
+  delete(user) {
+    return mssql()
+      .request.input("userId", user.id)
+      .execute("api_v1_users_delete");
   },
 
+  // ENABLE A USER
   async enable(user) {
     const { Int, NVarChar } = mssqlDataTypes;
 
@@ -159,6 +166,8 @@ export const Users = {
 
     return JSON.parse(userUpdated);
   },
+
+  // DISABLE A USER
   async disable(user) {
     const { Int, NVarChar } = mssqlDataTypes;
 
@@ -172,107 +181,18 @@ export const Users = {
     return JSON.parse(userUpdated);
   },
 
-  /**
-   *  ALL MS SQL SERVER QUERIES RELATED TO USERS
-   **/
-  query: {
-    baseSelect: `
-      u.id, u.createdAt, u.updatedAt, u.authenticationAt,
-      u.passwordResetAt, r.role AS role, u.active, u.email,
-      u.password, u.failedAuthenticationAttempts, u.profilePictureURI,
-      u.fullName, u.username, u.initials
-    `,
+  async resetPassword(body, user) {
+    const { Int, VarChar } = mssqlDataTypes;
 
-    // GET (READ) USER(S)
-    byId() {
-      return `
-        SELECT
-          ${this.baseSelect}
-        FROM users u
-        JOIN roles r ON r.id = u.role_id
-        WHERE u.id = @id;
-      `;
-    },
+    // Set new password
+    user.password = await hashPassword(body.password);
+    body = undefined;
 
-    // CREATE USER
-    insert() {
-      return `
-        DECLARE @role_id INT = (
-          SELECT id
-          FROM roles
-          WHERE role = @role
-        );
-        
-        INSERT INTO users
-          (role_id, active, email, password, profilePictureURI, fullName, username, initials)
-        VALUES
-          (@role_id, @active, @email, @password, @profilePictureURI, @fullName, @username, @initials);
-
-      `;
-    },
-
-    // UPDATE USER
-    // Source: https://learn.microsoft.com/fr-fr/archive/blogs/sqlserverstorageengine/openjson-the-easiest-way-to-import-json-text-into-table#use-case-2-updating-table-row-using-json-object
-    update() {
-      return `
-        DECLARE @role_id INT = (
-          SELECT id
-          FROM roles
-          WHERE role = @role
-        );
-        
-        DECLARE @json NVARCHAR(MAX) = @rawJSON;
-
-        UPDATE users
-        SET updatedAt = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE 'Eastern Standard Time',
-          role_id = ISNULL(@role_id, users.role_id),
-          active = ISNULL(json.active, users.active),
-          email = ISNULL(json.email, users.email),
-          profilePictureURI = ISNULL(json.profilePictureURI, users.profilePictureURI),
-          fullName = ISNULL(json.fullName, users.fullName),
-          username = ISNULL(json.username, users.username),
-          initials = ISNULL(json.initials, users.initials)
-        FROM OPENJSON(@json)
-        WITH (
-          role_id INT,
-          active BIT,
-          email VARCHAR(64),
-          profilePictureURI NVARCHAR(MAX),
-          fullName VARCHAR(64),
-          username VARCHAR(20),
-          initials VARCHAR(2)
-        ) AS json
-        WHERE users.id = @id;
-        
-        ${this.byId()}
-      `;
-    },
-
-    // DELETE USER
-    delete: "DELETE FROM users WHERE id = @id;",
-
-    // ENABLE USER
-    enable() {
-      return `
-        UPDATE users
-        SET active = 1,
-        updatedAt = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE 'Eastern Standard Time'
-        WHERE id = @id;
-
-        ${this.byId()}
-      `;
-    },
-
-    // DISABLE USER
-    disable() {
-      return `
-        UPDATE users
-        SET active = 0,
-        updatedAt = GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE 'Eastern Standard Time'
-        WHERE id = @id;
-
-        ${this.byId()}
-      `;
-    },
+    const {
+      output: { user: userUpdated },
+    } = await mssql()
+      .request.input("userId", Int, user.id)
+      .input("password", VarChar, user.password)
+      .execute("api_v1_users_update_password");
   },
 };

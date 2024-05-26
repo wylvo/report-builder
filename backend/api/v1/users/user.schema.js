@@ -146,8 +146,8 @@ export default {
           errorMessage: "already in use.",
         },
       },
-      username: {
-        ...this.create.username,
+      fullName: {
+        ...this.create.fullName,
         optional: true,
       },
       initials: {
