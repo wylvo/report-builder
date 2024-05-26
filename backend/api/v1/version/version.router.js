@@ -1,6 +1,6 @@
 import express from "express";
 
-import * as version from "./versionController.js";
+import * as version from "./version.controller.js";
 
 const router = express.Router();
 

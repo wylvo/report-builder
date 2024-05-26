@@ -1,8 +1,8 @@
 import express from "express";
 
-import { resetPasswordRouter } from "./resetPassword/resetPasswordRouter.js";
-import * as user from "./userController.js";
-import * as auth from "../../../auth/authController.js";
+import { resetPasswordRouter } from "./resetPassword/resetPassword.router.js";
+import * as user from "./user.controller.js";
+import * as auth from "../../../auth/auth.controller.js";
 
 const router = express.Router();
 

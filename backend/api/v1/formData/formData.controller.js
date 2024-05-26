@@ -1,4 +1,4 @@
-import { FormData } from "./formDataModel.js";
+import { FormData } from "./formData.model.js";
 import { config, catchAsync, mssql, GlobalError } from "../router.js";
 import reportValidationSchema from "../reports/reportValidationSchema.js";
 

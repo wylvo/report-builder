@@ -2,13 +2,13 @@ import { ExpressValidator } from "express-validator";
 import bcrypt from "bcrypt";
 
 import {
-  Report,
+  Reports,
   isNotEmptyArray,
   isNewReport,
   isDateTime,
   isTimeCustom,
   isValidUsername,
-} from "./reportModel.js";
+} from "./report.model.js";
 import {
   mssql,
   mssqlDataTypes,
@@ -30,7 +30,7 @@ const { checkSchema } = new ExpressValidator({
 });
 
 export const getAllReports = catchAsync(async (req, res, next) => {
-  const { results, data } = await Report.all();
+  const { results, data } = await Reports.all();
 
   res.status(200).json({
     status: "success",
@@ -41,7 +41,7 @@ export const getAllReports = catchAsync(async (req, res, next) => {
 
 export const getAllSoftDeletedReports = catchAsync(async (req, res, next) => {
   const softDeleted = true;
-  const { results, data } = await Report.all(softDeleted);
+  const { results, data } = await Reports.all(softDeleted);
 
   res.status(200).json({
     status: "success",
@@ -50,14 +50,14 @@ export const getAllSoftDeletedReports = catchAsync(async (req, res, next) => {
   });
 });
 
-export const validateCreate = validateBody(checkSchema, Report.schema.create);
+export const validateCreate = validateBody(checkSchema, Reports.schema.create);
 
 export const createReport = catchAsync(async (req, res, next) => {
   const transaction = mssql().transaction;
 
   try {
     await transaction.begin();
-    const report = await Report.create(
+    const report = await Reports.create(
       req.body,
       req.user.id,
       req.assignedTo,
@@ -78,7 +78,7 @@ export const createReport = catchAsync(async (req, res, next) => {
 export const getReport = catchAsync(async (req, res, next) => {
   const uuid = req.params.id;
 
-  const report = await Report.findByUUID(uuid);
+  const report = await Reports.findByUUID(uuid);
 
   if (!report)
     return next(new GlobalError(`Report not found with id: ${uuid}.`, 404));
@@ -89,12 +89,12 @@ export const getReport = catchAsync(async (req, res, next) => {
   });
 });
 
-export const validateUpdate = validateBody(checkSchema, Report.schema.update);
+export const validateUpdate = validateBody(checkSchema, Reports.schema.update);
 
 export const updateReport = catchAsync(async (req, res, next) => {
   const uuid = req.params.id;
 
-  const report = await Report.findByUUID(uuid);
+  const report = await Reports.findByUUID(uuid);
 
   if (!report)
     return next(new GlobalError(`Report not found with id: ${uuid}.`, 404));
@@ -103,7 +103,7 @@ export const updateReport = catchAsync(async (req, res, next) => {
 
   try {
     await transaction.begin();
-    const reportUpdated = await Report.update(
+    const reportUpdated = await Reports.update(
       req.body,
       report,
       req.user.username
@@ -123,14 +123,14 @@ export const updateReport = catchAsync(async (req, res, next) => {
 
 export const validateHardDelete = validateBody(
   checkSchema,
-  Report.schema.hardDelete
+  Reports.schema.hardDelete
 );
 
 export const deleteReport = catchAsync(async (req, res, next) => {
   const uuid = req.params.id;
 
   console.log(uuid);
-  const report = await Report.findByUUID(uuid);
+  const report = await Reports.findByUUID(uuid);
 
   if (!report)
     return next(new GlobalError(`Report not found with id: ${uuid}.`, 404));
@@ -148,7 +148,7 @@ export const deleteReport = catchAsync(async (req, res, next) => {
 
   try {
     await transaction.begin();
-    const password = await Report.superPassword(req.user.id, transaction);
+    const password = await Reports.superPassword(req.user.id, transaction);
 
     // For additional security, require for a password
     if (!(await bcrypt.compare(req.body.password, password)))
@@ -159,7 +159,7 @@ export const deleteReport = catchAsync(async (req, res, next) => {
         )
       );
 
-    await Report.hardDelete(report, transaction);
+    await Reports.hardDelete(report, transaction);
     await transaction.commit();
 
     res.status(204).json({
@@ -175,7 +175,7 @@ export const deleteReport = catchAsync(async (req, res, next) => {
 export const softDeleteReport = async (req, res, next) => {
   const uuid = req.params.id;
 
-  const report = await Report.findByUUID(uuid);
+  const report = await Reports.findByUUID(uuid);
 
   if (!report)
     return next(new GlobalError(`Report not found with id: ${uuid}.`, 404));
@@ -188,7 +188,7 @@ export const softDeleteReport = async (req, res, next) => {
       )
     );
 
-  const reportUpdated = await Report.softDelete(report);
+  const reportUpdated = await Reports.softDelete(report);
 
   res.status(200).json({
     status: "success",
@@ -199,7 +199,7 @@ export const softDeleteReport = async (req, res, next) => {
 export const undoSoftDeleteReport = async (req, res, next) => {
   const uuid = req.params.id;
 
-  const report = await Report.findByUUID(uuid);
+  const report = await Reports.findByUUID(uuid);
 
   if (!report)
     return next(new GlobalError(`Report not found with id: ${uuid}.`, 404));
@@ -209,7 +209,7 @@ export const undoSoftDeleteReport = async (req, res, next) => {
       new GlobalError(`Report is not marked as deleted with id: ${uuid}.`, 400)
     );
 
-  const reportUpdated = await Report.undoSoftDelete(report);
+  const reportUpdated = await Reports.undoSoftDelete(report);
 
   res.status(200).json({
     status: "success",
@@ -217,14 +217,14 @@ export const undoSoftDeleteReport = async (req, res, next) => {
   });
 };
 
-export const validateImport = validateBody(checkSchema, Report.schema.import);
+export const validateImport = validateBody(checkSchema, Reports.schema.import);
 
 export const importReport = catchAsync(async (req, res, next) => {
   const transaction = mssql().transaction;
 
   try {
     await transaction.begin();
-    const report = await Report.import(
+    const report = await Reports.import(
       req.body,
       req.user.username,
       transaction

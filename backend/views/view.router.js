@@ -1,6 +1,6 @@
 import express from "express";
-import * as views from "./viewController.js";
-import * as auth from "../auth/authController.js";
+import * as views from "./view.controller.js";
+import * as auth from "../auth/auth.controller.js";
 
 const router = express.Router();
 

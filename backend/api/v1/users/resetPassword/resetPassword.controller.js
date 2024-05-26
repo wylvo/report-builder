@@ -1,7 +1,7 @@
 import { checkSchema } from "express-validator";
 
-import { User } from "../userModel.js";
-import { filterUserData } from "../userController.js";
+import { Users } from "../user.model.js";
+import { filterUserData } from "../user.controller.js";
 import {
   mssql,
   mssqlDataTypes,
@@ -11,11 +11,11 @@ import {
   validateBody,
   dateISO8601,
 } from "../../router.js";
-import ResetPassword from "./resetPasswordModel.js";
+import ResetPassword from "./resetPassword.model.js";
 
 export const validateResetPassword = validateBody(
   checkSchema,
-  User.schema.resetPassword
+  Users.schema.resetPassword
 );
 
 export const resetUserPassword = catchAsync(async (req, res, next) => {
@@ -23,7 +23,7 @@ export const resetUserPassword = catchAsync(async (req, res, next) => {
   const id = req.userId;
   req.userId = undefined;
 
-  const user = await User.findById(id);
+  const user = await Users.findById(id);
 
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));

@@ -1,8 +1,8 @@
 import express from "express";
 
-import * as report from "./reportController.js";
-import * as auth from "../../../auth/authController.js";
-import * as formData from "../formData/formDataController.js";
+import * as report from "./report.controller.js";
+import * as auth from "../../../auth/auth.controller.js";
+import * as formData from "../formData/formData.controller.js";
 
 const router = express.Router();
 

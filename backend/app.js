@@ -9,10 +9,10 @@ import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
 
 import routerV1 from "./api/v1/router.js";
-import globalErrorHandler from "./errors/errorController.js";
+import globalErrorHandler from "./errors/error.controller.js";
 import GlobalError from "./errors/globalError.js";
-import * as auth from "./auth/authController.js";
-import { viewRouter } from "./views/viewRouter.js";
+import * as auth from "./auth/auth.controller.js";
+import { viewRouter } from "./views/view.router.js";
 
 const app = express();
 const __dirname = path.resolve();

@@ -54,7 +54,7 @@ export const updateBackup = async (req, res) => {
         )
       );
 
-      // If Report Is Found Update The Report. Else, Add The Report In The Backup File
+      // If Report Is Found Update The Reports. Else, Add The Report In The Backup File
       let operation = "";
       index !== -1
         ? ((backup["reportsList"][index] = report), (operation = "Updated"))

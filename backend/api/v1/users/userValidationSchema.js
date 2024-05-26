@@ -1,4 +1,4 @@
-import { User } from "./userModel.js";
+import { Users } from "./user.model.js";
 import config from "../../../config/app.config.js";
 
 export default {
@@ -32,7 +32,7 @@ export default {
       },
       custom: {
         options: async (email) => {
-          const user = await User.findByEmail(email);
+          const user = await Users.findByEmail(email);
           if (user) throw new Error();
         },
         errorMessage: "already in use.",
@@ -80,7 +80,7 @@ export default {
       },
       custom: {
         options: async (username, { req }) => {
-          const user = await User.findByUsername(username);
+          const user = await Users.findByUsername(username);
           if (user && String(user.id) !== req.params.id) throw new Error();
           return user;
         },
@@ -119,7 +119,7 @@ export default {
         },
         custom: {
           options: async (email, { req }) => {
-            const user = await User.findByEmail(email);
+            const user = await Users.findByEmail(email);
             if (user && String(user.id) !== req.params.id) throw new Error();
           },
           errorMessage: "already in use.",
@@ -139,7 +139,7 @@ export default {
         },
         custom: {
           options: async (username, { req }) => {
-            const user = await User.findByUsername(username);
+            const user = await Users.findByUsername(username);
             if (user && String(user.id) !== req.params.id) throw new Error();
             return user;
           },

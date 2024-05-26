@@ -12,14 +12,14 @@ import {
 import reportValidationSchema from "./reportValidationSchema.js";
 
 // Custom validation to check if username exists in DB & and user is active
-export { isValidUsername } from "../users/userModel.js";
+export { isValidUsername } from "../users/user.model.js";
 
 // Custom validation to check if a JSON is not empty
 export const isNotEmptyArray = (array) => array.length > 0;
 
 // Custom validation to check if report exists in DB
 export const isNewReport = async (value) => {
-  const report = await Report.findByUUID(value);
+  const report = await Reports.findByUUID(value);
   if (report) throw new Error();
 };
 
@@ -112,7 +112,7 @@ const insertManyToMany = (array, reportId, mssql, insert) => {
   return insert().query(rows);
 };
 
-export const Report = {
+export const Reports = {
   /**
    * MIDDLEWARE VALIDATION BEFORE:
    * CREATING A REPORT        /api/v1/reports (POST)

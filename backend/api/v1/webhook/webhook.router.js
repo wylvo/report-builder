@@ -1,7 +1,7 @@
 import express from "express";
 
-import * as webhook from "./webhookController.js";
-import * as auth from "../../../auth/authController.js";
+import * as webhook from "./webhook.controller.js";
+import * as auth from "../../../auth/auth.controller.js";
 
 const router = express.Router();
 

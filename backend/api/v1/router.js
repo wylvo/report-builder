@@ -1,11 +1,11 @@
 import express from "express";
 
-import { userRouter } from "./users/userRouter.js";
-import { reportRouter } from "./reports/reportRouter.js";
-import { webhookRouter } from "./webhook/webhookRouter.js";
-import { versionRouter } from "./version/versionRouter.js";
-import { formDataRouter } from "./formData/formDataRouter.js";
-import * as auth from "../../auth/authController.js";
+import { userRouter } from "./users/user.router.js";
+import { reportRouter } from "./reports/report.router.js";
+import { webhookRouter } from "./webhook/webhook.router.js";
+import { versionRouter } from "./version/version.router.js";
+import { formDataRouter } from "./formData/formData.router.js";
+import * as auth from "../../auth/auth.controller.js";
 
 export const generateUUID = () => {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
@@ -29,7 +29,7 @@ router.use("/formData", formDataRouter); // - /api/v1/formData
 
 export { mssql, mssqlDataTypes } from "../../config/db.config.js";
 export { validateBody } from "../../validation/validation.js";
-export { hashPassword } from "../../auth/authController.js";
+export { hashPassword } from "../../auth/auth.controller.js";
 export { default as config } from "../../config/app.config.js";
 export { default as dateISO8601 } from "../../date/dateISO8601.js";
 export { default as catchAsync } from "../../errors/catchAsync.js";

@@ -1,6 +1,6 @@
 import express from "express";
 
-import * as formData from "./formDataController.js";
+import * as formData from "./formData.controller.js";
 
 const router = express.Router();
 

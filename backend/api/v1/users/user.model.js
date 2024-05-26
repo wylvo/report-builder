@@ -1,9 +1,10 @@
 import userValidationSchema from "./userValidationSchema.js";
 import { mssql, hashPassword, config, mssqlDataTypes } from "../router.js";
+import { NVarChar } from "msnodesqlv8";
 
 // Custom validation to check if username exists in DB & and user is active
 export const isValidUsername = async (value, { req }) => {
-  const user = await User.findByUsername(value);
+  const user = await Users.findByUsername(value);
   if (!user) throw new Error("username does not exist.");
   if (user && !user.active) throw new Error("user is inactive.");
   req.assignedTo = user.id;
@@ -12,7 +13,7 @@ export const isValidUsername = async (value, { req }) => {
 
 // Custom validation to check if new username does not exists in DB
 export const isValidNewUsername = async (value, { req }) => {
-  const user = await User.findByUsername(value);
+  const user = await Users.findByUsername(value);
 
   // If a user is found with the username value
   // Then, the id present in the request has to match that exising user id in the DB
@@ -21,7 +22,7 @@ export const isValidNewUsername = async (value, { req }) => {
   return true;
 };
 
-export const User = {
+export const Users = {
   /**
    * MIDDLEWARE VALIDATION BEFORE:
    * SIGNING IN A USER          /signin                         (POST)
@@ -36,41 +37,58 @@ export const User = {
     resetPassword: userValidationSchema.resetPassword(),
   },
 
-  findById: async (id) => {
+  async findById(id) {
+    const { Int, NVarChar } = mssqlDataTypes;
+
     const {
-      recordset: [user],
-    } = await mssql().request.input("id", id).query(User.query.byId());
-
-    return user;
-  },
-
-  findByEmail: async (email) => {
-    const {
-      recordset: [user],
-    } = await mssql().request.input("email", email).query(User.query.byEmail());
-
-    return user;
-  },
-
-  findByUsername: async (username) => {
-    const {
-      recordset: [user],
+      output: { user },
     } = await mssql()
-      .request.input("username", username)
-      .query(User.query.byUsername());
+      .request.input("id", Int, id)
+      .output("user", NVarChar)
+      .execute("api_v1_users_getById");
 
-    return user;
+    return JSON.parse(user);
   },
 
-  async all() {
-    const { recordset: users } = await mssql().request.query(User.query.all());
-    return users;
+  async findByEmail(email) {
+    const { VarChar, NVarChar } = mssqlDataTypes;
+
+    const {
+      output: { user },
+    } = await mssql()
+      .request.input("email", VarChar, email)
+      .output("user", NVarChar)
+      .execute("api_v1_users_getByEmail");
+
+    return JSON.parse(user);
   },
 
-  async allFiltered() {
-    const { recordset: users } = await mssql().request.query(
-      User.query.allFiltered()
-    );
+  async findByUsername(username) {
+    const { VarChar, NVarChar } = mssqlDataTypes;
+
+    const {
+      output: { user },
+    } = await mssql()
+      .request.input("username", VarChar, username)
+      .output("user", NVarChar)
+      .execute("api_v1_users_getByUsername");
+
+    return JSON.parse(user);
+  },
+
+  async all(frontend = false) {
+    const { NVarChar } = mssqlDataTypes;
+
+    const {
+      output: { user },
+    } = await mssql()
+      .request.output("user", NVarChar)
+      .execute(
+        frontend ? "api_v1_users_getAllFrontend" : "api_v1_users_getAll"
+      );
+
+    const users = JSON.parse(user);
+
     return users;
   },
 
@@ -114,11 +132,12 @@ export const User = {
     const rawJSON = JSON.stringify([body]);
 
     const {
-      recordset: [userUpdated],
+      output: { user: userUpdated },
     } = await mssql()
       .request.input("id", user.id)
       .input("role", body.role)
       .input("rawJSON", NVarChar, rawJSON)
+      .output("user", NVarChar)
       .query(this.query.update());
 
     return userUpdated;
@@ -129,18 +148,28 @@ export const User = {
   },
 
   async enable(user) {
-    const {
-      recordset: [userUpdated],
-    } = await mssql().request.input("id", user.id).query(this.query.enable());
+    const { Int, NVarChar } = mssqlDataTypes;
 
-    return userUpdated;
+    const {
+      output: { user: userUpdated },
+    } = await mssql()
+      .request.input("userId", Int, user.id)
+      .output("user", NVarChar)
+      .execute("api_v1_users_enable");
+
+    return JSON.parse(userUpdated);
   },
   async disable(user) {
-    const {
-      recordset: [userUpdated],
-    } = await mssql().request.input("id", user.id).query(this.query.disable());
+    const { Int, NVarChar } = mssqlDataTypes;
 
-    return userUpdated;
+    const {
+      output: { user: userUpdated },
+    } = await mssql()
+      .request.input("userId", Int, user.id)
+      .output("user", NVarChar)
+      .execute("api_v1_users_disable");
+
+    return JSON.parse(userUpdated);
   },
 
   /**
@@ -165,44 +194,6 @@ export const User = {
       `;
     },
 
-    byEmail() {
-      return `
-        SELECT
-          ${this.baseSelect}
-        FROM users u
-        JOIN roles r ON r.id = u.role_id
-        WHERE email = @email;
-      `;
-    },
-
-    byUsername() {
-      return `
-        SELECT
-          ${this.baseSelect}
-        FROM users u
-        JOIN roles r ON r.id = u.role_id
-        WHERE u.username = @username;`;
-    },
-
-    all() {
-      return `
-        SELECT
-          u.id, r.role AS role, u.active, u.email, u.profilePictureURI, u.fullName, u.username, u.initials
-        FROM users u
-        JOIN roles r ON r.id = u.role_id;
-      `;
-    },
-
-    allFiltered() {
-      return `
-        SELECT
-          u.profilePictureURI, u.fullName, u.username, u.initials
-        FROM users u
-        JOIN roles r ON r.id = u.role_id
-        WHERE r.role = 'User';
-      `;
-    },
-
     // CREATE USER
     insert() {
       return `
@@ -217,7 +208,6 @@ export const User = {
         VALUES
           (@role_id, @active, @email, @password, @profilePictureURI, @fullName, @username, @initials);
 
-        ${this.byUsername()}
       `;
     },
 

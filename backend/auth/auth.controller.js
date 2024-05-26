@@ -3,7 +3,7 @@ import { checkSchema } from "express-validator";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-import { User } from "../api/v1/users/userModel.js";
+import { Users } from "../api/v1/users/user.model.js";
 import { validateBody } from "../validation/validation.js";
 import config from "../config/app.config.js";
 import catchAsync from "../errors/catchAsync.js";
@@ -55,16 +55,16 @@ const createJWT = (user, res, statusCode) => {
   res.status(statusCode).json({
     status: "success",
     token,
-    data: [user],
+    data: user,
   });
 };
 
-export const validateSignIn = validateBody(checkSchema, User.schema.signIn);
+export const validateSignIn = validateBody(checkSchema, Users.schema.signIn);
 
 export const signIn = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
-  const user = await User.findByEmail(email);
+  const user = await Users.findByEmail(email);
 
   // Check if user exists && provided password is valid
   if (!user || !(await comparePasswords(password, user.password)))
@@ -109,7 +109,7 @@ export const protect = catchAsync(async (req, res, next) => {
   const decoded = await promisify(jwt.verify)(token, config.jwt.secret);
 
   // Check if user exists in DB
-  const currentUser = await User.findById(decoded.id);
+  const currentUser = await Users.findById(decoded.id);
 
   if (!currentUser) {
     return next(
@@ -149,7 +149,7 @@ export const isLoggedIn = async (req, res, next) => {
       );
 
       // Check if user still exists
-      const currentUser = await User.findById(decoded.id);
+      const currentUser = await Users.findById(decoded.id);
       if (!currentUser) {
         return next();
       }

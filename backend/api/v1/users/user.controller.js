@@ -1,11 +1,11 @@
 import { checkSchema } from "express-validator";
 
-import { User } from "./userModel.js";
-import { Report, filterReportArrayData } from "../reports/reportModel.js";
+import { Users } from "./user.model.js";
+import { Reports, filterReportArrayData } from "../reports/report.model.js";
 import {
   resetUserPassword,
   validateResetPassword,
-} from "./resetPassword/resetPasswordController.js";
+} from "./resetPassword/resetPassword.controller.js";
 import {
   config,
   mssql,
@@ -28,23 +28,20 @@ export const filterUserData = (
   reports = undefined,
   reportsDeleted = undefined
 ) => {
-  return [
-    {
-      ...filterObject(
-        obj,
-        "id",
-        "role",
-        "active",
-        "email",
-        "profilePictureURI",
-        "fullName",
-        "username",
-        "initials"
-      ),
-      ...(reports && { reports }),
-      ...(reportsDeleted && { reportsDeleted }),
-    },
-  ];
+  obj = filterObject(
+    obj,
+    "id",
+    "role",
+    "active",
+    "email",
+    "profilePictureURI",
+    "fullName",
+    "username",
+    "initials"
+  );
+  if (reports) obj.reports = reports;
+  if (reportsDeleted) obj.reportsDeleted = reportsDeleted;
+  return obj;
 };
 
 export const getUserId = (req, res, next) => {
@@ -53,7 +50,8 @@ export const getUserId = (req, res, next) => {
 };
 
 export const getAllUsersFrontend = catchAsync(async (req, res, next) => {
-  const users = await User.allFiltered();
+  const frontend = true;
+  const users = await Users.all(frontend);
 
   res.status(200).json({
     status: "success",
@@ -63,7 +61,7 @@ export const getAllUsersFrontend = catchAsync(async (req, res, next) => {
 });
 
 export const getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.all();
+  const users = await Users.all();
 
   res.status(200).json({
     status: "success",
@@ -72,10 +70,10 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
   });
 });
 
-export const validateCreate = validateBody(checkSchema, User.schema.create);
+export const validateCreate = validateBody(checkSchema, Users.schema.create);
 
 export const createUser = catchAsync(async (req, res, next) => {
-  const user = await User.create(req.body);
+  const user = await Users.create(req.body);
 
   res.status(201).json({
     status: "success",
@@ -86,7 +84,7 @@ export const createUser = catchAsync(async (req, res, next) => {
 export const getUser = catchAsync(async (req, res, next) => {
   const id = req.params.id;
 
-  const user = await User.findById(id);
+  const user = await Users.findById(id);
 
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
@@ -99,13 +97,12 @@ export const getUser = catchAsync(async (req, res, next) => {
       output: { report: rawJSON2 },
     },
   ] = await Promise.all([
-    Report.createdBy(user.id),
-    Report.softDeletedCreatedBy(user.id),
+    Reports.createdBy(user.id),
+    Reports.softDeletedCreatedBy(user.id),
   ]);
 
   const reports = JSON.parse(rawJSON1);
   const reportsDeleted = JSON.parse(rawJSON2);
-  console.log(reports);
 
   res.status(200).json({
     status: "success",
@@ -117,18 +114,18 @@ export const getUser = catchAsync(async (req, res, next) => {
   });
 });
 
-export const validateUpdate = validateBody(checkSchema, User.schema.update);
+export const validateUpdate = validateBody(checkSchema, Users.schema.update);
 
 export const updateUser = catchAsync(async (req, res, next) => {
   const id = req.params.id;
 
-  const user = await User.findById(id);
+  const user = await Users.findById(id);
 
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
   console.log(user);
 
-  const userUpdated = await User.update(req.body, user);
+  const userUpdated = await Users.update(req.body, user);
 
   res.status(201).json({
     status: "success",
@@ -139,12 +136,12 @@ export const updateUser = catchAsync(async (req, res, next) => {
 export const deleteUser = catchAsync(async (req, res, next) => {
   const id = req.params.id;
 
-  const user = await User.findById(id);
+  const user = await Users.findById(id);
 
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
 
-  await User.delete(user);
+  await Users.delete(user);
 
   res.status(204).json({
     status: "success",
@@ -155,7 +152,7 @@ export const deleteUser = catchAsync(async (req, res, next) => {
 export const enableUser = async (req, res, next) => {
   const id = req.params.id;
 
-  const user = await User.findById(id);
+  const user = await Users.findById(id);
 
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
@@ -163,7 +160,7 @@ export const enableUser = async (req, res, next) => {
   if (user.active === true)
     return next(new GlobalError(`User is already active with id: ${id}.`, 400));
 
-  const userUpdated = await User.enable(user);
+  const userUpdated = await Users.enable(user);
 
   res.status(200).json({
     status: "success",
@@ -174,7 +171,7 @@ export const enableUser = async (req, res, next) => {
 export const disableUser = async (req, res, next) => {
   const id = req.params.id;
 
-  const user = await User.findById(id);
+  const user = await Users.findById(id);
 
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
@@ -184,7 +181,7 @@ export const disableUser = async (req, res, next) => {
       new GlobalError(`User is already inactive with id: ${id}.`, 400)
     );
 
-  const userUpdated = await User.disable(user);
+  const userUpdated = await Users.disable(user);
 
   res.status(200).json({
     status: "success",
