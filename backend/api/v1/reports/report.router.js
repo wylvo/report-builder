@@ -39,4 +39,7 @@ router
     report.updateReport
   );
 
+// Handle report migration in a separate module
+router.use("/migrate", report.migrateReport);
+
 export { router as reportRouter };

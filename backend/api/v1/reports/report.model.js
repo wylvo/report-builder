@@ -129,6 +129,8 @@ export const Reports = {
     create: reportValidationSchema.create,
     update: reportValidationSchema.update,
     hardDelete: reportValidationSchema.hardDelete,
+    import: (version) => reportValidationSchema.import[version],
+    migrate: (version) => reportValidationSchema.migrate[version],
   },
 
   // GET SINGLE REPORT BY UUID

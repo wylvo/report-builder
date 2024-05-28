@@ -308,4 +308,12 @@ export default {
       isString: { errorMessage: "should be a string" },
     },
   },
+
+  import: {
+    "1.0.0": {},
+  },
+
+  migrate: {
+    "1.0.0": {},
+  },
 };

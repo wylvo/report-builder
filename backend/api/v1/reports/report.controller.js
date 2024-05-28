@@ -9,6 +9,7 @@ import {
   isTimeCustom,
   isValidUsername,
 } from "./report.model.js";
+
 import {
   mssql,
   mssqlDataTypes,
@@ -20,6 +21,9 @@ import {
   GlobalError,
   dateMSSharePoint,
 } from "../router.js";
+
+import { migrateReport } from "./migrate/migrate.controller.js";
+import { importReports } from "./import/import.controller.js";
 
 const { checkSchema } = new ExpressValidator({
   isNotEmptyArray,
@@ -221,31 +225,9 @@ export const undoSoftDeleteReport = async (req, res, next) => {
   });
 };
 
-export const validateImport = validateBody(checkSchema, Reports.schema.import);
+export const validateImport = validateBody(
+  checkSchema,
+  Reports.schema.import("1.0.0")
+);
 
-export const importReport = catchAsync(async (req, res, next) => {
-  const transaction = mssql().transaction;
-
-  try {
-    await transaction.begin();
-    const report = await Reports.import(
-      req.body,
-      req.user.username,
-      transaction
-    );
-    await transaction.commit();
-
-    res.status(201).json({
-      status: "success",
-      data: filterReportData(report),
-    });
-  } catch (error) {
-    await transaction.rollback();
-    return next(
-      new GlobalError(
-        `An error occured while creating a report: ${error.message}.`,
-        401
-      )
-    );
-  }
-});
+export { importReports as importReports, migrateReport as migrateReport };
