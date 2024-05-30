@@ -7,14 +7,6 @@ import { versionRouter } from "./version/version.router.js";
 import { formDataRouter } from "./formData/formData.router.js";
 import * as auth from "../../auth/auth.controller.js";
 
-export const generateUUID = () => {
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0,
-      v = c == "x" ? r : (r & 0x3) | 0x8;
-    return v.toString(16).toLowerCase();
-  });
-};
-
 const router = express.Router();
 
 // Protect all routes after this middleware

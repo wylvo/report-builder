@@ -4,7 +4,6 @@ import {
   mssqlDataTypes,
   dateISO8601,
   config,
-  generateUUID,
   validateBody,
   catchAsync,
   GlobalError,

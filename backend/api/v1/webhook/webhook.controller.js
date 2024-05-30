@@ -19,7 +19,7 @@ export const sendReportToIncomingWebhook = catchAsync(
   async (req, res, next) => {
     const id = req.params.id;
 
-    const report = await Reports.findByUUID(id);
+    const report = await Reports.findById(id);
 
     if (!report)
       return next(new GlobalError(`Report not found with id: ${id}.`, 404));

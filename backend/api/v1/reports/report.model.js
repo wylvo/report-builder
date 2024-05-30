@@ -3,7 +3,6 @@ import validator from "validator";
 import {
   mssql,
   mssqlDataTypes,
-  generateUUID,
   config,
   dateISO8601,
   dateMSSharePoint,
@@ -16,12 +15,6 @@ export { isValidUsername } from "../users/user.model.js";
 
 // Custom validation to check if a JSON is not empty
 export const isNotEmptyArray = (array) => array.length > 0;
-
-// Custom validation to check if report exists in DB
-export const isNewReport = async (value) => {
-  const report = await Reports.findByUUID(value);
-  if (report) throw new Error();
-};
 
 // Custom date & time validation function for checkSchema in reportController.js
 export const isDateTime = (value) => {
@@ -74,26 +67,6 @@ const isTransactionObjectEmpty = (transaction) =>
     ? true
     : false;
 
-// Filter a single report by filtering the "id" key from a report
-export const filterReportData = (data) => {
-  const transaction = data.incident.transaction;
-  if (isTransactionObjectEmpty(transaction)) data.incident.transaction = {};
-  return Object.keys(data)
-    .filter((key) => !["id"].includes(key))
-    .reduce((obj, key) => {
-      obj[key] = data[key];
-      return obj;
-    }, {});
-};
-
-// Filter many reports using the filterReportData() function
-export const filterReportArrayData = (data) => {
-  const reports = [];
-  if (data && Array.isArray(data))
-    data.forEach((obj) => reports.push(filterReportData(obj)));
-  return reports;
-};
-
 // Placeholder function to insert data into many to many SQL tables tied to reports
 // Data is escaped to prevent SQL injection
 const insertManyToMany = (array, reportId, mssql, insertFunction) => {
@@ -133,22 +106,6 @@ export const Reports = {
     hardDelete: reportSchema.hardDelete,
     import: reportSchema.import,
     migrate: reportSchema.migrate,
-  },
-
-  // GET SINGLE REPORT BY UUID
-  async findByUUID(uuid) {
-    const { NVarChar, UniqueIdentifier } = mssqlDataTypes;
-
-    const {
-      output: { report: rawJSON },
-    } = await mssql()
-      .request.input("uuid", UniqueIdentifier, uuid)
-      .output("report", NVarChar)
-      .execute("api_v1_reports_getByUUID");
-
-    const report = JSON.parse(rawJSON);
-
-    return report ? report : undefined;
   },
 
   // GET SINGLE REPORT BY ID
@@ -215,7 +172,7 @@ export const Reports = {
 
     const reportUpdated = JSON.parse(rawJSON);
 
-    return filterReportData(reportUpdated);
+    return reportUpdated;
   },
 
   // UNDO SOFT DELETE SINGLE REPORT BY ID
@@ -231,7 +188,7 @@ export const Reports = {
 
     const reportUpdated = JSON.parse(rawJSON);
 
-    return filterReportData(reportUpdated);
+    return reportUpdated;
   },
 
   // GET ALL REPORTS, OR GET ALL SOFT DELETED REPORTS
@@ -251,7 +208,7 @@ export const Reports = {
 
     return !reports
       ? { results: 0, data: [] }
-      : { results: reports.length, data: filterReportArrayData(reports) };
+      : { results: reports.length, data: reports };
   },
 
   // CREATE A NEW REPORT
@@ -259,7 +216,6 @@ export const Reports = {
   async create(body, createdByAndUpdatedBy, assignedTo, transaction) {
     const { UniqueIdentifier, NVarChar, VarChar, Int, Bit, Date, Time } = mssqlDataTypes;
 
-    body.uuid = generateUUID();
     body.version = config.version;
     // Same user id for created by and updated by
     body.createdBy = createdByAndUpdatedBy;
@@ -272,7 +228,6 @@ export const Reports = {
 
     const reportCreate = mssql(transaction).request;
 
-    reportCreate.input("uuid", UniqueIdentifier, body.uuid);
     reportCreate.input("version", VarChar, body.version);
     reportCreate.input("createdBy", Int, body.createdBy);
     reportCreate.input("updatedBy", Int, body.updatedBy);
@@ -325,7 +280,7 @@ export const Reports = {
       
     const reportCreated = JSON.parse(rawJSON);
 
-    return filterReportData(reportCreated);
+    return reportCreated;
   },
 
   // UPDATE AN EXISTING REPORT
@@ -400,7 +355,7 @@ export const Reports = {
 
     const reportUpdated = JSON.parse(rawJSON);
 
-    return filterReportData(reportUpdated);
+    return reportUpdated;
   },
 
   // DELETE AN EXISTING REPORT **THIS ACTION IS IRREVERSIBLE**
@@ -464,7 +419,6 @@ export const Reports = {
 
     const preparedStatement = mssql().preparedStatement;
 
-    preparedStatement.input("uuid", UniqueIdentifier);
     preparedStatement.input("version", VarChar);
     preparedStatement.input("createdBy", Int);
     preparedStatement.input("updatedBy", Int);
@@ -489,7 +443,6 @@ export const Reports = {
     await preparedStatement.prepare(`
       DECLARE @reportId INT;
       EXEC @reportId = [dbo].[api_v1_reports_create]
-        @uuid = @uuid,
         @version = @version,
         @createdBy = @createdBy,
         @updatedBy = @updatedBy,
@@ -516,7 +469,6 @@ export const Reports = {
     const {
       recordset: [report],
     } = await preparedStatement.execute({
-      uuid: body.uuid,
       version: body.version,
       createdBy: body.createdBy,
       updatedBy: body.updatedBy,

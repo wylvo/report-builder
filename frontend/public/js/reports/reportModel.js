@@ -264,7 +264,6 @@ const checkReportValidity = (report) => {
 // Create a single report object
 const createReportObject = (report, form) => {
   return {
-    id: report?.id ?? utils.generateUUID(),
     assignedTo: form["assigned-to"].value.trim(),
     isOnCall: form.oncall.checked,
     isDeleted: false,

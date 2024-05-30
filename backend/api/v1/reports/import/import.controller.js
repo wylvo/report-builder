@@ -3,7 +3,6 @@ import { ExpressValidator } from "express-validator";
 import {
   Reports,
   isNotEmptyArray,
-  isNewReport,
   isDateTime,
   isTimeCustom,
   isValidUsername,
@@ -11,7 +10,6 @@ import {
 
 const { checkSchema } = new ExpressValidator({
   isNotEmptyArray,
-  isNewReport,
   isDateTime,
   isTimeCustom,
   isValidUsername,
@@ -22,7 +20,6 @@ import {
   mssqlDataTypes,
   dateISO8601,
   config,
-  generateUUID,
   validateBody,
   catchAsync,
   GlobalError,
@@ -43,7 +40,7 @@ export const importReports = catchAsync(async (req, res, next) => {
 
     res.status(201).json({
       status: "success",
-      data: filterReportData(report),
+      data: report,
     });
   } catch (error) {
     await transaction.rollback();

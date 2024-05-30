@@ -25,14 +25,14 @@ export default {
     }
   },
 
-  // Generate UUID version 4
-  generateUUID: () => {
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-      const r = (Math.random() * 16) | 0,
-        v = c == "x" ? r : (r & 0x3) | 0x8;
-      return v.toString(16).toLowerCase();
-    });
-  },
+  // // Generate UUID version 4
+  // generateUUID: () => {
+  //   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+  //     const r = (Math.random() * 16) | 0,
+  //       v = c == "x" ? r : (r & 0x3) | 0x8;
+  //     return v.toString(16).toLowerCase();
+  //   });
+  // },
 
   // Format date to MM/DD/YYYY HH:mm AM or PM
   formatDate: (date) => {

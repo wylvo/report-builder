@@ -1,7 +1,7 @@
 import { checkSchema } from "express-validator";
 
 import { Users } from "./user.model.js";
-import { Reports, filterReportArrayData } from "../reports/report.model.js";
+import { Reports } from "../reports/report.model.js";
 import { validateBody, catchAsync, GlobalError } from "../router.js";
 
 export const filterObject = (obj, ...allowedFields) => {
@@ -96,11 +96,7 @@ export const getUser = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: "success",
-    data: filterUserData(
-      user,
-      filterReportArrayData(reports),
-      filterReportArrayData(reportsDeleted)
-    ),
+    data: filterUserData(user, reports, reportsDeleted),
   });
 });
 

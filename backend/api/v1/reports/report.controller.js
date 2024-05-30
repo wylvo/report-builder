@@ -4,7 +4,6 @@ import bcrypt from "bcrypt";
 import {
   Reports,
   isNotEmptyArray,
-  isNewReport,
   isDateTime,
   isTimeCustom,
   isValidUsername,
@@ -14,7 +13,6 @@ import { mssql, validateBody, catchAsync, GlobalError } from "../router.js";
 
 const { checkSchema } = new ExpressValidator({
   isNotEmptyArray,
-  isNewReport,
   isDateTime,
   isTimeCustom,
   isValidUsername,
@@ -72,12 +70,12 @@ export const createReport = catchAsync(async (req, res, next) => {
 });
 
 export const getReport = catchAsync(async (req, res, next) => {
-  const uuid = req.params.id;
+  const id = req.params.id;
 
-  const report = await Reports.findByUUID(uuid);
+  const report = await Reports.findById(id);
 
   if (!report)
-    return next(new GlobalError(`Report not found with id: ${uuid}.`, 404));
+    return next(new GlobalError(`Report not found with id: ${id}.`, 404));
 
   res.status(200).json({
     status: "success",
@@ -91,12 +89,12 @@ export const validateUpdate = validateBody(
 );
 
 export const updateReport = catchAsync(async (req, res, next) => {
-  const uuid = req.params.id;
+  const id = req.params.id;
 
-  const report = await Reports.findByUUID(uuid);
+  const report = await Reports.findById(id);
 
   if (!report)
-    return next(new GlobalError(`Report not found with id: ${uuid}.`, 404));
+    return next(new GlobalError(`Report not found with id: ${id}.`, 404));
 
   console.time("UPDATE");
   const transaction = mssql().transaction;
@@ -128,13 +126,13 @@ export const validateHardDelete = validateBody(
 );
 
 export const deleteReport = catchAsync(async (req, res, next) => {
-  const uuid = req.params.id;
+  const id = req.params.id;
 
-  console.log(uuid);
-  const report = await Reports.findByUUID(uuid);
+  console.log(id);
+  const report = await Reports.findById(id);
 
   if (!report)
-    return next(new GlobalError(`Report not found with id: ${uuid}.`, 404));
+    return next(new GlobalError(`Report not found with id: ${id}.`, 404));
 
   // EXTRA check if user is not an admin return an error
   if (req.user.role !== "Admin")
@@ -174,17 +172,17 @@ export const deleteReport = catchAsync(async (req, res, next) => {
 });
 
 export const softDeleteReport = async (req, res, next) => {
-  const uuid = req.params.id;
+  const id = req.params.id;
 
-  const report = await Reports.findByUUID(uuid);
+  const report = await Reports.findById(id);
 
   if (!report)
-    return next(new GlobalError(`Report not found with id: ${uuid}.`, 404));
+    return next(new GlobalError(`Report not found with id: ${id}.`, 404));
 
   if (report.isDeleted === true)
     return next(
       new GlobalError(
-        `Report is already marked as deleted with id: ${uuid}.`,
+        `Report is already marked as deleted with id: ${id}.`,
         400
       )
     );
@@ -198,16 +196,16 @@ export const softDeleteReport = async (req, res, next) => {
 };
 
 export const undoSoftDeleteReport = async (req, res, next) => {
-  const uuid = req.params.id;
+  const id = req.params.id;
 
-  const report = await Reports.findByUUID(uuid);
+  const report = await Reports.findById(id);
 
   if (!report)
-    return next(new GlobalError(`Report not found with id: ${uuid}.`, 404));
+    return next(new GlobalError(`Report not found with id: ${id}.`, 404));
 
   if (report.isDeleted === false)
     return next(
-      new GlobalError(`Report is not marked as deleted with id: ${uuid}.`, 400)
+      new GlobalError(`Report is not marked as deleted with id: ${id}.`, 400)
     );
 
   const reportUpdated = await Reports.undoSoftDelete(report);

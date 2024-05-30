@@ -13,7 +13,7 @@ const isEmptyObject = (object) => {
 // Parse Report Data Into Readable Variables. Return Report Data & Adaptive Card As JSON
 export const setAdaptiveCard = (report) => {
   // Meta Data
-  const uuid = report.uuid;
+  const id = report.id;
   const createdTime = report.createdAt.split(".")[0] + "Z";
   const username = report.assignedTo;
   const techProfilePicture = () => {
@@ -77,7 +77,7 @@ export const setAdaptiveCard = (report) => {
           "type": "AdaptiveCard",
           "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
           "version": "1.5",
-          "id": `${uuid}`,
+          "id": `${id}`,
           "body": [
             {
               "type": "Input.Text",
@@ -533,7 +533,7 @@ export const setAdaptiveCard = (report) => {
                   "items": [
                     {
                       "type": "TextBlock",
-                      "text": `${uuid}`,
+                      "text": `${id}`,
                       "wrap": true,
                       "size": "Small",
                       "fontType": "Monospace",

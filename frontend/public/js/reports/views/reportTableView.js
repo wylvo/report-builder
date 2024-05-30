@@ -101,7 +101,7 @@ class ReportTableView extends TableView {
       </td>
       <td data-cell="Date"><div>${formattedDate}</div></td>
       <td data-cell="Title">
-        <div><a class="table-row-link" href="#${report.uuid}">${report.incident.title}</a></div>
+        <div><a class="table-row-link" href="#${report.id}">${report.incident.title}</a></div>
       </td>
       <td data-cell="Status">
         <div><p class="${status.class}">${status.text}</p></div>
@@ -113,7 +113,7 @@ class ReportTableView extends TableView {
       <td data-cell="Procedural">
         <div><p ${isProcedural.class}>${isProcedural.text}</p></div>
       </td>
-      <td data-cell="Actions" data-uuid="${report.uuid}" class="table-row-buttons">
+      <td data-cell="Actions" data-id="${report.id}" class="table-row-buttons">
           ${buttons}
       </td>
     </tr>

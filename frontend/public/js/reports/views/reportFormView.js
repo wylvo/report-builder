@@ -140,7 +140,7 @@ export class ReportFormView extends FormView {
     this.newReport();
 
     this._tab.firstElementChild.textContent = report.incident.title;
-    this._tab.firstElementChild.setAttribute("href", `#${report.uuid}`);
+    this._tab.firstElementChild.setAttribute("href", `#${report.id}`);
 
     const fields = this._fields;
     const checkBoxes = this._checkBoxes;
@@ -257,7 +257,7 @@ export class ReportFormView extends FormView {
 
       // Id
       if (tag.classList.contains("data-id"))
-        (tag.textContent = report.uuid), tag.classList.remove("hidden");
+        (tag.textContent = report.id), tag.classList.remove("hidden");
     });
   }
 
