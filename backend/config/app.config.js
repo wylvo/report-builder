@@ -33,6 +33,7 @@ const config = {
       incidentTypes: [],
       incidentTransactionTypes: [],
     },
+    reportVersions: ["1.0.0"],
   },
   jwt: {
     secret: process.env.JWT_SECRET,

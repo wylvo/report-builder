@@ -1,4 +1,21 @@
-import { Reports } from "../report.model.js";
+import { ExpressValidator } from "express-validator";
+
+import {
+  Reports,
+  isNotEmptyArray,
+  isNewReport,
+  isDateTime,
+  isTimeCustom,
+  isValidUsername,
+} from "../report.model.js";
+
+const { checkSchema } = new ExpressValidator({
+  isNotEmptyArray,
+  isNewReport,
+  isDateTime,
+  isTimeCustom,
+  isValidUsername,
+});
 
 import {
   mssql,

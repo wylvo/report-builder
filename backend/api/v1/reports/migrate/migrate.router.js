@@ -5,8 +5,8 @@ import * as report from "../report.controller.js";
 const router = express.Router();
 
 /** ROUTE restricted to "User" role
- * /api/v1/reports/migrate/:version  (POST)
+ * /api/v1/reports/migrate (POST)
  */
 router.post("/", report.migrateReport);
 
-export { router as resetPasswordRouter };
+export { router as migrateRouter };

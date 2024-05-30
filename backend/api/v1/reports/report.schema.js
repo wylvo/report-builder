@@ -1,6 +1,7 @@
 import config from "../../../config/app.config.js";
 
-const DEFAULT_CREATE = {
+// VALIDATION TO CREATE A REPORT
+const CREATE = {
   "**.date": {
     trim: {},
     isDate: {
@@ -255,65 +256,61 @@ const DEFAULT_CREATE = {
   },
 };
 
+// VALIDATION TO UPDATE A REPORT
+const UPDATE = {
+  ...CREATE,
+  isDeleted: {
+    exists: { errorMessage: "required.", bail: true },
+    isBoolean: {
+      options: { strict: true },
+      errorMessage: "should be a boolean (true or false).",
+    },
+  },
+  isWebhookSent: {
+    exists: { errorMessage: "required.", bail: true },
+    isBoolean: {
+      options: { strict: true },
+      errorMessage: "should be a boolean (true or false).",
+    },
+  },
+  hasTriggeredWebhook: {
+    exists: {
+      errorMessage: "required.",
+      bail: true,
+    },
+    isBoolean: {
+      options: { strict: true },
+      errorMessage: "should be a boolean (true or false).",
+    },
+  },
+};
+
+// VALIDATION TO MIGRATE A REPORT
+const MIGRATE = {
+  ...UPDATE,
+};
+
+// VALIDATION TO MIGRATE A REPORT
+const IMPORT = {
+  ...MIGRATE,
+};
+
+// VALIDATION TO HARD DELETE A REPORT
+const HARD_DELETE = {
+  password: {
+    exists: {
+      errorMessage: "required.",
+      bail: true,
+    },
+    notEmpty: { errorMessage: "can't be empty.", bail: true },
+    isString: { errorMessage: "should be a string" },
+  },
+};
+
 export default {
-  /**
-   *  VALIDATION TO CREATE A REPORT
-   **/
-  create: {
-    ...DEFAULT_CREATE,
-  },
-
-  /**
-   *  VALIDATION TO UPDATE A REPORT
-   *  (SAME AS CREATE, EXCEPT: isDeleted, isWebhookSent, hasTriggeredWebhook)
-   **/
-  update: {
-    ...DEFAULT_CREATE,
-    isDeleted: {
-      exists: { errorMessage: "required.", bail: true },
-      isBoolean: {
-        options: { strict: true },
-        errorMessage: "should be a boolean (true or false).",
-      },
-    },
-    isWebhookSent: {
-      exists: { errorMessage: "required.", bail: true },
-      isBoolean: {
-        options: { strict: true },
-        errorMessage: "should be a boolean (true or false).",
-      },
-    },
-    hasTriggeredWebhook: {
-      exists: {
-        errorMessage: "required.",
-        bail: true,
-      },
-      isBoolean: {
-        options: { strict: true },
-        errorMessage: "should be a boolean (true or false).",
-      },
-    },
-  },
-
-  /**
-   *  VALIDATION TO HARD DELETE A REPORT
-   **/
-  hardDelete: {
-    password: {
-      exists: {
-        errorMessage: "required.",
-        bail: true,
-      },
-      notEmpty: { errorMessage: "can't be empty.", bail: true },
-      isString: { errorMessage: "should be a string" },
-    },
-  },
-
-  import: {
-    "1.0.0": {},
-  },
-
-  migrate: {
-    "1.0.0": {},
-  },
+  create: { ...CREATE },
+  update: { ...UPDATE },
+  migrate: { ...MIGRATE },
+  import: { ...IMPORT },
+  hardDelete: { ...HARD_DELETE },
 };

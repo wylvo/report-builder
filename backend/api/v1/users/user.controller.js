@@ -2,18 +2,7 @@ import { checkSchema } from "express-validator";
 
 import { Users } from "./user.model.js";
 import { Reports, filterReportArrayData } from "../reports/report.model.js";
-import {
-  resetUserPassword,
-  validateResetPassword,
-} from "./resetPassword/resetPassword.controller.js";
-import {
-  config,
-  mssql,
-  mssqlDataTypes,
-  validateBody,
-  catchAsync,
-  GlobalError,
-} from "../router.js";
+import { validateBody, catchAsync, GlobalError } from "../router.js";
 
 export const filterObject = (obj, ...allowedFields) => {
   const newObj = {};
@@ -196,6 +185,6 @@ export const getMe = (req, res, next) => {
 };
 
 export {
-  resetUserPassword as resetUserPassword,
-  validateResetPassword as validateResetPassword,
-};
+  resetUserPassword,
+  validateResetPassword,
+} from "./resetPassword/resetPassword.controller.js";

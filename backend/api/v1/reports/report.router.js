@@ -1,5 +1,8 @@
 import express from "express";
 
+import { importRouter } from "./import/import.router.js";
+import { migrateRouter } from "./migrate/migrate.router.js";
+
 import * as report from "./report.controller.js";
 import * as auth from "../../../auth/auth.controller.js";
 import * as formData from "../formData/formData.controller.js";
@@ -40,6 +43,7 @@ router
   );
 
 // Handle report migration in a separate module
-router.use("/migrate", report.migrateReport);
+router.use("/import", importRouter);
+router.use("/migrate", migrateRouter);
 
 export { router as reportRouter };

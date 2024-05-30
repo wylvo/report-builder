@@ -10,20 +10,7 @@ import {
   isValidUsername,
 } from "./report.model.js";
 
-import {
-  mssql,
-  mssqlDataTypes,
-  dateISO8601,
-  config,
-  generateUUID,
-  validateBody,
-  catchAsync,
-  GlobalError,
-  dateMSSharePoint,
-} from "../router.js";
-
-import { migrateReport } from "./migrate/migrate.controller.js";
-import { importReports } from "./import/import.controller.js";
+import { mssql, validateBody, catchAsync, GlobalError } from "../router.js";
 
 const { checkSchema } = new ExpressValidator({
   isNotEmptyArray,
@@ -54,7 +41,10 @@ export const getAllSoftDeletedReports = catchAsync(async (req, res, next) => {
   });
 });
 
-export const validateCreate = validateBody(checkSchema, Reports.schema.create);
+export const validateCreate = validateBody(
+  checkSchema,
+  Reports.validation.create
+);
 
 export const createReport = catchAsync(async (req, res, next) => {
   console.time("CREATE");
@@ -95,7 +85,10 @@ export const getReport = catchAsync(async (req, res, next) => {
   });
 });
 
-export const validateUpdate = validateBody(checkSchema, Reports.schema.update);
+export const validateUpdate = validateBody(
+  checkSchema,
+  Reports.validation.update
+);
 
 export const updateReport = catchAsync(async (req, res, next) => {
   const uuid = req.params.id;
@@ -131,7 +124,7 @@ export const updateReport = catchAsync(async (req, res, next) => {
 
 export const validateHardDelete = validateBody(
   checkSchema,
-  Reports.schema.hardDelete
+  Reports.validation.hardDelete
 );
 
 export const deleteReport = catchAsync(async (req, res, next) => {
@@ -227,7 +220,9 @@ export const undoSoftDeleteReport = async (req, res, next) => {
 
 export const validateImport = validateBody(
   checkSchema,
-  Reports.schema.import("1.0.0")
+  Reports.validation.import
 );
 
-export { importReports as importReports, migrateReport as migrateReport };
+export { migrateReport } from "./migrate/migrate.controller.js";
+export { importReports } from "./import/import.controller.js";
+export { checkSchema };

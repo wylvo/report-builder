@@ -9,7 +9,7 @@ import {
   dateMSSharePoint,
   GlobalError,
 } from "../router.js";
-import reportValidationSchema from "./report.schema.js";
+import reportSchema from "./report.schema.js";
 
 // Custom validation to check if username exists in DB & and user is active
 export { isValidUsername } from "../users/user.model.js";
@@ -121,16 +121,18 @@ const insertManyToMany = (array, reportId, mssql, insertFunction) => {
 export const Reports = {
   /**
    * MIDDLEWARE VALIDATION BEFORE:
-   * CREATING A REPORT        /api/v1/reports (POST)
-   * UPDATING A REPORT        /api/v1/reports/:id (PUT)
-   * HARD DELETING A REPORT   /api/v1/reports/:id (DELETE)
+   * CREATING A REPORT        /api/v1/reports         (POST)
+   * UPDATING A REPORT        /api/v1/reports/:id     (PUT)
+   * HARD DELETING A REPORT   /api/v1/reports/:id     (DELETE)
+   * IMPORTING REPORTS        /api/v1/reports/import  (POST)
+   * MIGRATING REPORTS        /api/v1/reports/migrate (POST)
    **/
-  schema: {
-    create: reportValidationSchema.create,
-    update: reportValidationSchema.update,
-    hardDelete: reportValidationSchema.hardDelete,
-    import: (version) => reportValidationSchema.import[version],
-    migrate: (version) => reportValidationSchema.migrate[version],
+  validation: {
+    create: reportSchema.create,
+    update: reportSchema.update,
+    hardDelete: reportSchema.hardDelete,
+    import: reportSchema.import,
+    migrate: reportSchema.migrate,
   },
 
   // GET SINGLE REPORT BY UUID
