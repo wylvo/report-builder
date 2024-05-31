@@ -11,9 +11,9 @@ import {
 import reportSchema from "./report.schema.js";
 
 // Custom validation to check if username exists in DB & and user is active
-export { isValidUsername } from "../users/user.model.js";
+export { isUsername, isValidUsername } from "../users/user.model.js";
 
-// Custom validation to check if a JSON is not empty
+// Custom validation to check if an array is not empty
 export const isNotEmptyArray = (array) => array.length > 0;
 
 // Custom date & time validation function for checkSchema in reportController.js
@@ -214,7 +214,7 @@ export const Reports = {
   // CREATE A NEW REPORT
   // prettier-ignore
   async create(body, createdByAndUpdatedBy, assignedTo, transaction) {
-    const { UniqueIdentifier, NVarChar, VarChar, Int, Bit, Date, Time } = mssqlDataTypes;
+    const { NVarChar, VarChar, Int, Bit, Date, Time } = mssqlDataTypes;
 
     body.version = config.version;
     // Same user id for created by and updated by
@@ -410,7 +410,7 @@ export const Reports = {
   },
 
   async import(body, createdByAndUpdatedBy, transaction) {
-    const { UniqueIdentifier, VarChar, Int, Bit, Date, Time } = mssqlDataTypes;
+    const { VarChar, Int, Bit, Date, Time } = mssqlDataTypes;
 
     req.body.version = config.version;
     req.body.createdBy = createdByAndUpdatedBy;

@@ -216,11 +216,9 @@ export const undoSoftDeleteReport = async (req, res, next) => {
   });
 };
 
-export const validateImport = validateBody(
-  checkSchema,
-  Reports.validation.import
-);
-
 export { migrateReport } from "./migrate/migrate.controller.js";
-export { importReports } from "./import/import.controller.js";
-export { checkSchema };
+export {
+  validateImport,
+  validateUsernames,
+  importReports,
+} from "./import/import.controller.js";

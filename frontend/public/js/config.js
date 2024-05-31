@@ -35,7 +35,6 @@ export const DEFAULT_REPORT = Object.freeze({
   call: {
     date: "string",
     time: "string",
-    dateTime: "string (Date)",
     phone: "string",
     status: "string",
   },

@@ -288,11 +288,37 @@ const UPDATE = {
 // VALIDATION TO MIGRATE A REPORT
 const MIGRATE = {
   ...UPDATE,
+  createdAt: {
+    exists: { errorMessage: "required.", bail: true },
+    isISO8601: {
+      options: { strict: true, strictSeparator: true },
+      errorMessage: "invalid date (see ISO 8601).",
+    },
+  },
+  updatedAt: {
+    exists: { errorMessage: "required.", bail: true },
+    isISO8601: {
+      options: { strict: true, strictSeparator: true },
+      errorMessage: "invalid date (see ISO 8601).",
+    },
+  },
+  createdBy: {
+    exists: { errorMessage: "required.", bail: true },
+    notEmpty: { errorMessage: "can't be empty.", bail: true },
+    isString: { errorMessage: "should be a string." },
+    isValidUsername: {},
+  },
+  updatedBy: {
+    exists: { errorMessage: "required.", bail: true },
+    notEmpty: { errorMessage: "can't be empty.", bail: true },
+    isString: { errorMessage: "should be a string." },
+    isValidUsername: {},
+  },
 };
 
-// VALIDATION TO MIGRATE A REPORT
+// VALIDATION TO IMPORT A REPORT
 const IMPORT = {
-  ...MIGRATE,
+  areValidUsernames: {},
 };
 
 // VALIDATION TO HARD DELETE A REPORT

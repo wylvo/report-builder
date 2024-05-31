@@ -85,7 +85,6 @@ export const mssql = (existingPool = undefined) => {
 };
 
 export const mssqlDataTypes = {
-  UniqueIdentifier: sql.UniqueIdentifier,
   NVarChar: sql.NVarChar,
   VarChar: sql.VarChar,
   Date: sql.Date,

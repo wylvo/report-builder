@@ -253,7 +253,7 @@ const checkReportValidity = (report) => {
   const hasInvalidInputLength = invalidInputLengths.length > 0;
   if (hasInvalidInputLength) {
     throw new Error(
-      `The following fields have invalid lengths: ${invalidInputLengths.join(
+      `The following fields have invalid character lengths: ${invalidInputLengths.join(
         ", "
       )}.`
     );
