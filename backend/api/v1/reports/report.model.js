@@ -77,7 +77,7 @@ const insertManyToMany = (array, reportId, mssql, insertFunction) => {
     { Int } = mssqlDataTypes;
 
   array.forEach((value, i) => {
-    const param = "param_" + i;
+    const param = `param_${insertFunction.name}_${i}`;
     params[param] = value;
     rows.push(insertFunction().row(param));
   });
@@ -86,7 +86,7 @@ const insertManyToMany = (array, reportId, mssql, insertFunction) => {
     // console.log("param:", param, typeof param, ", value:", value, typeof value);
     mssql.input(param, value);
   }
-  mssql.input("reportId", Int, reportId);
+  mssql.input(`reportId_${insertFunction.name}`, Int, reportId);
 
   return insertFunction().query(rows);
 };
@@ -368,7 +368,7 @@ export const Reports = {
   insertStores() {
     return {
       row: (param) =>
-        `(@reportId, (SELECT id FROM stores WHERE number = ${"@" + param}))`,
+        `(@reportId_insertStores, (SELECT id FROM stores WHERE number = ${"@" + param}))`,
       query: (rows) =>
         `INSERT INTO reportStores (report_id, store_id) VALUES ${rows.join(", ")};`,
     };
@@ -379,7 +379,7 @@ export const Reports = {
   insertIncidentTypes() {
     return {
       row: (param) =>
-        `(@reportId, (SELECT id FROM incidentTypes WHERE type = ${"@" + param}))`,
+        `(@reportId_insertIncidentTypes, (SELECT id FROM incidentTypes WHERE type = ${"@" + param}))`,
       query: (rows) =>
         `INSERT INTO reportIncidentTypes (report_id, incidentType_id) VALUES ${rows.join(", ")};`,
     };
@@ -390,7 +390,7 @@ export const Reports = {
   insertIncidentTransactionTypes() {
     return {
       row: (param) =>
-        `(@reportId, (SELECT id FROM incidentTransactionTypes WHERE type = ${"@" + param}))`,
+        `(@reportId_insertIncidentTransactionTypes, (SELECT id FROM incidentTransactionTypes WHERE type = ${"@" + param}))`,
       query: (rows) =>
         `INSERT INTO reportIncidentTransactionTypes (report_id, incidentTransactionType_id) VALUES ${rows.join(", ")};`,
     };
@@ -412,10 +412,13 @@ export const Reports = {
     const { NVarChar, VarChar, Int, Bit, Date, Time, DateTimeOffset } = mssqlDataTypes;
     const reportsImported = [];
 
+    let i = 0;
     for (const report of body) {
+      console.log("Report:", i++);
+
       report.version = config.version;
       report.createdAt = dateISO8601(report.createdAt);
-      report.updatedAt = dateISO8601(report.createdAt);
+      report.updatedAt = dateISO8601(report.updatedAt);
       report.call.dateTime = dateMSSharePoint(
         `${report.call.date} ${report.call.time}`
       );
@@ -449,36 +452,41 @@ export const Reports = {
       reportImport.input("incidentTransactionIsIRCreated", Bit, report.incident.transaction.isIRCreated);
       reportImport.input("incidentDetails", VarChar, report.incident.details);
 
-      const { output: { id: id } } = await reportImport
+      const { output: { id } } = await reportImport
       .output("id", Int)
       .execute("api_v1_reports_import");
 
       const stores = mssql(transaction).request,
-        incidentTypes = mssql(transaction).request,
-        incidentTransactionTypes = mssql(transaction).request;
+        incidentTypes = mssql(transaction).request;
 
-      const insertStores = insertManyToMany(report.store.number, id, stores, this.insertStores),
-        insertIncidentTypes = insertManyToMany(report.incident.type, id, incidentTypes, this.insertIncidentTypes);
-      
-      await stores.query(insertStores);
-      await incidentTypes.query(insertIncidentTypes);
+      await stores.query(
+        insertManyToMany(report.store.number, id, stores, this.insertStores)
+      );
+      await incidentTypes.query(
+        insertManyToMany(report.incident.type, id, incidentTypes, this.insertIncidentTypes)
+      );
       
       if(report.incident.transaction.type) {
-        const insertIncidentTransactionTypes =
-          insertManyToMany(report.incident.transaction.type, id, incidentTransactionTypes, this.insertIncidentTransactionTypes);
-        await incidentTransactionTypes.query(insertIncidentTransactionTypes);
+        const incidentTransactionTypes = mssql(transaction).request;
+        await incidentTransactionTypes.query(
+          insertManyToMany(report.incident.transaction.type, id, incidentTransactionTypes, this.insertIncidentTransactionTypes)
+        );
       }
-      
-      const {
-        output: { report: rawJSON },
-      } = await mssql(transaction)
-        .request.input("id", Int, id)
-        .output("report", NVarChar)
-        .execute("api_v1_reports_getById");
-        
-      const reportImported = JSON.parse(rawJSON);
 
-      reportsImported.push(reportImported);
+      // for(const query of queries) {
+      //   await reportImport.query(query);
+      // }
+      
+      // const {
+      //   output: { report: rawJSON },
+      // } = await mssql(transaction)
+      //   .request.input("id", Int, id)
+      //   .output("report", NVarChar)
+      //   .execute("api_v1_reports_getById");
+        
+      // const reportImported = JSON.parse(rawJSON);
+
+      reportsImported.push(id);
     }
     
     return reportsImported;

@@ -19,7 +19,6 @@ const { checkSchema } = new ExpressValidator({
 import {
   mssql,
   mssqlDataTypes,
-  dateISO8601,
   config,
   validateBody,
   catchAsync,
@@ -116,6 +115,7 @@ export const importReports = catchAsync(async (req, res, next) => {
       data: reports,
     });
   } catch (error) {
+    console.error(error);
     await transaction.rollback();
     throw error;
   }

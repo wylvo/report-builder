@@ -1,6 +1,7 @@
 // https://stackoverflow.com/questions/17415579/how-to-iso-8601-format-a-date-with-timezone-offset-in-javascript#17415677
 // prettier-ignore
 export default (date) => {
+  date = new Date(date);
   const tzo = -date.getTimezoneOffset();
   const dif = tzo >= 0 ? '+' : '-';
   const pad = (num) => (num < 10 ? '0' : '') + num;
