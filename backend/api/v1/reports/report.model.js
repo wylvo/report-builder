@@ -98,14 +98,12 @@ export const Reports = {
    * UPDATING A REPORT        /api/v1/reports/:id     (PUT)
    * HARD DELETING A REPORT   /api/v1/reports/:id     (DELETE)
    * IMPORTING REPORTS        /api/v1/reports/import  (POST)
-   * MIGRATING REPORTS        /api/v1/reports/migrate (POST)
    **/
   validation: {
     create: reportSchema.create,
     update: reportSchema.update,
     hardDelete: reportSchema.hardDelete,
-    import: reportSchema.import,
-    migrate: reportSchema.migrate,
+    import: () => reportSchema.import,
   },
 
   // GET SINGLE REPORT BY ID
@@ -334,8 +332,7 @@ export const Reports = {
 
     const insertStores =
         insertManyToMany(body.store.number, report.id, stores, this.insertStores),
-      insertIncidentTypes =
-        insertManyToMany(body.incident.type, report.id, incidentTypes, this.insertIncidentTypes);
+      insertIncidentTypes = insertManyToMany(body.incident.type, report.id, incidentTypes, this.insertIncidentTypes);
     
     await stores.query(insertStores);
     await incidentTypes.query(insertIncidentTypes);
@@ -409,90 +406,81 @@ export const Reports = {
       );
   },
 
-  async import(body, createdByAndUpdatedBy, transaction) {
-    const { VarChar, Int, Bit, Date, Time } = mssqlDataTypes;
+  // IMPORT REPORTS
+  // prettier-ignore
+  async import(body, transaction) {
+    const { NVarChar, VarChar, Int, Bit, Date, Time, DateTimeOffset } = mssqlDataTypes;
+    const reportsImported = [];
 
-    req.body.version = config.version;
-    req.body.createdBy = createdByAndUpdatedBy;
-    req.body.updatedBy = createdByAndUpdatedBy;
-    if (!body.incident.transaction.type) body.incident.transaction = {};
+    for (const report of body) {
+      report.version = config.version;
+      report.createdAt = dateISO8601(report.createdAt);
+      report.updatedAt = dateISO8601(report.createdAt);
+      report.call.dateTime = dateMSSharePoint(
+        `${report.call.date} ${report.call.time}`
+      );
+      if (!report.incident.transaction.type) report.incident.transaction = {};
+      
+      const reportImport = mssql(transaction).request;
 
-    const preparedStatement = mssql().preparedStatement;
+      reportImport.input("version", VarChar, report.version);
+      reportImport.input("createdAt", DateTimeOffset, report.createdAt);
+      reportImport.input("updatedAt", DateTimeOffset, report.updatedAt);
+      reportImport.input("createdBy", VarChar, report.createdBy);
+      reportImport.input("updatedBy", VarChar, report.updatedBy);
+      reportImport.input("assignedTo", VarChar, report.assignedTo);
+      reportImport.input("isOnCall", Bit, report.isOnCall);
+      reportImport.input("isDeleted", Bit, report.isDeleted);
+      reportImport.input("isWebhookSent", Bit, report.isWebhookSent);
+      reportImport.input("hasTriggeredWebhook", Bit, report.hasTriggeredWebhook);
+      reportImport.input("callDate", Date, report.call.date);
+      reportImport.input("callTime", Time, report.call.time);
+      reportImport.input("callDateTime", VarChar, report.call.dateTime);
+      reportImport.input("callPhone", VarChar, report.call.phone);
+      reportImport.input("callStatus", VarChar, report.call.status);
+      reportImport.input("storeEmployeeName", VarChar, report.store.employee.name);
+      reportImport.input("storeEmployeeIsStoreManager", Bit, report.store.employee.isStoreManager);
+      reportImport.input("storeDistrictManagerIsContacted", Bit, report.store.districtManager.isContacted);
+      reportImport.input("incidentTitle", VarChar, report.incident.title);
+      reportImport.input("incidentPos", VarChar, report.incident.pos);
+      reportImport.input("incidentIsProcedural", Bit, report.incident.isProcedural);
+      reportImport.input("incidentError", VarChar, report.incident.error);
+      reportImport.input("incidentTransactionNumber", VarChar, report.incident.transaction.number);
+      reportImport.input("incidentTransactionIsIRCreated", Bit, report.incident.transaction.isIRCreated);
+      reportImport.input("incidentDetails", VarChar, report.incident.details);
 
-    preparedStatement.input("version", VarChar);
-    preparedStatement.input("createdBy", Int);
-    preparedStatement.input("updatedBy", Int);
-    preparedStatement.input("assignedTo", Int);
-    preparedStatement.input("isOnCall", Bit);
-    preparedStatement.input("callDate", Date);
-    preparedStatement.input("callTime", Time);
-    preparedStatement.input("callDateTime", VarChar);
-    preparedStatement.input("callPhone", VarChar);
-    preparedStatement.input("callStatus", VarChar);
-    preparedStatement.input("storeEmployeeName", VarChar);
-    preparedStatement.input("storeEmployeeIsStoreManager", Bit);
-    preparedStatement.input("storeDistrictManagerIsContacted", Bit);
-    preparedStatement.input("incidentTitle", VarChar);
-    preparedStatement.input("incidentPos", VarChar);
-    preparedStatement.input("incidentIsProcedural", Bit);
-    preparedStatement.input("incidentError", VarChar);
-    preparedStatement.input("incidentTransactionNumber", VarChar);
-    preparedStatement.input("incidentTransactionIsIRCreated", Bit);
-    preparedStatement.input("incidentDetails", VarChar);
+      const { output: { id: id } } = await reportImport
+      .output("id", Int)
+      .execute("api_v1_reports_import");
 
-    await preparedStatement.prepare(`
-      DECLARE @reportId INT;
-      EXEC @reportId = [dbo].[api_v1_reports_create]
-        @version = @version,
-        @createdBy = @createdBy,
-        @updatedBy = @updatedBy,
-        @assignedTo = @assignedTo,
-        @isOnCall = @isOnCall,
-        @callDate = @callDate,
-        @callTime = @callTime,
-        @callDateTime = @callDateTime,
-        @callPhone = @callPhone,
-        @callStatus = @callStatus,
-        @storeEmployeeName = @storeEmployeeName,
-        @storeEmployeeIsStoreManager = @storeEmployeeIsStoreManager,
-        @storeDistrictManagerIsContacted = @storeDistrictManagerIsContacted,
-        @incidentTitle = @incidentTitle,
-        @incidentPos = @incidentPos,
-        @incidentIsProcedural = @incidentIsProcedural,
-        @incidentError = @incidentError,
-        @incidentTransactionNumber = @incidentTransactionNumber,
-        @incidentTransactionIsIRCreated = @incidentTransactionIsIRCreated,
-        @incidentDetails = @incidentDetails,
-        @returnNewReport = 1;
-    `);
+      const stores = mssql(transaction).request,
+        incidentTypes = mssql(transaction).request,
+        incidentTransactionTypes = mssql(transaction).request;
 
-    const {
-      recordset: [report],
-    } = await preparedStatement.execute({
-      version: body.version,
-      createdBy: body.createdBy,
-      updatedBy: body.updatedBy,
-      assignedTo: body.assignedTo,
-      isOnCall: body.isOnCall,
-      callDate: body.call.date,
-      callTime: body.call.time,
-      callDateTime: body.call.dateTime,
-      callPhone: body.call.phone,
-      callStatus: body.call.status,
-      storeEmployeeName: body.store.employee.name,
-      storeEmployeeIsStoreManager: body.store.employee.isStoreManager,
-      storeDistrictManagerIsContacted: body.store.districtManager.isContacted,
-      incidentTitle: body.incident.title,
-      incidentPos: body.incident.pos,
-      incidentIsProcedural: body.incident.isProcedural,
-      incidentError: body.incident.error,
-      incidentTransactionNumber: body.incident.transaction.number,
-      incidentTransactionIsIRCreated: body.incident.transaction.isIRCreated,
-      incidentDetails: body.incident.details,
-    });
+      const insertStores = insertManyToMany(report.store.number, id, stores, this.insertStores),
+        insertIncidentTypes = insertManyToMany(report.incident.type, id, incidentTypes, this.insertIncidentTypes);
+      
+      await stores.query(insertStores);
+      await incidentTypes.query(insertIncidentTypes);
+      
+      if(report.incident.transaction.type) {
+        const insertIncidentTransactionTypes =
+          insertManyToMany(report.incident.transaction.type, id, incidentTransactionTypes, this.insertIncidentTransactionTypes);
+        await incidentTransactionTypes.query(insertIncidentTransactionTypes);
+      }
+      
+      const {
+        output: { report: rawJSON },
+      } = await mssql(transaction)
+        .request.input("id", Int, id)
+        .output("report", NVarChar)
+        .execute("api_v1_reports_getById");
+        
+      const reportImported = JSON.parse(rawJSON);
 
-    await preparedStatement.unprepare();
-
-    return report;
+      reportsImported.push(reportImported);
+    }
+    
+    return reportsImported;
   },
 };

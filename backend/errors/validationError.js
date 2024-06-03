@@ -1,8 +1,25 @@
 import { validationResult } from "express-validator";
 
 export const errorValidationResult = validationResult.withDefaults({
-  formatter: (error) =>
-    error.path ? `${error.path}: ${error.msg}` : error.msg,
+  formatter: (error) => {
+    if (error.path) {
+      // Regular expression to match '[i]' or '[i].' pattern
+      // Where 'i' is a number and the position of an array element
+      const regex = /\[(\d+)\](\.)?/;
+
+      // Check if the error.path string value contains the pattern
+      if (regex.test(error.path)) {
+        // Replace the pattern '[i]' or '[i].' with 'Report i'
+        error.path = error.path.replace(
+          regex,
+          (match, p1, p2) => `Report ${Number(p1) + 1}${Number(p2) + 1 || ""} `
+        );
+      }
+      return `${error.path}: ${error.msg}`;
+    }
+
+    return error.msg;
+  },
 });
 
 export const formatErrors = (objectOrArray) => {

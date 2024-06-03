@@ -1,17 +1,23 @@
 import userValidationSchema from "./user.schema.js";
 import { mssql, hashPassword, config, mssqlDataTypes } from "../router.js";
 
-// Custom validation to check if username exists in DB & and user is active
-export const isUsername = async (value) => {
+// Custom validation to check if username exists in DB
+export const isUsername = async (value, raiseError = true) => {
   const user = await Users.findByUsername(value);
-  if (!user) throw new Error("username does not exist.");
-  if (user && !user.active) throw new Error("user is inactive.");
+  if (!user && raiseError) throw new Error("username does not exist.");
+  return user;
+};
+
+// Custom validation to check if username exists in DB & and if user is active
+export const isActiveUsername = async (value, raiseError = true) => {
+  const user = await isUsername(value);
+  if (user && !user.active && raiseError) throw new Error("user is inactive.");
   return user;
 };
 
 // Custom validation to check if username exists in DB & and user is active
 export const isValidUsername = async (value, { req }) => {
-  const user = await isUsername(value);
+  const user = await isActiveUsername(value);
   req.assignedTo = user.id;
   return true;
 };

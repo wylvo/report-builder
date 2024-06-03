@@ -1,6 +1,7 @@
 import express from "express";
 
 import * as report from "../report.controller.js";
+import * as formData from "../../formData/formData.controller.js";
 
 const router = express.Router();
 
@@ -9,7 +10,10 @@ const router = express.Router();
  */
 router.post(
   "/",
+  report.validateBodyIsArray,
+  formData.synchonizeReportValidation,
   report.validateImport,
+  report.validateCreatedAtAndUpdatedAt,
   report.validateUsernames,
   report.importReports
 );

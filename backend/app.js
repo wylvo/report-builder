@@ -17,6 +17,7 @@ import { viewRouter } from "./views/view.router.js";
 const app = express();
 const __dirname = path.resolve();
 
+// Template views
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "/backend/views"));
 
@@ -41,7 +42,7 @@ app.use("/api", limiter);
 
 app.use(cors());
 app.use(compression());
-app.use(express.json({ limit: "5mb" }));
+app.use(express.json({ limit: "5mb", type: "*/*" }));
 app.use(cookieParser());
 
 // Format JSON responses as text with 2 indented spaces

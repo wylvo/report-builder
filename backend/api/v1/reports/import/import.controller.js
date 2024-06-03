@@ -6,6 +6,7 @@ import {
   isDateTime,
   isTimeCustom,
   isValidUsername,
+  isUsername,
 } from "../report.model.js";
 
 const { checkSchema } = new ExpressValidator({
@@ -26,48 +27,96 @@ import {
   dateMSSharePoint,
 } from "../../router.js";
 
+// prettier-ignore
+export const validateBodyIsArray = catchAsync(async (req, res, next) => {
+  if (!Array.isArray(req.body))
+    return next(new GlobalError("Request body has to be an array enclosed by []", 400));
+  if (req.body.length === 0)
+    return next(new GlobalError("Request body array can't be empty", 400));
+  next();
+});
+
 export const validateImport = validateBody(
   checkSchema,
-  Reports.validation.import,
+  Reports.validation.import(),
   false
 );
 
-// Custom validation to check if all the usernames are not empty
-export const validateUsernames = catchAsync((req, res, next) => {
-  const uniqueUsernames = new Set([
-    ...new Set(req.body.map((report) => report.createdBy)),
-    ...new Set(req.body.map((report) => report.updatedBy)),
-    ...new Set(req.body.map((report) => report.assignedTo)),
-  ]);
+// Custom validation to check if createdAt and updatedAt have proper time constraints
+// prettier-ignore
+export const validateCreatedAtAndUpdatedAt = catchAsync(async (req, res, next) => {
+  const reports = req.body;
 
-  console.log(uniqueUsernames);
-  // req.body.forEach((report) => {});
+  reports.forEach((report, i) => {
+    const pos = i + 1;
+    const createdAt = new Date(report.createdAt);
+    const updatedAt = new Date(report.updatedAt);
+
+    if (createdAt > Date.now())
+      return next(new GlobalError(`Report ${pos}: createdAt can't be greater than the current time.`, 400));
+    
+    if (updatedAt > Date.now())
+      return next(new GlobalError(`Report ${pos}: updatedAt can't be greater than the current time.`, 400));
+
+    if (createdAt > new Date(report.updatedAt))
+      return next(new GlobalError(`Report ${pos}: createdAt can't be greater than updatedAt.`, 400));
+  });
+
+  next();
+});
+
+// Custom validation to check if all the usernames are not empty
+// prettier-ignore
+export const validateUsernames = catchAsync(async (req, res, next) => {
+  let raiseError;
+  const reports = req.body;
+  
+  // Get all unique usernames from the request body
+  const uniqueUsernames = Array.from(
+    new Set(
+      reports
+        .map((report) => [report.createdBy, report.updatedBy, report.assignedTo])
+        .flat()
+    )
+  );
+
+  const validUsernames = new Map();
+
+  for (const username of uniqueUsernames) {
+    const user = await isUsername(username, raiseError = false);
+    if (!user)
+      return next(new GlobalError(`Username '${username}' does not exist.`, 400));
+
+    validUsernames.set(user.username, user.id);
+  }
+
+  // Modify createdBy, updatedBy, assignedTo values to their respective user ids
+  reports.forEach((report) => {
+    report.createdBy = validUsernames.get(report.createdBy)
+    report.updatedBy = validUsernames.get(report.updatedBy)
+    report.assignedTo = validUsernames.get(report.assignedTo)
+  });
+  
   next();
 });
 
 export const importReports = catchAsync(async (req, res, next) => {
-  // const transaction = mssql().transaction;
+  console.time("IMPORT");
+  const transaction = mssql().transaction;
 
   try {
-    // await transaction.begin();
-    // const report = await Reports.import(
-    //   req.body,
-    //   req.user.username,
-    //   transaction
-    // );
-    // await transaction.commit();
+    await transaction.begin();
+    const reports = await Reports.import(req.body, transaction);
+    await transaction.commit();
 
+    console.timeEnd("IMPORT");
     res.status(201).json({
       status: "success",
-      data: "report",
+      results: reports.length,
+      data: reports,
     });
   } catch (error) {
-    // await transaction.rollback();
-    return next(
-      new GlobalError(
-        `An error occured while creating a report: ${error.message}.`,
-        401
-      )
-    );
+    await transaction.rollback();
+    throw error;
   }
 });

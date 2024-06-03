@@ -18,6 +18,7 @@ export const validateBody = (checkSchema, schemaToApply, doCheckExact = true, er
         },
       }).run(req)
     : await checkSchema(schemaToApply, ["body"]).run(req);
+    
     const result = errorValidationResult(req);
     const errors = errorType !== "mapped" ? result.array() : result.mapped();
 

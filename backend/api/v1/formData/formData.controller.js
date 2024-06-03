@@ -1,27 +1,38 @@
 import { FormData } from "./formData.model.js";
 import { config, catchAsync, mssql, GlobalError } from "../router.js";
-import reportValidationSchema from "../reports/report.schema.js";
+import reportSchema from "../reports/report.schema.js";
 
 // prettier-ignore
 export const synchonizeReportValidation = catchAsync(async (req, res, next) => {
   // Store Numbers
-  const storeNumbers = reportValidationSchema.create["store.number"];
+  const storeNumbers = reportSchema.create["store.number"];
+  const storeNumbersImport = reportSchema.import["*.store.number"];
+
   storeNumbers.isIn.options = [config.validation.selects.storeNumbers];
-  storeNumbers.isIn.errorMessage =
-    `only '${config.validation.selects.storeNumbers.join("', '")}' are allowed.`;
+  storeNumbers.isIn.errorMessage = `only '${config.validation.selects.storeNumbers.join("', '")}' are allowed.`;
+
+  storeNumbersImport.isIn.options = [config.validation.selects.storeNumbers];
+  storeNumbersImport.isIn.errorMessage = `only '${config.validation.selects.storeNumbers.join("', '")}' are allowed.`;
 
   // Incident Types
-  const incidentTypes = reportValidationSchema.create["incident.type"];
+  const incidentTypes = reportSchema.create["incident.type"];
+  const incidentTypesImport = reportSchema.import["*.incident.type"];
+
   incidentTypes.isIn.options = [config.validation.selects.incidentTypes];
-  incidentTypes.isIn.errorMessage = 
-    `only '${config.validation.selects.incidentTypes.join("', '")}' are allowed.`;
+  incidentTypes.isIn.errorMessage = `only '${config.validation.selects.incidentTypes.join("', '")}' are allowed.`;
+
+  incidentTypesImport.isIn.options = [config.validation.selects.incidentTypes];
+  incidentTypesImport.isIn.errorMessage = `only '${config.validation.selects.incidentTypes.join("', '")}' are allowed.`;
 
   // Incident Transaction Types
-  const incidentTransactionTypes =
-    reportValidationSchema.create["incident.transaction.type"];
+  const incidentTransactionTypes = reportSchema.create["incident.transaction.type"];
+  const incidentTransactionTypesImport = reportSchema.import["*.incident.transaction.type"];
+
   incidentTransactionTypes.isIn.options = [config.validation.selects.incidentTransactionTypes];
-  incidentTransactionTypes.isIn.errorMessage = 
-    `only '${config.validation.selects.incidentTransactionTypes.join("', '")}' are allowed.`;
+  incidentTransactionTypes.isIn.errorMessage = `only '${config.validation.selects.incidentTransactionTypes.join("', '")}' are allowed.`;
+
+  incidentTransactionTypesImport.isIn.options = [config.validation.selects.incidentTransactionTypes];
+  incidentTransactionTypesImport.isIn.errorMessage = `only '${config.validation.selects.incidentTransactionTypes.join("', '")}' are allowed.`;
 
   next();
 });

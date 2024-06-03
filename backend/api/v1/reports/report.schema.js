@@ -21,6 +21,10 @@ const CREATE = {
     exists: { errorMessage: "required.", bail: true },
     notEmpty: { errorMessage: "can't be empty.", bail: true },
     isString: { errorMessage: "should be a string." },
+    isLength: {
+      options: { max: 20 },
+      errorMessage: "invalid length, max of 20 characters allowed.",
+    },
     isValidUsername: {},
   },
   isOnCall: {
@@ -285,41 +289,94 @@ const UPDATE = {
   },
 };
 
-// VALIDATION TO MIGRATE A REPORT
-const MIGRATE = {
-  ...UPDATE,
-  createdAt: {
-    exists: { errorMessage: "required.", bail: true },
-    isISO8601: {
-      options: { strict: true, strictSeparator: true },
-      errorMessage: "invalid date (see ISO 8601).",
-    },
-  },
-  updatedAt: {
-    exists: { errorMessage: "required.", bail: true },
-    isISO8601: {
-      options: { strict: true, strictSeparator: true },
-      errorMessage: "invalid date (see ISO 8601).",
-    },
-  },
-  createdBy: {
-    exists: { errorMessage: "required.", bail: true },
-    notEmpty: { errorMessage: "can't be empty.", bail: true },
-    isString: { errorMessage: "should be a string." },
-    isValidUsername: {},
-  },
-  updatedBy: {
-    exists: { errorMessage: "required.", bail: true },
-    notEmpty: { errorMessage: "can't be empty.", bail: true },
-    isString: { errorMessage: "should be a string." },
-    isValidUsername: {},
-  },
-};
-
 // VALIDATION TO IMPORT A REPORT
 const IMPORT = {
-  areValidUsernames: {},
+  "**.date": UPDATE["**.date"],
+  "**.time": UPDATE["**.time"],
+  "*": {
+    isObject: {
+      errorMessage:
+        "invalid report object, has to be enclosed by brackets {} (see documentation).",
+    },
+  },
+
+  "*.createdAt": {
+    exists: { errorMessage: "required.", bail: true },
+    isISO8601: {
+      options: { strict: true, strictSeparator: true },
+      errorMessage: "invalid date (see ISO 8601).",
+    },
+  },
+  "*.updatedAt": {
+    exists: { errorMessage: "required.", bail: true },
+    isISO8601: {
+      options: { strict: true, strictSeparator: true },
+      errorMessage: "invalid date (see ISO 8601).",
+    },
+  },
+  "*.createdBy": {
+    exists: { errorMessage: "required.", bail: true },
+    notEmpty: { errorMessage: "can't be empty.", bail: true },
+    isString: { errorMessage: "should be a string." },
+    isLength: {
+      options: { max: 20 },
+      errorMessage: "invalid length, max of 20 characters allowed.",
+    },
+  },
+  "*.updatedBy": {
+    exists: { errorMessage: "required.", bail: true },
+    notEmpty: { errorMessage: "can't be empty.", bail: true },
+    isString: { errorMessage: "should be a string." },
+    isLength: {
+      options: { max: 20 },
+      errorMessage: "invalid length, max of 20 characters allowed.",
+    },
+  },
+
+  "*.assignedTo": UPDATE.assignedTo,
+  "*.isOnCall": UPDATE.isOnCall,
+  "*.isDeleted": UPDATE.isDeleted,
+  "*.isWebhookSent": UPDATE.isWebhookSent,
+  "*.hasTriggeredWebhook": UPDATE.hasTriggeredWebhook,
+
+  "*.call": UPDATE.call,
+  "*.call.date": UPDATE["call.date"],
+  "*.call.time": UPDATE["call.time"],
+  "*.call.phone": UPDATE["call.phone"],
+  "*.call.status": UPDATE["call.status"],
+
+  "*.store": UPDATE.store,
+  "*.store.number": UPDATE["store.number"],
+  "*.store.employee": UPDATE["store.employee"],
+  "*.store.employee.name": UPDATE["store.employee.name"],
+  "*.store.employee.isStoreManager": UPDATE["store.employee.isStoreManager"],
+  "*.store.districtManager": UPDATE["store.districtManager"],
+  "*.store.districtManager.isContacted":
+    UPDATE["store.districtManager.isContacted"],
+
+  "*.incident": UPDATE.incident,
+  "*.incident.title": UPDATE["incident.title"],
+  "*.incident.type": UPDATE["incident.type"],
+  "*.incident.pos": UPDATE["incident.pos"],
+  "*.incident.isProcedural": UPDATE["incident.isProcedural"],
+  "*.incident.error": UPDATE["incident.error"],
+  "*.incident.transaction": UPDATE["incident.transaction"],
+  "*.incident.transaction.type": UPDATE["incident.transaction.type"],
+  "*.incident.transaction.number": UPDATE["incident.transaction.number"],
+  "*.incident.transaction.isIRCreated":
+    UPDATE["incident.transaction.isIRCreated"],
+  "*.incident.details": UPDATE["incident.details"],
 };
+
+// Remove username validation from import operations.
+// This will prevent checking username validity on every reports.
+delete IMPORT["*.assignedTo"].isValidUsername;
+
+// Remove custom sanitizers from import operations.
+// This validation can only work with a single report
+delete IMPORT["*.store.number"].customSanitizer;
+delete IMPORT["*.incident.type"].customSanitizer;
+delete IMPORT["*.incident.transaction.type"].customSanitizer;
 
 // VALIDATION TO HARD DELETE A REPORT
 const HARD_DELETE = {
@@ -336,7 +393,6 @@ const HARD_DELETE = {
 export default {
   create: { ...CREATE },
   update: { ...UPDATE },
-  migrate: { ...MIGRATE },
   import: { ...IMPORT },
   hardDelete: { ...HARD_DELETE },
 };
