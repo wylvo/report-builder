@@ -66,7 +66,7 @@ export const validateCreatedAtAndUpdatedAt = catchAsync(async (req, res, next) =
 
 // Custom validation to check if all the usernames are not empty
 // prettier-ignore
-export const validateUsernames = catchAsync(async (req, res, next) => {
+export const validateUsernamesAndFilterDuplicates = catchAsync(async (req, res, next) => {
   let raiseError;
   const reports = req.body;
   
@@ -91,9 +91,14 @@ export const validateUsernames = catchAsync(async (req, res, next) => {
 
   // Modify createdBy, updatedBy, assignedTo values to their respective user ids
   reports.forEach((report) => {
-    report.createdBy = validUsernames.get(report.createdBy)
-    report.updatedBy = validUsernames.get(report.updatedBy)
-    report.assignedTo = validUsernames.get(report.assignedTo)
+    report.createdBy = validUsernames.get(report.createdBy);
+    report.updatedBy = validUsernames.get(report.updatedBy);
+    report.assignedTo = validUsernames.get(report.assignedTo);
+
+    // Keep only unique values for each arrays inside a report
+    report.store.numbers = [...new Set(report.store.numbers)];
+    report.incident.types = [...new Set(report.incident.types)];
+    report.incident.transaction.types = [...new Set(report.incident.transaction.types)];
   });
   
   next();

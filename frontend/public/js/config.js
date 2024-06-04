@@ -39,7 +39,7 @@ export const DEFAULT_REPORT = Object.freeze({
     status: "string",
   },
   store: {
-    number: ["string"],
+    numbers: ["string"],
     employee: {
       name: "string",
       isStoreManager: false,
@@ -50,7 +50,7 @@ export const DEFAULT_REPORT = Object.freeze({
   },
   incident: {
     title: "string",
-    type: ["string"],
+    types: ["string"],
     pos: "string",
     isProcedural: false,
     error: "string",

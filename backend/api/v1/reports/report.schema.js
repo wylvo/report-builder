@@ -75,7 +75,7 @@ const CREATE = {
 
   /********************************************
    *  "store": {
-   *    "number": ["101", "401", "201"],
+   *    "number": ["102", "401", "201"],
    *    "employee": {
    *      "name": "John Doe",
    *      "isStoreManager": false
@@ -89,7 +89,7 @@ const CREATE = {
     exists: { errorMessage: "required.", bail: true },
     isObject: { errorMessage: "has to be an object enclosed by {}." },
   },
-  "store.number": {
+  "store.numbers": {
     exists: { errorMessage: "required.", bail: true },
     isArray: { errorMessage: "should be an array enclosed by [].", bail: true },
     isNotEmptyArray: { errorMessage: "array can't be empty.", bail: true },
@@ -100,7 +100,7 @@ const CREATE = {
     // Keep unique values only
     customSanitizer: {
       options: (_, { req }) => {
-        return (req.body.store.number = [...new Set(req.body.store.number)]);
+        return (req.body.store.numbers = [...new Set(req.body.store.numbers)]);
       },
     },
   },
@@ -163,7 +163,7 @@ const CREATE = {
       errorMessage: "invalid length, max of 100 characters allowed.",
     },
   },
-  "incident.type": {
+  "incident.types": {
     exists: { errorMessage: "required.", bail: true },
     isArray: { errorMessage: "should be an array enclosed by [].", bail: true },
     isNotEmptyArray: { errorMessage: "array can't be empty.", bail: true },
@@ -174,7 +174,9 @@ const CREATE = {
     // Keep unique values only
     customSanitizer: {
       options: (_, { req }) => {
-        return (req.body.incident.type = [...new Set(req.body.incident.type)]);
+        return (req.body.incident.types = [
+          ...new Set(req.body.incident.types),
+        ]);
       },
     },
   },
@@ -207,7 +209,7 @@ const CREATE = {
     exists: { errorMessage: "required.", bail: true },
     isObject: { errorMessage: "has to be an object enclosed by {}." },
   },
-  "incident.transaction.type": {
+  "incident.transaction.types": {
     optional: true,
     isArray: { errorMessage: "should be an array enclosed by [].", bail: true },
     isNotEmptyArray: { errorMessage: "array can't be empty.", bail: true },
@@ -218,8 +220,8 @@ const CREATE = {
     // Keep unique values only
     customSanitizer: {
       options: (_, { req }) => {
-        return (req.body.incident.transaction.type = [
-          ...new Set(req.body.incident.transaction.type),
+        return (req.body.incident.transaction.types = [
+          ...new Set(req.body.incident.transaction.types),
         ]);
       },
     },
@@ -228,7 +230,7 @@ const CREATE = {
     exists: {
       errorMessage: "required.",
       bail: true,
-      if: (_, { req }) => req.body.incident.transaction.type,
+      if: (_, { req }) => req.body.incident.transaction.types,
     },
     isString: {
       errorMessage: "should be a string.",
@@ -242,7 +244,7 @@ const CREATE = {
     exists: {
       errorMessage: "required.",
       bail: true,
-      if: (_, { req }) => req.body.incident.transaction.type,
+      if: (_, { req }) => req.body.incident.transaction.types,
     },
     isBoolean: {
       options: { strict: true },
@@ -302,6 +304,7 @@ const IMPORT = {
 
   "*.createdAt": {
     exists: { errorMessage: "required.", bail: true },
+    isString: { errorMessage: "should be a string." },
     isISO8601: {
       options: { strict: true, strictSeparator: true },
       errorMessage: "invalid date (see ISO 8601).",
@@ -309,6 +312,7 @@ const IMPORT = {
   },
   "*.updatedAt": {
     exists: { errorMessage: "required.", bail: true },
+    isString: { errorMessage: "should be a string." },
     isISO8601: {
       options: { strict: true, strictSeparator: true },
       errorMessage: "invalid date (see ISO 8601).",
@@ -346,7 +350,7 @@ const IMPORT = {
   "*.call.status": UPDATE["call.status"],
 
   "*.store": UPDATE.store,
-  "*.store.number": UPDATE["store.number"],
+  "*.store.numbers": UPDATE["store.numbers"],
   "*.store.employee": UPDATE["store.employee"],
   "*.store.employee.name": UPDATE["store.employee.name"],
   "*.store.employee.isStoreManager": UPDATE["store.employee.isStoreManager"],
@@ -356,12 +360,12 @@ const IMPORT = {
 
   "*.incident": UPDATE.incident,
   "*.incident.title": UPDATE["incident.title"],
-  "*.incident.type": UPDATE["incident.type"],
+  "*.incident.types": UPDATE["incident.types"],
   "*.incident.pos": UPDATE["incident.pos"],
   "*.incident.isProcedural": UPDATE["incident.isProcedural"],
   "*.incident.error": UPDATE["incident.error"],
   "*.incident.transaction": UPDATE["incident.transaction"],
-  "*.incident.transaction.type": UPDATE["incident.transaction.type"],
+  "*.incident.transaction.types": UPDATE["incident.transaction.types"],
   "*.incident.transaction.number": UPDATE["incident.transaction.number"],
   "*.incident.transaction.isIRCreated":
     UPDATE["incident.transaction.isIRCreated"],
@@ -372,19 +376,19 @@ const IMPORT = {
 // This will prevent checking username validity on every reports.
 delete IMPORT["*.assignedTo"].isValidUsername;
 
+// Re-adding to CREATE because the "delete" keyword removes "isValidUsername" from this object
+CREATE.assignedTo.isValidUsername = {};
+
 // Remove custom sanitizers from import operations.
 // This validation can only work with a single report
-delete IMPORT["*.store.number"].customSanitizer;
-delete IMPORT["*.incident.type"].customSanitizer;
-delete IMPORT["*.incident.transaction.type"].customSanitizer;
+delete IMPORT["*.store.numbers"].customSanitizer;
+delete IMPORT["*.incident.types"].customSanitizer;
+delete IMPORT["*.incident.transaction.types"].customSanitizer;
 
 // VALIDATION TO HARD DELETE A REPORT
 const HARD_DELETE = {
   password: {
-    exists: {
-      errorMessage: "required.",
-      bail: true,
-    },
+    exists: { errorMessage: "required.", bail: true },
     notEmpty: { errorMessage: "can't be empty.", bail: true },
     isString: { errorMessage: "should be a string" },
   },

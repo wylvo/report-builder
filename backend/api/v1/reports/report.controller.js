@@ -221,6 +221,6 @@ export {
   validateBodyIsArray,
   validateImport,
   validateCreatedAtAndUpdatedAt,
-  validateUsernames,
+  validateUsernamesAndFilterDuplicates,
   importReports,
 } from "./import/import.controller.js";

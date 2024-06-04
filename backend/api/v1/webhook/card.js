@@ -40,7 +40,7 @@ export const setAdaptiveCard = (report) => {
   const isProceduralText = report.incident.isProcedural ? "Yes" : "No";
 
   // Store Information
-  const storeNumber = report.store.number;
+  const storeNumber = report.store.numbers;
   const storeEmployeeName = report.store.employee.name;
   const isStoreEmployeeManager = report.store.employee.isStoreManager
     ? "Yes"
@@ -52,7 +52,7 @@ export const setAdaptiveCard = (report) => {
 
   // Incident Details
   const incidentTitle = report.incident.title;
-  const incidentType = report.incident.type;
+  const incidentType = report.incident.types;
   const incidentPos = report.incident.pos;
   const incidentErrorCode = report.incident.error;
 
@@ -60,7 +60,7 @@ export const setAdaptiveCard = (report) => {
   const incidentTransaction = isEmptyObject(report.incident.transaction)
     ? report.incident.transaction
     : {
-        type: report.incident.transaction.type,
+        type: report.incident.transaction.types,
         number: report.incident.transaction.number,
         isIRCreated: report.incident.transaction.isIRCreated ? "Yes" : "No",
       };

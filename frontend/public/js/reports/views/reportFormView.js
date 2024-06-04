@@ -160,7 +160,7 @@ export class ReportFormView extends FormView {
 
     // Store Information Accordion
     console.log(fields.get("store-number"));
-    selects.get("store-number").value = report.store.number[0];
+    selects.get("store-number").value = report.store.numbers[0];
     fields.get("store-employee").value = report.store.employee.name;
 
     report.store.employee.isStoreManager &&
@@ -177,7 +177,7 @@ export class ReportFormView extends FormView {
 
     // Incident Details Accordion
     fields.get("incident-title").value = report.incident.title;
-    selects.get("incident-type").value = report.incident.type;
+    selects.get("incident-type").value = report.incident.types;
     selects.get("incident-pos-number").value = report.incident.pos;
 
     report.incident.isProcedural &&
@@ -193,7 +193,7 @@ export class ReportFormView extends FormView {
       !checkBoxes.get("transaction-issue").checked
     ) {
       checkBoxes.get("transaction-issue").click();
-      selects.get("transaction-type").value = report.incident.transaction.type;
+      selects.get("transaction-type").value = report.incident.transaction.types;
 
       fields.get("transaction-number").value =
         report.incident.transaction.number;

@@ -72,20 +72,17 @@ const isTransactionObjectEmpty = (transaction) =>
 const insertManyToMany = (array, reportId, mssql, insertFunction) => {
   if (!array || !Array.isArray(array) || array.length === 0) return;
 
-  const params = {},
-    rows = [],
+  const rows = [],
     { Int } = mssqlDataTypes;
 
   array.forEach((value, i) => {
     const param = `param_${insertFunction.name}_${i}`;
-    params[param] = value;
     rows.push(insertFunction().row(param));
-  });
 
-  for (const [param, value] of Object.entries(params)) {
     // console.log("param:", param, typeof param, ", value:", value, typeof value);
     mssql.input(param, value);
-  }
+  });
+
   mssql.input(`reportId_${insertFunction.name}`, Int, reportId);
 
   return insertFunction().query(rows);
@@ -222,7 +219,7 @@ export const Reports = {
     body.call.dateTime = dateMSSharePoint(
       `${body.call.date} ${body.call.time}`
     );
-    if (!body.incident.transaction.type) body.incident.transaction = {};
+    if (!body.incident.transaction.types) body.incident.transaction = {};
 
     const reportCreate = mssql(transaction).request;
 
@@ -251,23 +248,18 @@ export const Reports = {
       .output("id", Int)
       .execute("api_v1_reports_create");
 
-    const stores = mssql(transaction).request,
-      incidentTypes = mssql(transaction).request,
-      incidentTransactionTypes = mssql(transaction).request;
-
-    const insertStores =
-        insertManyToMany(body.store.number, id, stores, this.insertStores),
-      insertIncidentTypes =
-        insertManyToMany(body.incident.type, id, incidentTypes, this.insertIncidentTypes);
-    
-    await stores.query(insertStores);
-    await incidentTypes.query(insertIncidentTypes);
-    
-    if(body.incident.transaction.type) {
-      const insertIncidentTransactionTypes =
-        insertManyToMany(body.incident.transaction.type, id, incidentTransactionTypes, this.insertIncidentTransactionTypes);
-      await incidentTransactionTypes.query(insertIncidentTransactionTypes);
+    const queries = [
+      insertManyToMany(body.store.numbers, id, reportCreate, this.insertStores),
+      insertManyToMany(body.incident.types, id, reportCreate, this.insertIncidentTypes),
+    ]
+        
+    if(body.incident.transaction.types) {
+      queries.push(
+        insertManyToMany(body.incident.transaction.types, id, reportCreate, this.insertIncidentTransactionTypes)
+      )
     }
+
+    await reportCreate.query(queries.join(" "));
     
     const {
       output: { report: rawJSON },
@@ -293,7 +285,7 @@ export const Reports = {
       body.call.dateTime = dateMSSharePoint(
         `${body.call.date} ${body.call.time}`
       );
-    if (!body.incident.transaction.type) body.incident.transaction = {};
+    if (!body.incident.transaction.types) body.incident.transaction = {};
     
     const reportUpdate = mssql(transaction).request;
 
@@ -326,22 +318,18 @@ export const Reports = {
 
     await this.deleteStoresIncidentTypesIncidentTransactionTypes(report.id);
 
-    const stores = mssql(transaction).request,
-      incidentTypes = mssql(transaction).request,
-      incidentTransactionTypes = mssql(transaction).request;
-
-    const insertStores =
-        insertManyToMany(body.store.number, report.id, stores, this.insertStores),
-      insertIncidentTypes = insertManyToMany(body.incident.type, report.id, incidentTypes, this.insertIncidentTypes);
-    
-    await stores.query(insertStores);
-    await incidentTypes.query(insertIncidentTypes);
-    
-    if(body.incident.transaction.type) {
-      const insertIncidentTransactionTypes =
-        insertManyToMany(body.incident.transaction.type, report.id, incidentTransactionTypes, this.insertIncidentTransactionTypes);
-      await incidentTransactionTypes.query(insertIncidentTransactionTypes);
+    const queries = [
+      insertManyToMany(body.store.numbers, report.id, reportUpdate, this.insertStores),
+      insertManyToMany(body.incident.types, report.id, reportUpdate, this.insertIncidentTypes),
+    ]
+        
+    if(body.incident.transaction.types) {
+      queries.push(
+        insertManyToMany(body.incident.transaction.types, report.id, reportUpdate, this.insertIncidentTransactionTypes)
+      )
     }
+
+    await reportUpdate.query(queries.join(" "));
 
     const {
       output: { report: rawJSON },
@@ -422,7 +410,7 @@ export const Reports = {
       report.call.dateTime = dateMSSharePoint(
         `${report.call.date} ${report.call.time}`
       );
-      if (!report.incident.transaction.type) report.incident.transaction = {};
+      if (!report.incident.transaction.types) report.incident.transaction = {};
       
       const reportImport = mssql(transaction).request;
 
@@ -452,39 +440,23 @@ export const Reports = {
       reportImport.input("incidentTransactionIsIRCreated", Bit, report.incident.transaction.isIRCreated);
       reportImport.input("incidentDetails", VarChar, report.incident.details);
 
-      const { output: { id } } = await reportImport
-      .output("id", Int)
-      .execute("api_v1_reports_import");
+      const { output: { id } } =
+        await reportImport
+          .output("id", Int)
+          .execute("api_v1_reports_import");
 
-      const stores = mssql(transaction).request,
-        incidentTypes = mssql(transaction).request;
-
-      await stores.query(
-        insertManyToMany(report.store.number, id, stores, this.insertStores)
-      );
-      await incidentTypes.query(
-        insertManyToMany(report.incident.type, id, incidentTypes, this.insertIncidentTypes)
-      );
+      const queries = [
+        insertManyToMany(report.store.numbers, id, reportImport, this.insertStores),
+        insertManyToMany(report.incident.types, id, reportImport, this.insertIncidentTypes),
+      ]
       
-      if(report.incident.transaction.type) {
-        const incidentTransactionTypes = mssql(transaction).request;
-        await incidentTransactionTypes.query(
-          insertManyToMany(report.incident.transaction.type, id, incidentTransactionTypes, this.insertIncidentTransactionTypes)
+      if(report.incident.transaction.types) {
+        queries.push(
+          insertManyToMany(report.incident.transaction.types, id, reportImport, this.insertIncidentTransactionTypes)
         );
       }
 
-      // for(const query of queries) {
-      //   await reportImport.query(query);
-      // }
-      
-      // const {
-      //   output: { report: rawJSON },
-      // } = await mssql(transaction)
-      //   .request.input("id", Int, id)
-      //   .output("report", NVarChar)
-      //   .execute("api_v1_reports_getById");
-        
-      // const reportImported = JSON.parse(rawJSON);
+      await reportImport.query(queries.join(" "));
 
       reportsImported.push(id);
     }

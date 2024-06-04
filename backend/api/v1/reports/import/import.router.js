@@ -14,7 +14,7 @@ router.post(
   formData.synchonizeReportValidation,
   report.validateImport,
   report.validateCreatedAtAndUpdatedAt,
-  report.validateUsernames,
+  report.validateUsernamesAndFilterDuplicates,
   report.importReports
 );
 

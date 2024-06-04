@@ -5,8 +5,8 @@ import reportSchema from "../reports/report.schema.js";
 // prettier-ignore
 export const synchonizeReportValidation = catchAsync(async (req, res, next) => {
   // Store Numbers
-  const storeNumbers = reportSchema.create["store.number"];
-  const storeNumbersImport = reportSchema.import["*.store.number"];
+  const storeNumbers = reportSchema.create["store.numbers"];
+  const storeNumbersImport = reportSchema.import["*.store.numbers"];
 
   storeNumbers.isIn.options = [config.validation.selects.storeNumbers];
   storeNumbers.isIn.errorMessage = `only '${config.validation.selects.storeNumbers.join("', '")}' are allowed.`;
@@ -15,8 +15,8 @@ export const synchonizeReportValidation = catchAsync(async (req, res, next) => {
   storeNumbersImport.isIn.errorMessage = `only '${config.validation.selects.storeNumbers.join("', '")}' are allowed.`;
 
   // Incident Types
-  const incidentTypes = reportSchema.create["incident.type"];
-  const incidentTypesImport = reportSchema.import["*.incident.type"];
+  const incidentTypes = reportSchema.create["incident.types"];
+  const incidentTypesImport = reportSchema.import["*.incident.types"];
 
   incidentTypes.isIn.options = [config.validation.selects.incidentTypes];
   incidentTypes.isIn.errorMessage = `only '${config.validation.selects.incidentTypes.join("', '")}' are allowed.`;
@@ -25,8 +25,8 @@ export const synchonizeReportValidation = catchAsync(async (req, res, next) => {
   incidentTypesImport.isIn.errorMessage = `only '${config.validation.selects.incidentTypes.join("', '")}' are allowed.`;
 
   // Incident Transaction Types
-  const incidentTransactionTypes = reportSchema.create["incident.transaction.type"];
-  const incidentTransactionTypesImport = reportSchema.import["*.incident.transaction.type"];
+  const incidentTransactionTypes = reportSchema.create["incident.transaction.types"];
+  const incidentTransactionTypesImport = reportSchema.import["*.incident.transaction.types"];
 
   incidentTransactionTypes.isIn.options = [config.validation.selects.incidentTransactionTypes];
   incidentTransactionTypes.isIn.errorMessage = `only '${config.validation.selects.incidentTransactionTypes.join("', '")}' are allowed.`;
