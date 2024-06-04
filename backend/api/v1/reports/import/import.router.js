@@ -13,7 +13,7 @@ router.post(
   report.validateBodyIsArray,
   formData.synchonizeReportValidation,
   report.validateImport,
-  report.validateCreatedAtAndUpdatedAt,
+  report.validateTimestampsAndTransactionObject,
   report.validateUsernamesAndFilterDuplicates,
   report.importReports
 );

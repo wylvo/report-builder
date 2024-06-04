@@ -62,7 +62,9 @@ export const setAdaptiveCard = (report) => {
     : {
         type: report.incident.transaction.types,
         number: report.incident.transaction.number,
-        isIRCreated: report.incident.transaction.isIRCreated ? "Yes" : "No",
+        hasVarianceReport: report.incident.transaction.hasVarianceReport
+          ? "Yes"
+          : "No",
       };
 
   const incidentDetails = report.incident.details;

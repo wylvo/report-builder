@@ -32,18 +32,23 @@ export const validateBodyIsArray = catchAsync(async (req, res, next) => {
     return next(new GlobalError("Request body has to be an array enclosed by []", 400));
   if (req.body.length === 0)
     return next(new GlobalError("Request body array can't be empty", 400));
+  const importLimit = config.request.import.reportCountLimit
+  if (req.body.length > importLimit)
+    return next(
+      new GlobalError(`Request body array has too many report objects. You can only import up to ${importLimit} reports. Your request had ${req.body.length} reports.`, 400)
+    );
   next();
 });
 
 export const validateImport = validateBody(
   checkSchema,
-  Reports.validation.import(),
+  Reports.validation.import,
   false
 );
 
 // Custom validation to check if createdAt and updatedAt have proper time constraints
 // prettier-ignore
-export const validateCreatedAtAndUpdatedAt = catchAsync(async (req, res, next) => {
+export const validateTimestampsAndTransactionObject = catchAsync(async (req, res, next) => {
   const reports = req.body;
 
   reports.forEach((report, i) => {
@@ -52,13 +57,20 @@ export const validateCreatedAtAndUpdatedAt = catchAsync(async (req, res, next) =
     const updatedAt = new Date(report.updatedAt);
 
     if (createdAt > Date.now())
-      return next(new GlobalError(`Report ${pos}: createdAt can't be greater than the current time.`, 400));
+      return next(new GlobalError(`Report ${pos} createdAt: can't be greater than the current time.`, 400));
     
     if (updatedAt > Date.now())
-      return next(new GlobalError(`Report ${pos}: updatedAt can't be greater than the current time.`, 400));
+      return next(new GlobalError(`Report ${pos} updatedAt: can't be greater than the current time.`, 400));
 
     if (createdAt > new Date(report.updatedAt))
-      return next(new GlobalError(`Report ${pos}: createdAt can't be greater than updatedAt.`, 400));
+      return next(new GlobalError(`Report ${pos} createdAt: can't be greater than updatedAt.`, 400));
+
+    if (report.incident.transaction.types) {
+      if(typeof report.incident.transaction.number === "undefined")
+        report.incident.transaction.number = null;
+      if(typeof report.incident.transaction.hasVarianceReport === "undefined")
+        report.incident.transaction.hasVarianceReport = false;
+    }
   });
 
   next();
@@ -108,6 +120,7 @@ export const importReports = catchAsync(async (req, res, next) => {
   console.time("IMPORT");
   const transaction = mssql().transaction;
 
+  console.log("Running import");
   try {
     await transaction.begin();
     const reports = await Reports.import(req.body, transaction);

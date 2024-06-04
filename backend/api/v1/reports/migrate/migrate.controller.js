@@ -65,6 +65,10 @@ export const migrateReport = catchAsync(async (req, res, next) => {
       delete report.incident.transaction.type;
     }
 
+    const isIRCreated = report.incident.transaction.isIRCreated;
+    report.incident.transaction.hasVarianceReport = isIRCreated;
+    delete report.incident.transaction.isIRCreated;
+
     delete report.tech;
     delete report.tableRowEl;
   });

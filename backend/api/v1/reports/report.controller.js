@@ -220,7 +220,7 @@ export { migrateReport } from "./migrate/migrate.controller.js";
 export {
   validateBodyIsArray,
   validateImport,
-  validateCreatedAtAndUpdatedAt,
+  validateTimestampsAndTransactionObject,
   validateUsernamesAndFilterDuplicates,
   importReports,
 } from "./import/import.controller.js";

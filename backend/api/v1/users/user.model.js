@@ -114,7 +114,7 @@ export const Users = {
     body.password = await hashPassword(body.password);
     body.active = body.active ?? true;
     body.profilePictureURI =
-      body.profilePictureURI ?? config.misc.defaultProfilePicture;
+      body.profilePictureURI ?? config.validation.defaultProfilePicture;
     body.initials = body.initials?.toUpperCase() ?? null;
 
     const {
@@ -139,7 +139,7 @@ export const Users = {
     const { Int, VarChar, Bit, NVarChar } = mssqlDataTypes;
 
     body.profilePictureURI =
-      body.profilePictureURI ?? config.misc.defaultProfilePicture;
+      body.profilePictureURI ?? config.validation.defaultProfilePicture;
 
     const {
       output: { user: userUpdated },

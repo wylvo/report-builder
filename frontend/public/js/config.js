@@ -58,7 +58,7 @@ export const DEFAULT_REPORT = Object.freeze({
     // Can be empty object
     transaction: {
       number: "string",
-      isIRCreated: false,
+      hasVarianceReport: false,
     },
     details: "string",
   },

@@ -20,6 +20,9 @@ const handleJWTError = () =>
 const handleTokenExpiredError = () =>
   new GlobalError("Your token has expired please sign in again.", 401);
 
+const handlePayloadTooLargeError = () =>
+  new GlobalError("Your request payload is too large.", 413);
+
 const sendErrorDev = (err, req, res) => {
   // API error
   if (
@@ -46,9 +49,17 @@ const sendErrorDev = (err, req, res) => {
 
 const sendErrorProd = (err, req, res) => {
   // API error
-  if (req.originalUrl.startsWith("/api")) {
+  if (
+    req.originalUrl.startsWith("/api") ||
+    req.originalUrl.startsWith("/signin")
+  ) {
     // Trusted error: send message to client
     if (err.isTrusted) {
+      if (typeof err.trustedMessage === "object") {
+        err.trustedMessage = Object.values(err.trustedMessage)
+          .map((message) => message)
+          .join(" ");
+      }
       return res.status(err.statusCode).json({
         status: err.status,
         message: err.message || err.trustedMessage,
@@ -74,7 +85,7 @@ const sendErrorProd = (err, req, res) => {
       title: "Something went wrong!",
       statusCode: err.statusCode,
       scriptPath: null,
-      message: err.message,
+      msg: err.message || err.trustedMessage,
     });
   }
   // Programming or other unknown error: don't leak error details
@@ -83,7 +94,7 @@ const sendErrorProd = (err, req, res) => {
 
   // Send generic message
   return res.status(err.statusCode).render("error", {
-    title: "Something wnet wrong!",
+    title: "Something went wrong!",
     statusCode: err.statusCode,
     scriptPath: null,
     msg: "Please try again later.",
@@ -102,6 +113,8 @@ export default (err, req, res, next) => {
     if (err.number === 2627) error = handleDuplicateFieldsDB(error);
     if (err.name === "JsonWebTokenError") error = handleJWTError();
     if (err.name === "TokenExpiredError") error = handleTokenExpiredError();
+    if (err.name === "PayloadTooLargeError")
+      error = handlePayloadTooLargeError();
     sendErrorProd(error, req, res);
   }
 };

@@ -169,7 +169,7 @@ const CREATE = {
     isNotEmptyArray: { errorMessage: "array can't be empty.", bail: true },
     isIn: {
       options: [],
-      errorMessage: `${config.validation.selects.incidentTypes.join(", ")}`,
+      errorMessage: "",
     },
     // Keep unique values only
     customSanitizer: {
@@ -240,7 +240,7 @@ const CREATE = {
       errorMessage: "invalid length, max of 100 characters allowed.",
     },
   },
-  "incident.transaction.isIRCreated": {
+  "incident.transaction.hasVarianceReport": {
     exists: {
       errorMessage: "required.",
       bail: true,
@@ -336,8 +336,16 @@ const IMPORT = {
       errorMessage: "invalid length, max of 20 characters allowed.",
     },
   },
+  "*.assignedTo": {
+    exists: { errorMessage: "required.", bail: true },
+    notEmpty: { errorMessage: "can't be empty.", bail: true },
+    isString: { errorMessage: "should be a string." },
+    isLength: {
+      options: { max: 20 },
+      errorMessage: "invalid length, max of 20 characters allowed.",
+    },
+  },
 
-  "*.assignedTo": UPDATE.assignedTo,
   "*.isOnCall": UPDATE.isOnCall,
   "*.isDeleted": UPDATE.isDeleted,
   "*.isWebhookSent": UPDATE.isWebhookSent,
@@ -350,7 +358,15 @@ const IMPORT = {
   "*.call.status": UPDATE["call.status"],
 
   "*.store": UPDATE.store,
-  "*.store.numbers": UPDATE["store.numbers"],
+  "*.store.numbers": {
+    exists: { errorMessage: "required.", bail: true },
+    isArray: { errorMessage: "should be an array enclosed by [].", bail: true },
+    isNotEmptyArray: { errorMessage: "array can't be empty.", bail: true },
+    isIn: {
+      options: [],
+      errorMessage: "",
+    },
+  },
   "*.store.employee": UPDATE["store.employee"],
   "*.store.employee.name": UPDATE["store.employee.name"],
   "*.store.employee.isStoreManager": UPDATE["store.employee.isStoreManager"],
@@ -360,30 +376,47 @@ const IMPORT = {
 
   "*.incident": UPDATE.incident,
   "*.incident.title": UPDATE["incident.title"],
-  "*.incident.types": UPDATE["incident.types"],
+  "*.incident.types": {
+    exists: { errorMessage: "required.", bail: true },
+    isArray: { errorMessage: "should be an array enclosed by [].", bail: true },
+    isNotEmptyArray: { errorMessage: "array can't be empty.", bail: true },
+    isIn: {
+      options: [],
+      errorMessage: "",
+    },
+  },
   "*.incident.pos": UPDATE["incident.pos"],
   "*.incident.isProcedural": UPDATE["incident.isProcedural"],
   "*.incident.error": UPDATE["incident.error"],
   "*.incident.transaction": UPDATE["incident.transaction"],
-  "*.incident.transaction.types": UPDATE["incident.transaction.types"],
-  "*.incident.transaction.number": UPDATE["incident.transaction.number"],
-  "*.incident.transaction.isIRCreated":
-    UPDATE["incident.transaction.isIRCreated"],
+  "*.incident.transaction.types": {
+    optional: true,
+    isArray: { errorMessage: "should be an array enclosed by [].", bail: true },
+    isNotEmptyArray: { errorMessage: "array can't be empty.", bail: true },
+    isIn: {
+      options: [],
+      errorMessage: "",
+    },
+  },
+  "*.incident.transaction.number": {
+    optional: true,
+    isString: {
+      errorMessage: "should be a string.",
+    },
+    isLength: {
+      options: { max: 100 },
+      errorMessage: "invalid length, max of 100 characters allowed.",
+    },
+  },
+  "*.incident.transaction.hasVarianceReport": {
+    optional: true,
+    isBoolean: {
+      options: { strict: true },
+      errorMessage: "should be a boolean (true or false).",
+    },
+  },
   "*.incident.details": UPDATE["incident.details"],
 };
-
-// Remove username validation from import operations.
-// This will prevent checking username validity on every reports.
-delete IMPORT["*.assignedTo"].isValidUsername;
-
-// Re-adding to CREATE because the "delete" keyword removes "isValidUsername" from this object
-CREATE.assignedTo.isValidUsername = {};
-
-// Remove custom sanitizers from import operations.
-// This validation can only work with a single report
-delete IMPORT["*.store.numbers"].customSanitizer;
-delete IMPORT["*.incident.types"].customSanitizer;
-delete IMPORT["*.incident.transaction.types"].customSanitizer;
 
 // VALIDATION TO HARD DELETE A REPORT
 const HARD_DELETE = {

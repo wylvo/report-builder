@@ -100,7 +100,7 @@ export const Reports = {
     create: reportSchema.create,
     update: reportSchema.update,
     hardDelete: reportSchema.hardDelete,
-    import: () => reportSchema.import,
+    import: reportSchema.import,
   },
 
   // GET SINGLE REPORT BY ID
@@ -241,7 +241,7 @@ export const Reports = {
     reportCreate.input("incidentIsProcedural", Bit, body.incident.isProcedural);
     reportCreate.input("incidentError", VarChar, body.incident.error);
     reportCreate.input("incidentTransactionNumber", VarChar, body.incident.transaction.number);
-    reportCreate.input("incidentTransactionIsIRCreated", Bit, body.incident.transaction.isIRCreated);
+    reportCreate.input("incidentTransactionHasVarianceReport", Bit, body.incident.transaction.hasVarianceReport);
     reportCreate.input("incidentDetails", VarChar, body.incident.details);
 
     const { output: { id: id } } = await reportCreate
@@ -311,7 +311,7 @@ export const Reports = {
     reportUpdate.input("incidentIsProcedural", Bit, body.incident.isProcedural);
     reportUpdate.input("incidentError", VarChar, body.incident.error);
     reportUpdate.input("incidentTransactionNumber", VarChar, body.incident.transaction.number);
-    reportUpdate.input("incidentTransactionIsIRCreated", Bit, body.incident.transaction.isIRCreated);
+    reportUpdate.input("incidentTransactionHasVarianceReport", Bit, body.incident.transaction.hasVarianceReport);
     reportUpdate.input("incidentDetails", VarChar, body.incident.details);
 
     await reportUpdate.execute("api_v1_reports_update");
@@ -397,7 +397,7 @@ export const Reports = {
   // IMPORT REPORTS
   // prettier-ignore
   async import(body, transaction) {
-    const { NVarChar, VarChar, Int, Bit, Date, Time, DateTimeOffset } = mssqlDataTypes;
+    const { VarChar, Int, Bit, Date, Time, DateTimeOffset } = mssqlDataTypes;
     const reportsImported = [];
 
     let i = 0;
@@ -437,7 +437,7 @@ export const Reports = {
       reportImport.input("incidentIsProcedural", Bit, report.incident.isProcedural);
       reportImport.input("incidentError", VarChar, report.incident.error);
       reportImport.input("incidentTransactionNumber", VarChar, report.incident.transaction.number);
-      reportImport.input("incidentTransactionIsIRCreated", Bit, report.incident.transaction.isIRCreated);
+      reportImport.input("incidentTransactionHasVarianceReport", Bit, report.incident.transaction.hasVarianceReport);
       reportImport.input("incidentDetails", VarChar, report.incident.details);
 
       const { output: { id } } =

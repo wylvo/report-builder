@@ -198,7 +198,7 @@ export class ReportFormView extends FormView {
       fields.get("transaction-number").value =
         report.incident.transaction.number;
 
-      report.incident.transaction.isIRCreated &&
+      report.incident.transaction.hasVarianceReport &&
       !["transaction-incident-report"].checked
         ? (["transaction-incident-report"].checked = true)
         : (["transaction-incident-report"].checked = false);

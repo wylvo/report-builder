@@ -8,6 +8,7 @@ import compression from "compression";
 import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
 
+import config from "./config/app.config.js";
 import routerV1 from "./api/v1/router.js";
 import globalErrorHandler from "./errors/error.controller.js";
 import GlobalError from "./errors/globalError.js";
@@ -34,15 +35,17 @@ if (process.env.NODE_ENV === "development") {
 
 // Limit requests to the API
 const limiter = rateLimit({
-  max: 100,
-  windowMs: 30000,
-  message: "Too many request from this IP, please try again in 30 seconds!",
+  max: config.rateLimter.maxNumberOfRequests,
+  windowMs: config.rateLimter.windowMiliseconds,
+  message: config.rateLimter.message,
 });
 app.use("/api", limiter);
 
 app.use(cors());
 app.use(compression());
-app.use(express.json({ limit: "5mb", type: "*/*" }));
+app.use(
+  express.json({ limit: config.request.byteLimit, type: config.request.type })
+);
 app.use(cookieParser());
 
 // Format JSON responses as text with 2 indented spaces

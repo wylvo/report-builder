@@ -24,6 +24,18 @@ const config = {
       path: backupFilePath,
     },
   },
+  rateLimter: {
+    maxNumberOfRequests: 100, // Max number of requests before a client is restricted to make another request
+    windowMiliseconds: 30000, // How long before a client is eligible to make another request
+    message: "Too many request from this IP, please try again later!",
+  },
+  request: {
+    byteLimit: "2mb",
+    type: "*/*",
+    import: {
+      reportCountLimit: 500, // 1 report is around 3 800 bytes. 3 800 bytes * 500 reports = 1,900,000 bytes or 1.9 MB
+    },
+  },
   validation: {
     selects: {
       pos: [null, "1", "2", "3"],
@@ -33,7 +45,7 @@ const config = {
       incidentTypes: [],
       incidentTransactionTypes: [],
     },
-    reportVersions: ["1.0.0"],
+    defaultProfilePicture: "/img/default_profile_picture.jpg",
   },
   jwt: {
     secret: process.env.JWT_SECRET,
