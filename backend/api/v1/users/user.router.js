@@ -10,7 +10,7 @@ const router = express.Router();
  * /api/v1/users/me       (GET)
  * /api/v1/users/frontend (GET)
  */
-router.get("/me", user.getMe, user.getUser);
+router.get("/account", user.getMe, user.getUser);
 router.get("/frontend", user.getAllUsersFrontend);
 
 // Restrict the following routes to admin role after this middleware

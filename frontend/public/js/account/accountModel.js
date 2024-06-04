@@ -28,10 +28,8 @@ const DB = {
   getCurrentUserAccount: async () => {
     // API request to get the current signed in user account from the database
     const {
-      data: {
-        data: [user],
-      },
-    } = await api.v1.users.getCurrentUser();
+      data: { data: user },
+    } = await api.v1.users.getCurrentUserAccount();
 
     state.user = user;
 
