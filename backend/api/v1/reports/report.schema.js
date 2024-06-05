@@ -145,7 +145,7 @@ const CREATE = {
    *    "transaction": {
    *      "type": ["Sale"],
    *      "number": "",
-   *      "isIRCreated": false
+   *      "hasVarianceReport": false
    *    },
    *    "details": "Hello World!"
    *  }

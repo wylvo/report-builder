@@ -198,7 +198,7 @@ const controlDeleteReport = async function (id) {
     }
 
     // Api call to soft delete a report in the database
-    await model.DB.deleteReport(id);
+    await model.DB.softDeleteReport(id);
     
     reportTableView.updateTotalCount(model.state.reports);
     notificationsView.success(`Report successfully deleted: ${report.incident.title} [${report.id}]`);
@@ -325,8 +325,7 @@ const controlPages = function (page) {
   if (isNaN(page)) return;
   paginationView.renderAll(model.pages(page));
 
-  const reports = model.rowsPerPage(page);
-  reportTableView.renderAll(reports);
+  controlRenderAllReports();
 };
 
 const controlRenderAllReports = function () {

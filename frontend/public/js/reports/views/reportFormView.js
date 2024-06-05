@@ -199,9 +199,9 @@ export class ReportFormView extends FormView {
         report.incident.transaction.number;
 
       report.incident.transaction.hasVarianceReport &&
-      !["transaction-incident-report"].checked
-        ? (["transaction-incident-report"].checked = true)
-        : (["transaction-incident-report"].checked = false);
+      !["transaction-variance-report"].checked
+        ? (["transaction-variance-report"].checked = true)
+        : (["transaction-variance-report"].checked = false);
     }
     textAreas.get("incident-details").value = report.incident.details;
 
@@ -314,12 +314,12 @@ export class ReportFormView extends FormView {
       this._selects.get("transaction-type").disabled = false;
       this._selects.get("transaction-type").setAttribute("required", "");
       this._fields.get("transaction-number").disabled = false;
-      this._checkBoxes.get("transaction-incident-report").disabled = false;
+      this._checkBoxes.get("transaction-variance-report").disabled = false;
     } else {
       this._selects.get("transaction-type").disabled = true;
       this._fields.get("transaction-number").disabled = true;
       this._selects.get("transaction-type").removeAttribute("required");
-      this._checkBoxes.get("transaction-incident-report").disabled = true;
+      this._checkBoxes.get("transaction-variance-report").disabled = true;
     }
     return (this._transactionIssue = !this._transactionIssue);
   }

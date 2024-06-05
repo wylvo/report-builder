@@ -37,7 +37,7 @@ const controlDeleteReport = async function (id) {
     if (id === window.location.hash.slice(1)) accountTabsView.removeLocationHash();
 
     // Api call to soft delete a report in the database
-    await model.DB.deleteReport(id);
+    await model.DB.softDeleteReport(id);
     
     reportTableView.updateTotalCount(model.state.reports);
     notificationsView.success(`Report successfully deleted: ${report.incident.title} [${report.id}]`);
@@ -151,8 +151,7 @@ const controlPages = function (page) {
   if (isNaN(page)) return;
   paginationView.renderAll(model.pages(page));
 
-  const reports = model.rowsPerPage(page);
-  reportTableView.renderAll(reports);
+  controlRenderAllReports();
 };
 
 export const init = async function () {
@@ -163,7 +162,7 @@ export const init = async function () {
   model.state.reportsDeleted = model.state.user.reportsDeleted;
 
   // Initialize the single tab
-  accountTabsView.renderAll(model.initNumberOfTabs(1));
+  accountTabsView.renderAll(null, model.initNumberOfTabs(1));
   accountFormView = accountTabsView.tabs.get(model.state.tab);
   accountFormView.render(model.state.user);
 

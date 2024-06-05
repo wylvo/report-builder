@@ -130,9 +130,9 @@ class UserTabsView extends TabsView {
               <!-- ROLE, STATUS  -->
               <div class="form-grouping-col">
                 <select id="role_${index}" name="role" class="role">
-                  <option selected value="user">User</option>
-                  <option value="guest">Guest</option>
-                  <option value="admin">Admin</option>
+                  <option selected value="User">User</option>
+                  <option value="Guest">Guest</option>
+                  <option value="Admin">Admin</option>
                 </select>
                 <label for="role_${index}">Role:</label>
               </div>

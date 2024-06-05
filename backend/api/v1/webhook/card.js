@@ -472,7 +472,7 @@ export const setAdaptiveCard = (report) => {
                         },
                         {
                           "title": "Inc Report:",
-                          "value": `${incidentTransaction.isIRCreated}`
+                          "value": `${incidentTransaction.hasVarianceReport}`
                         }
                       ]
                     }

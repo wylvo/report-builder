@@ -339,14 +339,14 @@ class ReportTabsView extends TabsView {
                 <p class="max-length"><span id="transaction-number_${index}-length">0</span>/<span class="max-length-text"></span></p>
               </div>
               <div class="form-grouping-col self-end">
-                <label for="transaction-incident-report_${index}"
+                <label for="transaction-variance-report_${index}"
                   >Inc. Report</label
                 >
                 <label class="switch">
                   <input
                     type="checkbox"
-                    id="transaction-incident-report_${index}"
-                    name="transaction-incident-report"
+                    id="transaction-variance-report_${index}"
+                    name="transaction-variance-report"
                   />
                   <span class="slider"></span>
                 </label>

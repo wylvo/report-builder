@@ -21,7 +21,7 @@ const init = async function () {
 
 // API requests linked to the backend database
 const DB = {
-  deleteReport: async (id) => reportModel.DB.deleteReport(id),
+  softDeleteReport: async (id) => reportModel.DB.softDeleteReport(id),
   hardDeleteReport: async (id, password) =>
     reportModel.DB.hardDeleteReport(id, password),
   undoSoftDeleteReport: async (id) => reportModel.DB.undoSoftDeleteReport(id),

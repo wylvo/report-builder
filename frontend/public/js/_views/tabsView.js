@@ -37,6 +37,7 @@ export default class TabsView extends View {
     const tabFormContainer = document.querySelector(".tabs-forms");
 
     if (formData) {
+      console.log(formData);
       Object.keys(formData.selects).forEach((key) => {
         formData.selects[key] = formData.selects[key].map((selectValue) => {
           if (!selectValue) return `<option value="">None</option>`;

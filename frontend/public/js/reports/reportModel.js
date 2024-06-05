@@ -96,20 +96,15 @@ const DB = {
     return report;
   },
 
-  deleteReport: async (id) => {
-    // API request to delete a report from the database
-    const { response } = await api.v1.reports.deleteReport(id);
+  getAllSoftDeletedReports: async () => {
+    // API request to get all reports from the database
+    const {
+      data: { data },
+    } = await api.v1.reports.getAllSoftDeletedReports();
+    console.log(data);
 
-    // Find & check if report is in the state object
-    const index = findObjectIndexById(state.reports, id, false);
-
-    // If found, remove the row element and report object
-    if (index !== -1) {
-      state.reports[index].tableRowEl.remove();
-      state.reports.splice(index, 1);
-    }
-
-    return response;
+    // Add all reports in the model state
+    state.reportsDeleted = data;
   },
 
   hardDeleteReport: async (id, password) => {
@@ -129,15 +124,20 @@ const DB = {
     return response;
   },
 
-  getAllSoftDeletedReports: async () => {
-    // API request to get all reports from the database
-    const {
-      data: { data },
-    } = await api.v1.reports.getAllSoftDeletedReports();
-    console.log(data);
+  softDeleteReport: async (id) => {
+    // API request to soft delete a report from the database
+    const { response } = await api.v1.reports.softDeleteReport(id);
 
-    // Add all reports in the model state
-    state.reportsDeleted = data;
+    // Find & check if report is in the state object
+    const index = findObjectIndexById(state.reports, id, false);
+
+    // If found, remove the row element and report object
+    if (index !== -1) {
+      state.reports[index].tableRowEl.remove();
+      state.reports.splice(index, 1);
+    }
+
+    return response;
   },
 
   undoSoftDeleteReport: async (id) => {
@@ -273,14 +273,13 @@ const createReportObject = (report, form) => {
     call: {
       date: form.date.value.trim(),
       time: form.time.value.trim(),
-      dateTime: utils.formatDate(`${form.date.value.trim()} ${form.time.value.trim()}`).sharepoint,
       phone: form["phone-no-caller-id"].checked
         ? "No Caller ID"
         : form["phone-number"].value.trim(),
       status: form["status"].value.trim(),
     },
     store: {
-      number: form["store-number"].value.trim(),
+      numbers: [form["store-number"].value.trim()],
       employee: {
         name: form["store-employee"].value.trim(),
         isStoreManager: form["store-manager"].checked,
@@ -291,15 +290,15 @@ const createReportObject = (report, form) => {
     },
     incident: {
       title: form["incident-title"].value.trim(),
-      type: form["incident-type"].value.trim(),
+      types: [form["incident-type"].value.trim()],
       pos: form["incident-pos-number"].value.trim(),
       isProcedural: form["incident-procedural"].checked,
       error: form["incident-error-code"].value.trim(),
       transaction: form["transaction-issue"].checked
         ? {
-            type: form["transaction-type"].value.trim(),
+            types: [form["transaction-type"].value.trim()],
             number: form["transaction-number"].value.trim(),
-            isIRCreated: form["transaction-incident-report"].checked,
+            hasVarianceReport: form["transaction-variance-report"].checked,
           }
         : {},
       details: form["incident-details"].value.trim(),
@@ -322,8 +321,9 @@ const updateReport = (reportOrId, form) => {
   clone = createReportObject(clone, form);
   clone.updatedAt = new Date().toISOString();
   clone.updatedBy = state.user.username;
-  clone.isWebhookSent = false;
   clone.isDeleted = false;
+  clone.isWebhookSent = false;
+  clone.hasTriggeredWebhook = false;
 
   // Check validity of the clone. If not valid, an error will be thrown here.
   checkReportValidity(clone);
@@ -331,8 +331,9 @@ const updateReport = (reportOrId, form) => {
   // Update the report
   report.assignedTo = clone.assignedTo;
   report.isOnCall = clone.isOnCall;
-  report.isWebhookSent = clone.isWebhookSent;
   report.isDeleted = clone.isDeleted;
+  report.isWebhookSent = clone.isWebhookSent;
+  report.hasTriggeredWebhook = clone.hasTriggeredWebhook;
   report.tableRowEl = tableRowEl;
   report.call = clone.call;
   report.store = clone.store;

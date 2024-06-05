@@ -1,32 +1,32 @@
-export const getDashboard = (req, res) => {
+export const getDashboard = (_, res) => {
   res.status(200).render("dashboard", {
     title: "Dashboard",
     scriptPath: "/js/dashboard/dashboardController.js",
   });
 };
 
-export const getReports = (req, res) => {
+export const getReports = (_, res) => {
   res.status(200).render("reports", {
     title: "Reports",
     scriptPath: "/js/reports/reportController.js",
   });
 };
 
-export const getusers = (req, res) => {
+export const getUsers = (_, res) => {
   res.status(200).render("users", {
     title: "Users",
     scriptPath: "/js/users/userController.js",
   });
 };
 
-export const getAccount = (req, res) => {
+export const getAccount = (_, res) => {
   res.status(200).render("account", {
     title: "Your Account",
     scriptPath: "/js/account/accountController.js",
   });
 };
 
-export const getSignInForm = (req, res) => {
+export const getSignInForm = (_, res) => {
   res.status(200).render("auth", {
     title: "Sign In",
     scriptPath: "/js/auth/authController.js",
