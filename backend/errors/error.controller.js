@@ -15,10 +15,10 @@ const handleDuplicateFieldsDB = (error) => {
 };
 
 const handleJWTError = () =>
-  new GlobalError("Invalid token. Please sign in again!", 401);
+  new GlobalError("Invalid access token. Please sign in again.", 401);
 
 const handleTokenExpiredError = () =>
-  new GlobalError("Your token has expired please sign in again.", 401);
+  new GlobalError("Your access token has expired. Please sign in again.", 401);
 
 const handlePayloadTooLargeError = () =>
   new GlobalError("Your request payload is too large.", 413);
@@ -37,6 +37,8 @@ const sendErrorDev = (err, req, res) => {
       stack: err.stack,
     });
   }
+
+  console.error("ERROR 💥", err);
 
   // Render error to frontend
   return res.status(err.statusCode).render("error", {
@@ -66,10 +68,10 @@ const sendErrorProd = (err, req, res) => {
       });
     }
 
-    // Programming or other unknown error: don't leak error details
     // Log Error
     console.error("ERROR 💥", err);
 
+    // Programming or other unknown error: don't leak error details
     // Send generic message
     return res.status(500).json({
       status: "error",

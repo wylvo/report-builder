@@ -40,7 +40,7 @@ export const state = {
 // prettier-ignore
 export const findObjectIndexById = (array, targetObject, raiseErrorIfNotFound = true) => {
   const index = array.findIndex((object) =>
-    object.id === (typeof targetObject === "object" ? targetObject.id : targetObject)
+    String(object.id) === (typeof targetObject === "object" ? targetObject.id : targetObject)
   );
   if(index === -1 && raiseErrorIfNotFound)
     throw new TypeError(`Invalid target. Object index is undefined in provided array.`);

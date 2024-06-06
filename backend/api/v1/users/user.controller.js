@@ -13,14 +13,12 @@ export const filterObject = (obj, ...allowedFields) => {
   return newObj;
 };
 
-export const filterUserData = (
-  obj,
-  reports = undefined,
-  reportsDeleted = undefined
-) => {
+export const filterUserData = (obj) => {
   obj = filterObject(
     obj,
     "id",
+    "createdAt",
+    "updatedAt",
     "role",
     "active",
     "email",
@@ -29,8 +27,6 @@ export const filterUserData = (
     "username",
     "initials"
   );
-  if (reports) obj.reports = reports;
-  if (reportsDeleted) obj.reportsDeleted = reportsDeleted;
   return obj;
 };
 
@@ -41,22 +37,22 @@ export const getUserId = (req, res, next) => {
 
 export const getAllUsersFrontend = catchAsync(async (req, res, next) => {
   const frontend = true;
-  const users = await Users.all(frontend);
+  const { results, data } = await Users.all(frontend);
 
   res.status(200).json({
     status: "success",
-    results: users.length,
-    data: users,
+    results,
+    data,
   });
 });
 
 export const getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await Users.all();
+  const { results, data } = await Users.all();
 
   res.status(200).json({
     status: "success",
-    results: users.length,
-    data: users,
+    results,
+    data,
   });
 });
 
@@ -79,24 +75,24 @@ export const getUser = catchAsync(async (req, res, next) => {
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
 
-  const [
-    {
-      output: { report: rawJSON1 },
-    },
-    {
-      output: { report: rawJSON2 },
-    },
-  ] = await Promise.all([
-    Reports.createdBy(user.id),
-    Reports.softDeletedCreatedBy(user.id),
-  ]);
+  // const [
+  //   {
+  //     output: { report: rawJSON1 },
+  //   },
+  //   {
+  //     output: { report: rawJSON2 },
+  //   },
+  // ] = await Promise.all([
+  //   Reports.createdBy(user.id),
+  //   Reports.softDeletedCreatedBy(user.id),
+  // ]);
 
-  const reports = JSON.parse(rawJSON1);
-  const reportsDeleted = JSON.parse(rawJSON2);
+  // const reports = JSON.parse(rawJSON1);
+  // const reportsDeleted = JSON.parse(rawJSON2);
 
   res.status(200).json({
     status: "success",
-    data: filterUserData(user, reports, reportsDeleted),
+    data: filterUserData(user /*, reports, reportsDeleted*/),
   });
 });
 
@@ -105,11 +101,18 @@ export const validateUpdate = validateBody(checkSchema, Users.schema.update);
 export const updateUser = catchAsync(async (req, res, next) => {
   const id = req.params.id;
 
+  if (Number(id) !== req.body.id)
+    return next(
+      new GlobalError(
+        `Request body id value does match with the request parameter id value.`,
+        400
+      )
+    );
+
   const user = await Users.findById(id);
 
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
-  console.log(user);
 
   const userUpdated = await Users.update(req.body, user);
 

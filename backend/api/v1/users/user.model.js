@@ -104,7 +104,9 @@ export const Users = {
 
     const users = JSON.parse(user);
 
-    return users;
+    return !users
+      ? { results: 0, data: [] }
+      : { results: users.length, data: users };
   },
 
   // CREATE A NEW USER

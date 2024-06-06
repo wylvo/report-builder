@@ -55,9 +55,7 @@ const DB = {
 
     // API request to create a user in the database
     const {
-      data: {
-        data: [user],
-      },
+      data: { data: user },
     } = await api.v1.users.createUser(userObject);
 
     console.log(user);
@@ -70,9 +68,7 @@ const DB = {
 
   getUser: async (id) => {
     const {
-      data: {
-        data: [user],
-      },
+      data: { data: user },
     } = await api.v1.users.getUser(id);
 
     return user;
@@ -83,6 +79,7 @@ const DB = {
     const user = updateUserObject(id, form);
     const tableRowEl = user.tableRowEl;
     delete user.tableRowEl;
+
     if (!user.profilePictureURI) delete user.profilePictureURI;
 
     // API request to update a user from the database
@@ -112,9 +109,7 @@ const DB = {
   enableUser: async (id, userObject) => {
     // API request to enable a user from the database
     const {
-      data: {
-        data: [user],
-      },
+      data: { data: user },
     } = await api.v1.users.enableUser(id);
 
     // Update the status in the user object
@@ -126,9 +121,7 @@ const DB = {
   disableUser: async (id, userObject) => {
     // API request to disable a user from the database
     const {
-      data: {
-        data: [user],
-      },
+      data: { data: user },
     } = await api.v1.users.disableUser(id);
 
     // Update the status in the user object
@@ -144,9 +137,7 @@ const DB = {
 
     // API request to reset the password of an existing user from the database
     const {
-      data: {
-        data: [user],
-      },
+      data: { data: user },
     } = await api.v1.users.resetUserPassword(id, password, passwordConfirmation);
 
     return user;
@@ -184,6 +175,9 @@ const updateUserObject = function (userObjectOrId, form) {
   const user = state.users[index];
   const tableRowEl = user.tableRowEl;
   user.tableRowEl = {};
+
+  delete user.createdAt;
+  delete user.updatedAt;
 
   // Create a clone of the user object to update
   let clone = structuredClone(user);

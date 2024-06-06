@@ -91,6 +91,14 @@ export const validateUpdate = validateBody(
 export const updateReport = catchAsync(async (req, res, next) => {
   const id = req.params.id;
 
+  if (Number(id) !== req.body.id)
+    return next(
+      new GlobalError(
+        `Request body id value does match with the request parameter id value.`,
+        400
+      )
+    );
+
   const report = await Reports.findById(id);
 
   if (!report)

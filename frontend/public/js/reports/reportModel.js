@@ -11,7 +11,7 @@ import {
   findTabIndexByObjectId,
   initThemeInLocalStorage,
 } from "../model.js";
-import { DEFAULT_REPORT } from "../config.js";
+import { DEFAULT_REPORT_CREATE, DEFAULT_REPORT_UPDATE } from "../config.js";
 import api from "../api.js";
 import utils from "../utils.js";
 
@@ -19,12 +19,14 @@ import * as accountModel from "../account/accountModel.js";
 
 // 1st function to be ran by ./reportController.js
 const init = async () => {
-  utils.deepFreeze(DEFAULT_REPORT);
+  utils.deepFreeze(DEFAULT_REPORT_CREATE);
+  utils.deepFreeze(DEFAULT_REPORT_UPDATE);
+
   await Promise.all([
     DB.getReports(),
     DB.getAllSoftDeletedReports(),
     DB.synchonizeFormData(),
-    // accountModel.DB.getCurrentUserAccount(),
+    accountModel.DB.getCurrentUserAccount(),
   ]);
   state.version = await api.v1.version.getVersion();
   initThemeInLocalStorage();
@@ -58,7 +60,7 @@ const DB = {
     console.log(reportObject);
 
     // Check validity of the report object
-    checkReportValidity(reportObject);
+    checkReportValidity(DEFAULT_REPORT_CREATE, reportObject);
 
     // API request to create a report in the database
     const {
@@ -168,7 +170,7 @@ const DB = {
 };
 
 // Check validity of a report by looking at data types
-const checkReportValidity = (report) => {
+const checkReportValidity = (configObject, report) => {
   const missingKeys = [];
   const invalidTypes = [];
 
@@ -213,7 +215,7 @@ const checkReportValidity = (report) => {
   };
 
   // Traverse default report object, and compare data types with report object passed in parameter
-  utils.traverse(hasSameValueTypes, DEFAULT_REPORT, report);
+  utils.traverse(hasSameValueTypes, configObject, report);
 
   const hasMissingKeys = missingKeys.length > 0;
   const hasinvalidTypes = invalidTypes.length > 0;
@@ -266,9 +268,6 @@ const createReportObject = (report, form) => {
   return {
     assignedTo: form["assigned-to"].value.trim(),
     isOnCall: form.oncall.checked,
-    isDeleted: false,
-    isWebhookSent: report?.isWebhookSent ?? false,
-    hasTriggeredWebhook: report?.hasTriggeredWebhook ?? false,
     tableRowEl: report?.tableRowEl || {},
     call: {
       date: form.date.value.trim(),
@@ -326,7 +325,7 @@ const updateReport = (reportOrId, form) => {
   clone.hasTriggeredWebhook = false;
 
   // Check validity of the clone. If not valid, an error will be thrown here.
-  checkReportValidity(clone);
+  checkReportValidity(DEFAULT_REPORT_UPDATE, clone);
 
   // Update the report
   report.assignedTo = clone.assignedTo;

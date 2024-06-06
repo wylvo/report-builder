@@ -17,6 +17,8 @@ const CREATE = {
     },
   },
 
+  tableRowEl: { optional: true },
+
   assignedTo: {
     exists: { errorMessage: "required.", bail: true },
     notEmpty: { errorMessage: "can't be empty.", bail: true },
@@ -265,6 +267,30 @@ const CREATE = {
 // VALIDATION TO UPDATE A REPORT
 const UPDATE = {
   ...CREATE,
+  id: {
+    exists: { errorMessage: "required.", bail: true },
+    isString: {
+      errorMessage: "should not be a string but an integer.",
+      bail: true,
+      negated: true,
+    },
+    isBoolean: {
+      options: { strict: true },
+      errorMessage: "should not be a boolean but an integer.",
+      negated: true,
+    },
+    isArray: {
+      errorMessage: "should not be an array but an integer.",
+      bail: true,
+      negated: true,
+    },
+    isObject: {
+      errorMessage: "should not be an object but an integer.",
+      bail: true,
+      negated: true,
+    },
+    isInt: { errorMessage: "should be an integer.", bail: true },
+  },
   isDeleted: {
     exists: { errorMessage: "required.", bail: true },
     isBoolean: {
