@@ -91,9 +91,18 @@ const DB = {
     report.tableRowEl = undefined;
 
     // API request to update a report from the database
-    await api.v1.reports.updateReport(id, report);
+    const {
+      data: { data },
+    } = await api.v1.reports.updateReport(id, report);
 
     report.tableRowEl = tableRowEl;
+    report.version = data.version;
+    report.createdAt = data.createdAt;
+    report.updatedAt = data.updatedAt;
+    report.createdBy = data.createdBy;
+    report.updatedBy = data.updatedBy;
+
+    console.log("REPORT:", report);
 
     return report;
   },
@@ -318,8 +327,6 @@ const updateReport = (reportOrId, form) => {
 
   // Update the clone separately with new data from the form
   clone = createReportObject(clone, form);
-  clone.updatedAt = new Date().toISOString();
-  clone.updatedBy = state.user.username;
   clone.isDeleted = false;
   clone.isWebhookSent = false;
   clone.hasTriggeredWebhook = false;
@@ -337,6 +344,12 @@ const updateReport = (reportOrId, form) => {
   report.call = clone.call;
   report.store = clone.store;
   report.incident = clone.incident;
+
+  delete report.version;
+  delete report.createdAt;
+  delete report.createdBy;
+  delete report.updatedAt;
+  delete report.updatedBy;
 
   return report;
 };

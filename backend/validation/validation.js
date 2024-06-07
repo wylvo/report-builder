@@ -14,7 +14,7 @@ export const validateBody = (checkSchema, schemaToApply, doCheckExact = true, er
     ? await checkExact(checkSchema(schemaToApply, ["body"]), {
         message: (fields) => {
           const [field] = fields;
-          return `Unknown field '${field.path}' in request ${field.location} with value '${field.value}'`;
+          return `Unknown field '${field.path}' in request ${field.location} with value '${field.value}'.`;
         },
       }).run(req)
     : await checkSchema(schemaToApply, ["body"]).run(req);
