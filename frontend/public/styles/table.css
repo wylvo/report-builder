@@ -119,7 +119,7 @@ Child Views: reportTableView.js & userTableView.js
 .table-wrapper {
   overflow-y: auto;
   overflow-x: hidden;
-  max-height: 202rem;
+  max-height: 179.7rem;
 }
 
 .table-content {

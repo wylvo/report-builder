@@ -210,6 +210,7 @@ export const Reports = {
   // prettier-ignore
   async create(body, createdByAndUpdatedBy, assignedTo, transaction) {
     const { NVarChar, VarChar, Int, Bit, Date, Time } = mssqlDataTypes;
+    let reportHasTransaction = true;
 
     body.version = config.version;
     // Same user id for created by and updated by
@@ -219,7 +220,8 @@ export const Reports = {
     body.call.dateTime = dateMSSharePoint(
       `${body.call.date} ${body.call.time}`
     );
-    if (!body.incident.transaction.types) body.incident.transaction = {};
+    if (!body.incident.transaction.types) 
+      (body.incident.transaction = {}), (reportHasTransaction = false);
 
     const reportCreate = mssql(transaction).request;
 
@@ -269,6 +271,7 @@ export const Reports = {
       .execute("api_v1_reports_getById");
       
     const reportCreated = JSON.parse(rawJSON);
+    reportHasTransaction === false ? reportCreated.incident.transaction = {} : null;
 
     return reportCreated;
   },
@@ -277,6 +280,7 @@ export const Reports = {
   // prettier-ignore
   async update(body, report, updatedBy, transaction) {
     const { NVarChar, VarChar, Int, Bit, Date, Time } = mssqlDataTypes;
+    let reportHasTransaction = true;
 
     body.version = config.version;
     body.createdBy = report.createdBy;
@@ -285,7 +289,8 @@ export const Reports = {
       body.call.dateTime = dateMSSharePoint(
         `${body.call.date} ${body.call.time}`
       );
-    if (!body.incident.transaction.types) body.incident.transaction = {};
+    if (!body.incident.transaction.types)
+      (body.incident.transaction = {}), (reportHasTransaction = false);
     
     const reportUpdate = mssql(transaction).request;
 
@@ -339,6 +344,7 @@ export const Reports = {
       .execute("api_v1_reports_getById");
 
     const reportUpdated = JSON.parse(rawJSON);
+    reportHasTransaction === false ? reportUpdated.incident.transaction = {} : null;
 
     return reportUpdated;
   },

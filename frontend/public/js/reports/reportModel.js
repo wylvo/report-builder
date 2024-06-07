@@ -88,21 +88,28 @@ const DB = {
     // Update a report object
     const report = updateReport(id, form);
     const tableRowEl = report.tableRowEl;
+
     report.tableRowEl = undefined;
+    delete report.version;
+    delete report.createdAt;
+    delete report.createdBy;
+    delete report.updatedAt;
+    delete report.updatedBy;
 
     // API request to update a report from the database
     const {
-      data: { data },
+      data: { data: reportUpdated },
     } = await api.v1.reports.updateReport(id, report);
 
     report.tableRowEl = tableRowEl;
-    report.version = data.version;
-    report.createdAt = data.createdAt;
-    report.updatedAt = data.updatedAt;
-    report.createdBy = data.createdBy;
-    report.updatedBy = data.updatedBy;
-
-    console.log("REPORT:", report);
+    report.version = reportUpdated.version;
+    report.createdAt = reportUpdated.createdAt;
+    report.updatedAt = reportUpdated.updatedAt;
+    report.createdBy = reportUpdated.createdBy;
+    report.updatedBy = reportUpdated.updatedBy;
+    report.call = reportUpdated.call;
+    report.store = reportUpdated.store;
+    report.incident = reportUpdated.incident;
 
     return report;
   },
@@ -112,7 +119,6 @@ const DB = {
     const {
       data: { data },
     } = await api.v1.reports.getAllSoftDeletedReports();
-    console.log(data);
 
     // Add all reports in the model state
     state.reportsDeleted = data;
@@ -171,8 +177,6 @@ const DB = {
     const {
       data: { data },
     } = await api.v1.formData.synchonizeFormData();
-
-    console.log(data.selects);
 
     state.formData.selects = data.selects;
   },
@@ -344,12 +348,6 @@ const updateReport = (reportOrId, form) => {
   report.call = clone.call;
   report.store = clone.store;
   report.incident = clone.incident;
-
-  delete report.version;
-  delete report.createdAt;
-  delete report.createdBy;
-  delete report.updatedAt;
-  delete report.updatedBy;
 
   return report;
 };
