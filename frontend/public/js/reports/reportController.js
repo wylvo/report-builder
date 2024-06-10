@@ -345,38 +345,35 @@ const controlRenderAllReports = function () {
 
 const controlImportReports = async function (rawJSON) {
   try {
-    const reportsArray = JSON.parse(rawJSON);
+    const unmigratedReports = JSON.parse(rawJSON);
     let errors = false;
 
     // Check if raw JSON is an array and is not empty
-    if (!Array.isArray(reportsArray) || reportsArray.length === 0)
+    if (!Array.isArray(unmigratedReports) || unmigratedReports.length === 0)
       return notificationsView.warning(
         "JSON can't be empty, and has to be enclosed by an array -> []"
       );
 
+    const migratedReports = await model.DB.migrateReports(unmigratedReports);
+
     // Check report validity of each values inside the non-empty array
-    reportsArray.forEach((report, i) => {
+    migratedReports.forEach((report, i) => {
       try {
-        REPORTS.checkReportValidity(report);
+        model.checkReportValidity(model.DEFAULT_REPORT_IMPORT, report);
       } catch (error) {
         errors = true;
-        notificationsView.error(`Report #${i + 1}: ${error.message}`);
+        notificationsView.error(`Report ${i + 1}: ${error.message}`);
       }
     });
 
     if (errors) return;
 
-    // prettier-ignore
-    // Filter report objects with duplicate "id" values
-    const uniqueReportsArray = reportsArray.filter((value, i, array) =>
-      i === array.findIndex((obj) => obj.id === value.id));
+    const reportIds = await model.DB.importReports(migratedReports);
 
-    console.log(uniqueReportsArray);
-
-    await model.DB.importReports(uniqueReportsArray);
+    console.log(reportIds);
 
     notificationsView.import(
-      `Report(s) successfully imported: ${uniqueReportsArray.length}`
+      `Report(s) successfully imported: ${reportIds.length}`
     );
     modalView.closeModal();
   } catch (error) {

@@ -184,7 +184,7 @@ class ReportTabsView extends TabsView {
             </div>
 
             <!-- STORE DISTRICT MANAGER, DM CONTACTED -->
-            <div class="grid columns-37-37-25">
+            <div class="grid">
               <div class="form-grouping-col gc-span-2">
                 <select 
                   id="store-dm_${index}" 
@@ -199,17 +199,6 @@ class ReportTabsView extends TabsView {
                   <option value="">(None)</option>
                 </select>
                 <label for="store-dm_${index}">District Manager:</label>
-              </div>
-              <div class="form-grouping-col gc-3 self-end">
-                <label for="store-dm-contacted_${index}">DM Contacted</label>
-                <label class="switch">
-                  <input
-                    type="checkbox"
-                    id="store-dm-contacted_${index}"
-                    name="store-dm-contacted"
-                  />
-                  <span class="slider"></span>
-                </label>
               </div>
             </div>
           </div>

@@ -36,7 +36,7 @@ if (process.env.NODE_ENV === "development") {
 // Limit requests to the API
 const limiter = rateLimit({
   max: config.rateLimter.maxNumberOfRequests,
-  windowMs: config.rateLimter.windowMiliseconds,
+  windowMs: config.rateLimter.windowMilliseconds,
   message: config.rateLimter.message,
 });
 app.use("/api", limiter);

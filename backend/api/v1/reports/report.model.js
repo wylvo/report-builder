@@ -237,7 +237,6 @@ export const Reports = {
     reportCreate.input("callStatus", VarChar, body.call.status);
     reportCreate.input("storeEmployeeName", VarChar, body.store.employee.name);
     reportCreate.input("storeEmployeeIsStoreManager", Bit, body.store.employee.isStoreManager);
-    reportCreate.input("storeDistrictManagerIsContacted", Bit, body.store.districtManager.isContacted);
     reportCreate.input("incidentTitle", VarChar, body.incident.title);
     reportCreate.input("incidentPos", VarChar, body.incident.pos);
     reportCreate.input("incidentIsProcedural", Bit, body.incident.isProcedural);
@@ -310,7 +309,6 @@ export const Reports = {
     reportUpdate.input("callStatus", VarChar, body.call.status);
     reportUpdate.input("storeEmployeeName", VarChar, body.store.employee.name);
     reportUpdate.input("storeEmployeeIsStoreManager", Bit, body.store.employee.isStoreManager);
-    reportUpdate.input("storeDistrictManagerIsContacted", Bit, body.store.districtManager.isContacted);
     reportUpdate.input("incidentTitle", VarChar, body.incident.title);
     reportUpdate.input("incidentPos", VarChar, body.incident.pos);
     reportUpdate.input("incidentIsProcedural", Bit, body.incident.isProcedural);
@@ -437,7 +435,6 @@ export const Reports = {
       reportImport.input("callStatus", VarChar, report.call.status);
       reportImport.input("storeEmployeeName", VarChar, report.store.employee.name);
       reportImport.input("storeEmployeeIsStoreManager", Bit, report.store.employee.isStoreManager);
-      reportImport.input("storeDistrictManagerIsContacted", Bit, report.store.districtManager.isContacted);
       reportImport.input("incidentTitle", VarChar, report.incident.title);
       reportImport.input("incidentPos", VarChar, report.incident.pos);
       reportImport.input("incidentIsProcedural", Bit, report.incident.isProcedural);

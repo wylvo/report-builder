@@ -25,19 +25,23 @@ export const migrateReport = catchAsync(async (req, res, next) => {
       ? (name = "carah.malcolm")
       : null;
 
-  reports.forEach((report) => {
+  reports.forEach((report, i) => {
     delete report.id;
     delete report.version;
 
     const cDT = report.createdDateTime;
-    const lMDT = report.lastModifiedDateTime;
+    const lMDT = report.lastModifiedDateTime || report.lastModified;
     report.createdAt = cDT;
-    report.updatedAt = lMDT;
+    report.updatedAt = lMDT ? lMDT : report.createdAt;
     delete report.createdDateTime;
     delete report.lastModifiedDateTime;
+    delete report.lastModified;
 
     report.createdBy = nameToUsername(report.createdBy);
-    report.updatedBy = nameToUsername(report.updatedBy);
+    report.updatedBy = report.updatedBy
+      ? nameToUsername(report.updatedBy)
+      : report.createdBy;
+
     report.assignedTo = report.tech.username;
     report.isOnCall = report.tech.isOnCall;
 
@@ -47,8 +51,7 @@ export const migrateReport = catchAsync(async (req, res, next) => {
     report.store.numbers = [sN];
     delete report.store.number;
 
-    delete report.store.districtManager.name;
-    delete report.store.districtManager.username;
+    delete report.store.districtManager;
 
     delete report.incident.date;
     delete report.incident.time;
@@ -70,7 +73,8 @@ export const migrateReport = catchAsync(async (req, res, next) => {
     delete report.incident.transaction.isIRCreated;
 
     delete report.tech;
-    delete report.tableRowEl;
+    if (i === 155) console.log(report);
+    // delete report.tableRowEl;
   });
 
   res.status(201).json({

@@ -82,9 +82,6 @@ const CREATE = {
    *      "name": "John Doe",
    *      "isStoreManager": false
    *    }
-   *    "districtManager":  {
-   *      "isContacted": false
-   *    }
    *  }
    ******************************************/
   store: {
@@ -119,17 +116,6 @@ const CREATE = {
     },
   },
   "store.employee.isStoreManager": {
-    exists: { errorMessage: "required.", bail: true },
-    isBoolean: {
-      options: { strict: true },
-      errorMessage: "should be a boolean (true or false).",
-    },
-  },
-  "store.districtManager": {
-    exists: { errorMessage: "required.", bail: true },
-    isObject: { errorMessage: "has to be an object enclosed by {}." },
-  },
-  "store.districtManager.isContacted": {
     exists: { errorMessage: "required.", bail: true },
     isBoolean: {
       options: { strict: true },
@@ -396,9 +382,6 @@ const IMPORT = {
   "*.store.employee": UPDATE["store.employee"],
   "*.store.employee.name": UPDATE["store.employee.name"],
   "*.store.employee.isStoreManager": UPDATE["store.employee.isStoreManager"],
-  "*.store.districtManager": UPDATE["store.districtManager"],
-  "*.store.districtManager.isContacted":
-    UPDATE["store.districtManager.isContacted"],
 
   "*.incident": UPDATE.incident,
   "*.incident.title": UPDATE["incident.title"],

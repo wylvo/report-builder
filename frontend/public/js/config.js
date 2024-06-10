@@ -36,24 +36,22 @@ export const DEFAULT_REPORT_CREATE = Object.freeze({
     status: "string",
   },
   store: {
-    numbers: ["string"],
+    numbers: [],
     employee: {
       name: "string",
       isStoreManager: false,
     },
-    districtManager: {
-      isContacted: false,
-    },
   },
   incident: {
     title: "string",
-    types: ["string"],
+    types: [],
     pos: "string",
     isProcedural: false,
     error: "string",
 
     // Can be empty object
     transaction: {
+      types: [],
       number: "string",
       hasVarianceReport: false,
     },
@@ -62,40 +60,16 @@ export const DEFAULT_REPORT_CREATE = Object.freeze({
 });
 
 export const DEFAULT_REPORT_UPDATE = Object.freeze({
-  assignedTo: "string",
-  isOnCall: false,
+  ...DEFAULT_REPORT_CREATE,
   isDeleted: false,
   isWebhookSent: false,
   hasTriggeredWebhook: false,
-  tableRowEl: {},
-  call: {
-    date: "string",
-    time: "string",
-    phone: "string",
-    status: "string",
-  },
-  store: {
-    numbers: ["string"],
-    employee: {
-      name: "string",
-      isStoreManager: false,
-    },
-    districtManager: {
-      isContacted: false,
-    },
-  },
-  incident: {
-    title: "string",
-    types: ["string"],
-    pos: "string",
-    isProcedural: false,
-    error: "string",
+});
 
-    // Can be empty object
-    transaction: {
-      number: "string",
-      hasVarianceReport: false,
-    },
-    details: "string",
-  },
+export const DEFAULT_REPORT_IMPORT = Object.freeze({
+  ...DEFAULT_REPORT_UPDATE,
+  updatedBy: "string",
+  createdBy: "string",
+  createdAt: "string",
+  updatedAt: "string",
 });

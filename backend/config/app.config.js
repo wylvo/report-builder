@@ -26,7 +26,7 @@ const config = {
   },
   rateLimter: {
     maxNumberOfRequests: 100, // Max number of requests before a client is restricted to make another request
-    windowMiliseconds: 30000, // How long before a client is eligible to make another request
+    windowMilliseconds: 30000, // How long before a client is eligible to make another request in milliseconds
     message: "Too many request from this IP, please try again later!",
   },
   request: {

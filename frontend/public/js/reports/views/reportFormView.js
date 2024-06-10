@@ -170,11 +170,6 @@ export class ReportFormView extends FormView {
 
     selects.get("store-dm").value = report.store.districtManager.username;
 
-    report.store.districtManager.isContacted &&
-    !checkBoxes.get("store-dm-contacted").checked
-      ? (checkBoxes.get("store-dm-contacted").checked = true)
-      : (checkBoxes.get("store-dm-contacted").checked = false);
-
     // Incident Details Accordion
     fields.get("incident-title").value = report.incident.title;
     selects.get("incident-type").value = report.incident.types;

@@ -152,7 +152,7 @@ export default class ModalView extends NotificationsView {
     this._contentText = `
       <p>Do you really want to delete the following ${dataFill.type}?</p><br>
       <p><strong>${dataFill.content.escapeHTML()}</strong><br>
-      ${dataFill.id.escapeHTML()}</p>
+      ${String(dataFill.id).escapeHTML()}</p>
     `;
     this.#btnConfirmText = "Yes, Delete";
     this.#btnCancelText = "No, Cancel";
@@ -167,7 +167,7 @@ export default class ModalView extends NotificationsView {
     this._contentText = `
       <p>Do you really want to delete the following report?</p><br>
       <p><strong>${report.incident.title.escapeHTML()}</strong><br>
-      ${report.id.escapeHTML()}</p>
+      ${String(report.id).escapeHTML()}</p>
     `;
     this.#btnConfirmText = "Yes, Delete";
     this.#btnConfirmAltText = "Yes, HARD Delete";
@@ -188,7 +188,7 @@ export default class ModalView extends NotificationsView {
     this._contentText = `
       <p>Recover the following report?</p><br>
       <p><strong>${dataFill.content.escapeHTML()}</strong><br>
-      ${dataFill.id.escapeHTML()}</p>
+      ${String(dataFill.id).escapeHTML()}</p>
     `;
     this.#btnConfirmText = "Yes, Undo Delete";
     this.#btnCancelText = "No, Cancel";

@@ -46,9 +46,6 @@ export const setAdaptiveCard = (report) => {
     ? "Yes"
     : "No";
   const storeDMName = report.store.districtManager.name;
-  const isStoreDMContacted = report.store.districtManager.isContacted
-    ? "Yes"
-    : "No";
 
   // Incident Details
   const incidentTitle = report.incident.title;
@@ -375,7 +372,7 @@ export const setAdaptiveCard = (report) => {
                         },
                         {
                           "title": "DM Contacted:",
-                          "value": `${isStoreDMContacted}`
+                          "value": "REMOVED"
                         }
                       ]
                     }

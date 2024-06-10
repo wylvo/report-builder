@@ -11,7 +11,11 @@ import {
   findTabIndexByObjectId,
   initThemeInLocalStorage,
 } from "../model.js";
-import { DEFAULT_REPORT_CREATE, DEFAULT_REPORT_UPDATE } from "../config.js";
+import {
+  DEFAULT_REPORT_CREATE,
+  DEFAULT_REPORT_UPDATE,
+  DEFAULT_REPORT_IMPORT,
+} from "../config.js";
 import api from "../api.js";
 import utils from "../utils.js";
 
@@ -19,8 +23,9 @@ import * as accountModel from "../account/accountModel.js";
 
 // 1st function to be ran by ./reportController.js
 const init = async () => {
-  utils.deepFreeze(DEFAULT_REPORT_CREATE);
-  utils.deepFreeze(DEFAULT_REPORT_UPDATE);
+  [DEFAULT_REPORT_CREATE, DEFAULT_REPORT_UPDATE, DEFAULT_REPORT_IMPORT].forEach(
+    (object) => utils.deepFreeze(object)
+  );
 
   await Promise.all([
     DB.getReports(),
@@ -44,13 +49,6 @@ const DB = {
     state.reports = data;
 
     return data;
-  },
-
-  importReports: async (uniqueReportsArray) => {
-    for (const report of uniqueReportsArray) {
-      // API request to create a report in the database
-      await api.v1.reports.createReport(report);
-    }
   },
 
   createReport: async (tabReport, form) => {
@@ -173,6 +171,22 @@ const DB = {
     return response;
   },
 
+  importReports: async (reports) => {
+    const {
+      data: { data },
+    } = await api.v1.reports.import().importReports(reports);
+
+    return data;
+  },
+
+  migrateReports: async (reports) => {
+    const {
+      data: { data },
+    } = await api.v1.reports.migrate().migrateReports(reports);
+
+    return data;
+  },
+
   synchonizeFormData: async () => {
     const {
       data: { data },
@@ -192,7 +206,8 @@ const checkReportValidity = (configObject, report) => {
     const target = typeof currentObject === "undefined" ? "root" : currentObject;
 
     // If the target object does not exist, throw an error. (For nested objects)
-    if (typeof targetObject === "undefined") throw new Error(`Failed to validate report. The "${target}" object was not found.`)
+    if (typeof targetObject === "undefined")
+      throw new Error(`Failed to validate report. The "${target}" ${Array.isArray(target) ? "array" : "object"} was not found.`)
 
     // Key Names. Sort by alphabetical order to compare them
     const defaultKeys = Object.keys(defaultObject).sort();
@@ -296,9 +311,6 @@ const createReportObject = (report, form) => {
         name: form["store-employee"].value.trim(),
         isStoreManager: form["store-manager"].checked,
       },
-      districtManager: {
-        isContacted: form["store-dm-contacted"].checked,
-      },
     },
     incident: {
       title: form["incident-title"].value.trim(),
@@ -394,6 +406,9 @@ export {
   findObjectById,
   findObjectIndexById,
   findTabIndexByObjectId,
+
+  // from -> ../config.js
+  DEFAULT_REPORT_IMPORT,
 
   // from this local file -> ./reportModel.js
   DB,

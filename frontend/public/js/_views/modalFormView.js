@@ -73,9 +73,6 @@ export default class ModalFormView extends ModalView {
     const replaceElement = false;
     const headerText = "Import Reports";
     const formHtml = `
-      <div class="modal-content">
-        <p>Duplicate reports will be filtered out by report id. If there are duplicate report ids, only the first duplicate report will be kept.</p>
-      </div>
       <form class="form" id="form-modal">
         <!-- REPORTS RAW JSON -->
         <div class="form-grouping-col">

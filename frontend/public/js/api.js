@@ -66,6 +66,26 @@ export default {
       async undoSoftDeleteReport(id) {
         return await fetchJSON(`${this.url}/${id}/softDeleteUndo`, "PUT", {});
       },
+
+      import() {
+        const url = `${this.url}/import`;
+
+        return {
+          async importReports(reports) {
+            return await fetchJSON(url, "POST", reports);
+          },
+        };
+      },
+
+      migrate() {
+        const url = `${this.url}/migrate`;
+
+        return {
+          async migrateReports(reports) {
+            return await fetchJSON(url, "POST", reports);
+          },
+        };
+      },
     },
 
     users: {
