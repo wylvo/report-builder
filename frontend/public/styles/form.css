@@ -299,7 +299,7 @@ input:checked + .slider:before {
   gap: 1.6rem;
 }
 
-.form-btn {
+.tabs-forms .form-btn {
   display: flex;
   align-items: center;
   justify-content: center;

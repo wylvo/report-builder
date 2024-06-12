@@ -178,7 +178,6 @@ export const Reports = {
       output: { report: rawJSON },
     } = await mssql()
       .request.input("id", Int, report.id)
-      .output("report", NVarChar)
       .execute("api_V1_reports_softDeleteUndoById");
 
     const reportUpdated = JSON.parse(rawJSON);

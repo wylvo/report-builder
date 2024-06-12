@@ -9,6 +9,10 @@
     font-size: 1.6rem;
   }
 
+  select {
+    padding: 0.8rem;
+  }
+
   input[class="time"]::-webkit-calendar-picker-indicator {
     transform: translateX(-650%);
   }
@@ -43,7 +47,7 @@
   }
 
   .table-wrapper {
-    max-height: 193rem;
+    max-height: 175rem;
   }
 
   .table-row {

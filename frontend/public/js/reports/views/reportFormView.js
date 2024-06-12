@@ -123,6 +123,9 @@ export class ReportFormView extends FormView {
     this._btnSubmit.children[1].textContent = "Create Report";
     this._btnSubmit.firstElementChild.firstElementChild.setAttribute("href", "/img/icons.svg#icon-save");
 
+    if (this._btnSubmit.children[2]) this._btnSubmit.children[2].remove();
+    if (this._btnTeams.children[2]) this._btnTeams.children[2].remove();
+
     this._checkBoxes.get("phone-no-caller-id").checked = false;
     this._fields.get("phone-number").disabled = false;
 
@@ -168,7 +171,7 @@ export class ReportFormView extends FormView {
       ? (checkBoxes.get("store-manager").checked = true)
       : (checkBoxes.get("store-manager").checked = false);
 
-    selects.get("store-dm").value = report.store.districtManager.username;
+    selects.get("store-dm").value = report.store.districtManagers[0].username;
 
     // Incident Details Accordion
     fields.get("incident-title").value = report.incident.title;

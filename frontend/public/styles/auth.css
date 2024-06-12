@@ -108,12 +108,12 @@ header {
   border-color: var(--on-background);
 }
 
-#auth .form-btn {
+#auth .form-btn.auth {
   margin-top: 2.4rem;
   align-self: center;
 }
 
-#auth .form-btn button {
+#auth .form-btn.auth button {
   padding: 1.2rem 4.8rem;
   border: 0.2rem solid transparent;
   color: var(--fields-background-color);
@@ -121,13 +121,13 @@ header {
   transition: all 0.3s ease;
 }
 
-#auth .form-btn button:hover {
+#auth .form-btn.auth button:hover {
   background-color: var(--fields-background-color);
   color: var(--fields-on-background);
   border: 0.2rem solid var(--fields-on-background);
 }
 
-#auth .form-btn button:active {
+#auth .form-btn.auth button:active {
   scale: 0.95;
 }
 

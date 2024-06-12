@@ -37,21 +37,28 @@ export const synchonizeReportValidation = catchAsync(async (req, res, next) => {
   next();
 });
 
-const getFormDataSelectionOptions = async (type = "all") => {
-  const {
-    recordset: [formData],
-  } = await mssql().request.query(FormData.query.getSelectionOptions(type));
-
-  return formData;
-};
-
 export const updateFormDataConfig = async () => {
   const {
     storeNumbers,
     districtManagers,
     incidentTypes,
     incidentTransactionTypes,
-  } = await getFormDataSelectionOptions();
+    users,
+  } = await FormData.all();
+
+  // const [
+  //   storeNumbers,
+  //   districtManagers,
+  //   { incidentTypes: incidentTypes },
+  //   { incidentTransactionTypes: incidentTransactionTypes },
+  //   users,
+  // ] = await Promise.all([
+  //   FormData.storeNumbers(),
+  //   FormData.districtManagers(),
+  //   FormData.incidentTypes(),
+  //   FormData.incidentTransactionTypes(),
+  //   FormData.activeUsersByRoleUser(),
+  // ]);
 
   const other = "Other";
 
@@ -66,6 +73,7 @@ export const updateFormDataConfig = async () => {
   config.validation.selects.districtManagers = districtManagers;
   config.validation.selects.incidentTypes = incidentTypes;
   config.validation.selects.incidentTransactionTypes = incidentTransactionTypes;
+  config.validation.selects.users = users;
 
   return config.validation;
 };

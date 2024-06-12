@@ -108,7 +108,11 @@ class ReportTableView extends TableView {
       </td>
       <td data-cell="Store"><div>${report.store.numbers.join(", ")}</div></td>
       <td data-cell="Employee"><div>${report.store.employee.name}</div></td>
-      <td data-cell="DM"><div>${report.store.districtManager.name.join(", ")}</div></td>
+      <td data-cell="DM">
+        <div>
+          ${report.store.districtManagers.map(dm => dm.fullName).join(", ")}
+        </div>
+      </td>
       <td data-cell="Type"><div>${report.incident.types.join(", ")}</div></td>
       <td data-cell="Procedural">
         <div><p ${isProcedural.class}>${isProcedural.text}</p></div>

@@ -1,75 +1,76 @@
+import { mssql, mssqlDataTypes } from "../router.js";
+const { NVarChar, Int } = mssqlDataTypes;
+
 export const FormData = {
-  query: {
-    getSelectionOptions(type = "all") {
-      return `
-        SELECT
-          ${
-            type === "all"
-              ? this.allSelectionOptions()
-              : type === "storeNumbers"
-              ? this.storeNumbersSelectionOptions
-              : type === "districtManagers"
-              ? this.districtManagersSelectionOptions
-              : type === "incidentTypes"
-              ? this.incidentTypesSelectionOptions
-              : type === "incidentTransactionTypes"
-              ? this.incidentTransactionTypesSelectionOptions
-              : this.allSelectionOptions()
-          }
-        FOR JSON PATH, WITHOUT_ARRAY_WRAPPER;
-      `;
-    },
+  async all() {
+    const {
+      output: { formData: rawJSON },
+    } = await mssql()
+      .request.output("formData", NVarChar)
+      .execute("api_v1_formData_getAll");
 
-    allSelectionOptions() {
-      return `
-        ${this.storeNumbersSelectionOptions},
-        ${this.districtManagersSelectionOptions},
-        ${this.incidentTypesSelectionOptions},
-        ${this.incidentTransactionTypesSelectionOptions}
-      `;
-    },
+    const formData = JSON.parse(rawJSON);
 
-    storeNumbersSelectionOptions: `
-      (
-        SELECT 
-          JSON_QUERY(CONCAT('["',STRING_AGG(JSON_VALUE(value, '$.number'), '","'),'"]'))
-        FROM (
-          SELECT value
-          FROM OPENJSON((SELECT number FROM stores FOR JSON PATH)) AS j
-        ) j
-      ) AS [storeNumbers]
-    `,
+    return formData;
+  },
 
-    districtManagersSelectionOptions: `
-      (
-        JSON_QUERY((
-          SELECT fullName, username
-          FROM districtManagers
-          FOR JSON PATH
-        ))
-      ) AS [districtManagers]
-    `,
+  async storeNumbers() {
+    const {
+      output: { formData: rawJSON },
+    } = await mssql()
+      .request.output("formData", NVarChar)
+      .execute("api_v1_formData_getStoreNumbers");
 
-    incidentTypesSelectionOptions: `
-      (
-        SELECT 
-          JSON_QUERY(CONCAT('["',STRING_AGG(JSON_VALUE(value, '$.type'), '","'),'"]'))
-        FROM (
-          SELECT value
-          FROM OPENJSON((SELECT type FROM incidentTypes FOR JSON PATH)) AS j
-        ) j
-      ) AS [incidentTypes]
-    `,
+    const formData = JSON.parse(rawJSON);
 
-    incidentTransactionTypesSelectionOptions: `
-      (
-        SELECT 
-          JSON_QUERY(CONCAT('["',STRING_AGG(JSON_VALUE(value, '$.type'), '","'),'"]'))
-        FROM (
-          SELECT value
-          FROM OPENJSON((SELECT type FROM incidentTransactionTypes FOR JSON PATH)) AS j
-        ) j
-      ) AS [incidentTransactionTypes]
-    `,
+    return formData;
+  },
+
+  async districtManagers() {
+    const {
+      output: { formData: rawJSON },
+    } = await mssql()
+      .request.output("formData", NVarChar)
+      .execute("api_v1_formData_getDistrictManagers");
+
+    const formData = JSON.parse(rawJSON);
+
+    return formData;
+  },
+
+  async incidentTypes() {
+    const {
+      output: { formData: rawJSON },
+    } = await mssql()
+      .request.output("formData", NVarChar)
+      .execute("api_v1_formData_getIncidentTypes");
+
+    const formData = JSON.parse(rawJSON);
+
+    return formData;
+  },
+
+  async incidentTransactionTypes() {
+    const {
+      output: { formData: rawJSON },
+    } = await mssql()
+      .request.output("formData", NVarChar)
+      .execute("api_v1_formData_getIncidentTransactionTypes");
+
+    const formData = JSON.parse(rawJSON);
+
+    return formData;
+  },
+
+  async activeUsersByRoleUser() {
+    const {
+      output: { formData: rawJSON },
+    } = await mssql()
+      .request.output("formData", NVarChar)
+      .execute("api_v1_formData_getActiveUsersByRoleUser");
+
+    const formData = JSON.parse(rawJSON);
+
+    return formData;
   },
 };

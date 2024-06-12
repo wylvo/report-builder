@@ -49,7 +49,7 @@ class ReportTabsView extends TabsView {
             <p class="report-oncall tag">ON-CALL</p>
           </div>
           <div>
-            <p class="data-id tag"></p>
+            <p>Report ID:<span class="data-id tag"></span></p>
           </div>
         </div>
 
@@ -386,7 +386,7 @@ class ReportTabsView extends TabsView {
             <p class="report-oncall tag">ON-CALL</p>
           </div>
           <div>
-            <p class="report-id tag"></p>
+            <p>Report ID:<span class="data-id tag"></span></p>
           </div>
         </div>
 

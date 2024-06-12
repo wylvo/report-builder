@@ -104,7 +104,9 @@ export default class View {
     const replacementHtml = {
       save: `<svg class="icons"><use href="/img/icons.svg#icon-save"></use></svg>`,
       update: `<svg class="icons"><use href="/img/icons.svg#icon-sync"></use></svg>`,
-      teams: `<svg class="icons"><use href="/img/icons.svg#icon-ms-teams"></use></svg>`
+      delete: `<svg class="icons"><use href="/img/icons.svg#icon-delete"></use></svg>`,
+      teams: `<svg class="icons"><use href="/img/icons.svg#icon-ms-teams"></use></svg>`,
+      table: ``
     };
 
     if (childrenIndex) targetEl.children[childrenIndex].replaceWith(this.htmlStringToElement(replacementHtml[icon]));

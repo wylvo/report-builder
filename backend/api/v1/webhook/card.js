@@ -45,7 +45,7 @@ export const setAdaptiveCard = (report) => {
   const isStoreEmployeeManager = report.store.employee.isStoreManager
     ? "Yes"
     : "No";
-  const storeDMName = report.store.districtManager.name;
+  const storeDMFullName = report.store.districtManagers.join(", ");
 
   // Incident Details
   const incidentTitle = report.incident.title;
@@ -352,7 +352,7 @@ export const setAdaptiveCard = (report) => {
                         },
                         {
                           "title": "DM:",
-                          "value": `${storeDMName}`
+                          "value": `${storeDMFullName}`
                         }
                       ]
                     }

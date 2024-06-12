@@ -44,6 +44,7 @@ const config = {
       storeNumbers: [],
       incidentTypes: [],
       incidentTransactionTypes: [],
+      users: [],
     },
     defaultProfilePicture: "/img/default_profile_picture.jpg",
   },
