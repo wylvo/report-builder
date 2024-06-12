@@ -134,24 +134,26 @@ export const Reports = {
     return password;
   },
 
-  // GET ALL REPORTS CREATED BY A USER
-  async createdBy(userId) {
+  // GET ALL REPORTS CREATED BY A USER, OR GET ALL SOFT DELETED REPORTS CREATED BY A USER
+  async createdBy(userId, softDeleted = false) {
     const { NVarChar, Int } = mssqlDataTypes;
 
-    return mssql()
+    const {
+      output: { report: rawJSON },
+    } = await mssql()
       .request.input("userId", Int, userId)
       .output("report", NVarChar)
-      .execute("api_v1_reports_getCreatedByUserId");
-  },
+      .execute(
+        softDeleted
+          ? "api_v1_reports_getCreatedByUserIdSoftDeleted"
+          : "api_v1_reports_getCreatedByUserId"
+      );
 
-  // GET ALL SOFT DELETED REPORTS CREATED BY A USER
-  async softDeletedCreatedBy(userId) {
-    const { NVarChar, Int } = mssqlDataTypes;
+    const reports = JSON.parse(rawJSON);
 
-    return mssql()
-      .request.input("userId", Int, userId)
-      .output("report", NVarChar)
-      .execute("api_v1_reports_getCreatedByUserIdSoftDeleted");
+    return !reports
+      ? { results: 0, data: [] }
+      : { results: reports.length, data: reports };
   },
 
   // SOFT DELETE SINGLE REPORT BY ID
@@ -221,6 +223,13 @@ export const Reports = {
     );
     if (!body.incident.transaction.types) 
       (body.incident.transaction = {}), (reportHasTransaction = false);
+
+    if (body.store.numbers.includes("*"))
+      body.store.numbers = config.validation.selects.storeNumbers.filter(sN => sN !== "*");
+    if (body.incident.types.includes("*"))
+      body.incident.types = config.validation.selects.incidentTypes.filter(iT => iT !== "*");
+    if (body.incident.transaction.types.includes("*"))
+      body.incident.transaction.types = config.validation.selects.incidentTransactionTypes.filter(iTT => iTT !== "*");
 
     const reportCreate = mssql(transaction).request;
 

@@ -20,6 +20,12 @@ router.put("/:id/softDelete", report.softDeleteReport);
 router.put("/:id/softDeleteUndo", report.undoSoftDeleteReport);
 router.get("/softDeleted", report.getAllSoftDeletedReports);
 
+router.get("/createdBy/:username", report.getAllReportsCreatedByUser);
+router.get(
+  "/createdBySoftDeleted/:username",
+  report.getAllReportsCreatedByUserSoftDeleted
+);
+
 /** ROUTES restricted to "user" role
  * /api/v1/reports      (GET & POST)
  * /api/v1/reports/:id  (GET & PUT)
@@ -42,7 +48,7 @@ router
     report.updateReport
   );
 
-// Handle report migration in a separate module
+// Handle report importation & report migration in a separate module
 router.use("/import", importRouter);
 router.use("/migrate", migrateRouter);
 

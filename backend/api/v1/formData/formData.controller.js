@@ -46,20 +46,6 @@ export const updateFormDataConfig = async () => {
     users,
   } = await FormData.all();
 
-  // const [
-  //   storeNumbers,
-  //   districtManagers,
-  //   { incidentTypes: incidentTypes },
-  //   { incidentTransactionTypes: incidentTransactionTypes },
-  //   users,
-  // ] = await Promise.all([
-  //   FormData.storeNumbers(),
-  //   FormData.districtManagers(),
-  //   FormData.incidentTypes(),
-  //   FormData.incidentTransactionTypes(),
-  //   FormData.activeUsersByRoleUser(),
-  // ]);
-
   const other = "Other";
 
   // If type includes "Other" push the element to the end of the array
@@ -68,6 +54,10 @@ export const updateFormDataConfig = async () => {
       ? elementArr.push(elementArr.splice(elementArr.indexOf(other), 1)[0])
       : elementArr
   );
+
+  storeNumbers.unshift("*");
+  incidentTypes.unshift("*");
+  incidentTransactionTypes.unshift("*");
 
   config.validation.selects.storeNumbers = storeNumbers;
   config.validation.selects.districtManagers = districtManagers;

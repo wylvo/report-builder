@@ -10,6 +10,7 @@ import {
 } from "./report.model.js";
 
 import { mssql, validateBody, catchAsync, GlobalError } from "../router.js";
+import { Users } from "../users/user.model.js";
 
 const { checkSchema } = new ExpressValidator({
   isNotEmptyArray,
@@ -223,6 +224,47 @@ export const undoSoftDeleteReport = async (req, res, next) => {
     data: reportUpdated,
   });
 };
+
+export const getAllReportsCreatedByUser = catchAsync(async (req, res, next) => {
+  const username = req.params.username;
+
+  const user = await Users.findByUsername(username);
+
+  if (!user)
+    return next(
+      new GlobalError(`User not found with username: ${username}.`, 404)
+    );
+
+  const { results, data } = await Reports.createdBy(user.id);
+
+  res.status(200).json({
+    status: "success",
+    results,
+    data,
+  });
+});
+
+export const getAllReportsCreatedByUserSoftDeleted = catchAsync(
+  async (req, res, next) => {
+    const username = req.params.username;
+
+    const user = await Users.findByUsername(username);
+
+    if (!user)
+      return next(
+        new GlobalError(`User not found with username: ${username}.`, 404)
+      );
+
+    const softDeleted = true;
+    const { results, data } = await Reports.createdBy(user.id, softDeleted);
+
+    res.status(200).json({
+      status: "success",
+      results,
+      data,
+    });
+  }
+);
 
 export { migrateReport } from "./migrate/migrate.controller.js";
 export {
