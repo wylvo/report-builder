@@ -22,13 +22,13 @@
     column-gap: 0.8rem;
   }
 
-  .now-btn .form-now-btn {
+  .now-btn .form-btn.now {
     position: absolute;
     right: 1%;
     bottom: 5%;
   }
 
-  .form-now-btn {
+  .form-btn.now {
     width: 12.8rem;
     height: 3.6rem;
   }
@@ -101,12 +101,12 @@
     padding: 0.8rem;
   }
 
-  .form-now-btn {
+  .form-btn.now {
     width: 12rem;
     height: 3.6rem;
   }
 
-  .now-btn .form-now-btn {
+  .now-btn .form-btn.now {
     right: 0.5%;
     bottom: 2.5%;
   }
@@ -144,10 +144,10 @@
     gap: 3.6rem;
   }
 
-  .form-paste-btn,
-  .form-copy-btn,
-  .form-new-btn,
-  .form-now-btn {
+  .form-btn.paste,
+  .form-btn.copy,
+  .form-btn.new,
+  .form-btn.now {
     padding: 1rem;
   }
 

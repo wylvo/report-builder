@@ -22,19 +22,19 @@ class UserTabsView extends TabsView {
             <h1>User Profile Card</h1>
           </div>
           <div class="form-action-btns">
-            <button type="button" class="form-copy-btn tooltip" id="form-copy-btn_${index}">
+            <button type="button" class="form-btn copy tooltip" id="form-copy-btn_${index}">
               <svg class="icons">
                 <use href="/img/icons.svg#icon-copy"></use>
               </svg>
               <span class="tooltiptext">Copy User</span>
             </button>
-            <button disabled type="button" class="form-paste-btn tooltip" id="form-paste-btn_${index}">
+            <button disabled type="button" class="form-btn paste tooltip" id="form-paste-btn_${index}">
               <svg class="icons">
                 <use href="/img/icons.svg#icon-paste"></use>
               </svg>
               <span class="tooltiptext">Paste User</span>
             </button>
-            <button type="button" class="form-new-btn tooltip" id="form-new-btn_${index}">
+            <button type="button" class="form-btn new tooltip" id="form-new-btn_${index}">
               <svg class="icons">
                 <use href="/img/icons.svg#icon-add"></use>
               </svg>
@@ -245,11 +245,11 @@ class UserTabsView extends TabsView {
 
         <!-- CALL TO ACTION BUTTONS -->
         <div class="grid columns-50-50 form-buttons">
-          <label for="form-submit-btn_${index}" class="cta-button">
+          <label for="form-submit-btn_${index}">
             <button
               type="submit"
               id="form-submit-btn_${index}"
-              class="form-submit-btn"
+              class="form-btn submit"
             >
               <svg class="icons">
                 <use href="/img/icons.svg#icon-save"></use>
@@ -258,11 +258,11 @@ class UserTabsView extends TabsView {
             </button>
           </label>
 
-          <label for="form-reset-password-btn_${index}" class="cta-button">
+          <label for="form-reset-password-btn_${index}">
             <button
               type="submit"
               id="form-reset-password-btn_${index}"
-              class="form-reset-password-btn"
+              class="form-btn reset-password"
               disabled
             >
               <p class="form-reset-password-btn-text" id="form-reset-password-btn-text_${index}">Reset User Password</p>

@@ -111,10 +111,10 @@ input[type="checkbox"]:disabled + span::before {
   position: relative;
 }
 
-.now-btn .form-now-btn {
+.now-btn .form-btn.now {
   position: absolute;
-  right: 1%;
-  bottom: 3%;
+  right: 0;
+  bottom: 0.034rem;
   z-index: 1;
 }
 
@@ -299,10 +299,7 @@ input:checked + .slider:before {
   gap: 1.6rem;
 }
 
-.form-paste-btn,
-.form-copy-btn,
-.form-new-btn,
-.form-now-btn {
+.form-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -316,71 +313,9 @@ input:checked + .slider:before {
   transition: all 0.4s;
 }
 
-.form-now-btn {
-  width: 12.8rem;
-  height: 4rem;
-}
-
-.form-paste-btn:hover,
-.form-copy-btn:hover,
-.form-new-btn:hover,
-.form-now-btn:hover {
-  filter: brightness(135%);
-}
-
-.form-paste-btn:active,
-.form-copy-btn:active,
-.form-new-btn:active,
-.form-now-btn:active {
-  scale: 0.9;
-}
-
-.form-copy-btn:disabled,
-.form-paste-btn:disabled,
-.form-new-btn:disabled,
-.form-now-btn:disabled,
-.form-submit-btn:disabled,
-.form-reset-password-btn:disabled,
-.form-teams-btn:disabled,
-.form-paste-btn:disabled .icons,
-.form-copy-btn:disabled .icons,
-.form-new-btn:disabled .icons,
-.form-now-btn:disabled .icons,
-.form-submit-btn:disabled .icons,
-.form-reset-password-btn .icons,
-.form-teams-btn:disabled .icons {
-  scale: 1;
-  background-color: var(--buttons-disabled-background-color);
-  color: var(--buttons-disabled-on-background);
-  fill: var(--buttons-disabled-on-background);
-  cursor: not-allowed;
-}
-
-.form-copy-btn:disabled:hover,
-.form-paste-btn:disabled:hover,
-.form-new-btn:disabled:hover,
-.form-now-btn:disabled:hover {
-  filter: brightness(100%);
-}
-
-.form-copy-btn:disabled:active,
-.form-paste-btn:disabled:active,
-.form-new-btn:disabled:active,
-.form-now-btn:disabled:active,
-.form-submit-btn:disabled:active,
-.form-reset-password-btn:disabled:active,
-.form-teams-btn:disabled:active {
-  scale: 1;
-}
-
-.form-buttons {
-  font-size: 2.4rem;
-  justify-content: center;
-}
-
-.form-submit-btn,
-.form-reset-password-btn,
-.form-teams-btn {
+.form-btn.submit,
+.form-btn.ms-teams,
+.form-btn.reset-password {
   width: 100%;
   height: 100%;
 
@@ -399,30 +334,51 @@ input:checked + .slider:before {
   cursor: pointer;
 }
 
-.form-teams-btn {
+.form-btn.now {
+  width: 12.8rem;
+  height: 4rem;
+}
+
+.form-btn.submit,
+.form-btn.ms-teams {
   position: relative;
 }
 
-.form-submit-btn:hover,
-.form-reset-password-btn:hover,
-.form-teams-btn:hover {
+.form-btn:hover {
   filter: brightness(135%);
 }
 
-.form-submit-btn:active,
-.form-reset-password-btn:active,
-.form-teams-btn:active {
+.form-btn:active {
   scale: 0.95;
 }
 
-.form-submit-btn:disabled:hover,
-.form-reset-password-btn:disabled:hover,
-.form-teams-btn:disabled:hover {
+.form-btn.submit:disabled,
+.form-btn.ms-teams:disabled,
+.form-btn.reset-password:disabled,
+.form-btn:disabled,
+.form-btn.submit:disabled .icons,
+.form-btn.ms-teams:disabled .icons,
+.form-btn.reset-password:disabled .icons,
+.form-btn:disabled .icons {
+  scale: 1;
+  background-color: var(--buttons-disabled-background-color);
+  color: var(--buttons-disabled-on-background);
+  fill: var(--buttons-disabled-on-background);
+  cursor: not-allowed;
+}
+
+.form-btn:disabled:hover,
+.form-btn:disabled:active {
   filter: brightness(100%);
 }
 
-.form-teams-btn .status-success,
-.form-teams-btn .status-error {
+.form-buttons {
+  font-size: 2.4rem;
+  justify-content: center;
+}
+
+.form-btn .status-success,
+.form-btn .status-error {
   position: absolute;
   top: 0%;
   left: 100%;
@@ -436,15 +392,15 @@ input:checked + .slider:before {
   transform: translate(-50%, -50%);
 }
 
-.form-teams-btn .status-success,
-.form-teams-btn:disabled .status-success {
+.form-btn .icons.status-success,
+.form-btn:disabled .icons.status-success {
   background-color: var(--good-on-background);
   color: var(--default-on-background);
   fill: var(--default-on-background);
 }
 
-.form-teams-btn .status-error,
-.form-teams-btn:disabled .status-error {
+.form-btn .icons.status-error,
+.form-btn:disabled .icons.status-error {
   background-color: var(--attention-background-color-alt);
   color: var(--default-on-background);
   fill: var(--default-on-background);

@@ -28,13 +28,13 @@ export class ReportFormView extends FormView {
     this._tags = this._form.querySelectorAll(".tag");
 
     // Buttons
-    this._btnPaste = this._form.querySelector(".form-paste-btn");
-    this._btnCopy = this._form.querySelector(".form-copy-btn");
-    this._btnNew = this._form.querySelector(".form-new-btn");
-    this._btnNow = this._form.querySelector(".form-now-btn");
-    this._btnSubmit = this._form.querySelector(".form-submit-btn");
+    this._btnPaste = this._form.querySelector(".form-btn.paste");
+    this._btnCopy = this._form.querySelector(".form-btn.copy");
+    this._btnNew = this._form.querySelector(".form-btn.new");
+    this._btnNow = this._form.querySelector(".form-btn.now");
+    this._btnSubmit = this._form.querySelector(".form-btn.submit");
     this._btnSubmitText = this._form.querySelector(".form-submit-btn-text");
-    this._btnTeams = this._form.querySelector(".form-teams-btn");
+    this._btnTeams = this._form.querySelector(".form-btn.ms-teams");
 
     // Initialize default State
     this.#defaultState();

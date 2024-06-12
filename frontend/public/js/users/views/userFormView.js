@@ -30,12 +30,12 @@ export class UserFormView extends FormView {
     this._passwordConfirmation = this._fields.get("password-confirmation");
 
     // Buttons
-    this._btnPaste = this._form.querySelector(".form-paste-btn");
-    this._btnCopy = this._form.querySelector(".form-copy-btn");
-    this._btnNew = this._form.querySelector(".form-new-btn");
-    this._btnSubmit = this._form.querySelector(".form-submit-btn");
-    this._btnSubmitText = this._form.querySelector(".form-submit-btn-text");
-    this._btnResetPassword = this._form.querySelector(".form-reset-password-btn");
+    this._btnPaste = this._form.querySelector(".form-btn.paste");
+    this._btnCopy = this._form.querySelector(".form-btn.copy");
+    this._btnNew = this._form.querySelector(".form-btn.new");
+    this._btnSubmit = this._form.querySelector(".form-btn.submit");
+    this._btnSubmitText = this._form.querySelector("form-submit-btn-text");
+    this._btnResetPassword = this._form.querySelector(".form-btn.reset-password");
 
     // Initialize default State
     this.#defaultState();

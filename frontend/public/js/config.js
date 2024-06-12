@@ -68,8 +68,8 @@ export const DEFAULT_REPORT_UPDATE = Object.freeze({
 
 export const DEFAULT_REPORT_IMPORT = Object.freeze({
   ...DEFAULT_REPORT_UPDATE,
-  updatedBy: "string",
   createdBy: "string",
+  updatedBy: "string",
   createdAt: "string",
   updatedAt: "string",
 });

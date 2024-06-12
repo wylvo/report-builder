@@ -22,19 +22,19 @@ class ReportTabsView extends TabsView {
             <h1>Phone Call Report</h1>
           </div>
           <div class="form-action-btns">
-            <button type="button" class="form-copy-btn tooltip" id="form-copy-btn_${index}">
+            <button type="button" class="form-btn copy tooltip" id="form-copy-btn_${index}">
               <svg class="icons">
                 <use href="/img/icons.svg#icon-copy"></use>
               </svg>
               <span class="tooltiptext">Copy Report</span>
             </button>
-            <button disabled type="button" class="form-paste-btn tooltip" id="form-paste-btn_${index}">
+            <button disabled type="button" class="form-btn paste tooltip" id="form-paste-btn_${index}">
               <svg class="icons">
                 <use href="/img/icons.svg#icon-paste"></use>
               </svg>
               <span class="tooltiptext">Paste Report</span>
             </button>
-            <button type="button" class="form-new-btn tooltip" id="form-new-btn_${index}">
+            <button type="button" class="form-btn new tooltip" id="form-new-btn_${index}">
               <svg class="icons">
                 <use href="/img/icons.svg#icon-add"></use>
               </svg>
@@ -80,7 +80,7 @@ class ReportTabsView extends TabsView {
               <div class="form-grouping-col now-btn">
                 <input type="time" id="time_${index}" name="time" class="time" required />
                 <label for="time_${index}">Time:</label>
-                <button type="button" id="form-now-btn_${index}" class="form-now-btn">
+                <button type="button" id="form-now-btn_${index}" class="form-btn now">
                   NOW
                 </button>
               </div>
@@ -392,11 +392,11 @@ class ReportTabsView extends TabsView {
 
         <!-- CALL TO ACTION BUTTONS -->
         <div class="grid columns-50-50 form-buttons">
-          <label for="form-submit-btn_${index}" class="cta-button">
+          <label for="form-submit-btn_${index}">
             <button
               type="submit"
               id="form-submit-btn_${index}"
-              class="form-submit-btn"
+              class="form-btn submit"
             >
               <svg class="icons">
                 <use href="/img/icons.svg#icon-save"></use>
@@ -405,11 +405,11 @@ class ReportTabsView extends TabsView {
             </button>
           </label>
 
-          <label for="form-teams-btn_${index}" class="cta-button">
+          <label for="form-teams-btn_${index}">
             <button
               type="button"
               id="form-teams-btn_${index}"
-              class="form-teams-btn"
+              class="form-btn ms-teams"
               disabled
             >
               <svg class="icons">

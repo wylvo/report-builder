@@ -13,6 +13,10 @@ Child Views: reportTableView.js & userTableView.js
   padding-bottom: 1.6rem;
 }
 
+.table-header-users {
+  justify-content: flex-end;
+}
+
 .table-filter {
   width: 50%;
   display: flex;
@@ -52,7 +56,7 @@ Child Views: reportTableView.js & userTableView.js
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.8rem;
+  padding: 0.4rem;
   background-color: var(--background-primary-color);
   color: var(--on-background-content);
   border: 0.1rem solid var(--buttons-border-color-alt);
@@ -84,6 +88,7 @@ Child Views: reportTableView.js & userTableView.js
 
 .table-pagination-text {
   font-size: 1.8rem;
+  padding: 0.4rem;
   /* font-weight: 700; */
   color: var(--on-background-content);
   text-decoration: underline;
@@ -119,7 +124,7 @@ Child Views: reportTableView.js & userTableView.js
 .table-wrapper {
   overflow-y: auto;
   overflow-x: hidden;
-  max-height: 179.7rem;
+  max-height: 178.9rem;
 }
 
 .table-content {
@@ -401,7 +406,7 @@ button.teams:disabled .icons.status-success {
   background-color: var(--good-on-background);
 }
 
-button.teams .icons.status-error {
+button.teams:disabled .icons.status-error {
   background-color: var(--attention-background-color-alt);
 }
 

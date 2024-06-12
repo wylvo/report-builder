@@ -40,6 +40,14 @@ header {
   justify-content: center;
 }
 
+.main-auth > .left .bstech-logo {
+  position: absolute;
+  width: 12.8rem;
+  bottom: 0;
+  left: 0;
+  transform: translate(10%, -50%);
+}
+
 .container {
   width: 75%;
   padding: 3.2rem;

@@ -10,6 +10,7 @@ import notificationsView from "../_views/notificationsView.js";
 
 import ModalFormView from "../_views/modalFormView.js";
 import ModalView from "../_views/modalView.js";
+import { ReportFormView } from "./views/reportFormView.js";
 
 const modalView = new ModalView();
 
@@ -94,20 +95,29 @@ const controlSaveReport = async function (reportId) {
   const id = reportId ? reportId : window.location.hash.slice(1);
   let report;
   try {
-    // Save report
-    if (!id) {
-      report = await model.DB.createReport(model.state.tab, reportFormView._form);
-      reportTableView.render(report);
-      reportTableView.updateTotalCount(model.state.reports);
-      notificationsView.success(`Report successfully created: [${report.id}]`);
-    }
+    // // Save report
+    // if (!id) {
+    //   report = await model.DB.createReport(model.state.tab, reportFormView._form);
+    //   reportTableView.render(report);
+    //   reportTableView.updateTotalCount(model.state.reports);
+    //   notificationsView.success(`Report successfully created: [${report.id}]`);
+    // }
 
-    // Save changes
-    if (id) {
-      report = await model.DB.updateReport(id, reportFormView._form);
-      reportTableView.update(report);
-      notificationsView.success(`Report changes were saved: [${report.id}]`);
-    }
+    // // Save changes
+    // if (id) {
+    //   report = await model.DB.updateReport(id, reportFormView._form);
+    //   reportTableView.update(report);
+    //   notificationsView.success(`Report successfully updated: [${report.id}]`);
+    // }
+
+    reportFormView.renderSpinner(reportFormView._btnSubmit);
+    
+    await reportFormView.sleep(3);
+
+    reportFormView.clearSpinner(reportFormView._btnSubmit, "success", "save");
+
+
+    await reportFormView.sleep(5000);
 
     reportFormView.takeSnapshot(reportFormView.newClone());
     reportFormView.updateTags(report);
@@ -138,14 +148,15 @@ const controlSendReport = async function (id = undefined) {
 
     if(reportViewInTab) reportViewInTab.renderSpinner(reportViewInTab._btnTeams);
     reportTableView.renderSpinner(tableViewBtnTeams);
+    await reportFormView.sleep(3);
 
     // const request = await api.sendTeamsWebhook(report);
     if(reportViewInTab) {
-      reportViewInTab.clearSpinner(reportViewInTab._btnTeams, "success");
+      reportViewInTab.clearSpinner(reportViewInTab._btnTeams, "success", "teams");
       reportViewInTab._btnTeams.disabled = true;
     }
 
-    reportTableView.clearSpinner(tableViewBtnTeams, "success");
+    reportTableView.clearSpinner(tableViewBtnTeams, "success", "teams");
     tableViewBtnTeams.disabled = true;
     notificationsView.success(`Report successfully sent on Teams. Status code ${request.response.status} (${request.response.statusText})`);
 
@@ -463,9 +474,6 @@ export const init = async function () {
   // Modal form view handler
   modalFormView.addHandlerClickImportReports(controlImportReports);
 
-  // const version = await api.v1.version.getVersion();
-  // console.log("Version", version);
-  // tabsView._appVersion.textContent = version;
   console.log(model.state);
 };
 

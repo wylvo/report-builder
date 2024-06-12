@@ -24,10 +24,7 @@ export default class View {
   #scrollTop = document.querySelector(".scroll-top-btn");
   #scrollBottom = document.querySelector(".scroll-bottom-btn");
 
-  constructor() {
-    this.#addHandlerScrollToTop();
-    this.#addHandlerScrollTo();
-  }
+  constructor() {}
 
   // Convert HTML string to DOM element
   htmlStringToElement(htmlString) {
@@ -103,14 +100,15 @@ export default class View {
   }
 
   // prettier-ignore
-  clearSpinner(targetEl, status, childrenIndex = undefined) {
-    const replacementHtml = `
-      <svg class="icons">
-        <use href="/img/icons.svg#icon-ms-teams"></use>
-      </svg>
-    `
-    if (childrenIndex) targetEl.children[childrenIndex].replaceWith(this.htmlStringToElement(replacementHtml));
-    else targetEl.firstElementChild.replaceWith(this.htmlStringToElement(replacementHtml));
+  clearSpinner(targetEl, status, icon, childrenIndex = undefined) {
+    const replacementHtml = {
+      save: `<svg class="icons"><use href="/img/icons.svg#icon-save"></use></svg>`,
+      update: `<svg class="icons"><use href="/img/icons.svg#icon-sync"></use></svg>`,
+      teams: `<svg class="icons"><use href="/img/icons.svg#icon-ms-teams"></use></svg>`
+    };
+
+    if (childrenIndex) targetEl.children[childrenIndex].replaceWith(this.htmlStringToElement(replacementHtml[icon]));
+    else targetEl.firstElementChild.replaceWith(this.htmlStringToElement(replacementHtml[icon]));
     
     if (status === "error" || status === "success")
       if(targetEl.querySelector(`.status-${status}`))
@@ -126,24 +124,5 @@ export default class View {
         <use href="/img/icons.svg#icon-${status}"></use>
       </svg>
     `;
-  }
-
-  scrollToTop() {
-    document.body.scrollTop = document.documentElement.scrollTop = 0;
-  }
-
-  scrollToBottom() {
-    window.scrollTo(0, document.body.scrollHeight);
-  }
-
-  // Scroll To Bottom Of The Page
-  #addHandlerScrollToTop() {
-    // this.#scrollTop.addEventListener("click", this.scrollToTop.bind(this));
-  }
-
-  // prettier-ignore
-  // Scroll To Top Of The Page
-  #addHandlerScrollTo() {
-    // this.#scrollBottom.addEventListener("click", this.scrollToBottom.bind(this));
   }
 }
