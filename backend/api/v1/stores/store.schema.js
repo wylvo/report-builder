@@ -108,7 +108,18 @@ const CREATE = {
   },
 };
 
-const UPDATE = { ...CREATE };
+const UPDATE = {
+  ...CREATE,
+  number: {
+    optional: true,
+    notEmpty: { errorMessage: "can't be empty.", bail: true },
+    isString: { errorMessage: "should be a string.", bail: true },
+    isLength: {
+      options: { max: 20 },
+      errorMessage: "invalid length, max of 20 characters allowed.",
+    },
+  },
+};
 
 // VALIDATION TO HARD DELETE A DISTRICT MANAGER
 const HARD_DELETE = {

@@ -64,7 +64,11 @@ export const updateStore = catchAsync(async (req, res, next) => {
       new GlobalError(`Store not found with number: ${number}.`, 404)
     );
 
-  const storeUpdated = await Stores.update(req.body, store);
+  const storeUpdated = await Stores.update(
+    req.body,
+    store,
+    req.districtManagerId
+  );
 
   res.status(201).json({
     status: "success",

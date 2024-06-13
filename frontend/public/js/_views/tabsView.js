@@ -41,8 +41,10 @@ export default class TabsView extends View {
       Object.keys(formData.selects).forEach((key) => {
         formData.selects[key] = formData.selects[key].map((selectValue) => {
           if (!selectValue) return `<option value="">None</option>`;
+          if (selectValue === "*")
+            return `<option value="${selectValue.escapeHTML()}">All</option>`;
           if (selectValue) {
-            if (key === "districtManagers")
+            if (key === "districtManagers" || key === "users")
               return `<option value="${selectValue.username.escapeHTML()}">${selectValue.fullName.escapeHTML()}</option>`;
             return `<option value="${selectValue.escapeHTML()}">${selectValue.escapeHTML()}</option>`;
           }

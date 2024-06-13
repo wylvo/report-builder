@@ -95,38 +95,37 @@ const controlSaveReport = async function (reportId) {
   const id = reportId ? reportId : window.location.hash.slice(1);
   let report;
   try {
-    // // Save report
-    // if (!id) {
-    //   report = await model.DB.createReport(model.state.tab, reportFormView._form);
-    //   reportTableView.render(report);
-    //   reportTableView.updateTotalCount(model.state.reports);
-    //   notificationsView.success(`Report successfully created: [${report.id}]`);
-    // }
-
-    // // Save changes
-    // if (id) {
-    //   report = await model.DB.updateReport(id, reportFormView._form);
-    //   reportTableView.update(report);
-    //   notificationsView.success(`Report successfully updated: [${report.id}]`);
-    // }
-
+    // Render spinner animation
     reportFormView.renderSpinner(reportFormView._btnSubmit);
-    
-    await reportFormView.sleep(3);
 
-    reportFormView.clearSpinner(reportFormView._btnSubmit, "success", "save");
+    // Save report
+    if (!id) {
+      report = await model.DB.createReport(model.state.tab, reportFormView._form);
+      reportTableView.render(report);
+      reportTableView.updateTotalCount(model.state.reports);
+      notificationsView.success(`Report successfully created: [${report.id}]`);
+    }
 
+    // Save changes
+    if (id) {
+      report = await model.DB.updateReport(id, reportFormView._form);
+      reportTableView.update(report);
+      notificationsView.success(`Report successfully updated: [${report.id}]`);
+    }
 
-    await reportFormView.sleep(5000);
-
+    // Update form state
     reportFormView.takeSnapshot(reportFormView.newClone());
     reportFormView.updateTags(report);
     reportFormView._btnTeams.disabled = false;
+
+    // Update tab state
     reportTabsView.render(model.state.tab, report.incident.title, report.id);
+
     model.loadTabWith(model.state.reports, model.state.tab, report.id);
   } catch (error) {
     console.error(error);
     notificationsView.error(error.message, 60);
+    reportFormView.clearSpinner(reportFormView._btnSubmit, "error", "save");
   }
 };
 

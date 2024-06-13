@@ -365,8 +365,7 @@ class ReportTabsView extends TabsView {
                   class="assigned-to"
                   required
                 >
-                  <option selected value="william.evora">William Evora</option>
-                  <option value="carah.malcolm">Carah Malcolm</option>
+                  ${formData.selects.users.join("")}
                 </select>
                 <label for="assigned-to_${index}">Assigned To:</label>
               </div>
