@@ -1,5 +1,5 @@
-import { ExpressValidator } from "express-validator";
 import bcrypt from "bcrypt";
+import { ExpressValidator } from "express-validator";
 
 import {
   Reports,
@@ -11,6 +11,7 @@ import {
 
 import { mssql, validateBody, catchAsync, GlobalError } from "../router.js";
 import { Users } from "../users/user.model.js";
+import { Super } from "../super/super.model.js";
 
 const { checkSchema } = new ExpressValidator({
   isNotEmptyArray,
@@ -137,7 +138,6 @@ export const validateHardDelete = validateBody(
 export const deleteReport = catchAsync(async (req, res, next) => {
   const id = req.params.id;
 
-  console.log(id);
   const report = await Reports.findById(id);
 
   if (!report)
@@ -156,7 +156,7 @@ export const deleteReport = catchAsync(async (req, res, next) => {
 
   try {
     await transaction.begin();
-    const password = await Reports.superPassword(req.user.id, transaction);
+    const password = await Super.getSuperPassword(req.user.id, transaction);
 
     // For additional security, require for a password
     if (!(await bcrypt.compare(req.body.password, password)))

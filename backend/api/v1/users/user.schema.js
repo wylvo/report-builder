@@ -2,9 +2,7 @@ import { Users } from "./user.model.js";
 import config from "../../../config/app.config.js";
 
 export default {
-  /**
-   *  VALIDATION TO CREATE A USER
-   **/
+  // VALIDATION TO CREATE A USER
   create: {
     role: {
       exists: { errorMessage: "required.", bail: true },
@@ -78,6 +76,8 @@ export default {
         options: { max: 20 },
         errorMessage: "invalid length, max of 20 characters allowed.",
       },
+      toLowerCase: {},
+
       custom: {
         options: async (username, { req }) => {
           const user = await Users.findByUsername(username);
@@ -98,9 +98,7 @@ export default {
     tableRowEl: { optional: true },
   },
 
-  /**
-   *  VALIDATION TO UPDATE A USER
-   **/
+  // VALIDATION TO UPDATE A USER
   update() {
     return {
       id: {
@@ -162,6 +160,8 @@ export default {
           options: { max: 20 },
           errorMessage: "invalid length, max of 20 characters allowed.",
         },
+        toLowerCase: {},
+
         custom: {
           options: async (username, { req }) => {
             const user = await Users.findByUsername(username);
@@ -182,9 +182,7 @@ export default {
     };
   },
 
-  /**
-   *  VALIDATION TO RESET A USER PASSWORD
-   **/
+  // VALIDATION TO RESET A USER PASSWORD
   resetPassword() {
     return {
       password: this.create.password,
@@ -192,9 +190,7 @@ export default {
     };
   },
 
-  /**
-   *  VALIDATION TO SIGN IN WITH A USER
-   **/
+  // VALIDATION TO SIGN IN WITH A USER
   signIn: {
     email: {
       exists: { errorMessage: "required.", bail: true },

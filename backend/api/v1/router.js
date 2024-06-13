@@ -5,6 +5,8 @@ import { reportRouter } from "./reports/report.router.js";
 import { webhookRouter } from "./webhook/webhook.router.js";
 import { versionRouter } from "./version/version.router.js";
 import { formDataRouter } from "./formData/formData.router.js";
+import { storeRouter } from "./stores/store.router.js";
+import { districtManagerRouter } from "./districtManagers/districtManager.router.js";
 import * as auth from "../../auth/auth.controller.js";
 
 const router = express.Router();
@@ -18,6 +20,8 @@ router.use("/reports", reportRouter); // - /api/v1/reports
 router.use("/webhook", webhookRouter); // - /api/v1/webhook
 router.use("/version", versionRouter); // - /api/v1/version
 router.use("/formData", formDataRouter); // - /api/v1/formData
+router.use("/stores", storeRouter); // - /api/v1/stores
+router.use("/districtManagers", districtManagerRouter); // - /api/v1/districtManagers
 
 export { mssql, mssqlDataTypes } from "../../config/db.config.js";
 export { validateBody } from "../../validation/validation.js";

@@ -119,21 +119,6 @@ export const Reports = {
     return report ? report : undefined;
   },
 
-  // GET SUPER PASSWORD
-  async superPassword(userId, transaction = undefined) {
-    const { Int, VarChar } = mssqlDataTypes;
-    const request = transaction ? mssql(transaction).request : mssql().request;
-
-    const {
-      output: { hash: password },
-    } = await request
-      .input("userId", Int, userId)
-      .output("hash", VarChar)
-      .execute("api_v1_super_getPassword");
-
-    return password;
-  },
-
   // GET ALL REPORTS CREATED BY A USER, OR GET ALL SOFT DELETED REPORTS CREATED BY A USER
   async createdBy(userId, softDeleted = false) {
     const { NVarChar, Int } = mssqlDataTypes;

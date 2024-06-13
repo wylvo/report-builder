@@ -1,0 +1,116 @@
+import bcrypt from "bcrypt";
+import { ExpressValidator } from "express-validator";
+
+import { validateBody, catchAsync, GlobalError } from "../router.js";
+import { Stores, isValidDistrictManagerUsername } from "./store.model.js";
+import { Super } from "../super/super.model.js";
+
+const { checkSchema } = new ExpressValidator({
+  isValidDistrictManagerUsername,
+});
+
+export const getAllStores = catchAsync(async (req, res, next) => {
+  const { results, data } = await Stores.all();
+
+  res.status(200).json({
+    status: "success",
+    results,
+    data,
+  });
+});
+
+export const validateCreate = validateBody(
+  checkSchema,
+  Stores.validation.create
+);
+
+export const createStore = catchAsync(async (req, res, next) => {
+  const store = await Stores.create(req.body, req.districtManagerId);
+
+  res.status(201).json({
+    status: "success",
+    data: store,
+  });
+});
+
+export const getStore = catchAsync(async (req, res, next) => {
+  const number = req.params.number;
+
+  const store = await Stores.findByNumber(number);
+
+  if (!store)
+    return next(
+      new GlobalError(`Store not found with number: ${number}.`, 404)
+    );
+
+  res.status(200).json({
+    status: "success",
+    data: store,
+  });
+});
+
+export const validateUpdate = validateBody(
+  checkSchema,
+  Stores.validation.update
+);
+
+export const updateStore = catchAsync(async (req, res, next) => {
+  const number = req.params.number;
+
+  const store = await Stores.findByNumber(number);
+
+  if (!store)
+    return next(
+      new GlobalError(`Store not found with number: ${number}.`, 404)
+    );
+
+  const storeUpdated = await Stores.update(req.body, store);
+
+  res.status(201).json({
+    status: "success",
+    data: storeUpdated,
+  });
+});
+
+export const validateHardDelete = validateBody(
+  checkSchema,
+  Stores.validation.hardDelete
+);
+
+export const deleteStore = catchAsync(async (req, res, next) => {
+  const number = req.params.number;
+
+  const store = await Stores.findByNumber(number);
+
+  if (!store)
+    return next(
+      new GlobalError(`Store not found with number: ${number}.`, 404)
+    );
+
+  // EXTRA check if user is not an admin return an error
+  if (req.user.role !== "Admin")
+    return next(
+      new GlobalError(
+        "You do not have permission to perform this operation.",
+        403
+      )
+    );
+
+  const password = await Super.getSuperPassword(req.user.id);
+
+  // For additional security, require for a password
+  if (!(await bcrypt.compare(req.body.password, password)))
+    return next(
+      new GlobalError(
+        "You do not have permission to perform this operation. Please contact your administrator.",
+        403
+      )
+    );
+
+  await Stores.hardDelete(store);
+
+  res.status(204).json({
+    status: "success",
+    data: null,
+  });
+});

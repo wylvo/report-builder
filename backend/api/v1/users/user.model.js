@@ -29,7 +29,7 @@ export const isValidNewUsername = async (value, { req }) => {
   // If a user is found with the username value
   // Then, the id present in the request has to match that exising user id in the DB
   // Otherwise, this would trigger an error as it would allow duplicate usernames in the DB
-  if (user && user.id !== req.params.id) throw new Error();
+  if (user && String(user.id) !== req.params.id) throw new Error();
   return true;
 };
 

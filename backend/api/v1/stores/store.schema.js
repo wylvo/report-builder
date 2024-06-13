@@ -8,6 +8,13 @@ const CREATE = {
       errorMessage: "invalid length, max of 255 characters allowed.",
     },
   },
+  active: {
+    optional: true,
+    isBoolean: {
+      options: { strict: true },
+      errorMessage: "should be a boolean (true or false).",
+    },
+  },
   number: {
     exists: { errorMessage: "required.", bail: true },
     notEmpty: { errorMessage: "can't be empty.", bail: true },
@@ -97,13 +104,23 @@ const CREATE = {
       options: { max: 20 },
       errorMessage: "invalid length, max of 20 characters allowed.",
     },
-    isDistrictManager: {},
+    isValidDistrictManagerUsername: {},
   },
 };
 
 const UPDATE = { ...CREATE };
 
+// VALIDATION TO HARD DELETE A DISTRICT MANAGER
+const HARD_DELETE = {
+  password: {
+    exists: { errorMessage: "required.", bail: true },
+    notEmpty: { errorMessage: "can't be empty.", bail: true },
+    isString: { errorMessage: "should be a string" },
+  },
+};
+
 export default {
   create: { ...CREATE },
   update: { ...UPDATE },
+  hardDelete: { ...HARD_DELETE },
 };

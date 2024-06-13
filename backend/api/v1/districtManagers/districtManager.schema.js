@@ -1,3 +1,6 @@
+import { DistrictManagers } from "./districtManager.model.js";
+
+// VALIDATION TO CREATE A DISTRICT MANAGER
 const CREATE = {
   fullName: {
     exists: { errorMessage: "required.", bail: true },
@@ -16,18 +19,96 @@ const CREATE = {
       options: { max: 20 },
       errorMessage: "invalid length, max of 20 characters allowed.",
     },
+    toLowerCase: {},
+
+    custom: {
+      options: async (username, { req }) => {
+        const districtManager = await DistrictManagers.findByUsername(username);
+        if (districtManager && String(districtManager.id) !== req.params.id)
+          throw new Error();
+        return districtManager;
+      },
+      errorMessage: "already in use.",
+    },
   },
   profilePictureURI: {
-    exists: { errorMessage: "required.", bail: true },
-    notEmpty: { errorMessage: "can't be empty.", bail: true },
-    isString: { errorMessage: "should be a string.", bail: true },
+    optional: true,
+    isDataURI: { errorMessage: "invalid data URI." },
   },
 };
-const UPDATE = { ...CREATE };
-const DELETE = {};
+
+// VALIDATION TO CREATE A DISTRICT MANAGER
+const UPDATE = {
+  id: {
+    exists: { errorMessage: "required.", bail: true },
+    isString: {
+      errorMessage: "should not be a string but an integer.",
+      bail: true,
+      negated: true,
+    },
+    isBoolean: {
+      options: { strict: true },
+      errorMessage: "should not be a boolean but an integer.",
+      negated: true,
+    },
+    isArray: {
+      errorMessage: "should not be an array but an integer.",
+      bail: true,
+      negated: true,
+    },
+    isObject: {
+      errorMessage: "should not be an object but an integer.",
+      bail: true,
+      negated: true,
+    },
+    isInt: { errorMessage: "should be an integer.", bail: true },
+  },
+  fullName: {
+    optional: true,
+    notEmpty: { errorMessage: "can't be empty.", bail: true },
+    isString: { errorMessage: "should be a string.", bail: true },
+    isLength: {
+      options: { max: 100 },
+      errorMessage: "invalid length, max of 100 characters allowed.",
+    },
+  },
+  username: {
+    optional: true,
+    notEmpty: { errorMessage: "can't be empty.", bail: true },
+    isString: { errorMessage: "should be a string.", bail: true },
+    isLength: {
+      options: { max: 20 },
+      errorMessage: "invalid length, max of 20 characters allowed.",
+    },
+    toLowerCase: {},
+
+    custom: {
+      options: async (username, { req }) => {
+        const districtManager = await DistrictManagers.findByUsername(username);
+        if (districtManager && String(districtManager.id) !== req.params.id)
+          throw new Error();
+        return districtManager;
+      },
+      errorMessage: "already in use.",
+    },
+  },
+  profilePictureURI: {
+    optional: true,
+    isDataURI: { errorMessage: "invalid data URI." },
+  },
+};
+
+// VALIDATION TO HARD DELETE A DISTRICT MANAGER
+const HARD_DELETE = {
+  password: {
+    exists: { errorMessage: "required.", bail: true },
+    notEmpty: { errorMessage: "can't be empty.", bail: true },
+    isString: { errorMessage: "should be a string" },
+  },
+};
 
 export default {
   create: { ...CREATE },
   update: { ...UPDATE },
-  delete: { ...DELETE },
+  hardDelete: { ...HARD_DELETE },
 };
