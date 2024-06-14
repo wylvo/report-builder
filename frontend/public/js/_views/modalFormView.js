@@ -60,7 +60,7 @@ export default class ModalFormView extends ModalView {
             id="modal-btn"
             class="modal-btn error"
           >
-            Hard Delete Report
+            <p>Hard Delete Report</p>
           </button>
           <button type="button" class="modal-btn cancel">No, Cancel</button>
         </div>
@@ -105,7 +105,7 @@ export default class ModalFormView extends ModalView {
             id="modal-btn-import"
             class="modal-btn import info"
           >
-            Import Reports
+            <p>Import Reports</p>
           </button>
           <button type="button" class="modal-btn cancel">No, Cancel</button>
         </div>
@@ -119,8 +119,14 @@ export default class ModalFormView extends ModalView {
       .querySelector("#form-modal")
       .addEventListener("submit", async (e) => {
         e.preventDefault();
+        const hardDeleteBtn =
+          this._modalElement.querySelector(".modal-btn.error");
+        this.renderSpinner(hardDeleteBtn);
+
         await handler(id, this.#password());
+
         this.#clearPassword();
+        this.clearSpinner(hardDeleteBtn, null, "hardDelete");
       });
   }
 

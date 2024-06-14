@@ -46,16 +46,6 @@ export const connectToDB = async () => {
       )
     );
     console.timeEnd("Pool warmed in");
-
-    // const row = {
-    //   password: "''); DROP TABLE reportIncidentTransactionTypes;--",
-    // };
-    // const pInserts = await pool.request()
-    //   .query`INSERT INTO [super] ([password]) VALUES (${row.password})`;
-    // const users = await pool.request()
-    //   .query`SELECT * FROM reportIncidentTransactionTypes`;
-    // console.log(pInserts);
-    // console.log(users.recordset);
   }
 };
 

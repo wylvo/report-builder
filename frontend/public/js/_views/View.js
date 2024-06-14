@@ -105,7 +105,10 @@ export default class View {
       save: `<svg class="icons"><use href="/img/icons.svg#icon-save"></use></svg>`,
       update: `<svg class="icons"><use href="/img/icons.svg#icon-sync"></use></svg>`,
       delete: `<svg class="icons"><use href="/img/icons.svg#icon-delete"></use></svg>`,
+      undo: `<svg class="icons"><use href="/img/icons.svg#icon-undo"></use></svg>`,
       teams: `<svg class="icons"><use href="/img/icons.svg#icon-ms-teams"></use></svg>`,
+      hardDelete: `<p>Hard Delete Report</p>`,
+      import: `<p>Import Reports</p>`,
       table: ``
     };
 

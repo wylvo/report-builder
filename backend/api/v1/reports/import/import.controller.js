@@ -120,7 +120,6 @@ export const importReports = catchAsync(async (req, res, next) => {
   console.time("IMPORT");
   const transaction = mssql().transaction;
 
-  console.log("Running import");
   try {
     await transaction.begin();
     const reports = await Reports.import(req.body, transaction);

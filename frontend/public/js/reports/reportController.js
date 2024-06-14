@@ -10,7 +10,6 @@ import notificationsView from "../_views/notificationsView.js";
 
 import ModalFormView from "../_views/modalFormView.js";
 import ModalView from "../_views/modalView.js";
-import { ReportFormView } from "./views/reportFormView.js";
 
 const modalView = new ModalView();
 
@@ -63,7 +62,6 @@ const controlCopy = function (inputs = undefined) {
   model.state.clipboard = inputs;
   if (model.state.clipboard.size > 0)
     reportTabsView.tabs.forEach((reportFormView) => reportFormView._btnPaste.disabled = false);
-  notificationsView.info(`Report state copied from tab ${model.state.tab + 1}`, 5);
 };
 
 const controlNewReport = function () {
@@ -82,11 +80,10 @@ const controlRenderReport = function () {
 
     const report = model.loadTabWith(model.state.reports, model.state.tab, id);
     reportFormView.render(report);
-    console.log(model.state);
   } catch (error) {
     console.error(error);
-    controlNewReport();
     notificationsView.error(error.message, 60);
+    controlNewReport();
   }
 };
 
@@ -95,10 +92,9 @@ const controlSaveReport = async function (reportId) {
   const id = reportId ? reportId : window.location.hash.slice(1);
   let report;
   try {
-    // Render spinner animation
     reportFormView.renderSpinner(reportFormView._btnSubmit);
 
-    // Save report
+    // Create report
     if (!id) {
       report = await model.DB.createReport(model.state.tab, reportFormView._form);
       reportTableView.render(report);
@@ -106,7 +102,7 @@ const controlSaveReport = async function (reportId) {
       notificationsView.success(`Report successfully created: [${report.id}]`);
     }
 
-    // Save changes
+    // Update report
     if (id) {
       report = await model.DB.updateReport(id, reportFormView._form);
       reportTableView.update(report);
@@ -120,8 +116,10 @@ const controlSaveReport = async function (reportId) {
 
     // Update tab state
     reportTabsView.render(model.state.tab, report.incident.title, report.id);
-
     model.loadTabWith(model.state.reports, model.state.tab, report.id);
+
+    reportFormView.clearSpinner(reportFormView._btnSubmit, "success", "save");
+
   } catch (error) {
     console.error(error);
     notificationsView.error(error.message, 60);
@@ -181,11 +179,17 @@ const controlSendReport = async function (id = undefined) {
 
 // prettier-ignore
 const controlDeleteReport = async function (id) {
+  let reportTableRowDeleteBtn;
+
   try {
-    const report = model.findObjectById(model.state.reports, id);
-    const isAdmin = model.state.user.role === "Admin"
     let isDeleteConfirmed = true;
 
+    const report = model.findObjectById(model.state.reports, id);
+    const isAdmin = model.state.user.role === "Admin";
+    const hasIdInHash = id === window.location.hash.slice(1);
+
+    reportTableRowDeleteBtn = report.tableRowEl.querySelector(".delete");
+        
     // if current user is admin, propose hard delete option
     if (isAdmin) {
       modalFormView = await modalView.confirmDeleteOrHardDelete(report);
@@ -198,20 +202,23 @@ const controlDeleteReport = async function (id) {
     if (!isDeleteConfirmed || !modalFormView) return;
 
     // Remove id if in hash
-    if (id === window.location.hash.slice(1)) reportTabsView.removeLocationHash();
+    if (hasIdInHash) reportTabsView.removeLocationHash();
   
     // Clear report if in tab
     const tabIndex = model.findTabIndexByObjectId(id);
-    if (tabIndex !== -1) {
+    const tabFound = tabIndex !== -1;
+    if (tabFound) {
       model.clearTab(tabIndex)
       reportTabsView.tabs.get(tabIndex).newReport((takeSnapshot = true))
     }
 
+    reportTableView.renderSpinner(reportTableRowDeleteBtn);
+
     // Api call to soft delete a report in the database
     await model.DB.softDeleteReport(id);
-    
+
     reportTableView.updateTotalCount(model.state.reports);
-    notificationsView.success(`Report successfully deleted: ${report.incident.title} [${report.id}]`);
+    notificationsView.delete(`Report successfully deleted: ${report.incident.title} [${report.id}]`);
 
     await model.DB.getAllSoftDeletedReports();
     if(reportTableView.isDeletedViewActive)
@@ -220,47 +227,62 @@ const controlDeleteReport = async function (id) {
   } catch (error) {
     console.error(error);
     notificationsView.error(error.message, 60);
+    reportTableView.clearSpinner(reportTableRowDeleteBtn, null, "delete");
   }
 };
 
 // prettier-ignore
 const controlHardDeleteReport = async function (id, password) {
+  let reportTableRowDeleteBtn;
+
   try {
     const report = model.findObjectById(model.state.reports, id);
+    const hasIdInHash = id === window.location.hash.slice(1);
+    
+    reportTableRowDeleteBtn = report.tableRowEl.querySelector(".delete");
   
     // Remove id if in hash
-    if(id === window.location.hash.slice(1)) reportTabsView.removeLocationHash();
+    if (hasIdInHash) reportTabsView.removeLocationHash();
   
     // Clear report if in tab
     const tabIndex = model.findTabIndexByObjectId(id);
-    if (tabIndex !== -1) {
+    const tabFound = tabIndex !== -1;
+    if (tabFound) {
       model.clearTab(tabIndex)
       reportTabsView.tabs.get(tabIndex).newReport((takeSnapshot = true))
     }
+
+    reportTableView.renderSpinner(reportTableRowDeleteBtn);
 
     // Api call to hard delete a report in the database
     await model.DB.hardDeleteReport(id, password);
 
     modalView.closeModal();
     reportTableView.updateTotalCount(model.state.reports);
-    notificationsView.success(`Report successfully hard deleted: ${report.incident.title} [${report.id}]`);
+    notificationsView.delete(`Report successfully hard deleted: ${report.incident.title} [${report.id}]`);
 
   } catch (error) {
     console.error(error);
     notificationsView.error(error.message, 60);
+    reportTableView.clearSpinner(reportTableRowDeleteBtn, null, "delete");
   }
 };
 
 // prettier-ignore
 const controlUndoDeleteReport = async function (id) {
+  let reportTableRowUndoBtn;
   try {
-    const reportDeleted = model.findObjectById(model.state.reportsDeleted, id);
-
     let isUndoConfirmed = true;
+    const reportDeleted = model.findObjectById(model.state.reportsDeleted, id);
+    reportTableRowUndoBtn = reportDeleted.tableRowEl.querySelector(".undo");
+
     isUndoConfirmed = await modalView.confirmUndo(reportDeleted);
     if (!isUndoConfirmed) return;
 
+    reportTableView.renderSpinner(reportTableRowUndoBtn);
+
     await model.DB.undoSoftDeleteReport(id);
+    
     reportTableView.updateTotalCount(model.state.reportsDeleted);
     notificationsView.undo(
       `Deleted report successfully recovered: ${reportDeleted.incident.title} [${reportDeleted.id}]`
@@ -273,6 +295,8 @@ const controlUndoDeleteReport = async function (id) {
   } catch (error) {
     console.error(error);
     notificationsView.error(error.message, 60);
+    reportTableView.clearSpinner(reportTableRowUndoBtn, null, "undo");
+
   }
 };
 
@@ -280,14 +304,15 @@ const controlUndoDeleteReport = async function (id) {
 const controlUnsavedReport = async (controlFunction, handler = undefined, event = undefined) => {
   let isSaveConfirmed = false;
   const currentReportView = reportTabsView.tabs.get(model.state.tab);
+  const formHasChanges = currentReportView._changes.length > 0;
 
-  if (currentReportView._changes.length > 0) {
+  if (formHasChanges) {
     if (event) event.preventDefault();
     isSaveConfirmed = await modalView.confirmSave();
   }
   if (isSaveConfirmed) {
     const id = window.location.hash.slice(1);
-    if (currentReportView._changes.length > 0) return controlSaveReport(id);
+    if (formHasChanges) return controlSaveReport(id);
   }
 
   if (typeof handler === "function") {
@@ -418,7 +443,6 @@ export const init = async function () {
   // If id in hash render report
   if (window.location.hash.slice(1)) controlRenderReport();
 
-  console.log(model.state);
   // Initialize all table rows per page
   model.state.rowsPerPage = paginationView.rowsPerPage();
   reportTableView.renderAll(model.rowsPerPage(model.state.reports));

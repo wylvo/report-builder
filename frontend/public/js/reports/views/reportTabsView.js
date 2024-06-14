@@ -108,7 +108,7 @@ class ReportTabsView extends TabsView {
                     value=""
                     maxlength="20"
                   />
-                  <label for="phone-number_${index}">Phone #:</label>
+                  <label for="phone-number_${index}">Phone Number:</label>
                 </div>
                 <div class="form-grouping-col self-end">
                   <label for="phone-no-caller-id_${index}">No Caller ID</label>
@@ -149,14 +149,14 @@ class ReportTabsView extends TabsView {
             <div class="grid columns-37-37-25 mt-36">
               <div class="form-grouping-col gc-span-2-switch">
                 <select 
-                  id="store-number_${index}" 
-                  name="store-number" 
-                  class="store-number" 
+                  id="store-numbers_${index}" 
+                  name="store-numbers" 
+                  class="store-numbers" 
                   required
                 >
                   ${formData.selects.storeNumbers.join("")}
                 </select>
-                <label for="store-number_${index}">Number:</label>
+                <label for="store-numbers_${index}">Number:</label>
               </div>
               <div class="form-grouping-col">
                 <input
@@ -243,14 +243,14 @@ class ReportTabsView extends TabsView {
             <div class="grid columns-37-37-25">
               <div class="form-grouping-col gc-span-2-switch">
                 <select
-                  id="incident-type_${index}"
-                  name="incident-type"
-                  class="incident-type"
+                  id="incident-types_${index}"
+                  name="incident-types"
+                  class="incident-types"
                   required
                 >
                   ${formData.selects.incidentTypes.join("")}
                 </select>
-                <label for="incident-type_${index}">Incident Type:</label>
+                <label for="incident-types_${index}">Incident Type:</label>
               </div>
               <div class="form-grouping-col">
                 <select
@@ -260,7 +260,7 @@ class ReportTabsView extends TabsView {
                 >
                   ${formData.selects.pos.join("")}
                 </select>
-                <label for="incident-pos-number_${index}">POS #:</label>
+                <label for="incident-pos-number_${index}">POS Number:</label>
               </div>
               <div class="form-grouping-col self-end">
                 <label for="incident-procedural_${index}">Procedural</label>
@@ -307,13 +307,13 @@ class ReportTabsView extends TabsView {
             <div class="grid columns-37-37-25 transaction-details">
               <div class="form-grouping-col gc-span-2-switch">
                 <select
-                  id="transaction-type_${index}"
-                  name="transaction-type"
-                  class="transaction-type"
+                  id="transaction-types_${index}"
+                  name="transaction-types"
+                  class="transaction-types"
                 >
                   ${formData.selects.incidentTransactionTypes.join("")}
                 </select>
-                <label for="transaction-type_${index}">Transaction Type:</label>
+                <label for="transaction-types_${index}">Transaction Type:</label>
               </div>
               <div class="form-grouping-col">
                 <input
@@ -324,12 +324,12 @@ class ReportTabsView extends TabsView {
                   placeholder="1010203772"
                   maxlength="100"
                 />
-                <label for="transaction-number_${index}">Transaction #:</label>
+                <label for="transaction-number_${index}">Transaction Number:</label>
                 <p class="max-length"><span id="transaction-number_${index}-length">0</span>/<span class="max-length-text"></span></p>
               </div>
               <div class="form-grouping-col self-end">
                 <label for="transaction-variance-report_${index}"
-                  >Inc. Report</label
+                  >Variance Report</label
                 >
                 <label class="switch">
                   <input

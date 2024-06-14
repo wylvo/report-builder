@@ -306,7 +306,7 @@ const createReportObject = (report, form) => {
       status: form["status"].value.trim(),
     },
     store: {
-      numbers: [form["store-number"].value.trim()],
+      numbers: [form["store-numbers"].value.trim()],
       employee: {
         name: form["store-employee"].value.trim(),
         isStoreManager: form["store-manager"].checked,
@@ -314,13 +314,13 @@ const createReportObject = (report, form) => {
     },
     incident: {
       title: form["incident-title"].value.trim(),
-      types: [form["incident-type"].value.trim()],
+      types: [form["incident-types"].value.trim()],
       pos: form["incident-pos-number"].value.trim(),
       isProcedural: form["incident-procedural"].checked,
       error: form["incident-error-code"].value.trim(),
       transaction: form["transaction-issue"].checked
         ? {
-            types: [form["transaction-type"].value.trim()],
+            types: [form["transaction-types"].value.trim()],
             number: form["transaction-number"].value.trim(),
             hasVarianceReport: form["transaction-variance-report"].checked,
           }

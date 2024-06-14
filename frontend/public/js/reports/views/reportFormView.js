@@ -162,8 +162,7 @@ export class ReportFormView extends FormView {
       : (fields.get("phone-number").value = report.call.phone);
 
     // Store Information Accordion
-    console.log(fields.get("store-number"));
-    selects.get("store-number").value = report.store.numbers[0];
+    selects.get("store-numbers").value = report.store.numbers[0];
     fields.get("store-employee").value = report.store.employee.name;
 
     report.store.employee.isStoreManager &&
@@ -175,7 +174,7 @@ export class ReportFormView extends FormView {
 
     // Incident Details Accordion
     fields.get("incident-title").value = report.incident.title;
-    selects.get("incident-type").value = report.incident.types;
+    selects.get("incident-types").value = report.incident.types[0];
     selects.get("incident-pos-number").value = report.incident.pos;
 
     report.incident.isProcedural &&
@@ -185,13 +184,14 @@ export class ReportFormView extends FormView {
 
     fields.get("incident-error-code").value = report.incident.error;
 
-    // Transaction Issue & Details
+    // Transaction Issue
     if (
       !this.isEmptyObject(report.incident.transaction) &&
       !checkBoxes.get("transaction-issue").checked
     ) {
       checkBoxes.get("transaction-issue").click();
-      selects.get("transaction-type").value = report.incident.transaction.types;
+      selects.get("transaction-types").value =
+        report.incident.transaction.types[0];
 
       fields.get("transaction-number").value =
         report.incident.transaction.number;
@@ -201,6 +201,8 @@ export class ReportFormView extends FormView {
         ? (["transaction-variance-report"].checked = true)
         : (["transaction-variance-report"].checked = false);
     }
+
+    // Details
     textAreas.get("incident-details").value = report.incident.details;
 
     // Assigned to Signature & On-Call
@@ -309,14 +311,14 @@ export class ReportFormView extends FormView {
 
   _transactionIssueSwitch() {
     if (this._transactionIssue) {
-      this._selects.get("transaction-type").disabled = false;
-      this._selects.get("transaction-type").setAttribute("required", "");
+      this._selects.get("transaction-types").disabled = false;
+      this._selects.get("transaction-types").setAttribute("required", "");
       this._fields.get("transaction-number").disabled = false;
       this._checkBoxes.get("transaction-variance-report").disabled = false;
     } else {
-      this._selects.get("transaction-type").disabled = true;
+      this._selects.get("transaction-types").disabled = true;
       this._fields.get("transaction-number").disabled = true;
-      this._selects.get("transaction-type").removeAttribute("required");
+      this._selects.get("transaction-types").removeAttribute("required");
       this._checkBoxes.get("transaction-variance-report").disabled = true;
     }
     return (this._transactionIssue = !this._transactionIssue);

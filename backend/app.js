@@ -51,11 +51,11 @@ app.use(cookieParser());
 // Format JSON responses as text with 2 indented spaces
 app.set("json spaces", 2);
 
-// Test middleware
-app.use((req, res, next) => {
-  console.log(req.cookies);
-  next();
-});
+// // Test middleware
+// app.use((req, res, next) => {
+//   console.log(req.cookies);
+//   next();
+// });
 
 app.use("/", viewRouter);
 app.use("/api/v1", routerV1);

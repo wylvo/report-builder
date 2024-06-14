@@ -95,7 +95,6 @@ const controlCopy = function (inputs = undefined) {
   model.state.clipboard = inputs;
   if (model.state.clipboard.size > 0)
     userTabsView.tabs.forEach((userFormView) => userFormView._btnPaste.disabled = false);
-  notificationsView.info(`User state copied from tab ${model.state.tab + 1}`, 5);
 };
 
 const controlNewUser = function () {

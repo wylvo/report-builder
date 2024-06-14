@@ -165,7 +165,8 @@ export const Reports = {
       output: { report: rawJSON },
     } = await mssql()
       .request.input("id", Int, report.id)
-      .execute("api_V1_reports_softDeleteUndoById");
+      .output("report", NVarChar)
+      .execute("api_v1_reports_softDeleteUndoById");
 
     const reportUpdated = JSON.parse(rawJSON);
 
@@ -209,6 +210,8 @@ export const Reports = {
     if (!body.incident.transaction.types) 
       (body.incident.transaction = {}), (reportHasTransaction = false);
 
+    // For store numbers, incident types or incident transaction types
+    // If their array includes: "*", add all the elements except the wildcard
     if (body.store.numbers.includes("*"))
       body.store.numbers = config.validation.selects.storeNumbers.filter(sN => sN !== "*");
     if (body.incident.types.includes("*"))
@@ -247,11 +250,10 @@ export const Reports = {
       insertManyToMany(body.incident.types, id, reportCreate, this.insertIncidentTypes),
     ]
         
-    if(body.incident.transaction.types) {
+    if(reportHasTransaction) 
       queries.push(
         insertManyToMany(body.incident.transaction.types, id, reportCreate, this.insertIncidentTransactionTypes)
-      )
-    }
+      );
 
     await reportCreate.query(queries.join(" "));
     
@@ -263,7 +265,7 @@ export const Reports = {
       .execute("api_v1_reports_getById");
       
     const reportCreated = JSON.parse(rawJSON);
-    reportHasTransaction === false ? reportCreated.incident.transaction = {} : null;
+    if(!reportHasTransaction) reportCreated.incident.transaction = {};
 
     return reportCreated;
   },
@@ -283,6 +285,15 @@ export const Reports = {
       );
     if (!body.incident.transaction.types)
       (body.incident.transaction = {}), (reportHasTransaction = false);
+
+    // For store numbers, incident types or incident transaction types
+    // If their array includes: "*", add all the elements except the wildcard
+    if (body.store.numbers.includes("*"))
+      body.store.numbers = config.validation.selects.storeNumbers.filter(sN => sN !== "*");
+    if (body.incident.types.includes("*"))
+      body.incident.types = config.validation.selects.incidentTypes.filter(iT => iT !== "*");
+    if (body.incident.transaction.types.includes("*"))
+      body.incident.transaction.types = config.validation.selects.incidentTransactionTypes.filter(iTT => iTT !== "*");
     
     const reportUpdate = mssql(transaction).request;
 
@@ -319,7 +330,7 @@ export const Reports = {
       insertManyToMany(body.incident.types, report.id, reportUpdate, this.insertIncidentTypes),
     ]
         
-    if(body.incident.transaction.types) {
+    if(reportHasTransaction) {
       queries.push(
         insertManyToMany(body.incident.transaction.types, report.id, reportUpdate, this.insertIncidentTransactionTypes)
       )
@@ -335,7 +346,7 @@ export const Reports = {
       .execute("api_v1_reports_getById");
 
     const reportUpdated = JSON.parse(rawJSON);
-    reportHasTransaction === false ? reportUpdated.incident.transaction = {} : null;
+    if(!reportHasTransaction) reportUpdated.incident.transaction = {};
 
     return reportUpdated;
   },
@@ -397,7 +408,7 @@ export const Reports = {
     const { VarChar, Int, Bit, Date, Time, DateTimeOffset } = mssqlDataTypes;
     const reportsImported = [];
 
-    let i = 0;
+    let i = 1;
     for (const report of body) {
       console.log("Report:", i++);
 
