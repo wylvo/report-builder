@@ -123,6 +123,7 @@ export default class ModalFormView extends ModalView {
           this._modalElement.querySelector(".modal-btn.error");
         this.renderSpinner(hardDeleteBtn);
 
+        // function controlHardDeleteReport in ./report.controller.js
         await handler(id, this.#password());
 
         this.#clearPassword();
@@ -138,7 +139,14 @@ export default class ModalFormView extends ModalView {
         .querySelector("#form-modal")
         .addEventListener("submit", async (e) => {
           e.preventDefault();
+          const importBtn =
+            this._modalElement.querySelector(".modal-btn.import");
+          this.renderSpinner(importBtn);
+
+          // function controlImportReports in ./report.controller.js
           await handler(this.#reports());
+
+          this.clearSpinner(importBtn, null, "import");
         });
     });
   }

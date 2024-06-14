@@ -1,13 +1,4 @@
-import { Reports } from "../report.model.js";
-import {
-  mssql,
-  mssqlDataTypes,
-  config,
-  validateBody,
-  catchAsync,
-  GlobalError,
-  dateMSSharePoint,
-} from "../../router.js";
+import { catchAsync, GlobalError } from "../../router.js";
 
 export const migrateReport = catchAsync(async (req, res, next) => {
   const reports = req.body;
@@ -31,8 +22,10 @@ export const migrateReport = catchAsync(async (req, res, next) => {
 
     const cDT = report.createdDateTime;
     const lMDT = report.lastModifiedDateTime || report.lastModified;
-    report.createdAt = cDT;
-    report.updatedAt = lMDT ? lMDT : report.createdAt;
+    report.createdAt = cDT ? cDT : report.createdAt;
+    if (lMDT && !report.updatedAt) report.updatedAt = lMDT;
+    if (!lMDT && !report.updatedAt) report.updatedAt = report.createdAt;
+
     delete report.createdDateTime;
     delete report.lastModifiedDateTime;
     delete report.lastModified;
@@ -42,14 +35,17 @@ export const migrateReport = catchAsync(async (req, res, next) => {
       ? nameToUsername(report.updatedBy)
       : report.createdBy;
 
-    report.assignedTo = report.tech.username;
-    report.isOnCall = report.tech.isOnCall;
+    if (report.tech?.username) report.assignedTo = report.tech.username;
+    if (typeof report.tech?.isOnCall !== "undefined")
+      report.isOnCall = report.tech.isOnCall;
 
     delete report.call.dateTime;
 
     const sN = report.store.number;
-    report.store.numbers = [sN];
-    delete report.store.number;
+    if (sN) {
+      report.store.numbers = [sN];
+      delete report.store.number;
+    }
 
     delete report.store.districtManager;
 
@@ -59,8 +55,10 @@ export const migrateReport = catchAsync(async (req, res, next) => {
     delete report.incident.copyTimestamp;
 
     const iT = report.incident.type;
-    report.incident.types = [iT];
-    delete report.incident.type;
+    if (iT) {
+      report.incident.types = [iT];
+      delete report.incident.type;
+    }
 
     if (report.incident.transaction.type) {
       const iTT = report.incident.transaction.type;
@@ -69,15 +67,15 @@ export const migrateReport = catchAsync(async (req, res, next) => {
     }
 
     const isIRCreated = report.incident.transaction.isIRCreated;
-    report.incident.transaction.hasVarianceReport = isIRCreated;
-    delete report.incident.transaction.isIRCreated;
+    if (typeof isIRCreated !== "undefined") {
+      report.incident.transaction.hasVarianceReport = isIRCreated;
+      delete report.incident.transaction.isIRCreated;
+    }
 
     delete report.tech;
-    if (i === 155) console.log(report);
-    // delete report.tableRowEl;
   });
 
-  res.status(201).json({
+  res.status(200).json({
     status: "success",
     data: reports,
   });

@@ -60,16 +60,16 @@ export const DEFAULT_REPORT_CREATE = Object.freeze({
 });
 
 export const DEFAULT_REPORT_UPDATE = Object.freeze({
-  ...DEFAULT_REPORT_CREATE,
   isDeleted: false,
   isWebhookSent: false,
   hasTriggeredWebhook: false,
+  ...DEFAULT_REPORT_CREATE,
 });
 
 export const DEFAULT_REPORT_IMPORT = Object.freeze({
-  ...DEFAULT_REPORT_UPDATE,
   createdBy: "string",
   updatedBy: "string",
   createdAt: "string",
   updatedAt: "string",
+  ...DEFAULT_REPORT_UPDATE,
 });

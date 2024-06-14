@@ -300,6 +300,47 @@ const controlUndoDeleteReport = async function (id) {
   }
 };
 
+const controlImportReports = async function (rawJSON) {
+  try {
+    let errors = false;
+    const unmigratedReports = JSON.parse(rawJSON);
+
+    // Check if raw JSON is an array and is not empty
+    if (!Array.isArray(unmigratedReports) || unmigratedReports.length === 0)
+      return notificationsView.warning(
+        "JSON can't be empty, and has to be enclosed by an array -> []"
+      );
+
+    const migratedReports = await model.DB.migrateReports(unmigratedReports);
+
+    // Check report validity of each values inside the non-empty array
+    migratedReports.forEach((report, i) => {
+      console.log(report);
+      try {
+        report.tableRowEl = {};
+        model.checkReportValidity(model.DEFAULT_REPORT_IMPORT, report);
+      } catch (error) {
+        errors = true;
+        notificationsView.error(`Report ${i + 1}: ${error.message}`);
+      }
+    });
+
+    if (errors) return;
+
+    const reportIds = await model.DB.importReports(migratedReports);
+
+    console.log(reportIds);
+
+    notificationsView.import(
+      `Report(s) successfully imported: ${reportIds.length}`
+    );
+    modalView.closeModal();
+  } catch (error) {
+    console.error(error);
+    notificationsView.error(error.message, 60);
+  }
+};
+
 // prettier-ignore
 const controlUnsavedReport = async (controlFunction, handler = undefined, event = undefined) => {
   let isSaveConfirmed = false;
@@ -376,45 +417,6 @@ const controlRenderAllReports = function () {
   reportTableView.updateTotalCount(reports);
 
   return reports;
-};
-
-const controlImportReports = async function (rawJSON) {
-  try {
-    const unmigratedReports = JSON.parse(rawJSON);
-    let errors = false;
-
-    // Check if raw JSON is an array and is not empty
-    if (!Array.isArray(unmigratedReports) || unmigratedReports.length === 0)
-      return notificationsView.warning(
-        "JSON can't be empty, and has to be enclosed by an array -> []"
-      );
-
-    const migratedReports = await model.DB.migrateReports(unmigratedReports);
-
-    // Check report validity of each values inside the non-empty array
-    migratedReports.forEach((report, i) => {
-      try {
-        model.checkReportValidity(model.DEFAULT_REPORT_IMPORT, report);
-      } catch (error) {
-        errors = true;
-        notificationsView.error(`Report ${i + 1}: ${error.message}`);
-      }
-    });
-
-    if (errors) return;
-
-    const reportIds = await model.DB.importReports(migratedReports);
-
-    console.log(reportIds);
-
-    notificationsView.import(
-      `Report(s) successfully imported: ${reportIds.length}`
-    );
-    modalView.closeModal();
-  } catch (error) {
-    console.error(error);
-    notificationsView.error(error.message, 60);
-  }
 };
 
 const controlBeforeUnload = function () {
