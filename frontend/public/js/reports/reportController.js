@@ -1,5 +1,5 @@
 import * as model from "./reportModel.js";
-import api from "../api.js";
+import api, { isRequestInProgress } from "../api.js";
 
 import reportTabsView from "./views/reportTabsView.js";
 import reportTableView from "./views/reportTableView.js";
@@ -89,6 +89,8 @@ const controlRenderReport = function () {
 
 // prettier-ignore
 const controlSaveReport = async function (reportId) {
+  if (isRequestInProgress) return notificationsView.warning("A request is already in progress.");
+  
   const id = reportId ? reportId : window.location.hash.slice(1);
   let report;
   try {
@@ -129,6 +131,8 @@ const controlSaveReport = async function (reportId) {
 
 // prettier-ignore
 const controlSendReport = async function (id = undefined) {
+  if (isRequestInProgress) return notificationsView.warning("A request is already in progress.");
+  
   const hasIdInHash = window.location.hash.slice(1);
   let isPromptConfirmed = true;
   if (!id && hasIdInHash) id = hasIdInHash;
@@ -185,6 +189,8 @@ const controlSendReport = async function (id = undefined) {
 
 // prettier-ignore
 const controlDeleteReport = async function (id) {
+  if (isRequestInProgress) return notificationsView.warning("A request is already in progress.");
+  
   let reportTableRowDeleteBtn;
 
   try {
@@ -239,6 +245,8 @@ const controlDeleteReport = async function (id) {
 
 // prettier-ignore
 const controlHardDeleteReport = async function (id, password) {
+  if (isRequestInProgress) return notificationsView.warning("A request is already in progress.");
+  
   let reportTableRowDeleteBtn;
 
   try {
@@ -276,6 +284,8 @@ const controlHardDeleteReport = async function (id, password) {
 
 // prettier-ignore
 const controlUndoDeleteReport = async function (id) {
+  if (isRequestInProgress) return notificationsView.warning("A request is already in progress.");
+  
   let reportTableRowUndoBtn;
   try {
     let isUndoConfirmed = true;
@@ -307,6 +317,9 @@ const controlUndoDeleteReport = async function (id) {
 };
 
 const controlImportReports = async function (rawJSON) {
+  if (isRequestInProgress)
+    return notificationsView.warning("A request is already in progress.");
+
   try {
     let errors = false;
     const unmigratedReports = JSON.parse(rawJSON);
@@ -442,6 +455,9 @@ const controlBeforeUnload = function () {
  *************************************************************
  */
 export const init = async function () {
+  // reportTableView.renderSpinner(
+  //   reportTableView._table.querySelector(`.table-row td:nth-child(5)`)
+  // );
   await model.init();
 
   // Initialize all tabs

@@ -1,7 +1,17 @@
 import * as model from "./model.js";
 
+export let isRequestInProgress = false;
+
 // JSON Fetch requests
-const fetchJSON = async (url, method = undefined, jsonData = undefined) => {
+const fetchJSON = async (url, method = "GET", jsonData = undefined) => {
+  if (["POST", "PUT", "DELETE"].includes(method.toUpperCase())) {
+    if (isRequestInProgress) {
+      console.warn("A HTTP request is already in progress... Please wait.");
+      return { response: {}, data: {} };
+    }
+    isRequestInProgress = true;
+  }
+
   try {
     const response =
       method && jsonData
@@ -23,6 +33,10 @@ const fetchJSON = async (url, method = undefined, jsonData = undefined) => {
     return { response, data };
   } catch (error) {
     throw error;
+  } finally {
+    if (["POST", "PUT", "DELETE"].includes(method.toUpperCase())) {
+      isRequestInProgress = false;
+    }
   }
 };
 

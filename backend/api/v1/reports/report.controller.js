@@ -183,25 +183,25 @@ export const deleteReport = catchAsync(async (req, res, next) => {
 export const softDeleteReport = async (req, res, next) => {
   const id = req.params.id;
 
-  const report = await Reports.findById(id);
+  // const report = await Reports.findById(id);
 
-  if (!report)
-    return next(new GlobalError(`Report not found with id: ${id}.`, 404));
+  // if (!report)
+  //   return next(new GlobalError(`Report not found with id: ${id}.`, 404));
 
-  if (report.isDeleted === true)
-    return next(
-      new GlobalError(
-        `Report is already marked as deleted with id: ${id}.`,
-        400
-      )
-    );
+  // if (report.isDeleted === true)
+  //   return next(
+  //     new GlobalError(
+  //       `Report is already marked as deleted with id: ${id}.`,
+  //       400
+  //     )
+  //   );
 
-  const reportUpdated = await Reports.softDelete(report);
+  // const reportUpdated = await Reports.softDelete(report);
 
-  res.status(200).json({
-    status: "success",
-    data: reportUpdated,
-  });
+  // res.status(200).json({
+  //   status: "success",
+  //   data: reportUpdated,
+  // });
 };
 
 export const undoSoftDeleteReport = async (req, res, next) => {

@@ -267,15 +267,6 @@ export const Reports = {
       );
     if (!body.incident.transaction.types)
       (body.incident.transaction = {}), (reportHasTransaction = false);
-
-    // For store numbers, incident types or incident transaction types
-    // If their array includes: "*", add all the elements except the wildcard
-    if (body.store.numbers.includes("*"))
-      body.store.numbers = config.validation.selects.storeNumbers.filter(sN => sN !== "*");
-    if (body.incident.types.includes("*"))
-      body.incident.types = config.validation.selects.incidentTypes.filter(iT => iT !== "*");
-    if (body.incident.transaction.types.includes("*"))
-      body.incident.transaction.types = config.validation.selects.incidentTransactionTypes.filter(iTT => iTT !== "*");
     
     const reportUpdate = mssql(transaction).request;
 
