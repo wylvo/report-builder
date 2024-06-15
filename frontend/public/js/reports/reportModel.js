@@ -364,36 +364,6 @@ const updateReport = (reportOrId, form) => {
   return report;
 };
 
-// Update report key values. Update local storage
-// Only "isWebhookSent" and "hasTriggeredWebhook" keys are allowed
-const updateReportKeyValue = (report, key, value) => {
-  const index = findObjectIndexById(state.reports, report);
-  if (!Object.hasOwn(state.reports[index], key))
-    throw new TypeError(`Could not find key "${key}" in report object.`);
-
-  if (key !== "isWebhookSent" && key !== "hasTriggeredWebhook")
-    throw new TypeError(
-      `Invalid key "${key}". Only "isWebhookSent" and "hasTriggeredWebhook" keys are allowed.`
-    );
-
-  if (typeof value !== "boolean" || value === false)
-    throw new TypeError(`Invalid value type. Only boolean allowed.`);
-
-  state.reports[index][key] = value;
-  // saveReportsInLocalStorage();
-  return state.reports[index];
-};
-
-// Update report key: "isWebhookSent" to value: true
-const updateIsWebhookSent = (report) => {
-  updateReportKeyValue(report, "isWebhookSent", true);
-};
-
-// Update report key: "hasTriggeredWebhook" to value: true
-const updateHasTriggeredWebhook = (report) => {
-  updateReportKeyValue(report, "hasTriggeredWebhook", true);
-};
-
 export {
   // from -> ../model.js
   state,
@@ -412,8 +382,6 @@ export {
 
   // from this local file -> ./reportModel.js
   DB,
-  updateIsWebhookSent,
-  updateHasTriggeredWebhook,
   checkReportValidity,
   createReportObject,
   updateReport,

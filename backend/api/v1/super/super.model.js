@@ -1,5 +1,5 @@
 import { mssql, mssqlDataTypes } from "../router.js";
-const { Int, VarChar } = mssqlDataTypes;
+const { INT, VARCHAR } = mssqlDataTypes;
 
 export const Super = {
   // GET SUPER PASSWORD
@@ -9,8 +9,8 @@ export const Super = {
     const {
       output: { hash: password },
     } = await request
-      .input("userId", Int, userId)
-      .output("hash", VarChar)
+      .input("userId", INT, userId)
+      .output("hash", VARCHAR)
       .execute("api_v1_super_getPassword");
 
     return password;

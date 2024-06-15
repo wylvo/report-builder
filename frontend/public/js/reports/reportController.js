@@ -145,35 +145,41 @@ const controlSendReport = async function (id = undefined) {
 
     if(reportViewInTab) reportViewInTab.renderSpinner(reportViewInTab._btnTeams);
     reportTableView.renderSpinner(tableViewBtnTeams);
-    await reportFormView.sleep(3);
 
-    // const request = await api.sendTeamsWebhook(report);
-    if(reportViewInTab) {
-      reportViewInTab.clearSpinner(reportViewInTab._btnTeams, "success", "teams");
-      reportViewInTab._btnTeams.disabled = true;
+    const { data } = await api.v1.webhook.sendReportToIncomingWebhook(id);
+
+    report.hasTriggeredWebhook = data.data.hasTriggeredWebhook
+    console.log(data);
+
+    if(data.webhook) {
+      if (data.webhook.response.statusCode >= 300) {
+        if(reportViewInTab) reportViewInTab.clearSpinner(reportViewInTab._btnTeams, "warning", "teams");
+          reportTableView.clearSpinner(tableViewBtnTeams, "warning", "teams");
+          notificationsView.warning(`
+            Received unsuccessful response from incoming webhook. Status code: ${data.webhook.response.statusCode} (${data.webhook.response.statusText})`, 60
+          );
+          return;
+      }
+
+      report.isWebhookSent = data.data.isWebhookSent
+
+      if(reportViewInTab) {
+        reportViewInTab.clearSpinner(reportViewInTab._btnTeams, "success", "teams");
+        reportViewInTab._btnTeams.disabled = true;
+      }
+      
+      reportTableView.clearSpinner(tableViewBtnTeams, "success", "teams");
+      tableViewBtnTeams.disabled = true;
+      notificationsView.success(`Report successfully sent on Teams. Status code: ${data.webhook.response.status} (${data.webhook.response.statusText})`);
+      return;
     }
-
-    reportTableView.clearSpinner(tableViewBtnTeams, "success", "teams");
-    tableViewBtnTeams.disabled = true;
-    notificationsView.success(`Report successfully sent on Teams. Status code ${request.response.status} (${request.response.statusText})`);
-
-    model.updateIsWebhookSent(report);
-    model.updateHasTriggeredWebhook(report);
-
-    console.log("Local:", JSON.parse(localStorage.getItem("reportsList")));
-    console.log("Model:", model.state);
-    console.log("Tab index:", tabIndex, model.state.tabs.get(tabIndex).report);
+    // reportTableView.clearSpinner(tableViewBtnTeams, "error");
+    // notificationsView.warning(`Failed to send a report to an incoming webhook. ${data.webhook.response.status} (${data.webhook.response.statusText}`, 60);
   } catch (error) {
     console.error(error);
     notificationsView.error(error.message, 60);
     if(reportViewInTab) reportViewInTab.clearSpinner(reportViewInTab._btnTeams);
     reportTableView.clearSpinner(tableViewBtnTeams);
-
-    if (error.message.includes("Request failed")) {
-      if(reportViewInTab) reportViewInTab.clearSpinner(reportViewInTab._btnTeams, "error");
-      reportTableView.clearSpinner(tableViewBtnTeams, "error");
-      notificationsView.warning("Make sure you have internet access.", 60);
-    }
   }
 };
 

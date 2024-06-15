@@ -378,7 +378,8 @@ input:checked + .slider:before {
 }
 
 .form-btn .status-success,
-.form-btn .status-error {
+.form-btn .status-error,
+.form-btn .status-warning {
   position: absolute;
   top: 0%;
   left: 100%;
@@ -404,4 +405,12 @@ input:checked + .slider:before {
   background-color: var(--attention-background-color-alt);
   color: var(--default-on-background);
   fill: var(--default-on-background);
+}
+
+.form-btn .icons.status-warning,
+.form-btn:disabled .icons.status-warning {
+  background-color: var(--warning-background-color-alt);
+  color: var(--default-on-background);
+  fill: var(--default-on-background);
+  padding: 0.2rem;
 }

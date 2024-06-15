@@ -1,9 +1,9 @@
 import { mssql, mssqlDataTypes, config } from "../router.js";
 import storeSchema from "./store.schema.js";
 
-const { VarChar, NVarChar, Int, Bit } = mssqlDataTypes;
+const { VARCHAR, NVARCHAR, INT, BIT } = mssqlDataTypes;
 
-// Custom validation to check if district manager username exists in DB
+// Custom validation to check if a district manager username exists in DB
 export { isValidDistrictManagerUsername } from "../districtManagers/districtManager.model.js";
 
 export const Stores = {
@@ -24,8 +24,8 @@ export const Stores = {
     const {
       output: { store },
     } = await mssql()
-      .request.input("id", Int, id)
-      .output("store", NVarChar)
+      .request.input("id", INT, id)
+      .output("store", NVARCHAR)
       .execute("api_v1_stores_getById");
 
     return JSON.parse(store);
@@ -36,8 +36,8 @@ export const Stores = {
     const {
       output: { store },
     } = await mssql()
-      .request.input("number", VarChar, number)
-      .output("store", NVarChar)
+      .request.input("number", VARCHAR, number)
+      .output("store", NVARCHAR)
       .execute("api_v1_stores_getByNumber");
 
     return JSON.parse(store);
@@ -48,7 +48,7 @@ export const Stores = {
     const {
       output: { store },
     } = await mssql()
-      .request.output("store", NVarChar)
+      .request.output("store", NVARCHAR)
       .execute("api_v1_stores_getAll");
 
     const stores = JSON.parse(store);
@@ -65,19 +65,19 @@ export const Stores = {
     const {
       output: { store },
     } = await mssql()
-      .request.input("name", VarChar, body.name)
-      .input("active", Bit, body.active)
-      .input("number", VarChar, body.number)
-      .input("numberDK", VarChar, body.numberDK)
-      .input("address1", VarChar, body.address1)
-      .input("address2", VarChar, body.address2)
-      .input("city", VarChar, body.city)
-      .input("state", VarChar, body.state)
-      .input("zipcode", VarChar, body.zipcode)
-      .input("country", VarChar, body.country)
-      .input("phoneNumber", VarChar, body.phoneNumber)
-      .input("districtManagerId", Int, districtManagerId)
-      .output("store", NVarChar)
+      .request.input("name", VARCHAR, body.name)
+      .input("active", BIT, body.active)
+      .input("number", VARCHAR, body.number)
+      .input("numberDK", VARCHAR, body.numberDK)
+      .input("address1", VARCHAR, body.address1)
+      .input("address2", VARCHAR, body.address2)
+      .input("city", VARCHAR, body.city)
+      .input("state", VARCHAR, body.state)
+      .input("zipcode", VARCHAR, body.zipcode)
+      .input("country", VARCHAR, body.country)
+      .input("phoneNumber", VARCHAR, body.phoneNumber)
+      .input("districtManagerId", INT, districtManagerId)
+      .output("store", NVARCHAR)
       .execute("api_v1_stores_create");
 
     return JSON.parse(store);
@@ -88,20 +88,20 @@ export const Stores = {
     const {
       output: { store: storeUpdated },
     } = await mssql()
-      .request.input("storeId", Int, store.id)
-      .input("name", VarChar, body.name)
-      .input("active", Bit, body.active)
-      .input("number", VarChar, body.number)
-      .input("numberDK", VarChar, body.numberDK)
-      .input("address1", VarChar, body.address1)
-      .input("address2", VarChar, body.address2)
-      .input("city", VarChar, body.city)
-      .input("state", VarChar, body.state)
-      .input("zipcode", VarChar, body.zipcode)
-      .input("country", VarChar, body.country)
-      .input("phoneNumber", VarChar, body.phoneNumber)
-      .input("districtManagerId", Int, districtManagerId)
-      .output("store", NVarChar)
+      .request.input("storeId", INT, store.id)
+      .input("name", VARCHAR, body.name)
+      .input("active", BIT, body.active)
+      .input("number", VARCHAR, body.number)
+      .input("numberDK", VARCHAR, body.numberDK)
+      .input("address1", VARCHAR, body.address1)
+      .input("address2", VARCHAR, body.address2)
+      .input("city", VARCHAR, body.city)
+      .input("state", VARCHAR, body.state)
+      .input("zipcode", VARCHAR, body.zipcode)
+      .input("country", VARCHAR, body.country)
+      .input("phoneNumber", VARCHAR, body.phoneNumber)
+      .input("districtManagerId", INT, districtManagerId)
+      .output("store", NVARCHAR)
       .execute("api_v1_stores_update");
 
     return JSON.parse(storeUpdated);
@@ -110,7 +110,7 @@ export const Stores = {
   // DELETE AN EXISTING STORE **THIS ACTION IS IRREVERSIBLE**
   hardDelete(store) {
     return mssql()
-      .request.input("storeId", Int, store.id)
+      .request.input("storeId", INT, store.id)
       .execute("api_v1_stores_delete");
   },
 };

@@ -1,7 +1,7 @@
 import { mssql, mssqlDataTypes, config } from "../router.js";
 import districtManagerSchema from "./districtManager.schema.js";
 
-const { VarChar, NVarChar, Int } = mssqlDataTypes;
+const { VARCHAR, NVARCHAR, INT } = mssqlDataTypes;
 
 // Custom validation to check if a district manager username exists in DB
 export const isDistrictManagerUsername = async (value, raiseError = true) => {
@@ -48,8 +48,8 @@ export const DistrictManagers = {
     const {
       output: { districtManager },
     } = await mssql()
-      .request.input("id", Int, id)
-      .output("districtManager", NVarChar)
+      .request.input("id", INT, id)
+      .output("districtManager", NVARCHAR)
       .execute("api_v1_districtManagers_getById");
 
     return JSON.parse(districtManager);
@@ -60,8 +60,8 @@ export const DistrictManagers = {
     const {
       output: { districtManager },
     } = await mssql()
-      .request.input("username", VarChar, username)
-      .output("districtManager", NVarChar)
+      .request.input("username", VARCHAR, username)
+      .output("districtManager", NVARCHAR)
       .execute("api_v1_districtManagers_getByUsername");
 
     return JSON.parse(districtManager);
@@ -72,7 +72,7 @@ export const DistrictManagers = {
     const {
       output: { districtManager },
     } = await mssql()
-      .request.output("districtManager", NVarChar)
+      .request.output("districtManager", NVARCHAR)
       .execute("api_v1_districtManagers_getAll");
 
     const districtManagers = JSON.parse(districtManager);
@@ -90,10 +90,10 @@ export const DistrictManagers = {
     const {
       output: { districtManager },
     } = await mssql()
-      .request.input("fullName", VarChar, body.fullName)
-      .input("username", VarChar, body.username)
-      .input("profilePictureURI", NVarChar, body.profilePictureURI)
-      .output("districtManager", NVarChar)
+      .request.input("fullName", VARCHAR, body.fullName)
+      .input("username", VARCHAR, body.username)
+      .input("profilePictureURI", NVARCHAR, body.profilePictureURI)
+      .output("districtManager", NVARCHAR)
       .execute("api_v1_districtManagers_create");
 
     return JSON.parse(districtManager);
@@ -107,11 +107,11 @@ export const DistrictManagers = {
     const {
       output: { districtManager: districtManagerUpdated },
     } = await mssql()
-      .request.input("districtManagerId", Int, districtManager.id)
-      .input("fullName", VarChar, body.fullName)
-      .input("username", VarChar, body.username)
-      .input("profilePictureURI", NVarChar, body.profilePictureURI)
-      .output("districtManager", NVarChar)
+      .request.input("districtManagerId", INT, districtManager.id)
+      .input("fullName", VARCHAR, body.fullName)
+      .input("username", VARCHAR, body.username)
+      .input("profilePictureURI", NVARCHAR, body.profilePictureURI)
+      .output("districtManager", NVARCHAR)
       .execute("api_v1_districtManagers_update");
 
     return JSON.parse(districtManagerUpdated);
@@ -120,7 +120,7 @@ export const DistrictManagers = {
   // DELETE AN EXISTING DISTRICT MANAGER **THIS ACTION IS IRREVERSIBLE**
   hardDelete(districtManager) {
     return mssql()
-      .request.input("districtManagerId", Int, districtManager.id)
+      .request.input("districtManagerId", INT, districtManager.id)
       .execute("api_v1_districtManagers_delete");
   },
 };

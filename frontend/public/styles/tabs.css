@@ -43,6 +43,7 @@ Other Views: reportTableView.js & accountTableView.js
   border-right: 0.1rem solid transparent;
 }
 
+.tab-btn-table,
 .tab-btn {
   display: flex;
   justify-content: center;

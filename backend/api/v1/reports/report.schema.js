@@ -96,10 +96,18 @@ const CREATE = {
       options: [],
       errorMessage: "",
     },
-    // Keep unique values only
+
     customSanitizer: {
       options: (_, { req }) => {
-        return (req.body.store.numbers = [...new Set(req.body.store.numbers)]);
+        // Keep unique values only
+        req.body.store.numbers = [...new Set(req.body.store.numbers)];
+
+        // If includes: "*" (all), add all the elements from the validation. Filter out: "*"
+        if (req.body.store.numbers.includes("*"))
+          req.body.store.numbers =
+            config.validation.selects.storeNumbers.filter((sN) => sN !== "*");
+
+        return req.body.store.numbers;
       },
     },
   },
@@ -159,12 +167,18 @@ const CREATE = {
       options: [],
       errorMessage: "",
     },
-    // Keep unique values only
+
     customSanitizer: {
       options: (_, { req }) => {
-        return (req.body.incident.types = [
-          ...new Set(req.body.incident.types),
-        ]);
+        // Keep unique values only
+        req.body.incident.types = [...new Set(req.body.incident.types)];
+
+        // If includes: "*" (all), add all the elements from the validation. Filter out: "*"
+        if (req.body.incident.types.includes("*"))
+          req.body.incident.types =
+            config.validation.selects.incidentTypes.filter((iT) => iT !== "*");
+
+        return req.body.incident.types;
       },
     },
   },
@@ -205,12 +219,22 @@ const CREATE = {
       options: [],
       errorMessage: "",
     },
-    // Keep unique values only
+
     customSanitizer: {
       options: (_, { req }) => {
-        return (req.body.incident.transaction.types = [
+        // Keep unique values only
+        req.body.incident.transaction.types = [
           ...new Set(req.body.incident.transaction.types),
-        ]);
+        ];
+
+        // If includes: "*" (all), add all the elements from the validation. Filter out: "*"
+        if (req.body.incident.transaction.types.includes("*"))
+          req.body.incident.transaction.types =
+            config.validation.selects.incidentTransactionTypes.filter(
+              (iTT) => iTT !== "*"
+            );
+
+        return req.body.incident.transaction.types;
       },
     },
   },

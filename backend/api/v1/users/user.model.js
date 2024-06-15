@@ -1,5 +1,6 @@
 import userValidationSchema from "./user.schema.js";
 import { mssql, hashPassword, config, mssqlDataTypes } from "../router.js";
+const { INT, NVARCHAR, VARCHAR, BIT } = mssqlDataTypes;
 
 // Custom validation to check if username exists in DB
 export const isUsername = async (value, raiseError = true) => {
@@ -50,13 +51,11 @@ export const Users = {
 
   // GET SINGLE USER BY ID
   async findById(id) {
-    const { Int, NVarChar } = mssqlDataTypes;
-
     const {
       output: { user },
     } = await mssql()
-      .request.input("id", Int, id)
-      .output("user", NVarChar)
+      .request.input("id", INT, id)
+      .output("user", NVARCHAR)
       .execute("api_v1_users_getById");
 
     return JSON.parse(user);
@@ -64,13 +63,11 @@ export const Users = {
 
   // GET SINGLE USER BY EMAIL
   async findByEmail(email) {
-    const { VarChar, NVarChar } = mssqlDataTypes;
-
     const {
       output: { user },
     } = await mssql()
-      .request.input("email", VarChar, email)
-      .output("user", NVarChar)
+      .request.input("email", VARCHAR, email)
+      .output("user", NVARCHAR)
       .execute("api_v1_users_getByEmail");
 
     return JSON.parse(user);
@@ -78,13 +75,11 @@ export const Users = {
 
   // GET SINGLE USER BY USERNAME
   async findByUsername(username) {
-    const { VarChar, NVarChar } = mssqlDataTypes;
-
     const {
       output: { user },
     } = await mssql()
-      .request.input("username", VarChar, username)
-      .output("user", NVarChar)
+      .request.input("username", VARCHAR, username)
+      .output("user", NVARCHAR)
       .execute("api_v1_users_getByUsername");
 
     return JSON.parse(user);
@@ -92,12 +87,10 @@ export const Users = {
 
   // GET ALL USERS
   async all(frontend = false) {
-    const { NVarChar } = mssqlDataTypes;
-
     const {
       output: { user },
     } = await mssql()
-      .request.output("user", NVarChar)
+      .request.output("user", NVARCHAR)
       .execute(
         frontend ? "api_v1_users_getAllFrontend" : "api_v1_users_getAll"
       );
@@ -111,8 +104,6 @@ export const Users = {
 
   // CREATE A NEW USER
   async create(body) {
-    const { VarChar, Bit, NVarChar } = mssqlDataTypes;
-
     body.password = await hashPassword(body.password);
     body.active = body.active ?? true;
     body.profilePictureURI =
@@ -122,15 +113,15 @@ export const Users = {
     const {
       output: { user },
     } = await mssql()
-      .request.input("role", VarChar, body.role)
-      .input("active", Bit, body.active)
-      .input("email", VarChar, body.email)
-      .input("password", VarChar, body.password)
-      .input("profilePictureURI", NVarChar, body.profilePictureURI)
-      .input("fullName", VarChar, body.fullName)
-      .input("username", VarChar, body.username)
-      .input("initials", VarChar, body.initials)
-      .output("user", NVarChar)
+      .request.input("role", VARCHAR, body.role)
+      .input("active", BIT, body.active)
+      .input("email", VARCHAR, body.email)
+      .input("password", VARCHAR, body.password)
+      .input("profilePictureURI", NVARCHAR, body.profilePictureURI)
+      .input("fullName", VARCHAR, body.fullName)
+      .input("username", VARCHAR, body.username)
+      .input("initials", VARCHAR, body.initials)
+      .output("user", NVARCHAR)
       .execute("api_v1_users_create");
 
     return JSON.parse(user);
@@ -138,23 +129,21 @@ export const Users = {
 
   // UPDATE EXISTING USER
   async update(body, user) {
-    const { Int, VarChar, Bit, NVarChar } = mssqlDataTypes;
-
     body.profilePictureURI =
       body.profilePictureURI ?? config.validation.defaultProfilePicture;
 
     const {
       output: { user: userUpdated },
     } = await mssql()
-      .request.input("userId", Int, user.id)
-      .input("role", VarChar, body.role)
-      .input("active", Bit, body.active)
-      .input("email", VarChar, body.email)
-      .input("profilePictureURI", NVarChar, body.profilePictureURI)
-      .input("fullName", VarChar, body.fullName)
-      .input("username", VarChar, body.username)
-      .input("initials", VarChar, body.initials)
-      .output("user", NVarChar)
+      .request.input("userId", INT, user.id)
+      .input("role", VARCHAR, body.role)
+      .input("active", BIT, body.active)
+      .input("email", VARCHAR, body.email)
+      .input("profilePictureURI", NVARCHAR, body.profilePictureURI)
+      .input("fullName", VARCHAR, body.fullName)
+      .input("username", VARCHAR, body.username)
+      .input("initials", VARCHAR, body.initials)
+      .output("user", NVARCHAR)
       .execute("api_v1_users_update");
 
     return JSON.parse(userUpdated);
@@ -169,13 +158,11 @@ export const Users = {
 
   // ENABLE A USER
   async enable(user) {
-    const { Int, NVarChar } = mssqlDataTypes;
-
     const {
       output: { user: userUpdated },
     } = await mssql()
-      .request.input("userId", Int, user.id)
-      .output("user", NVarChar)
+      .request.input("userId", INT, user.id)
+      .output("user", NVARCHAR)
       .execute("api_v1_users_enable");
 
     return JSON.parse(userUpdated);
@@ -183,21 +170,17 @@ export const Users = {
 
   // DISABLE A USER
   async disable(user) {
-    const { Int, NVarChar } = mssqlDataTypes;
-
     const {
       output: { user: userUpdated },
     } = await mssql()
-      .request.input("userId", Int, user.id)
-      .output("user", NVarChar)
+      .request.input("userId", INT, user.id)
+      .output("user", NVARCHAR)
       .execute("api_v1_users_disable");
 
     return JSON.parse(userUpdated);
   },
 
   async resetPassword(body, user) {
-    const { Int, VarChar } = mssqlDataTypes;
-
     // Set new password
     user.password = await hashPassword(body.password);
     body = undefined;
@@ -205,8 +188,8 @@ export const Users = {
     const {
       output: { user: userUpdated },
     } = await mssql()
-      .request.input("userId", Int, user.id)
-      .input("password", VarChar, user.password)
+      .request.input("userId", INT, user.id)
+      .input("password", VARCHAR, user.password)
       .execute("api_v1_users_update_password");
   },
 };

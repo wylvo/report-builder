@@ -17,6 +17,11 @@ const dbConfig = {
     // encrypt: true, // for Azure SQL
     trustedConnection: false, // use Windows authentication
   },
+  pool: {
+    max: 10,
+    min: 0,
+    idleTimeoutMillis: 60000,
+  },
   beforeConnect: function (bcConfig) {
     // Modify the connection options here
     /** The Driver SQL Server Native Client has been removed from SQL Server 2022.
@@ -75,13 +80,13 @@ export const mssql = (existingPool = undefined) => {
 };
 
 export const mssqlDataTypes = {
-  NVarChar: sql.NVarChar,
-  VarChar: sql.VarChar,
-  Date: sql.Date,
-  Time: sql.Time,
-  Int: sql.Int,
-  Bit: sql.Bit,
-  DateTimeOffset: sql.DateTimeOffset,
+  NVARCHAR: sql.NVarChar,
+  VARCHAR: sql.VarChar,
+  DATE: sql.Date,
+  TIME: sql.Time,
+  INT: sql.Int,
+  BIT: sql.Bit,
+  DATETIMEOFFSET: sql.DateTimeOffset,
 };
 
 export default dbConfig;

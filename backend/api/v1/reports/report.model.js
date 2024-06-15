@@ -10,6 +10,9 @@ import {
 } from "../router.js";
 import reportSchema from "./report.schema.js";
 
+const { NVARCHAR, VARCHAR, INT, BIT, DATETIMEOFFSET, DATE, TIME } =
+  mssqlDataTypes;
+
 // Custom validation to check if username exists in DB & and user is active
 export { isUsername, isValidUsername } from "../users/user.model.js";
 
@@ -72,18 +75,17 @@ const isTransactionObjectEmpty = (transaction) =>
 const insertManyToMany = (array, reportId, mssql, insertFunction) => {
   if (!array || !Array.isArray(array) || array.length === 0) return;
 
-  const rows = [],
-    { Int } = mssqlDataTypes;
+  const rows = [];
 
   array.forEach((value, i) => {
     const param = `param_${insertFunction.name}_${i}`;
     rows.push(insertFunction().row(param));
 
-    // console.log("param:", param, typeof param, ", value:", value, typeof value);
+    // console.log("PARAM:", param, ", VALUE:", value, typeof value);
     mssql.input(param, value);
   });
 
-  mssql.input(`reportId_${insertFunction.name}`, Int, reportId);
+  mssql.input(`reportId_${insertFunction.name}`, INT, reportId);
 
   return insertFunction().query(rows);
 };
@@ -105,13 +107,11 @@ export const Reports = {
 
   // GET SINGLE REPORT BY ID
   async findById(id) {
-    const { NVarChar, Int } = mssqlDataTypes;
-
     const {
       output: { report: rawJSON },
     } = await mssql()
-      .request.input("id", Int, id)
-      .output("report", NVarChar)
+      .request.input("id", INT, id)
+      .output("report", NVARCHAR)
       .execute("api_v1_reports_getById");
 
     const report = JSON.parse(rawJSON);
@@ -121,13 +121,11 @@ export const Reports = {
 
   // GET ALL REPORTS CREATED BY A USER, OR GET ALL SOFT DELETED REPORTS CREATED BY A USER
   async createdBy(userId, softDeleted = false) {
-    const { NVarChar, Int } = mssqlDataTypes;
-
     const {
       output: { report: rawJSON },
     } = await mssql()
-      .request.input("userId", Int, userId)
-      .output("report", NVarChar)
+      .request.input("userId", INT, userId)
+      .output("report", NVARCHAR)
       .execute(
         softDeleted
           ? "api_v1_reports_getCreatedByUserIdSoftDeleted"
@@ -143,13 +141,11 @@ export const Reports = {
 
   // SOFT DELETE SINGLE REPORT BY ID
   async softDelete(report) {
-    const { NVarChar, Int } = mssqlDataTypes;
-
     const {
       output: { report: rawJSON },
     } = await mssql()
-      .request.input("id", Int, report.id)
-      .output("report", NVarChar)
+      .request.input("id", INT, report.id)
+      .output("report", NVARCHAR)
       .execute("api_v1_reports_softDeleteById");
 
     const reportUpdated = JSON.parse(rawJSON);
@@ -159,13 +155,11 @@ export const Reports = {
 
   // UNDO SOFT DELETE SINGLE REPORT BY ID
   async undoSoftDelete(report) {
-    const { NVarChar, Int } = mssqlDataTypes;
-
     const {
       output: { report: rawJSON },
     } = await mssql()
-      .request.input("id", Int, report.id)
-      .output("report", NVarChar)
+      .request.input("id", INT, report.id)
+      .output("report", NVARCHAR)
       .execute("api_v1_reports_softDeleteUndoById");
 
     const reportUpdated = JSON.parse(rawJSON);
@@ -175,11 +169,10 @@ export const Reports = {
 
   // GET ALL REPORTS, OR GET ALL SOFT DELETED REPORTS
   async all(softDeleted = false) {
-    const { NVarChar } = mssqlDataTypes;
     const {
       output: { report: rawJSON },
     } = await mssql()
-      .request.output("report", NVarChar)
+      .request.output("report", NVARCHAR)
       .execute(
         softDeleted
           ? "api_v1_reports_getAllSoftDeleted"
@@ -196,7 +189,6 @@ export const Reports = {
   // CREATE A NEW REPORT
   // prettier-ignore
   async create(body, createdByAndUpdatedBy, assignedTo, transaction) {
-    const { NVarChar, VarChar, Int, Bit, Date, Time } = mssqlDataTypes;
     let reportHasTransaction = true;
 
     body.version = config.version;
@@ -210,39 +202,30 @@ export const Reports = {
     if (!body.incident.transaction.types) 
       (body.incident.transaction = {}), (reportHasTransaction = false);
 
-    // For store numbers, incident types or incident transaction types
-    // If their array includes: "*", add all the elements except the wildcard
-    if (body.store.numbers.includes("*"))
-      body.store.numbers = config.validation.selects.storeNumbers.filter(sN => sN !== "*");
-    if (body.incident.types.includes("*"))
-      body.incident.types = config.validation.selects.incidentTypes.filter(iT => iT !== "*");
-    if (body.incident.transaction.types.includes("*"))
-      body.incident.transaction.types = config.validation.selects.incidentTransactionTypes.filter(iTT => iTT !== "*");
-
     const reportCreate = mssql(transaction).request;
 
-    reportCreate.input("version", VarChar, body.version);
-    reportCreate.input("createdBy", Int, body.createdBy);
-    reportCreate.input("updatedBy", Int, body.updatedBy);
-    reportCreate.input("assignedTo", Int, body.assignedTo);
-    reportCreate.input("isOnCall", Bit, body.isOnCall);
-    reportCreate.input("callDate", Date, body.call.date);
-    reportCreate.input("callTime", Time, body.call.time);
-    reportCreate.input("callDateTime", VarChar, body.call.dateTime);
-    reportCreate.input("callPhone", VarChar, body.call.phone);
-    reportCreate.input("callStatus", VarChar, body.call.status);
-    reportCreate.input("storeEmployeeName", VarChar, body.store.employee.name);
-    reportCreate.input("storeEmployeeIsStoreManager", Bit, body.store.employee.isStoreManager);
-    reportCreate.input("incidentTitle", VarChar, body.incident.title);
-    reportCreate.input("incidentPos", VarChar, body.incident.pos);
-    reportCreate.input("incidentIsProcedural", Bit, body.incident.isProcedural);
-    reportCreate.input("incidentError", VarChar, body.incident.error);
-    reportCreate.input("incidentTransactionNumber", VarChar, body.incident.transaction.number);
-    reportCreate.input("incidentTransactionHasVarianceReport", Bit, body.incident.transaction.hasVarianceReport);
-    reportCreate.input("incidentDetails", VarChar, body.incident.details);
+    reportCreate.input("version", VARCHAR, body.version);
+    reportCreate.input("createdBy", INT, body.createdBy);
+    reportCreate.input("updatedBy", INT, body.updatedBy);
+    reportCreate.input("assignedTo", INT, body.assignedTo);
+    reportCreate.input("isOnCall", BIT, body.isOnCall);
+    reportCreate.input("callDate", DATE, body.call.date);
+    reportCreate.input("callTime", TIME, body.call.time);
+    reportCreate.input("callDateTime", VARCHAR, body.call.dateTime);
+    reportCreate.input("callPhone", VARCHAR, body.call.phone);
+    reportCreate.input("callStatus", VARCHAR, body.call.status);
+    reportCreate.input("storeEmployeeName", VARCHAR, body.store.employee.name);
+    reportCreate.input("storeEmployeeIsStoreManager", BIT, body.store.employee.isStoreManager);
+    reportCreate.input("incidentTitle", VARCHAR, body.incident.title);
+    reportCreate.input("incidentPos", VARCHAR, body.incident.pos);
+    reportCreate.input("incidentIsProcedural", BIT, body.incident.isProcedural);
+    reportCreate.input("incidentError", VARCHAR, body.incident.error);
+    reportCreate.input("incidentTransactionNumber", VARCHAR, body.incident.transaction.number);
+    reportCreate.input("incidentTransactionHasVarianceReport", BIT, body.incident.transaction.hasVarianceReport);
+    reportCreate.input("incidentDetails", VARCHAR, body.incident.details);
 
-    const { output: { id: id } } = await reportCreate
-      .output("id", Int)
+    const { output: { id } } = await reportCreate
+      .output("id", INT)
       .execute("api_v1_reports_create");
 
     const queries = [
@@ -260,8 +243,8 @@ export const Reports = {
     const {
       output: { report: rawJSON },
     } = await mssql(transaction)
-      .request.input("id", Int, id)
-      .output("report", NVarChar)
+      .request.input("id", INT, id)
+      .output("report", NVARCHAR)
       .execute("api_v1_reports_getById");
       
     const reportCreated = JSON.parse(rawJSON);
@@ -273,7 +256,6 @@ export const Reports = {
   // UPDATE AN EXISTING REPORT
   // prettier-ignore
   async update(body, report, updatedBy, transaction) {
-    const { NVarChar, VarChar, Int, Bit, Date, Time } = mssqlDataTypes;
     let reportHasTransaction = true;
 
     body.version = config.version;
@@ -297,29 +279,29 @@ export const Reports = {
     
     const reportUpdate = mssql(transaction).request;
 
-    reportUpdate.input("reportId", Int, report.id);
-    reportUpdate.input("version", VarChar, body.version);
-    reportUpdate.input("createdBy", VarChar, body.createdBy);
-    reportUpdate.input("updatedBy", VarChar, body.updatedBy);
-    reportUpdate.input("assignedTo", VarChar, body.assignedTo);
-    reportUpdate.input("isOnCall", Bit, body.isOnCall);
-    reportUpdate.input("isDeleted", Bit, body.isDeleted);
-    reportUpdate.input("isWebhookSent", Bit, body.isWebhookSent);
-    reportUpdate.input("hasTriggeredWebhook", Bit, body.hasTriggeredWebhook);
-    reportUpdate.input("callDate", Date, body.call.date);
-    reportUpdate.input("callTime", Time, body.call.time);
-    reportUpdate.input("callDateTime", VarChar, body.call.dateTime);
-    reportUpdate.input("callPhone", VarChar, body.call.phone);
-    reportUpdate.input("callStatus", VarChar, body.call.status);
-    reportUpdate.input("storeEmployeeName", VarChar, body.store.employee.name);
-    reportUpdate.input("storeEmployeeIsStoreManager", Bit, body.store.employee.isStoreManager);
-    reportUpdate.input("incidentTitle", VarChar, body.incident.title);
-    reportUpdate.input("incidentPos", VarChar, body.incident.pos);
-    reportUpdate.input("incidentIsProcedural", Bit, body.incident.isProcedural);
-    reportUpdate.input("incidentError", VarChar, body.incident.error);
-    reportUpdate.input("incidentTransactionNumber", VarChar, body.incident.transaction.number);
-    reportUpdate.input("incidentTransactionHasVarianceReport", Bit, body.incident.transaction.hasVarianceReport);
-    reportUpdate.input("incidentDetails", VarChar, body.incident.details);
+    reportUpdate.input("reportId", INT, report.id);
+    reportUpdate.input("version", VARCHAR, body.version);
+    reportUpdate.input("createdBy", VARCHAR, body.createdBy);
+    reportUpdate.input("updatedBy", VARCHAR, body.updatedBy);
+    reportUpdate.input("assignedTo", VARCHAR, body.assignedTo);
+    reportUpdate.input("isOnCall", BIT, body.isOnCall);
+    reportUpdate.input("isDeleted", BIT, body.isDeleted);
+    reportUpdate.input("isWebhookSent", BIT, body.isWebhookSent);
+    reportUpdate.input("hasTriggeredWebhook", BIT, body.hasTriggeredWebhook);
+    reportUpdate.input("callDate", DATE, body.call.date);
+    reportUpdate.input("callTime", TIME, body.call.time);
+    reportUpdate.input("callDateTime", VARCHAR, body.call.dateTime);
+    reportUpdate.input("callPhone", VARCHAR, body.call.phone);
+    reportUpdate.input("callStatus", VARCHAR, body.call.status);
+    reportUpdate.input("storeEmployeeName", VARCHAR, body.store.employee.name);
+    reportUpdate.input("storeEmployeeIsStoreManager", BIT, body.store.employee.isStoreManager);
+    reportUpdate.input("incidentTitle", VARCHAR, body.incident.title);
+    reportUpdate.input("incidentPos", VARCHAR, body.incident.pos);
+    reportUpdate.input("incidentIsProcedural", BIT, body.incident.isProcedural);
+    reportUpdate.input("incidentError", VARCHAR, body.incident.error);
+    reportUpdate.input("incidentTransactionNumber", VARCHAR, body.incident.transaction.number);
+    reportUpdate.input("incidentTransactionHasVarianceReport", BIT, body.incident.transaction.hasVarianceReport);
+    reportUpdate.input("incidentDetails", VARCHAR, body.incident.details);
 
     await reportUpdate.execute("api_v1_reports_update");
 
@@ -341,8 +323,8 @@ export const Reports = {
     const {
       output: { report: rawJSON },
     } = await mssql(transaction).request
-      .input("id", Int, report.id)
-      .output("report", NVarChar)
+      .input("id", INT, report.id)
+      .output("report", NVARCHAR)
       .execute("api_v1_reports_getById");
 
     const reportUpdated = JSON.parse(rawJSON);
@@ -353,9 +335,8 @@ export const Reports = {
 
   // DELETE AN EXISTING REPORT **THIS ACTION IS IRREVERSIBLE**
   hardDelete(report, transaction) {
-    const { Int } = mssqlDataTypes;
     return mssql(transaction)
-      .request.input("reportId", Int, report.id)
+      .request.input("reportId", INT, report.id)
       .execute("api_v1_reports_delete");
   },
 
@@ -394,9 +375,8 @@ export const Reports = {
 
   // DELETE ALL STORES, INCIDENT TYPES, & INCIDENT TRANSACTION TYPES ASSIGNED TO A REPORT
   async deleteStoresIncidentTypesIncidentTransactionTypes(reportId) {
-    const { Int } = mssqlDataTypes;
     return mssql()
-      .request.input("reportId", Int, reportId)
+      .request.input("reportId", INT, reportId)
       .execute(
         "api_v1_reports_delete_store_incidentType_incidentTransactionType"
       );
@@ -405,7 +385,6 @@ export const Reports = {
   // IMPORT REPORTS
   // prettier-ignore
   async import(body, transaction) {
-    const { VarChar, Int, Bit, Date, Time, DateTimeOffset } = mssqlDataTypes;
     const reportsImported = [];
 
     let i = 1;
@@ -422,34 +401,34 @@ export const Reports = {
       
       const reportImport = mssql(transaction).request;
 
-      reportImport.input("version", VarChar, report.version);
-      reportImport.input("createdAt", DateTimeOffset, report.createdAt);
-      reportImport.input("updatedAt", DateTimeOffset, report.updatedAt);
-      reportImport.input("createdBy", VarChar, report.createdBy);
-      reportImport.input("updatedBy", VarChar, report.updatedBy);
-      reportImport.input("assignedTo", VarChar, report.assignedTo);
-      reportImport.input("isOnCall", Bit, report.isOnCall);
-      reportImport.input("isDeleted", Bit, report.isDeleted);
-      reportImport.input("isWebhookSent", Bit, report.isWebhookSent);
-      reportImport.input("hasTriggeredWebhook", Bit, report.hasTriggeredWebhook);
-      reportImport.input("callDate", Date, report.call.date);
-      reportImport.input("callTime", Time, report.call.time);
-      reportImport.input("callDateTime", VarChar, report.call.dateTime);
-      reportImport.input("callPhone", VarChar, report.call.phone);
-      reportImport.input("callStatus", VarChar, report.call.status);
-      reportImport.input("storeEmployeeName", VarChar, report.store.employee.name);
-      reportImport.input("storeEmployeeIsStoreManager", Bit, report.store.employee.isStoreManager);
-      reportImport.input("incidentTitle", VarChar, report.incident.title);
-      reportImport.input("incidentPos", VarChar, report.incident.pos);
-      reportImport.input("incidentIsProcedural", Bit, report.incident.isProcedural);
-      reportImport.input("incidentError", VarChar, report.incident.error);
-      reportImport.input("incidentTransactionNumber", VarChar, report.incident.transaction.number);
-      reportImport.input("incidentTransactionHasVarianceReport", Bit, report.incident.transaction.hasVarianceReport);
-      reportImport.input("incidentDetails", VarChar, report.incident.details);
+      reportImport.input("version", VARCHAR, report.version);
+      reportImport.input("createdAt", DATETIMEOFFSET, report.createdAt);
+      reportImport.input("updatedAt", DATETIMEOFFSET, report.updatedAt);
+      reportImport.input("createdBy", VARCHAR, report.createdBy);
+      reportImport.input("updatedBy", VARCHAR, report.updatedBy);
+      reportImport.input("assignedTo", VARCHAR, report.assignedTo);
+      reportImport.input("isOnCall", BIT, report.isOnCall);
+      reportImport.input("isDeleted", BIT, report.isDeleted);
+      reportImport.input("isWebhookSent", BIT, report.isWebhookSent);
+      reportImport.input("hasTriggeredWebhook", BIT, report.hasTriggeredWebhook);
+      reportImport.input("callDate", DATE, report.call.date);
+      reportImport.input("callTime", TIME, report.call.time);
+      reportImport.input("callDateTime", VARCHAR, report.call.dateTime);
+      reportImport.input("callPhone", VARCHAR, report.call.phone);
+      reportImport.input("callStatus", VARCHAR, report.call.status);
+      reportImport.input("storeEmployeeName", VARCHAR, report.store.employee.name);
+      reportImport.input("storeEmployeeIsStoreManager", BIT, report.store.employee.isStoreManager);
+      reportImport.input("incidentTitle", VARCHAR, report.incident.title);
+      reportImport.input("incidentPos", VARCHAR, report.incident.pos);
+      reportImport.input("incidentIsProcedural", BIT, report.incident.isProcedural);
+      reportImport.input("incidentError", VARCHAR, report.incident.error);
+      reportImport.input("incidentTransactionNumber", VARCHAR, report.incident.transaction.number);
+      reportImport.input("incidentTransactionHasVarianceReport", BIT, report.incident.transaction.hasVarianceReport);
+      reportImport.input("incidentDetails", VARCHAR, report.incident.details);
 
       const { output: { id } } =
         await reportImport
-          .output("id", Int)
+          .output("id", INT)
           .execute("api_v1_reports_import");
 
       const queries = [

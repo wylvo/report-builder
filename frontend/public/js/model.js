@@ -32,7 +32,14 @@ export const state = {
   },
 
   formData: {
-    selects: {},
+    selects: {
+      statuses: [],
+      storeNumbers: [],
+      incidentTypes: [],
+      pos: [],
+      incidentTransactionTypes: [],
+      users: [],
+    },
   },
 };
 

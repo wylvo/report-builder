@@ -115,7 +115,7 @@ export default class View {
     if (childrenIndex) targetEl.children[childrenIndex].replaceWith(this.htmlStringToElement(replacementHtml[icon]));
     else targetEl.firstElementChild.replaceWith(this.htmlStringToElement(replacementHtml[icon]));
     
-    if (status === "error" || status === "success")
+    if (status === "error" || status === "success" || status ===  "warning")
       if(targetEl.querySelector(`.status-${status}`))
         targetEl.querySelector(`.status-${status}`).replaceWith(this.htmlStringToElement(this.statusHtml(status)));
       else
