@@ -46,6 +46,10 @@
   stroke: var(--on-primary);
 }
 
+.icon-spinner.alt svg {
+  stroke: var(--on-background);
+}
+
 .spinner {
   transform-origin: center;
   animation: spinner_zKoa 2s linear infinite;
