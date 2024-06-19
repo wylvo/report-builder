@@ -1,5 +1,7 @@
 import * as model from "./userModel.js";
 
+import { isRequestInProgress } from "../api.js";
+
 import userTabsView from "./views/userTabsView.js";
 import userTableView from "./views/userTableView.js";
 
@@ -123,9 +125,13 @@ const controlRenderUser = function () {
 
 // prettier-ignore
 const controlSaveUser = async function (userId) {
+  if (isRequestInProgress) return notificationsView.warning("A request is already in progress.");
+
   const id = userId ? userId : window.location.hash.slice(1);
   let user;
   try {
+    userFormView.renderSpinner(userFormView._btnSubmit);
+
     // Create user
     if (!id) {
       user = await model.DB.createUser(userFormView._form);
@@ -142,12 +148,18 @@ const controlSaveUser = async function (userId) {
       notificationsView.success(`User successfully updated: [${user.id}]`);
     }
 
+    // Update form state
     userFormView.clearPasswordFields();
     userFormView.takeSnapshot(userFormView.newClone());
     userFormView.updateTags(user);
     userFormView._btnResetPassword.disabled = true;
+
+    // Update tab state
     userTabsView.render(model.state.tab, user.fullName, user.id);
     model.loadTabWith(model.state.users, model.state.tab, user.id);
+    
+    userFormView.clearSpinner(userFormView._btnSubmit, "success", id ? "update" : "save");
+
   } catch (error) {
     console.error(error);
     notificationsView.error(error.message, 60);
@@ -156,38 +168,55 @@ const controlSaveUser = async function (userId) {
 
 // prettier-ignore
 const controlResetUserPassword = async (userId) => {
+  if (isRequestInProgress) return notificationsView.warning("A request is already in progress.");
+
   try {
     const id = userId ? userId : window.location.hash.slice(1);
 
     if (id) {
+      userFormView.renderSpinner(userFormView._btnResetPassword);
+
       const user = await model.DB.resetUserPassword(id, userFormView._form);
       
       notificationsView.success(`User password successfully reset: ${user.email}`);
       userFormView.clearPasswordFields();
+      
+      userFormView.clearSpinner(userFormView._btnResetPassword, "success", "password");
     }
   } catch (error) {
     console.error(error);
     notificationsView.error(error.message, 60);
+    userFormView.clearSpinner(userFormView._btnResetPassword, "error", "password");
   }
 };
 
 // prettier-ignore
 const controlDeleteUser = async function (id) {
+  if (isRequestInProgress) return notificationsView.warning("A request is already in progress.");
+
+  let userTableRowDeleteBtn;
+
   try {    
     const user = model.findObjectById(model.state.users, id);
+    const hasIdInHash = id === window.location.hash.slice(1)
+    userTableRowDeleteBtn = user.tableRowEl.querySelector(".delete");
   
     let isDeleteConfirmed = true;
     isDeleteConfirmed = await modalView.confirmDelete(user);
     if(!isDeleteConfirmed) return;
-    if(id === window.location.hash.slice(1)) userTabsView.removeLocationHash();
+
+    // Remove id if in hash
+    if (hasIdInHash) userTabsView.removeLocationHash();
   
     const tabIndex = model.findTabIndexByObjectId(id);
-    if (tabIndex !== -1) {
+    const tabFound = tabIndex !== -1;
+    if (tabFound) {
       model.clearTab(tabIndex)
       userTabsView.tabs.get(tabIndex).newUser((takeSnapshot = true))
     }
 
     console.log(model.state.tabs);
+    userTableView.renderSpinner(userTableRowDeleteBtn);
   
     await model.DB.deleteUser(id);
     userTableView.updateTotalCount(model.state.users);
@@ -201,9 +230,15 @@ const controlDeleteUser = async function (id) {
 
 // prettier-ignore
 const controlUserStatus = async function (id) {
+  if (isRequestInProgress) return notificationsView.warning("A request is already in progress.");
+
+  let userTableRowStatusBtn;
+    
   try {
     let user = model.findObjectById(model.state.users, id);
+    userTableRowStatusBtn = user.tableRowEl.querySelector(".status");
 
+    userTableView.renderSpinner(userTableRowStatusBtn);
     if (user.active) user = await model.DB.disableUser(id, user);
     else user = await model.DB.enableUser(id, user);
 

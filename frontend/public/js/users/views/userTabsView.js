@@ -265,6 +265,9 @@ class UserTabsView extends TabsView {
               class="form-btn reset-password"
               disabled
             >
+              <svg class="icons">
+                <use href="/img/icons.svg#icon-key"></use>
+              </svg>
               <p class="form-reset-password-btn-text" id="form-reset-password-btn-text_${index}">Reset User Password</p>
             </button>
           </label>

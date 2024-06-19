@@ -120,12 +120,12 @@ const controlSaveReport = async function (reportId) {
     reportTabsView.render(model.state.tab, report.incident.title, report.id);
     model.loadTabWith(model.state.reports, model.state.tab, report.id);
 
-    reportFormView.clearSpinner(reportFormView._btnSubmit, "success", "save");
+    reportFormView.clearSpinner(reportFormView._btnSubmit, "success", id ? "update" : "save");
 
   } catch (error) {
     console.error(error);
     notificationsView.error(error.message, 60);
-    reportFormView.clearSpinner(reportFormView._btnSubmit, "error", "save");
+    reportFormView.clearSpinner(reportFormView._btnSubmit, "error", id ? "update" : "save");
   }
 };
 

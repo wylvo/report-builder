@@ -340,7 +340,8 @@ input:checked + .slider:before {
 }
 
 .form-btn.submit,
-.form-btn.ms-teams {
+.form-btn.ms-teams,
+.form-btn.reset-password {
   position: relative;
 }
 
