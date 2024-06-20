@@ -36,8 +36,9 @@ export const getUserId = (req, res, next) => {
 };
 
 export const getAllUsersFrontend = catchAsync(async (req, res, next) => {
+  const { page, rows } = req.query;
   const frontend = true;
-  const { results, data } = await Users.all(frontend);
+  const { results, data } = await Users.all(page, rows, frontend);
 
   res.status(200).json({
     status: "success",
@@ -47,7 +48,8 @@ export const getAllUsersFrontend = catchAsync(async (req, res, next) => {
 });
 
 export const getAllUsers = catchAsync(async (req, res, next) => {
-  const { results, data } = await Users.all();
+  const { page, rows } = req.query;
+  const { results, data } = await Users.all(page, rows);
 
   res.status(200).json({
     status: "success",
@@ -74,21 +76,6 @@ export const getUser = catchAsync(async (req, res, next) => {
 
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
-
-  // const [
-  //   {
-  //     output: { report: rawJSON1 },
-  //   },
-  //   {
-  //     output: { report: rawJSON2 },
-  //   },
-  // ] = await Promise.all([
-  //   Reports.createdBy(user.id),
-  //   Reports.softDeletedCreatedBy(user.id),
-  // ]);
-
-  // const reports = JSON.parse(rawJSON1);
-  // const reportsDeleted = JSON.parse(rawJSON2);
 
   res.status(200).json({
     status: "success",

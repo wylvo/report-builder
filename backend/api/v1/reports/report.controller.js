@@ -21,7 +21,8 @@ const { checkSchema } = new ExpressValidator({
 });
 
 export const getAllReports = catchAsync(async (req, res, next) => {
-  const { results, data } = await Reports.all();
+  const { page, rows } = req.query;
+  const { results, data } = await Reports.all(page, rows);
 
   res.status(200).json({
     status: "success",
@@ -31,8 +32,9 @@ export const getAllReports = catchAsync(async (req, res, next) => {
 });
 
 export const getAllSoftDeletedReports = catchAsync(async (req, res, next) => {
+  const { page, rows } = req.query;
   const softDeleted = true;
-  const { results, data } = await Reports.all(softDeleted);
+  const { results, data } = await Reports.all(page, rows, softDeleted);
 
   res.status(200).json({
     status: "success",
@@ -183,25 +185,25 @@ export const deleteReport = catchAsync(async (req, res, next) => {
 export const softDeleteReport = async (req, res, next) => {
   const id = req.params.id;
 
-  // const report = await Reports.findById(id);
+  const report = await Reports.findById(id);
 
-  // if (!report)
-  //   return next(new GlobalError(`Report not found with id: ${id}.`, 404));
+  if (!report)
+    return next(new GlobalError(`Report not found with id: ${id}.`, 404));
 
-  // if (report.isDeleted === true)
-  //   return next(
-  //     new GlobalError(
-  //       `Report is already marked as deleted with id: ${id}.`,
-  //       400
-  //     )
-  //   );
+  if (report.isDeleted === true)
+    return next(
+      new GlobalError(
+        `Report is already marked as deleted with id: ${id}.`,
+        400
+      )
+    );
 
-  // const reportUpdated = await Reports.softDelete(report);
+  const reportUpdated = await Reports.softDelete(report);
 
-  // res.status(200).json({
-  //   status: "success",
-  //   data: reportUpdated,
-  // });
+  res.status(200).json({
+    status: "success",
+    data: reportUpdated,
+  });
 };
 
 export const undoSoftDeleteReport = async (req, res, next) => {
@@ -235,7 +237,8 @@ export const getAllReportsCreatedByUser = catchAsync(async (req, res, next) => {
       new GlobalError(`User not found with username: ${username}.`, 404)
     );
 
-  const { results, data } = await Reports.createdBy(user.id);
+  const { page, rows } = req.query;
+  const { results, data } = await Reports.createdBy(user.id, page, rows);
 
   res.status(200).json({
     status: "success",
@@ -255,8 +258,14 @@ export const getAllReportsCreatedByUserSoftDeleted = catchAsync(
         new GlobalError(`User not found with username: ${username}.`, 404)
       );
 
+    const { page, rows } = req.query;
     const softDeleted = true;
-    const { results, data } = await Reports.createdBy(user.id, softDeleted);
+    const { results, data } = await Reports.createdBy(
+      user.id,
+      page,
+      rows,
+      softDeleted
+    );
 
     res.status(200).json({
       status: "success",

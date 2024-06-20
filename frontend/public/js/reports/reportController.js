@@ -455,73 +455,75 @@ const controlBeforeUnload = function () {
  *************************************************************
  */
 export const init = async function () {
-  // reportTableView.renderSpinner(
-  //   reportTableView._table.querySelector(`.table-row td:nth-child(5)`)
-  // );
-  await model.init();
+  try {
+    await model.init();
 
-  // Initialize all tabs
-  reportTabsView.renderAll(model.state.formData, model.initNumberOfTabs(5));
-  reportFormView = reportTabsView.tabs.get(model.state.tab);
+    // Initialize all tabs
+    reportTabsView.renderAll(model.state.formData, model.initNumberOfTabs(5));
+    reportFormView = reportTabsView.tabs.get(model.state.tab);
 
-  // If id in hash render report
-  if (window.location.hash.slice(1)) controlRenderReport();
+    // If id in hash render report
+    if (window.location.hash.slice(1)) controlRenderReport();
 
-  // Initialize all table rows per page
-  model.state.rowsPerPage = paginationView.rowsPerPage();
-  reportTableView.renderAll(model.rowsPerPage(model.state.reports));
-  reportTableView.updateTotalCount(model.state.reports);
+    // Initialize all table rows per page
+    model.state.rowsPerPage = paginationView.rowsPerPage();
+    reportTableView.renderAll(model.rowsPerPage(model.state.reports));
+    reportTableView.updateTotalCount(model.state.reports);
 
-  // Initialize all pagination buttons
-  paginationView.renderAll(model.pages());
+    // Initialize all pagination buttons
+    paginationView.renderAll(model.pages());
 
-  // Tab view handlers
-  reportTabsView.addHandlerClickTab(controlTabs);
-  reportTabsView.addHandlerKeydown(controlTabs);
-  reportTabsView.addHandlerBeforeUnload(controlBeforeUnload);
+    // Tab view handlers
+    reportTabsView.addHandlerClickTab(controlTabs);
+    reportTabsView.addHandlerKeydown(controlTabs);
+    reportTabsView.addHandlerBeforeUnload(controlBeforeUnload);
 
-  // Report view handler render. Applies to every report views (targeting Window object)
-  reportFormView.addHandlerRender(controlUnsavedReport, controlRenderReport);
-  // ^^^ ERROR WHEN EDITING URL, OVERWRITING AN EXISTING REPORT ^^^
+    // Report view handler render. Applies to every report views (targeting Window object)
+    reportFormView.addHandlerRender(controlUnsavedReport, controlRenderReport);
+    // ^^^ ERROR WHEN EDITING URL, OVERWRITING AN EXISTING REPORT ^^^
 
-  // Report view handlers per tabs
-  reportTabsView.tabs.forEach((reportFormView) => {
-    reportFormView.addHandlerPaste(controlPaste);
-    reportFormView.addHandlerCopy(controlCopy);
-    reportFormView.addHandlerNew(controlUnsavedReport, controlNewReport);
-    reportFormView.addHandlerSave(controlSaveReport);
-    reportFormView.addHandlerSend(controlSendReport);
-  });
+    // Report view handlers per tabs
+    reportTabsView.tabs.forEach((reportFormView) => {
+      reportFormView.addHandlerPaste(controlPaste);
+      reportFormView.addHandlerCopy(controlCopy);
+      reportFormView.addHandlerNew(controlUnsavedReport, controlNewReport);
+      reportFormView.addHandlerSave(controlSaveReport);
+      reportFormView.addHandlerSend(controlSendReport);
+    });
 
-  // Table view handlers
-  reportTableView.addHandlerClickAllDeletedReports(
-    controlRenderAllReports,
-    controlClearSearchResults
-  );
-  reportTableView.addHandlerClickAllReports(
-    controlRenderAllReports,
-    controlClearSearchResults
-  );
-  reportTableView.addHandlerUniqueReportPerTab(
-    controlUnsavedReport,
-    controlUniqueReportPerTab
-  );
-  reportTableView.addHandlerSend(controlSendReport);
-  reportTableView.addHandlerDelete(controlDeleteReport);
-  reportTableView.addHandlerUndoDelete(controlUndoDeleteReport);
+    // Table view handlers
+    reportTableView.addHandlerClickAllDeletedReports(
+      controlRenderAllReports,
+      controlClearSearchResults
+    );
+    reportTableView.addHandlerClickAllReports(
+      controlRenderAllReports,
+      controlClearSearchResults
+    );
+    reportTableView.addHandlerUniqueReportPerTab(
+      controlUnsavedReport,
+      controlUniqueReportPerTab
+    );
+    reportTableView.addHandlerSend(controlSendReport);
+    reportTableView.addHandlerDelete(controlDeleteReport);
+    reportTableView.addHandlerUndoDelete(controlUndoDeleteReport);
 
-  // Search view handler
-  searchView.addHandlerSearch(controlSearchResults);
-  searchView.addHandlerClearSearch(controlClearSearchResults);
+    // Search view handler
+    searchView.addHandlerSearch(controlSearchResults);
+    searchView.addHandlerClearSearch(controlClearSearchResults);
 
-  // Pagination view handlers
-  paginationView.addHandlerOnChangeRowsPerPage(controlRowsPerPage);
-  paginationView.addHandlerClickPage(controlPages);
+    // Pagination view handlers
+    paginationView.addHandlerOnChangeRowsPerPage(controlRowsPerPage);
+    paginationView.addHandlerClickPage(controlPages);
 
-  // Modal form view handler
-  modalFormView.addHandlerClickImportReports(controlImportReports);
+    // Modal form view handler
+    modalFormView.addHandlerClickImportReports(controlImportReports);
 
-  console.log(model.state);
+    console.log(model.state);
+  } catch (error) {
+    console.error(error);
+    notificationsView.error(error.message);
+  }
 };
 
 init();

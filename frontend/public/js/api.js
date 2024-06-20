@@ -26,7 +26,8 @@ const fetchJSON = async (url, method = "GET", jsonData = undefined) => {
         : await fetch(url);
 
     let data;
-    if (method === "DELETE") data = null;
+    console.log(response);
+    if (method === "DELETE" || response.status === 429) data = null;
     else data = await response.json();
 
     if (!response.ok) throw formatError(data, response);

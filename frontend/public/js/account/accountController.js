@@ -155,44 +155,49 @@ const controlPages = function (page) {
 };
 
 export const init = async function () {
-  await model.init();
+  try {
+    await model.init();
 
-  // Initialize user reports
-  model.state.reports = model.state.user.reports;
-  model.state.reportsDeleted = model.state.user.reportsDeleted;
+    // Initialize user reports
+    model.state.reports = model.state.user.reports;
+    model.state.reportsDeleted = model.state.user.reportsDeleted;
 
-  // Initialize the single tab
-  accountTabsView.renderAll(null, model.initNumberOfTabs(1));
-  accountFormView = accountTabsView.tabs.get(model.state.tab);
-  accountFormView.render(model.state.user);
+    // Initialize the single tab
+    accountTabsView.renderAll(null, model.initNumberOfTabs(1));
+    accountFormView = accountTabsView.tabs.get(model.state.tab);
+    accountFormView.render(model.state.user);
 
-  // Initialize table & rows per page
-  model.state.rowsPerPage = paginationView.rowsPerPage();
-  controlRenderAllReports();
+    // Initialize table & rows per page
+    model.state.rowsPerPage = paginationView.rowsPerPage();
+    controlRenderAllReports();
 
-  // Table view handlers
-  reportTableView.addHandlerClickAllDeletedReports(
-    controlRenderAllReports,
-    controlClearSearchResults
-  );
-  reportTableView.addHandlerClickAllReports(
-    controlRenderAllReports,
-    controlClearSearchResults
-  );
+    // Table view handlers
+    reportTableView.addHandlerClickAllDeletedReports(
+      controlRenderAllReports,
+      controlClearSearchResults
+    );
+    reportTableView.addHandlerClickAllReports(
+      controlRenderAllReports,
+      controlClearSearchResults
+    );
 
-  // reportTableView.addHandlerSend(controlSendReport);
-  reportTableView.addHandlerDelete(controlDeleteReport);
-  reportTableView.addHandlerUndoDelete(controlUndoDeleteReport);
+    // reportTableView.addHandlerSend(controlSendReport);
+    reportTableView.addHandlerDelete(controlDeleteReport);
+    reportTableView.addHandlerUndoDelete(controlUndoDeleteReport);
 
-  // Search view handler
-  searchView.addHandlerSearch(controlSearchResults);
-  searchView.addHandlerClearSearch(controlClearSearchResults);
+    // Search view handler
+    searchView.addHandlerSearch(controlSearchResults);
+    searchView.addHandlerClearSearch(controlClearSearchResults);
 
-  // Pagination view handlers
-  paginationView.addHandlerOnChangeRowsPerPage(controlRowsPerPage);
-  paginationView.addHandlerClickPage(controlPages);
+    // Pagination view handlers
+    paginationView.addHandlerOnChangeRowsPerPage(controlRowsPerPage);
+    paginationView.addHandlerClickPage(controlPages);
 
-  console.log(model.state);
+    console.log(model.state);
+  } catch (error) {
+    console.error(error);
+    notificationsView.error(error.message);
+  }
 };
 
 init();

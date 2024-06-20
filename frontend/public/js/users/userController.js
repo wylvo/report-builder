@@ -274,54 +274,59 @@ const controlPages = function (page) {
 };
 
 export const init = async function () {
-  await model.init();
+  try {
+    await model.init();
 
-  // Initialize all tabs
-  userTabsView.renderAll(null, model.initNumberOfTabs(5));
-  userFormView = userTabsView.tabs.get(model.state.tab);
+    // Initialize all tabs
+    userTabsView.renderAll(null, model.initNumberOfTabs(5));
+    userFormView = userTabsView.tabs.get(model.state.tab);
 
-  // If id in hash render user
-  if (window.location.hash.slice(1)) controlRenderUser();
+    // If id in hash render user
+    if (window.location.hash.slice(1)) controlRenderUser();
 
-  // Initialize all table rows per page
-  model.state.rowsPerPage = paginationView.rowsPerPage();
-  userTableView.renderAll(model.rowsPerPage(model.state.users));
-  userTableView.updateTotalCount(model.state.users);
+    // Initialize all table rows per page
+    model.state.rowsPerPage = paginationView.rowsPerPage();
+    userTableView.renderAll(model.rowsPerPage(model.state.users));
+    userTableView.updateTotalCount(model.state.users);
 
-  // Initialize all pagination buttons
-  paginationView.renderAll(model.pages());
+    // Initialize all pagination buttons
+    paginationView.renderAll(model.pages());
 
-  // Tab view handlers
-  userTabsView.addHandlerClickTab(controlTabs);
-  userTabsView.addHandlerKeydown(controlTabs);
-  userTabsView.addHandlerBeforeUnload(controlBeforeUnload);
+    // Tab view handlers
+    userTabsView.addHandlerClickTab(controlTabs);
+    userTabsView.addHandlerKeydown(controlTabs);
+    userTabsView.addHandlerBeforeUnload(controlBeforeUnload);
 
-  // User view handler render. Applies to every user views (targeting Window object)
-  userFormView.addHandlerRender(controlUnsavedUser, controlRenderUser);
-  // ^^^ ERROR WHEN EDITING URL, OVERWRITING AN EXISTING USER ^^^
+    // User view handler render. Applies to every user views (targeting Window object)
+    userFormView.addHandlerRender(controlUnsavedUser, controlRenderUser);
+    // ^^^ ERROR WHEN EDITING URL, OVERWRITING AN EXISTING USER ^^^
 
-  // User view handlers per tabs
-  userTabsView.tabs.forEach((userFormView) => {
-    userFormView.addHandlerPaste(controlPaste);
-    userFormView.addHandlerCopy(controlCopy);
-    userFormView.addHandlerNew(controlUnsavedUser, controlNewUser);
-    userFormView.addHandlerSave(controlSaveUser);
-    userFormView.addHandlerResetPassword(controlResetUserPassword);
-  });
+    // User view handlers per tabs
+    userTabsView.tabs.forEach((userFormView) => {
+      userFormView.addHandlerPaste(controlPaste);
+      userFormView.addHandlerCopy(controlCopy);
+      userFormView.addHandlerNew(controlUnsavedUser, controlNewUser);
+      userFormView.addHandlerSave(controlSaveUser);
+      userFormView.addHandlerResetPassword(controlResetUserPassword);
+    });
 
-  // Table view handlers
-  userTableView.addHandlerUniqueUserPerTab(
-    controlUnsavedUser,
-    controlUniqueUserPerTab
-  );
-  userTableView.addHandlerStatus(controlUserStatus);
-  userTableView.addHandlerDelete(controlDeleteUser);
+    // Table view handlers
+    userTableView.addHandlerUniqueUserPerTab(
+      controlUnsavedUser,
+      controlUniqueUserPerTab
+    );
+    userTableView.addHandlerStatus(controlUserStatus);
+    userTableView.addHandlerDelete(controlDeleteUser);
 
-  // Pagination view handlers
-  paginationView.addHandlerOnChangeRowsPerPage(controlRowsPerPage);
-  paginationView.addHandlerClickPage(controlPages);
+    // Pagination view handlers
+    paginationView.addHandlerOnChangeRowsPerPage(controlRowsPerPage);
+    paginationView.addHandlerClickPage(controlPages);
 
-  console.log(model.state);
+    console.log(model.state);
+  } catch (error) {
+    console.error(error);
+    notificationsView.error(error.message);
+  }
 };
 
 init();

@@ -86,11 +86,17 @@ export const Users = {
   },
 
   // GET ALL USERS
-  async all(frontend = false) {
+  async all(pageNumber = 1, rowsPerPage = 200, frontend = false) {
+    rowsPerPage =
+      rowsPerPage <= 0 || rowsPerPage > 200 ? (rowsPerPage = 200) : rowsPerPage;
+    pageNumber = pageNumber <= 0 ? (pageNumber = 1) : pageNumber;
+
     const {
       output: { user },
     } = await mssql()
       .request.output("user", NVARCHAR)
+      .input("pageNumber", INT, pageNumber)
+      .input("rowsPerPage", INT, rowsPerPage)
       .execute(
         frontend ? "api_v1_users_getAllFrontend" : "api_v1_users_getAll"
       );

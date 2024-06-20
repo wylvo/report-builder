@@ -120,11 +120,22 @@ export const Reports = {
   },
 
   // GET ALL REPORTS CREATED BY A USER, OR GET ALL SOFT DELETED REPORTS CREATED BY A USER
-  async createdBy(userId, softDeleted = false) {
+  async createdBy(
+    userId,
+    pageNumber = 1,
+    rowsPerPage = 500,
+    softDeleted = false
+  ) {
+    rowsPerPage =
+      rowsPerPage < 0 || rowsPerPage > 500 ? (rowsPerPage = 500) : rowsPerPage;
+    pageNumber = pageNumber < 0 ? (pageNumber = 1) : pageNumber;
+
     const {
       output: { report: rawJSON },
     } = await mssql()
       .request.input("userId", INT, userId)
+      .input("pageNumber", INT, pageNumber)
+      .input("rowsPerPage", INT, rowsPerPage)
       .output("report", NVARCHAR)
       .execute(
         softDeleted
@@ -168,11 +179,17 @@ export const Reports = {
   },
 
   // GET ALL REPORTS, OR GET ALL SOFT DELETED REPORTS
-  async all(softDeleted = false) {
+  async all(pageNumber = 1, rowsPerPage = 500, softDeleted = false) {
+    rowsPerPage =
+      rowsPerPage <= 0 || rowsPerPage > 500 ? (rowsPerPage = 500) : rowsPerPage;
+    pageNumber = pageNumber <= 0 ? (pageNumber = 1) : pageNumber;
+
     const {
       output: { report: rawJSON },
     } = await mssql()
       .request.output("report", NVARCHAR)
+      .input("pageNumber", INT, pageNumber)
+      .input("rowsPerPage", INT, rowsPerPage)
       .execute(
         softDeleted
           ? "api_v1_reports_getAllSoftDeleted"
