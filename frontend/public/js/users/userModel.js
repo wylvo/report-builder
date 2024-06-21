@@ -31,12 +31,32 @@ const DB = {
     // API request to get all users from the database
     const {
       data: { data },
-    } = await api.v1.users.getUsers();
+    } = await api.v1.users.getUsers(state.search.page, state.rowsPerPage);
 
     // Add all users in the model state
     state.users = data;
 
     state.users.forEach((user) => {
+      if (!user.profilePictureURI)
+        user.profilePictureURI = DEFAULT_PROFILE_PICTURE;
+    });
+
+    return data;
+  },
+
+  getUsersFrontend: async () => {
+    // API request to get all users from the database with limited data
+    const {
+      data: { data },
+    } = await api.v1.users.getUsersFrontend(
+      state.search.page,
+      state.rowsPerPage
+    );
+
+    // Add all users for the frontend in the model state
+    state.usersFrontend = data;
+
+    state.usersFrontend.forEach((user) => {
       if (!user.profilePictureURI)
         user.profilePictureURI = DEFAULT_PROFILE_PICTURE;
     });

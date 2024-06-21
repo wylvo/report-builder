@@ -44,11 +44,17 @@ export const Stores = {
   },
 
   // GET ALL STORES
-  async all() {
+  async all(pageNumber, rowsPerPage) {
+    rowsPerPage =
+      rowsPerPage <= 0 || rowsPerPage > 200 ? (rowsPerPage = 200) : rowsPerPage;
+    pageNumber = pageNumber <= 0 ? (pageNumber = 1) : pageNumber;
+
     const {
       output: { store },
     } = await mssql()
       .request.output("store", NVARCHAR)
+      .input("pageNumber", INT, pageNumber)
+      .input("rowsPerPage", INT, rowsPerPage)
       .execute("api_v1_stores_getAll");
 
     const stores = JSON.parse(store);

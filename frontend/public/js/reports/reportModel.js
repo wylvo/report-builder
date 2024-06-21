@@ -43,7 +43,7 @@ const DB = {
     // API request to get all reports from the database
     const {
       data: { data },
-    } = await api.v1.reports.getReports();
+    } = await api.v1.reports.getReports(state.search.page, state.rowsPerPage);
 
     // Add all reports in the model state
     state.reports = data;
@@ -116,7 +116,10 @@ const DB = {
     // API request to get all reports from the database
     const {
       data: { data },
-    } = await api.v1.reports.getAllSoftDeletedReports();
+    } = await api.v1.reports.getAllSoftDeletedReports(
+      state.search.page,
+      state.rowsPerPage
+    );
 
     // Add all reports in the model state
     state.reportsDeleted = data;

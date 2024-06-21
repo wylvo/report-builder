@@ -9,6 +9,7 @@ export const state = {
 
   // Other users
   users: [],
+  usersFrontend: [],
 
   // Current tab
   tab: 0,
@@ -23,7 +24,8 @@ export const state = {
   reports: [],
   reportsDeleted: [],
 
-  rowsPerPage: null,
+  page: 1,
+  rowsPerPage: 50,
   search: {
     query: "",
     filterBy: "",

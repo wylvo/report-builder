@@ -68,11 +68,17 @@ export const DistrictManagers = {
   },
 
   // GET ALL DISTRICT MANAGERS
-  async all() {
+  async all(pageNumber = 1, rowsPerPage = 200) {
+    rowsPerPage =
+      rowsPerPage <= 0 || rowsPerPage > 200 ? (rowsPerPage = 200) : rowsPerPage;
+    pageNumber = pageNumber <= 0 ? (pageNumber = 1) : pageNumber;
+
     const {
       output: { districtManager },
     } = await mssql()
       .request.output("districtManager", NVARCHAR)
+      .input("pageNumber", INT, pageNumber)
+      .input("rowsPerPage", INT, rowsPerPage)
       .execute("api_v1_districtManagers_getAll");
 
     const districtManagers = JSON.parse(districtManager);

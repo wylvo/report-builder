@@ -26,7 +26,6 @@ const fetchJSON = async (url, method = "GET", jsonData = undefined) => {
         : await fetch(url);
 
     let data;
-    console.log(response);
     if (method === "DELETE" || response.status === 429) data = null;
     else data = await response.json();
 
@@ -57,11 +56,27 @@ export default {
     reports: {
       url: "/api/v1/reports",
 
-      async getReports() {
-        return await fetchJSON(this.url);
+      async getReports(pageNumber = 1, rowsPerPage = 500) {
+        return await fetchJSON(
+          `${this.url}?page=${pageNumber}&rows=${rowsPerPage}`
+        );
       },
-      async getAllSoftDeletedReports() {
-        return await fetchJSON(`${this.url}/softDeleted`);
+      async getAllSoftDeletedReports(pageNumber = 1, rowsPerPage = 500) {
+        return await fetchJSON(
+          `${this.url}/softDeleted?page=${pageNumber}&rows=${rowsPerPage}`
+        );
+      },
+      // prettier-ignore
+      async getAllReportsCreatedByUser(username, pageNumber = 1, rowsPerPage = 500) {
+        return await fetchJSON(
+          `${this.url}/createdBy/${username}?page=${pageNumber}&rows=${rowsPerPage}`
+        );
+      },
+      // prettier-ignore
+      async getAllReportsCreatedByUserSoftDeleted(username, pageNumber = 1, rowsPerPage = 500) {
+        return await fetchJSON(
+          `${this.url}/softDeleted/createdBy/${username}?page=${pageNumber}&rows=${rowsPerPage}`
+        );
       },
       async createReport(report) {
         return await fetchJSON(this.url, "POST", report);
@@ -112,11 +127,15 @@ export default {
           passwordConfirmation,
         });
       },
-      async getUsers() {
-        return await fetchJSON(this.url);
+      async getUsers(pageNumber = 1, rowsPerPage = 200) {
+        return await fetchJSON(
+          `${this.url}?page=${pageNumber}&rows=${rowsPerPage}`
+        );
       },
-      async getUsersFrontend() {
-        return await fetchJSON(`${this.url}/frontend`);
+      async getUsersFrontend(pageNumber = 1, rowsPerPage = 200) {
+        return await fetchJSON(
+          `${this.url}/frontend?page=${pageNumber}&rows=${rowsPerPage}`
+        );
       },
       async createUser(user) {
         return await fetchJSON(this.url, "POST", user);
