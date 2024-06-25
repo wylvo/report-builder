@@ -131,12 +131,13 @@ export const Reports = {
     pageNumber = pageNumber < 0 ? (pageNumber = 1) : pageNumber;
 
     const {
-      output: { report: rawJSON },
+      output: { report: rawJSON, count },
     } = await mssql()
       .request.input("userId", INT, userId)
       .input("pageNumber", INT, pageNumber)
       .input("rowsPerPage", INT, rowsPerPage)
       .output("report", NVARCHAR)
+      .output("count", INT)
       .execute(
         softDeleted
           ? "api_v1_reports_getCreatedByUserIdSoftDeleted"
@@ -146,8 +147,8 @@ export const Reports = {
     const reports = JSON.parse(rawJSON);
 
     return !reports
-      ? { results: 0, data: [] }
-      : { results: reports.length, data: reports };
+      ? { total: 0, results: 0, data: [] }
+      : { total: count, results: reports.length, data: reports };
   },
 
   // SOFT DELETE SINGLE REPORT BY ID
@@ -185,11 +186,12 @@ export const Reports = {
     pageNumber = pageNumber <= 0 ? (pageNumber = 1) : pageNumber;
 
     const {
-      output: { report: rawJSON },
+      output: { report: rawJSON, count },
     } = await mssql()
-      .request.output("report", NVARCHAR)
-      .input("pageNumber", INT, pageNumber)
+      .request.input("pageNumber", INT, pageNumber)
       .input("rowsPerPage", INT, rowsPerPage)
+      .output("report", NVARCHAR)
+      .output("count", INT)
       .execute(
         softDeleted
           ? "api_v1_reports_getAllSoftDeleted"
@@ -199,8 +201,8 @@ export const Reports = {
     const reports = JSON.parse(rawJSON);
 
     return !reports
-      ? { results: 0, data: [] }
-      : { results: reports.length, data: reports };
+      ? { total: 0, results: 0, data: [] }
+      : { total: count, results: reports.length, data: reports };
   },
 
   // CREATE A NEW REPORT

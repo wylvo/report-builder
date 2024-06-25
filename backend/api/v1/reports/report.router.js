@@ -27,7 +27,7 @@ router.get("/:id", report.getReport);
 router.get("/createdBy/:username", report.getAllReportsCreatedByUser);
 router.get(
   "/softDeleted/createdBy/:username",
-  report.getAllReportsCreatedByUserSoftDeleted
+  report.getAllSoftDeletedReportsCreatedByUser
 );
 
 /** ROUTES restricted to "User" & "Admin" roles

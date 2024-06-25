@@ -73,7 +73,7 @@ export default {
         );
       },
       // prettier-ignore
-      async getAllReportsCreatedByUserSoftDeleted(username, pageNumber = 1, rowsPerPage = 500) {
+      async getAllSoftDeletedReportsCreatedByUser(username, pageNumber = 1, rowsPerPage = 500) {
         return await fetchJSON(
           `${this.url}/softDeleted/createdBy/${username}?page=${pageNumber}&rows=${rowsPerPage}`
         );

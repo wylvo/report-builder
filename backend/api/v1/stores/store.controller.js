@@ -11,10 +11,11 @@ const { checkSchema } = new ExpressValidator({
 
 export const getAllStores = catchAsync(async (req, res, next) => {
   const { page, rows } = req.query;
-  const { results, data } = await Stores.all(page, rows);
+  const { total, results, data } = await Stores.all(page, rows);
 
   res.status(200).json({
     status: "success",
+    total,
     results,
     data,
   });

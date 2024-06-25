@@ -34,13 +34,41 @@ export default class TableView extends View {
     return data.tableRowEl;
   }
 
+  renderTableSpinner() {
+    this.#clearTable();
+
+    const html = `
+      <tr class="table-row">
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>
+          <div class="icons icon-spinner alt">
+            <svg>
+              <g class="spinner">
+                <use href="/img/icons.svg#icon-loader"></use>
+              </g>
+            </svg>
+          </div>
+        </td>
+        <td></td>
+        <td></td>
+      </tr>
+    `;
+
+    const element = this.htmlStringToElement(html);
+    this._table.appendChild(element);
+  }
+
   update(data) {
     const { currentElement, newElement } = this._generateRowElement(data);
     currentElement.replaceWith(newElement);
     return newElement;
   }
 
-  updateTotalCount(array) {
-    this._count.textContent = array.length;
+  updateTotalCount(total) {
+    if (Array.isArray(total)) this._count.textContent = total.length;
+    else this._count.textContent = total;
   }
 }

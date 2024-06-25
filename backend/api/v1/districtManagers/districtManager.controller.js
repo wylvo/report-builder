@@ -7,10 +7,11 @@ import { Super } from "../super/super.model.js";
 
 export const getAllDistrictManagers = catchAsync(async (req, res, next) => {
   const { page, rows } = req.query;
-  const { results, data } = await DistrictManagers.all(page, rows);
+  const { total, results, data } = await DistrictManagers.all(page, rows);
 
   res.status(200).json({
     status: "success",
+    total,
     results,
     data,
   });

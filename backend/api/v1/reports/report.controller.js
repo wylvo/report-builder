@@ -22,10 +22,11 @@ const { checkSchema } = new ExpressValidator({
 
 export const getAllReports = catchAsync(async (req, res, next) => {
   const { page, rows } = req.query;
-  const { results, data } = await Reports.all(page, rows);
+  const { total, results, data } = await Reports.all(page, rows);
 
   res.status(200).json({
     status: "success",
+    total,
     results,
     data,
   });
@@ -34,10 +35,11 @@ export const getAllReports = catchAsync(async (req, res, next) => {
 export const getAllSoftDeletedReports = catchAsync(async (req, res, next) => {
   const { page, rows } = req.query;
   const softDeleted = true;
-  const { results, data } = await Reports.all(page, rows, softDeleted);
+  const { total, results, data } = await Reports.all(page, rows, softDeleted);
 
   res.status(200).json({
     status: "success",
+    total,
     results,
     data,
   });
@@ -238,16 +240,17 @@ export const getAllReportsCreatedByUser = catchAsync(async (req, res, next) => {
     );
 
   const { page, rows } = req.query;
-  const { results, data } = await Reports.createdBy(user.id, page, rows);
+  const { total, results, data } = await Reports.createdBy(user.id, page, rows);
 
   res.status(200).json({
     status: "success",
+    total,
     results,
     data,
   });
 });
 
-export const getAllReportsCreatedByUserSoftDeleted = catchAsync(
+export const getAllSoftDeletedReportsCreatedByUser = catchAsync(
   async (req, res, next) => {
     const username = req.params.username;
 
@@ -260,7 +263,7 @@ export const getAllReportsCreatedByUserSoftDeleted = catchAsync(
 
     const { page, rows } = req.query;
     const softDeleted = true;
-    const { results, data } = await Reports.createdBy(
+    const { total, results, data } = await Reports.createdBy(
       user.id,
       page,
       rows,
@@ -269,6 +272,7 @@ export const getAllReportsCreatedByUserSoftDeleted = catchAsync(
 
     res.status(200).json({
       status: "success",
+      total,
       results,
       data,
     });

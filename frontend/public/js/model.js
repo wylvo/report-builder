@@ -7,8 +7,11 @@ export const state = {
   // Current signed in user
   user: {},
 
-  // Other users
+  // All users
   users: [],
+  usersTotal: 0,
+
+  // All active users
   usersFrontend: [],
 
   // Current tab
@@ -20,11 +23,14 @@ export const state = {
   // Clipboard for copying data from forms in tabs (only)
   clipboard: new Map(),
 
-  // All reports & deleted reports
+  // All reports
   reports: [],
-  reportsDeleted: [],
+  reportsTotal: 0,
 
-  page: 1,
+  // All deleted reports reports
+  reportsDeleted: [],
+  reportsDeletedTotal: 0,
+
   rowsPerPage: 50,
   search: {
     query: "",
@@ -180,14 +186,14 @@ export const rowsPerPage = (array, page = state.search.page) => {
 
 // prettier-ignore
 // Set/Update page numbers (previous page, current page, and next page)
-export const pages = (page = state.search.page) => {
+export const pages = (total = state.reportsTotal, page = state.search.page) => {
   state.search.page = page < 1 ? 1 : page;
 
   // If there are search results, calculate pages on search results, else calculate pages on all reports
-  const reports = state.search.results.length > 0 ? state.search.results : state.reports;
+  // const reports = state.search.results.length > 0 ? state.search.results : state.reports;
 
   // Calculate the total number of pages available
-  const totalPages = Math.ceil(reports.length / state.rowsPerPage);
+  const totalPages = Math.ceil(total / state.rowsPerPage);
 
   // Current page and next page can never be greater than the total of pages
   const currentPage = state.search.page > totalPages ? totalPages : state.search.page;
@@ -229,11 +235,4 @@ export const initThemeInLocalStorage = function () {
   let theme = localStorage.getItem("theme");
   if (!theme) (theme = "light"), saveThemeInLocalStorage();
   state.theme = theme;
-};
-
-export const SERVER = {
-  // TO TEST
-  sendReportToIncomingWebhook: async (id) => {
-    await api.v1.webhook.sendReportToIncomingWebhook(id);
-  },
 };

@@ -50,18 +50,19 @@ export const Stores = {
     pageNumber = pageNumber <= 0 ? (pageNumber = 1) : pageNumber;
 
     const {
-      output: { store },
+      output: { store, count },
     } = await mssql()
-      .request.output("store", NVARCHAR)
-      .input("pageNumber", INT, pageNumber)
+      .request.input("pageNumber", INT, pageNumber)
       .input("rowsPerPage", INT, rowsPerPage)
+      .output("store", NVARCHAR)
+      .output("count", INT)
       .execute("api_v1_stores_getAll");
 
     const stores = JSON.parse(store);
 
     return !stores
-      ? { results: 0, data: [] }
-      : { results: stores.length, data: stores };
+      ? { total: 0, results: 0, data: [] }
+      : { total: count, results: stores.length, data: stores };
   },
 
   // CREATE A NEW STORE

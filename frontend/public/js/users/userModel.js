@@ -30,11 +30,13 @@ const DB = {
   getUsers: async () => {
     // API request to get all users from the database
     const {
-      data: { data },
+      data: { data, total },
     } = await api.v1.users.getUsers(state.search.page, state.rowsPerPage);
 
     // Add all users in the model state
     state.users = data;
+
+    state.usersTotal = total;
 
     state.users.forEach((user) => {
       if (!user.profilePictureURI)

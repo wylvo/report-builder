@@ -42,11 +42,62 @@ const DB = {
   getReports: async () => {
     // API request to get all reports from the database
     const {
-      data: { data },
+      data: { data, total },
     } = await api.v1.reports.getReports(state.search.page, state.rowsPerPage);
 
     // Add all reports in the model state
     state.reports = data;
+    state.reportsTotal = total;
+
+    return data;
+  },
+
+  getAllSoftDeletedReports: async () => {
+    // API request to get all reports from the database
+    const {
+      data: { data, total },
+    } = await api.v1.reports.getAllSoftDeletedReports(
+      state.search.page,
+      state.rowsPerPage
+    );
+
+    // Add all reports in the model state
+    state.reportsDeleted = data;
+    state.reportsDeletedTotal = total;
+
+    return data;
+  },
+
+  getAllReportsCreatedByUser: async () => {
+    // API request to get all reports from the database
+    const {
+      data: { data, total },
+    } = await api.v1.reports.getAllReportsCreatedByUser(
+      state.user.username,
+      state.search.page,
+      state.rowsPerPage
+    );
+
+    // Add all reports in the model state
+    state.user.reports = data;
+    state.user.reportsTotal = total;
+
+    return data;
+  },
+
+  getAllSoftDeletedReportsCreatedByUser: async () => {
+    // API request to get all reports from the database
+    const {
+      data: { data, total },
+    } = await api.v1.reports.getAllSoftDeletedReportsCreatedByUser(
+      state.user.username,
+      state.search.page,
+      state.rowsPerPage
+    );
+
+    // Add all reports in the model state
+    state.user.reportsDeleted = data;
+    state.user.reportsDeletedTotal = total;
 
     return data;
   },
@@ -110,19 +161,6 @@ const DB = {
     report.incident = reportUpdated.incident;
 
     return report;
-  },
-
-  getAllSoftDeletedReports: async () => {
-    // API request to get all reports from the database
-    const {
-      data: { data },
-    } = await api.v1.reports.getAllSoftDeletedReports(
-      state.search.page,
-      state.rowsPerPage
-    );
-
-    // Add all reports in the model state
-    state.reportsDeleted = data;
   },
 
   hardDeleteReport: async (id, password) => {

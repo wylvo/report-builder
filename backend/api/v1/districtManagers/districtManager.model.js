@@ -74,9 +74,10 @@ export const DistrictManagers = {
     pageNumber = pageNumber <= 0 ? (pageNumber = 1) : pageNumber;
 
     const {
-      output: { districtManager },
+      output: { districtManager, count },
     } = await mssql()
       .request.output("districtManager", NVARCHAR)
+      .output("count", INT)
       .input("pageNumber", INT, pageNumber)
       .input("rowsPerPage", INT, rowsPerPage)
       .execute("api_v1_districtManagers_getAll");
@@ -84,8 +85,12 @@ export const DistrictManagers = {
     const districtManagers = JSON.parse(districtManager);
 
     return !districtManagers
-      ? { results: 0, data: [] }
-      : { results: districtManagers.length, data: districtManagers };
+      ? { total: 0, results: 0, data: [] }
+      : {
+          total: count,
+          results: districtManagers.length,
+          data: districtManagers,
+        };
   },
 
   // CREATE A NEW DISTRICT MANAGER

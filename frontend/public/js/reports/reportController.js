@@ -100,7 +100,8 @@ const controlSaveReport = async function (reportId) {
     if (!id) {
       report = await model.DB.createReport(model.state.tab, reportFormView._form);
       reportTableView.render(report);
-      reportTableView.updateTotalCount(model.state.reports);
+      model.state.reportsTotal++;
+      reportTableView.updateTotalCount(model.state.reportsTotal);
       notificationsView.success(`Report successfully created: [${report.id}]`);
     }
 
@@ -229,7 +230,8 @@ const controlDeleteReport = async function (id) {
     // Api call to soft delete a report in the database
     await model.DB.softDeleteReport(id);
 
-    reportTableView.updateTotalCount(model.state.reports);
+    model.state.reportsTotal--;
+    reportTableView.updateTotalCount(model.state.reportsTotal);
     notificationsView.delete(`Report successfully deleted: ${report.incident.title} [${report.id}]`);
 
     await model.DB.getAllSoftDeletedReports();
@@ -272,7 +274,8 @@ const controlHardDeleteReport = async function (id, password) {
     await model.DB.hardDeleteReport(id, password);
 
     modalView.closeModal();
-    reportTableView.updateTotalCount(model.state.reports);
+    model.state.reportsTotal--;
+    reportTableView.updateTotalCount(model.state.reportsTotal);
     notificationsView.delete(`Report successfully hard deleted: ${report.incident.title} [${report.id}]`);
 
   } catch (error) {
@@ -299,7 +302,8 @@ const controlUndoDeleteReport = async function (id) {
 
     await model.DB.undoSoftDeleteReport(id);
     
-    reportTableView.updateTotalCount(model.state.reportsDeleted);
+    model.state.reportsDeletedTotal--;
+    reportTableView.updateTotalCount(model.state.reportsDeletedTotal);
     notificationsView.undo(
       `Deleted report successfully recovered: ${reportDeleted.incident.title} [${reportDeleted.id}]`
     );
@@ -312,7 +316,6 @@ const controlUndoDeleteReport = async function (id) {
     console.error(error);
     notificationsView.error(error.message, 60);
     reportTableView.clearSpinner(reportTableRowUndoBtn, null, "undo");
-
   }
 };
 
@@ -416,26 +419,39 @@ const controlRowsPerPage = function (rowsPerPage) {
   controlRenderAllReports();
 };
 
-const controlPages = function (page) {
+const controlPages = async function (page) {
   if (isNaN(page)) return;
-  paginationView.renderAll(model.pages(page));
 
-  controlRenderAllReports();
+  try {
+    reportTableView.renderTableSpinner();
+    model.state.search.page = page;
+
+    await model.DB.getReports();
+    console.log(model.state);
+
+    controlRenderAllReports();
+  } catch (error) {
+    console.error(error);
+    notificationsView.error(error.message);
+  }
 };
 
 const controlRenderAllReports = function () {
   const reports = reportTableView.isDeletedViewActive
-    ? model.state.reportsDeleted
-    : model.state.reports;
+    ? {
+        array: model.state.reportsDeleted,
+        total: model.state.reportsDeletedTotal,
+      }
+    : { array: model.state.reports, total: model.state.reportsTotal };
 
-  const rowsOfReports = model.rowsPerPage(reports);
-  const pages = model.pages();
+  // const rowsOfReports = model.rowsPerPage(reports.array);
+  const pages = model.pages(reports.total);
 
-  reportTableView.renderAll(rowsOfReports);
+  reportTableView.renderAll(reports.array);
   paginationView.renderAll(pages);
-  reportTableView.updateTotalCount(reports);
+  reportTableView.updateTotalCount(reports.total);
 
-  return reports;
+  return reports.array;
 };
 
 const controlBeforeUnload = function () {
@@ -467,11 +483,7 @@ export const init = async function () {
 
     // Initialize all table rows per page
     model.state.rowsPerPage = paginationView.rowsPerPage();
-    reportTableView.renderAll(model.rowsPerPage(model.state.reports));
-    reportTableView.updateTotalCount(model.state.reports);
-
-    // Initialize all pagination buttons
-    paginationView.renderAll(model.pages());
+    controlRenderAllReports();
 
     // Tab view handlers
     reportTabsView.addHandlerClickTab(controlTabs);

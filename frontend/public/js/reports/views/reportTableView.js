@@ -91,37 +91,37 @@ class ReportTableView extends TableView {
       `;
 
     return `
-    <tr class="table-row">
-      <td data-cell="TECH">
-        <div>
-          <p class="table-row-cell-pp ${isOnCallClass}">
-            ${initials}
-          </p>
-        </div>
-      </td>
-      <td data-cell="Date"><div>${formattedDate}</div></td>
-      <td data-cell="Title">
-        <div><a class="table-row-link" href="#${report.id}">${report.incident.title}</a></div>
-      </td>
-      <td data-cell="Status">
-        <div><p class="${status.class}">${status.text}</p></div>
-      </td>
-      <td data-cell="Store"><div>${report.store.numbers.join(", ")}</div></td>
-      <td data-cell="Employee"><div>${report.store.employee.name}</div></td>
-      <td data-cell="DM">
-        <div>
-          ${report.store.districtManagers.map(dm => dm.fullName).join(", ")}
-        </div>
-      </td>
-      <td data-cell="Type"><div>${report.incident.types.join(", ")}</div></td>
-      <td data-cell="Procedural">
-        <div><p ${isProcedural.class}>${isProcedural.text}</p></div>
-      </td>
-      <td data-cell="Actions" data-id="${report.id}" class="table-row-buttons">
-          ${buttons}
-      </td>
-    </tr>
-    `;
+      <tr class="table-row">
+        <td data-cell="TECH">
+          <div>
+            <p class="table-row-cell-pp ${isOnCallClass}">
+              ${initials}
+            </p>
+          </div>
+        </td>
+        <td data-cell="Date"><div>${formattedDate}</div></td>
+        <td data-cell="Title">
+          <div><a class="table-row-link" href="#${report.id}">${report.incident.title}</a></div>
+        </td>
+        <td data-cell="Status">
+          <div><p class="${status.class}">${status.text}</p></div>
+        </td>
+        <td data-cell="Store"><div>${report.store.numbers.join(", ")}</div></td>
+        <td data-cell="Employee"><div>${report.store.employee.name}</div></td>
+        <td data-cell="DM">
+          <div>
+            ${report.store.districtManagers.map(dm => dm.fullName).join(", ")}
+          </div>
+        </td>
+        <td data-cell="Type"><div>${report.incident.types.join(", ")}</div></td>
+        <td data-cell="Procedural">
+          <div><p ${isProcedural.class}>${isProcedural.text}</p></div>
+        </td>
+        <td data-cell="Actions" data-id="${report.id}" class="table-row-buttons">
+            ${buttons}
+        </td>
+      </tr>
+      `;
   }
 
   addHandlerClickAllReports(handler, handlerClearSearch) {

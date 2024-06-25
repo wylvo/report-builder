@@ -38,10 +38,11 @@ export const getUserId = (req, res, next) => {
 export const getAllUsersFrontend = catchAsync(async (req, res, next) => {
   const { page, rows } = req.query;
   const frontend = true;
-  const { results, data } = await Users.all(page, rows, frontend);
+  const { total, results, data } = await Users.all(page, rows, frontend);
 
   res.status(200).json({
     status: "success",
+    total,
     results,
     data,
   });
@@ -49,10 +50,11 @@ export const getAllUsersFrontend = catchAsync(async (req, res, next) => {
 
 export const getAllUsers = catchAsync(async (req, res, next) => {
   const { page, rows } = req.query;
-  const { results, data } = await Users.all(page, rows);
+  const { total, results, data } = await Users.all(page, rows);
 
   res.status(200).json({
     status: "success",
+    total,
     results,
     data,
   });

@@ -92,11 +92,12 @@ export const Users = {
     pageNumber = pageNumber <= 0 ? (pageNumber = 1) : pageNumber;
 
     const {
-      output: { user },
+      output: { user, count },
     } = await mssql()
-      .request.output("user", NVARCHAR)
-      .input("pageNumber", INT, pageNumber)
+      .request.input("pageNumber", INT, pageNumber)
       .input("rowsPerPage", INT, rowsPerPage)
+      .output("user", NVARCHAR)
+      .output("count", INT)
       .execute(
         frontend ? "api_v1_users_getAllFrontend" : "api_v1_users_getAll"
       );
@@ -104,8 +105,8 @@ export const Users = {
     const users = JSON.parse(user);
 
     return !users
-      ? { results: 0, data: [] }
-      : { results: users.length, data: users };
+      ? { total: 0, results: 0, data: [] }
+      : { total: count, results: users.length, data: users };
   },
 
   // CREATE A NEW USER

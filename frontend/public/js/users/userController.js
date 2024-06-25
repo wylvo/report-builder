@@ -137,7 +137,7 @@ const controlSaveUser = async function (userId) {
       user = await model.DB.createUser(userFormView._form);
       userFormView.render(user);
       userTableView.render(user);
-      userTableView.updateTotalCount(model.state.users);
+      userTableView.updateTotalCount(model.state.usersTotal++);
       notificationsView.success(`User successfully created: [${user.id}]`);
     }
 
@@ -219,7 +219,7 @@ const controlDeleteUser = async function (id) {
     userTableView.renderSpinner(userTableRowDeleteBtn);
   
     await model.DB.deleteUser(id);
-    userTableView.updateTotalCount(model.state.users);
+    userTableView.updateTotalCount(model.state.usersTotal--);
     notificationsView.success(`User successfully deleted: ${user.email} [${user.id}]`);
 
   } catch (error) {
@@ -287,7 +287,7 @@ export const init = async function () {
     // Initialize all table rows per page
     model.state.rowsPerPage = paginationView.rowsPerPage();
     userTableView.renderAll(model.rowsPerPage(model.state.users));
-    userTableView.updateTotalCount(model.state.users);
+    userTableView.updateTotalCount(model.state.usersTotal);
 
     // Initialize all pagination buttons
     paginationView.renderAll(model.pages());
