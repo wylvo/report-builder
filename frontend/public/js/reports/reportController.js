@@ -412,11 +412,20 @@ const controlClearSearchResults = function () {
   return controlRenderAllReports();
 };
 
-const controlRowsPerPage = function (rowsPerPage) {
+const controlRowsPerPage = async function (rowsPerPage) {
   model.state.rowsPerPage = rowsPerPage;
   model.state.search.page = 1;
 
-  controlRenderAllReports();
+  try {
+    reportTableView.renderTableSpinner();
+
+    await model.DB.getReports();
+
+    controlRenderAllReports();
+  } catch (error) {
+    console.error(error);
+    notificationsView.error(error.message);
+  }
 };
 
 const controlPages = async function (page) {
@@ -427,7 +436,6 @@ const controlPages = async function (page) {
     model.state.search.page = page;
 
     await model.DB.getReports();
-    console.log(model.state);
 
     controlRenderAllReports();
   } catch (error) {
@@ -444,11 +452,10 @@ const controlRenderAllReports = function () {
       }
     : { array: model.state.reports, total: model.state.reportsTotal };
 
-  // const rowsOfReports = model.rowsPerPage(reports.array);
-  const pages = model.pages(reports.total);
+  const pageBtns = model.pages(reports.total);
 
+  paginationView.renderAll(pageBtns);
   reportTableView.renderAll(reports.array);
-  paginationView.renderAll(pages);
   reportTableView.updateTotalCount(reports.total);
 
   return reports.array;

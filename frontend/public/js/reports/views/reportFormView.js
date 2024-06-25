@@ -190,12 +190,16 @@ export class ReportFormView extends FormView {
       !checkBoxes.get("transaction-issue").checked
     ) {
       checkBoxes.get("transaction-issue").click();
+
+      // Transaction Types
       selects.get("transaction-types").value =
         report.incident.transaction.types[0];
 
+      // Transaction Number
       fields.get("transaction-number").value =
         report.incident.transaction.number;
 
+      // Transaction Has Variance Report
       report.incident.transaction.hasVarianceReport &&
       !["transaction-variance-report"].checked
         ? (["transaction-variance-report"].checked = true)
@@ -205,8 +209,12 @@ export class ReportFormView extends FormView {
     // Details
     textAreas.get("incident-details").value = report.incident.details;
 
-    // Assigned to Signature & On-Call
+    console.log(selects);
+    console.log(report.assignedTo);
+    // Assigned to Signature
     selects.get("assigned-to").value = report.assignedTo;
+
+    // On-Call
     report.isOnCall && !checkBoxes.get("oncall").checked
       ? (checkBoxes.get("oncall").checked = true)
       : (checkBoxes.get("oncall").checked = false);

@@ -131,17 +131,19 @@ const controlUndoDeleteReport = async function (id) {
 
 const controlRenderAllReports = function () {
   const reports = reportTableView.isDeletedViewActive
-    ? model.state.reportsDeleted
-    : model.state.reports;
+    ? {
+        array: model.state.reportsDeleted,
+        total: model.state.reportsDeletedTotal,
+      }
+    : { array: model.state.reports, total: model.state.reportsTotal };
 
-  const rowsOfReports = model.rowsPerPage(reports);
-  const pages = model.pages();
+  const pageBtns = model.pages(reports.total);
 
-  reportTableView.renderAll(rowsOfReports);
-  paginationView.renderAll(pages);
-  reportTableView.updateTotalCount(reports);
+  paginationView.renderAll(pageBtns);
+  reportTableView.renderAll(reports.array);
+  reportTableView.updateTotalCount(reports.total);
 
-  return reports;
+  return reports.array;
 };
 
 const controlSearchResults = function () {
@@ -190,7 +192,9 @@ export const init = async function () {
 
     // Initialize user reports
     model.state.reports = model.state.user.reports;
+    model.state.reportsTotal = model.state.user.reportsTotal;
     model.state.reportsDeleted = model.state.user.reportsDeleted;
+    model.state.reportsDeletedTotal = model.state.user.reportsDeletedTotal;
 
     // Initialize the single tab
     accountTabsView.renderAll(null, model.initNumberOfTabs(1));

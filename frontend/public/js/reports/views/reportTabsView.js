@@ -198,7 +198,7 @@ class ReportTabsView extends TabsView {
                   <option value="louis-philippe.dalpe">Louis-Philippe Dalpe (No more DM)</option>
                   <option value="">(None)</option>
                 </select>
-                <label for="store-dm_${index}">District Manager:</label>
+                <label for="store-dm_${index}">District Managers:</label>
               </div>
             </div>
           </div>
@@ -250,7 +250,7 @@ class ReportTabsView extends TabsView {
                 >
                   ${formData.selects.incidentTypes.join("")}
                 </select>
-                <label for="incident-types_${index}">Incident Type:</label>
+                <label for="incident-types_${index}">Incident Types:</label>
               </div>
               <div class="form-grouping-col">
                 <select
@@ -313,7 +313,7 @@ class ReportTabsView extends TabsView {
                 >
                   ${formData.selects.incidentTransactionTypes.join("")}
                 </select>
-                <label for="transaction-types_${index}">Transaction Type:</label>
+                <label for="transaction-types_${index}">Transaction Types:</label>
               </div>
               <div class="form-grouping-col">
                 <input

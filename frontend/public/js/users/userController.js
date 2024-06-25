@@ -253,24 +253,46 @@ const controlUserStatus = async function (id) {
 };
 
 const controlRenderAllUsers = function () {
-  const users = model.rowsPerPage(model.state.users);
-  userTableView.renderAll(users);
-  paginationView.renderAll(model.pages());
+  // const users = model.rowsPerPage(model.state.users);
+  const pageBtns = model.pages(model.state.usersTotal);
+
+  paginationView.renderAll(pageBtns);
+  userTableView.renderAll(model.state.users);
+  userTableView.updateTotalCount(model.state.usersTotal);
+
+  return model.state.users;
 };
 
-const controlRowsPerPage = function (rowsPerPage) {
+const controlRowsPerPage = async function (rowsPerPage) {
   model.state.rowsPerPage = rowsPerPage;
   model.state.search.page = 1;
 
-  controlRenderAllUsers();
+  try {
+    userTableView.renderTableSpinner();
+
+    await model.DB.getUsers();
+
+    controlRenderAllUsers();
+  } catch (error) {
+    console.error(error);
+    notificationsView.error(error.message);
+  }
 };
 
-const controlPages = function (page) {
+const controlPages = async function (page) {
   if (isNaN(page)) return;
-  paginationView.renderAll(model.pages(page));
 
-  const users = model.rowsPerPage(model.state.users, page);
-  userTableView.renderAll(users);
+  try {
+    userTableView.renderTableSpinner();
+    model.state.search.page = page;
+
+    await model.DB.getUsers();
+
+    controlRenderAllUsers();
+  } catch (error) {
+    console.error(error);
+    notificationsView.error(error.message);
+  }
 };
 
 export const init = async function () {
@@ -286,11 +308,7 @@ export const init = async function () {
 
     // Initialize all table rows per page
     model.state.rowsPerPage = paginationView.rowsPerPage();
-    userTableView.renderAll(model.rowsPerPage(model.state.users));
-    userTableView.updateTotalCount(model.state.usersTotal);
-
-    // Initialize all pagination buttons
-    paginationView.renderAll(model.pages());
+    controlRenderAllUsers();
 
     // Tab view handlers
     userTabsView.addHandlerClickTab(controlTabs);

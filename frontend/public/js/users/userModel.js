@@ -35,7 +35,6 @@ const DB = {
 
     // Add all users in the model state
     state.users = data;
-
     state.usersTotal = total;
 
     state.users.forEach((user) => {
