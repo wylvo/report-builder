@@ -108,6 +108,8 @@ export default class View {
       undo: `<svg class="icons"><use href="/img/icons.svg#icon-undo"></use></svg>`,
       teams: `<svg class="icons"><use href="/img/icons.svg#icon-ms-teams"></use></svg>`,
       password: `<svg class="icons"><use href="/img/icons.svg#icon-key"></use></svg>`,
+      active: `<svg><use href="/img/icons.svg#icon-enable"></use></svg>`,
+      inactive: `<svg><use href="/img/icons.svg#icon-disable"></use></svg>`,
       hardDelete: `<p>Hard Delete Report</p>`,
       import: `<p>Import Reports</p>`,
       table: ``

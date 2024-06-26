@@ -163,6 +163,7 @@ const controlSaveUser = async function (userId) {
   } catch (error) {
     console.error(error);
     notificationsView.error(error.message, 60);
+    userFormView.clearSpinner(userFormView._btnSubmit, "error", id ? "update" : "save");
   }
 };
 
@@ -225,6 +226,7 @@ const controlDeleteUser = async function (id) {
   } catch (error) {
     console.error(error);
     notificationsView.error(error.message, 60);
+    userTableView.clearSpinner(userTableRowDeleteBtn, null, "delete");
   }
 };
 
@@ -233,9 +235,9 @@ const controlUserStatus = async function (id) {
   if (isRequestInProgress) return notificationsView.warning("A request is already in progress.");
 
   let userTableRowStatusBtn;
+  let user = model.findObjectById(model.state.users, id);
     
   try {
-    let user = model.findObjectById(model.state.users, id);
     userTableRowStatusBtn = user.tableRowEl.querySelector(".status");
 
     userTableView.renderSpinner(userTableRowStatusBtn);
@@ -249,6 +251,7 @@ const controlUserStatus = async function (id) {
   } catch (error) {
     console.error(error);
     notificationsView.error(error.message, 60);
+    userTableView.clearSpinner(userTableRowStatusBtn, null, user.active ? "inactive" : "active");
   }
 };
 

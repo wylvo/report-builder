@@ -131,6 +131,9 @@ export class UserFormView extends FormView {
     this._btnResetPassword.disabled = true;
     this._btnResetPassword.classList.add("hidden");
 
+    if (this._btnSubmit.children[2]) this._btnSubmit.children[2].remove();
+    if (this._btnResetPassword.children[2]) this._btnResetPassword.children[2].remove();
+
     this.updateTextInputsLength();
 
     if(takeSnapshot) this._snapshot = this.takeSnapshot();
