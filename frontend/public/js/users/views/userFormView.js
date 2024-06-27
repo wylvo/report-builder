@@ -56,7 +56,7 @@ export class UserFormView extends FormView {
     this._addHandlerCollapseExpandOrAccordion();
     this._addHandlerOnChange();
     this._addHandlerCheckPasswordsMatch();
-    this._addHandlerUpdateProfilePicture();
+    // this._addHandlerUpdateProfilePicture();
   }
 
   // prettier-ignore
@@ -142,7 +142,6 @@ export class UserFormView extends FormView {
   render(user) {
     this.newUser();
 
-    console.log(user);
     this._tab.firstElementChild.textContent = user.fullName;
     this._tab.firstElementChild.setAttribute("href", `#${user.id}`);
 
@@ -170,7 +169,7 @@ export class UserFormView extends FormView {
     this._snapshot = this.takeSnapshot();
 
     // Update form profile picture
-    this._imgProfilePicture.src = user.profilePictureURI;
+    this._imgProfilePicture.src = user.profilePictureURI ?? "";
 
     // Password inputs not required
     this._password.required = false;
@@ -274,13 +273,13 @@ export class UserFormView extends FormView {
     );
   }
 
-  _addHandlerUpdateProfilePicture() {
-    this._profilePictureURL.addEventListener("change", () => {
-      if (this._profilePictureURL.value === "")
-        this._imgProfilePicture.src = this.#DEFAULT_PICTURE;
-      else this._imgProfilePicture.src = this._profilePictureURL.value;
-    });
-  }
+  // _addHandlerUpdateProfilePicture() {
+  //   this._profilePictureURL.addEventListener("change", () => {
+  //     if (this._profilePictureURL.value === "")
+  //       this._imgProfilePicture.src = this.#DEFAULT_PICTURE;
+  //     else this._imgProfilePicture.src = this._profilePictureURL.value;
+  //   });
+  // }
 
   // prettier-ignore
   _addHandlerCollapseExpandOrAccordion() {

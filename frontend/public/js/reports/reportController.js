@@ -24,6 +24,40 @@ const controlTabs = function (tabIndex, id = undefined) {
   reportTabsView.updateLocationHash(reportId);
 };
 
+const controlBeforeUnload = function () {
+  let hasChanges;
+  for (const [_, reportFormView] of reportTabsView.tabs) {
+    if (reportFormView._changes.length > 0) {
+      hasChanges = true;
+      break;
+    }
+  }
+  return hasChanges;
+};
+
+// prettier-ignore
+const controlUnsavedReport = async (controlFunction, handler = undefined, event = undefined) => {
+  let isSaveConfirmed = false;
+  const currentReportView = reportTabsView.tabs.get(model.state.tab);
+  const formHasChanges = currentReportView._changes.length > 0;
+
+  if (formHasChanges) {
+    if (event) event.preventDefault();
+    isSaveConfirmed = await modalView.confirmSave();
+  }
+  if (isSaveConfirmed) {
+    const id = window.location.hash.slice(1);
+    if (formHasChanges) return controlSaveReport(id);
+  }
+
+  if (typeof handler === "function") {
+    const returnedValue = handler();
+    if (returnedValue !== null || typeof returnedValue !== "undefined")
+      return controlFunction(returnedValue, event);
+  }
+  return controlFunction(handler, event);
+};
+
 // prettier-ignore
 const controlUniqueReportPerTab = function (id, event = undefined) {
   for (const [index, tab] of model.state.tabs) {
@@ -363,53 +397,21 @@ const controlImportReports = async function (rawJSON) {
   }
 };
 
-// prettier-ignore
-const controlUnsavedReport = async (controlFunction, handler = undefined, event = undefined) => {
-  let isSaveConfirmed = false;
-  const currentReportView = reportTabsView.tabs.get(model.state.tab);
-  const formHasChanges = currentReportView._changes.length > 0;
-
-  if (formHasChanges) {
-    if (event) event.preventDefault();
-    isSaveConfirmed = await modalView.confirmSave();
-  }
-  if (isSaveConfirmed) {
-    const id = window.location.hash.slice(1);
-    if (formHasChanges) return controlSaveReport(id);
-  }
-
-  if (typeof handler === "function") {
-    const returnedValue = handler();
-    if (returnedValue !== null || typeof returnedValue !== "undefined")
-      return controlFunction(returnedValue, event);
-  }
-  return controlFunction(handler, event);
-};
-
-const controlSearchResults = function () {
-  model.state.search.page = 1;
-
+const controlRenderAllReports = function () {
   const reports = reportTableView.isDeletedViewActive
-    ? model.state.reportsDeleted
-    : model.state.reports;
+    ? {
+        array: model.state.reportsDeleted,
+        total: model.state.reportsDeletedTotal,
+      }
+    : { array: model.state.reports, total: model.state.reportsTotal };
 
-  const query = searchView.query();
-  if (!query) {
-    return controlClearSearchResults();
-  }
+  const pageBtns = model.pages(reports.total);
 
-  const filterBy = searchView.filterBy();
-  model.filterSearch(reports, query, filterBy);
+  paginationView.renderAll(pageBtns);
+  reportTableView.renderAll(reports.array);
+  reportTableView.updateTotalCount(reports.total);
 
-  controlRenderAllReports();
-  reportTableView.updateTotalCount(model.state.search.results);
-};
-
-const controlClearSearchResults = function () {
-  model.state.search.query = "";
-  model.state.search.results = [];
-  searchView.clearQuery();
-  return controlRenderAllReports();
+  return reports.array;
 };
 
 const controlRowsPerPage = async function (rowsPerPage) {
@@ -444,32 +446,30 @@ const controlPages = async function (page) {
   }
 };
 
-const controlRenderAllReports = function () {
+const controlSearchResults = function () {
+  model.state.search.page = 1;
+
   const reports = reportTableView.isDeletedViewActive
-    ? {
-        array: model.state.reportsDeleted,
-        total: model.state.reportsDeletedTotal,
-      }
-    : { array: model.state.reports, total: model.state.reportsTotal };
+    ? model.state.reportsDeleted
+    : model.state.reports;
 
-  const pageBtns = model.pages(reports.total);
+  const query = searchView.query();
+  if (!query) {
+    return controlClearSearchResults();
+  }
 
-  paginationView.renderAll(pageBtns);
-  reportTableView.renderAll(reports.array);
-  reportTableView.updateTotalCount(reports.total);
+  const filterBy = searchView.filterBy();
+  model.filterSearch(reports, query, filterBy);
 
-  return reports.array;
+  controlRenderAllReports();
+  reportTableView.updateTotalCount(model.state.search.results);
 };
 
-const controlBeforeUnload = function () {
-  let hasChanges;
-  for (const [_, reportFormView] of reportTabsView.tabs) {
-    if (reportFormView._changes.length > 0) {
-      hasChanges = true;
-      break;
-    }
-  }
-  return hasChanges;
+const controlClearSearchResults = function () {
+  model.state.search.query = "";
+  model.state.search.results = [];
+  searchView.clearQuery();
+  return controlRenderAllReports();
 };
 
 /*

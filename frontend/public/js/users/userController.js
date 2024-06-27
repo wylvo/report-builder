@@ -137,7 +137,8 @@ const controlSaveUser = async function (userId) {
       user = await model.DB.createUser(userFormView._form);
       userFormView.render(user);
       userTableView.render(user);
-      userTableView.updateTotalCount(model.state.usersTotal++);
+      model.state.usersTotal++;
+      userTableView.updateTotalCount(model.state.usersTotal);
       notificationsView.success(`User successfully created: [${user.id}]`);
     }
 
@@ -181,6 +182,7 @@ const controlResetUserPassword = async (userId) => {
       
       notificationsView.success(`User password successfully reset: ${user.email}`);
       userFormView.clearPasswordFields();
+      userFormView._btnResetPassword.disabled = true;
       
       userFormView.clearSpinner(userFormView._btnResetPassword, "success", "password");
     }
@@ -216,11 +218,12 @@ const controlDeleteUser = async function (id) {
       userTabsView.tabs.get(tabIndex).newUser((takeSnapshot = true))
     }
 
-    console.log(model.state.tabs);
     userTableView.renderSpinner(userTableRowDeleteBtn);
   
     await model.DB.deleteUser(id);
-    userTableView.updateTotalCount(model.state.usersTotal--);
+
+    model.state.usersTotal--;
+    userTableView.updateTotalCount(model.state.usersTotal);
     notificationsView.success(`User successfully deleted: ${user.email} [${user.id}]`);
 
   } catch (error) {

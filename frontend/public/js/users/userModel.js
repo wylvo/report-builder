@@ -18,9 +18,11 @@ import {
 import api from "../api.js";
 import utils from "../utils.js";
 
+import * as accountModel from "../account/accountModel.js";
+
 // 1st function to be ran by ./userController.js
 const init = async () => {
-  await DB.getUsers();
+  await Promise.all([DB.getUsers(), accountModel.DB.getCurrentUserAccount()]);
   state.version = await api.v1.version.getVersion();
   initThemeInLocalStorage();
 };
