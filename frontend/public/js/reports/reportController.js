@@ -397,8 +397,44 @@ const controlImportReports = async function (rawJSON) {
   }
 };
 
-const controlRenderAllReports = function () {
+const controlSearchResults = function () {
+  model.state.search.page = 1;
+
   const reports = reportTableView.isDeletedViewActive
+    ? model.state.reportsDeleted
+    : model.state.reports;
+
+  const query = searchView.query();
+  if (!query) return controlClearSearchResults(query);
+
+  const filterBy = searchView.filterBy();
+  model.filterSearch(reports, query, filterBy);
+
+  controlRenderAllReports();
+  reportTableView.updateResultCount(model.state.search.results);
+};
+
+const controlClearSearchResults = function (query) {
+  const isAlreadyEmptyQuery = model.state.search.query === "" || query !== "";
+  if (isAlreadyEmptyQuery) return;
+
+  // Clear the query
+  model.state.search.query = "";
+  model.state.search.results = [];
+  searchView.clearQuery();
+  reportTableView.updateResultCount(0);
+
+  return controlRenderAllReports();
+};
+
+const controlRenderAllReports = function () {
+  const query = model.state.search.query;
+  const reports = query
+    ? {
+        array: model.state.search.results,
+        total: model.state.search.results.length,
+      }
+    : reportTableView.isDeletedViewActive
     ? {
         array: model.state.reportsDeleted,
         total: model.state.reportsDeletedTotal,
@@ -409,7 +445,9 @@ const controlRenderAllReports = function () {
 
   paginationView.renderAll(pageBtns);
   reportTableView.renderAll(reports.array);
-  reportTableView.updateTotalCount(reports.total);
+  query
+    ? reportTableView.updateResultCount(reports.total)
+    : reportTableView.updateTotalCount(reports.total);
 
   return reports.array;
 };
@@ -422,6 +460,9 @@ const controlRowsPerPage = async function (rowsPerPage) {
     reportTableView.renderTableSpinner();
 
     await model.DB.getReports();
+
+    const query = searchView.query();
+    if (query) return controlSearchResults();
 
     controlRenderAllReports();
   } catch (error) {
@@ -446,38 +487,12 @@ const controlPages = async function (page) {
   }
 };
 
-const controlSearchResults = function () {
-  model.state.search.page = 1;
-
-  const reports = reportTableView.isDeletedViewActive
-    ? model.state.reportsDeleted
-    : model.state.reports;
-
-  const query = searchView.query();
-  if (!query) {
-    return controlClearSearchResults();
-  }
-
-  const filterBy = searchView.filterBy();
-  model.filterSearch(reports, query, filterBy);
-
-  controlRenderAllReports();
-  reportTableView.updateTotalCount(model.state.search.results);
-};
-
-const controlClearSearchResults = function () {
-  model.state.search.query = "";
-  model.state.search.results = [];
-  searchView.clearQuery();
-  return controlRenderAllReports();
-};
-
 /*
  *************************************************************
  * INITIALIZE ALL HANDLERS, AND RENDER ALL EXISTING REPORTS  *
  *************************************************************
  */
-export const init = async function () {
+const init = async function () {
   try {
     await model.init();
 

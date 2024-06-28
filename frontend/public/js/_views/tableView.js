@@ -2,7 +2,8 @@ import View from "./View.js";
 
 export default class TableView extends View {
   _table = document.querySelector("tbody");
-  _count = document.querySelector(".table-meta-data .count");
+  _total = document.querySelector(".table-meta-data .total-count");
+  _results = document.querySelector(".table-meta-data .results-count");
 
   constructor() {
     super();
@@ -68,7 +69,12 @@ export default class TableView extends View {
   }
 
   updateTotalCount(total) {
-    if (Array.isArray(total)) this._count.textContent = total.length;
-    else this._count.textContent = total;
+    if (Array.isArray(total)) this._total.textContent = total.length;
+    else this._total.textContent = total;
+  }
+
+  updateResultCount(total) {
+    if (Array.isArray(total)) this._results.textContent = total.length;
+    else this._results.textContent = total;
   }
 }

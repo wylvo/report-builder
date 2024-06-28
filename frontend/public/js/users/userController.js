@@ -301,7 +301,12 @@ const controlPages = async function (page) {
   }
 };
 
-export const init = async function () {
+/*
+ *************************************************************
+ * INITIALIZE ALL HANDLERS, AND RENDER ALL EXISTING USERS  *
+ *************************************************************
+ */
+const init = async function () {
   try {
     await model.init();
 

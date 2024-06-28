@@ -33,6 +33,11 @@ class PaginationView extends View {
       <div>
         <button ${!page.previous ? "disabled" : ""} data-page="${page.previous}" class="table-pagination-btn">
           <svg class="icons">
+            <use href="/img/icons.svg#icon-double-chevron-left"></use>
+          </svg>
+        </button>
+        <button ${!page.previous ? "disabled" : ""} data-page="${page.previous}" class="table-pagination-btn">
+          <svg class="icons">
             <use href="/img/icons.svg#icon-chevron-left"></use>
           </svg>
         </button>
@@ -40,6 +45,11 @@ class PaginationView extends View {
         <button ${!page.next ? "disabled" : ""} data-page="${page.next}" class="table-pagination-btn">
           <svg class="icons">
             <use href="/img/icons.svg#icon-chevron-right"></use>
+          </svg>
+        </button>
+          <button ${!page.next ? "disabled" : ""} data-page="${page.next}" class="table-pagination-btn">
+          <svg class="icons">
+            <use href="/img/icons.svg#icon-double-chevron-right"></use>
           </svg>
         </button>
       </div>

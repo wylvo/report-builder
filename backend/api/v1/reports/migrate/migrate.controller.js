@@ -66,6 +66,12 @@ export const migrateReport = catchAsync(async (req, res, next) => {
       delete report.incident.transaction.type;
     }
 
+    const details = report.incident.details;
+    if (details === "") report.incident.details = "None";
+    if (["mib", "audio", "music"].includes(details.toLowerCase())) {
+      report.incident.types.push("Audio");
+    }
+
     const isIRCreated = report.incident.transaction.isIRCreated;
     if (typeof isIRCreated !== "undefined") {
       report.incident.transaction.hasVarianceReport = isIRCreated;

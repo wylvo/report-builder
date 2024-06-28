@@ -129,23 +129,6 @@ const controlUndoDeleteReport = async function (id) {
   }
 };
 
-const controlRenderAllReports = function () {
-  const reports = reportTableView.isDeletedViewActive
-    ? {
-        array: model.state.reportsDeleted,
-        total: model.state.reportsDeletedTotal,
-      }
-    : { array: model.state.reports, total: model.state.reportsTotal };
-
-  const pageBtns = model.pages(reports.total);
-
-  paginationView.renderAll(pageBtns);
-  reportTableView.renderAll(reports.array);
-  reportTableView.updateTotalCount(reports.total);
-
-  return reports.array;
-};
-
 const controlSearchResults = function () {
   model.state.search.page = 1;
 
@@ -165,28 +148,85 @@ const controlSearchResults = function () {
   reportTableView.updateTotalCount(model.state.search.results);
 };
 
-const controlClearSearchResults = function () {
+const controlClearSearchResults = function (query) {
+  const isAlreadyEmptyQuery = model.state.search.query === "" || query !== "";
+  if (isAlreadyEmptyQuery) return;
+
+  // Clear the query
   model.state.search.query = "";
   model.state.search.results = [];
   searchView.clearQuery();
+  reportTableView.updateResultCount(0);
+
   return controlRenderAllReports();
 };
 
-const controlRowsPerPage = function (rowsPerPage) {
+const controlRenderAllReports = function () {
+  const query = model.state.search.query;
+  const reports = query
+    ? {
+        array: model.state.search.results,
+        total: model.state.search.results.length,
+      }
+    : reportTableView.isDeletedViewActive
+    ? {
+        array: model.state.reportsDeleted,
+        total: model.state.reportsDeletedTotal,
+      }
+    : { array: model.state.reports, total: model.state.reportsTotal };
+
+  const pageBtns = model.pages(reports.total);
+
+  paginationView.renderAll(pageBtns);
+  reportTableView.renderAll(reports.array);
+  query
+    ? reportTableView.updateResultCount(reports.total)
+    : reportTableView.updateTotalCount(reports.total);
+
+  return reports.array;
+};
+
+const controlRowsPerPage = async function (rowsPerPage) {
   model.state.rowsPerPage = rowsPerPage;
   model.state.search.page = 1;
 
-  controlRenderAllReports();
+  try {
+    reportTableView.renderTableSpinner();
+
+    await model.DB.getReports();
+
+    const query = searchView.query();
+    if (query) return controlSearchResults();
+
+    controlRenderAllReports();
+  } catch (error) {
+    console.error(error);
+    notificationsView.error(error.message);
+  }
 };
 
-const controlPages = function (page) {
+const controlPages = async function (page) {
   if (isNaN(page)) return;
-  paginationView.renderAll(model.pages(page));
 
-  controlRenderAllReports();
+  try {
+    reportTableView.renderTableSpinner();
+    model.state.search.page = page;
+
+    await model.DB.getReports();
+
+    controlRenderAllReports();
+  } catch (error) {
+    console.error(error);
+    notificationsView.error(error.message);
+  }
 };
 
-export const init = async function () {
+/*
+ *************************************************************
+ * INITIALIZE ALL HANDLERS, AND RENDER ALL EXISTING REPORTS  *
+ *************************************************************
+ */
+const init = async function () {
   try {
     await model.init();
 
