@@ -119,7 +119,11 @@ const controlRenderReport = function () {
     const isReportPresentInTab = controlUniqueReportPerTab(id);
     if (isReportPresentInTab) return;
 
-    const index = model.findObjectIndexById(model.state.reports, id, false);
+    const reports = reportTableView.isDeletedViewActive
+      ? model.state.reportsDeleted
+      : model.state.reports;
+
+    const index = model.findObjectIndexById(reports, id, false);
     const reportFound = index !== -1;
     let report;
 
@@ -128,7 +132,7 @@ const controlRenderReport = function () {
     if (reportFound) {
       controlUnhighlightReport(model.state.tab);
 
-      report = model.loadTab(model.state.reports[index], model.state.tab);
+      report = model.loadTab(reports[index], model.state.tab);
       reportFormView.render(report);
 
       reportTableView.highlight(report.tableRowEl);
@@ -518,6 +522,7 @@ const init = async function () {
     // Initialize all tabs
     reportTabsView.renderAll(model.state.formData, model.initNumberOfTabs(5));
     reportFormView = reportTabsView.tabs.get(model.state.tab);
+    reportTableView.loadUsers(model.state.usersFrontend);
 
     // Initialize all table rows per page
     model.state.rowsPerPage = paginationView.rowsPerPage();

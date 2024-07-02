@@ -67,14 +67,17 @@
                     class="table-filter-by"
                   >
                     <option selected value="incident.title">Title</option>
-                    <option value="assignedTo">TECH</option>
+                    <option value="id">ID</option>
+                    <!-- <option value="createdBy">Created By</option>
+                    <option value="updatedBy">Updated By</option> -->
+                    <option value="assignedTo">Assigned To</option>
                     <option value="call.dateTime">Date</option>
                     <option value="call.status">Status</option>
                     <option value="call.phone">Phone</option>
                     <option value="store.numbers">Stores</option>
                     <option value="incident.types">Types</option>
                     <option value="incident.isProcedural">Procedural</option>
-                    <option value="store.employee.name">Emp</option>
+                    <option value="store.employee.name">Employee</option>
                     <option value="store.districtManagers">DMs</option>
                     <option value="isOnCall">On-call</option>
                   </select>
@@ -108,13 +111,13 @@
               <table class="table-content">
                 <thead>
                   <tr>
-                    <th>TECH</th>
-                    <th>Date Reported</th>
+                    <th>Created By</th>
+                    <th>Call Date</th>
                     <th>Title</th>
                     <th>Status</th>
+                    <th>Assigned To</th>
                     <th>Stores</th>
-                    <th>Emp</th>
-                    <th>DMs</th>
+                    <th>Employee</th>
                     <th>Types</th>
                     <th>Procedural</th>
                     <th>Actions</th>

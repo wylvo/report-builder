@@ -87,4 +87,36 @@ export default class TableView extends View {
     if (tableRowEl.classList.contains("highlight"))
       tableRowEl.classList.remove("highlight");
   }
+
+  formatArray(arr, maxLength) {
+    // Initialize an empty string to store the formatted result
+    let formattedStr = "";
+
+    // Initialize remainingCount with the total number of elements in the array
+    let remainingCount = arr.length;
+
+    // Loop through each element in the array
+    for (let i = 0; i < arr.length; i++) {
+      let element = arr[i];
+
+      // Check if adding the next element would exceed the maxLength
+      // +2 accounts for the ", " that separates elements
+      if (formattedStr.length + element.length + 2 > maxLength) break; // If it would exceed, exit the loop
+
+      // If formattedStr is not empty, append ", " before adding the next element
+      if (formattedStr.length > 0) formattedStr += ", ";
+
+      // Add the current element to formattedStr
+      formattedStr += element;
+
+      // Decrease remainingCount as we've added an element to the string
+      remainingCount--;
+    }
+
+    // If there are remaining elements, append ", and x more" to the string
+    if (remainingCount > 0) formattedStr += `, and ${remainingCount} more`;
+
+    // Return the final formatted string
+    return formattedStr;
+  }
 }

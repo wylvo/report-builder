@@ -1,12 +1,19 @@
 import TableView from "../../_views/tableView.js";
+import { DEFAULT_PROFILE_PICTURE } from "../../config.js";
 
 class ReportTableView extends TableView {
   #btnAllReports = document.querySelector("#table-reports");
   #btnAllDeletedReports = document.querySelector("#table-delete-reports");
+  #tableCellMaxCharacterLength = 30;
+  #users = [];
   isDeletedViewActive = false;
 
   constructor() {
     super();
+  }
+
+  loadUsers(users) {
+    this.#users = users;
   }
 
   _generateEmptyRowHtml() {
@@ -15,22 +22,22 @@ class ReportTableView extends TableView {
         <td data-cell="TECH">
           <div>N/A</div>
         </td>
-        <td data-cell="Date">
+        <td data-cell="Call Date">
           <div>-</div>
         </td>
         <td data-cell="Title">
           <div>-</div>
-        </td>
-        <td data-cell="Phone">
+        </td>      
+        <td data-cell="Status">
           <div>-</div>
         </td>
+        <td data-cell="Assigned To">
+          <div>-</div>
+        </td>        
         <td data-cell="Store">
           <div>-</div>
         </td>
         <td data-cell="Employee">
-          <div>-</div>
-        </td>
-        <td data-cell="DM">
           <div>-</div>
         </td>
         <td data-cell="Procedural">
@@ -59,11 +66,19 @@ class ReportTableView extends TableView {
       ? { class: `class="attention"`, text: "Yes" }
       : { class: "", text: "No" };
 
-    let initials;
-    const [firstName, lastName] = report.assignedTo.split(".")
-    if(lastName) initials = `${firstName[0].toUpperCase()}${lastName[0].toUpperCase()}`
-    if(!lastName) initials = `${firstName[0].toUpperCase()}${firstName[1].toUpperCase()}`
-    const isOnCallClass = report.isOnCall ? "on-call" : ""
+
+    const createdBy = this.#users.find((user) => user.username === report.createdBy)
+    const profilePicture = createdBy?.profilePictureURI
+      ? createdBy.profilePictureURI
+      : DEFAULT_PROFILE_PICTURE;
+
+    const isOnCallClass = report.isOnCall ? "on-call" : "";
+    const assignedTo = this.#users.find((user) => user.username === report.assignedTo)
+
+    const storeNumbers =
+      this.formatArray(report.store.numbers, this.#tableCellMaxCharacterLength);
+    const incidentTypes =
+      this.formatArray(report.incident.types, this.#tableCellMaxCharacterLength);
 
     const buttons = !report.isDeleted 
       ? `
@@ -92,11 +107,11 @@ class ReportTableView extends TableView {
 
     return `
       <tr class="table-row">
-        <td data-cell="TECH">
+        <td data-cell="Created By">
           <div>
-            <p class="table-row-cell-pp ${isOnCallClass}">
-              ${initials}
-            </p>
+            <picture class="${isOnCallClass}">
+              <img class="table-row-cell-pp" src="${profilePicture}" alt="Profile picture of ${createdBy?.fullName || "N/A"}" />
+            </picture>
           </div>
         </td>
         <td data-cell="Date"><div>${formattedDate}</div></td>
@@ -106,14 +121,14 @@ class ReportTableView extends TableView {
         <td data-cell="Status">
           <div><p class="${status.class}">${status.text}</p></div>
         </td>
-        <td data-cell="Store"><div>${report.store.numbers.join(", ")}</div></td>
-        <td data-cell="Employee"><div>${report.store.employee.name}</div></td>
-        <td data-cell="DM">
+        <td data-cell="Assigned To">
           <div>
-            ${report.store.districtManagers.map(dm => dm.fullName).join(", ")}
+            ${assignedTo?.fullName || "N/A"}
           </div>
-        </td>
-        <td data-cell="Type"><div>${report.incident.types.join(", ")}</div></td>
+        </td>        
+        <td data-cell="Store"><div>${storeNumbers}</div></td>
+        <td data-cell="Employee"><div>${report.store.employee.name}</div></td>
+        <td data-cell="Type"><div>${incidentTypes}</div></td>
         <td data-cell="Procedural">
           <div><p ${isProcedural.class}>${isProcedural.text}</p></div>
         </td>

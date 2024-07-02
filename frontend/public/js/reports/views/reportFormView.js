@@ -142,6 +142,15 @@ export class ReportFormView extends FormView {
   render(report) {
     this.newReport();
 
+    if (report.isDeleted) {
+      this._btnSubmit.classList.add("hidden");
+      this._btnTeams.classList.add("hidden");
+    }
+    if (!report.isDeleted) {
+      this._btnSubmit.classList.remove("hidden");
+      this._btnTeams.classList.remove("hidden");
+    }
+
     this._tab.firstElementChild.textContent = report.incident.title;
     this._tab.firstElementChild.setAttribute("href", `#${report.id}`);
 
@@ -246,6 +255,7 @@ export class ReportFormView extends FormView {
     const tags = [...this._tags];
     const isProcedural = report.incident.isProcedural;
     const isOnCall = report.isOnCall;
+    const isDeleted = report.isDeleted;
     tags.forEach((tag) => {
       // Procedural
       if (tag.classList.contains("report-procedural")) {
@@ -258,6 +268,13 @@ export class ReportFormView extends FormView {
       if (tag.classList.contains("report-oncall")) {
         if (isOnCall)
           (tag.textContent = "ON-CALL"), tag.classList.remove("hidden");
+        else tag.classList.add("hidden");
+      }
+
+      // Deleted
+      if (tag.classList.contains("report-deleted")) {
+        if (isDeleted)
+          (tag.textContent = "DELETED"), tag.classList.remove("hidden");
         else tag.classList.add("hidden");
       }
 

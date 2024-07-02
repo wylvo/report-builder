@@ -2,7 +2,6 @@ import { Reports } from "../reports/report.model.js";
 import { config, mssql, catchAsync, GlobalError } from "../router.js";
 import { Webhooks } from "./webhook.model.js";
 
-// prettier-ignore
 export const sendReportToIncomingWebhook = catchAsync(
   async (req, res, next) => {
     const id = req.params.id;
@@ -12,8 +11,16 @@ export const sendReportToIncomingWebhook = catchAsync(
     if (!report)
       return next(new GlobalError(`Report not found with id: ${id}.`, 404));
 
+    if (report.isDeleted)
+      return next(
+        new GlobalError(
+          `Report is deleted, recover the report with id: ${id} first and try again.`,
+          400
+        )
+      );
+
     const sentAt = new Date().toISOString();
-    
+
     const [reportUpdatedHasTriggeredWebhook, response] = await Promise.all([
       Webhooks.updateHasTriggeredWebhook(report, req.user.username, false),
       Webhooks.microsoftTeams.send(report),
@@ -23,7 +30,11 @@ export const sendReportToIncomingWebhook = catchAsync(
 
     let reportUpdatedIsWebhookSent;
     if (response.ok)
-      reportUpdatedIsWebhookSent = await Webhooks.updateIsWebhookSent(report, req.user.username, false);
+      reportUpdatedIsWebhookSent = await Webhooks.updateIsWebhookSent(
+        report,
+        req.user.username,
+        false
+      );
 
     res.status(200).json({
       status: "success",
@@ -38,8 +49,8 @@ export const sendReportToIncomingWebhook = catchAsync(
         },
       },
       data: reportUpdatedIsWebhookSent
-      ? reportUpdatedIsWebhookSent
-      : reportUpdatedHasTriggeredWebhook,
+        ? reportUpdatedIsWebhookSent
+        : reportUpdatedHasTriggeredWebhook,
     });
   }
 );

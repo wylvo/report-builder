@@ -72,7 +72,8 @@ input[type="checkbox"]:disabled + span::before {
 }
 
 .user-status,
-.report-procedural {
+.report-procedural,
+.report-deleted {
   color: var(--attention-on-background);
   background-color: var(--attention-background-color);
 }

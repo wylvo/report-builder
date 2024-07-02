@@ -14,10 +14,10 @@ import * as reportModel from "../reports/reportModel.js";
 // 1st function to be ran by ./accountController.js
 const init = async function () {
   await DB.getCurrentUserAccount();
-  // await Promise.all([
-  //   reportModel.DB.getAllReportsCreatedByUser(),
-  //   reportModel.DB.getAllSoftDeletedReportsCreatedByUser(),
-  // ]);
+  await Promise.all([
+    reportModel.DB.getAllReportsCreatedByUser(),
+    reportModel.DB.getAllSoftDeletedReportsCreatedByUser(),
+  ]);
   state.version = await api.v1.version.getVersion();
   initThemeInLocalStorage();
 };

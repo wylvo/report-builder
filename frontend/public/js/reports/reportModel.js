@@ -21,6 +21,7 @@ import api from "../api.js";
 import utils from "../utils.js";
 
 import * as accountModel from "../account/accountModel.js";
+import * as userModel from "../users/userModel.js";
 
 // 1st function to be ran by ./reportController.js
 const init = async () => {
@@ -32,6 +33,7 @@ const init = async () => {
     DB.getReports(),
     DB.getAllSoftDeletedReports(),
     DB.synchonizeFormData(),
+    userModel.DB.getUsersFrontend(),
     accountModel.DB.getCurrentUserAccount(),
   ]);
   state.version = await api.v1.version.getVersion();

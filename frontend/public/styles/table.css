@@ -249,28 +249,19 @@ Child Views: reportTableView.js & userTableView.js
   border-radius: 0.2rem;
 }
 
-img.table-row-cell-pp {
-  align-self: center;
-  width: 3.2rem;
-  height: 3.2rem;
-  object-fit: cover;
-  border-radius: 50%;
-}
-
-.table-row p.table-row-cell-pp {
+.table-row img.table-row-cell-pp {
   position: relative;
   align-self: center;
-  color: var(--on-primary);
-  font-weight: 700;
-  background-color: #7a7a7a;
+  width: 3.6rem;
+  height: 3.6rem;
+  object-fit: cover;
+  border-radius: 6.4rem;
 }
 
-.table-row p.table-row-cell-pp.on-call::after {
+.table-row picture.on-call::after {
   position: absolute;
   content: "ON-CALL";
   white-space: nowrap;
-  top: 0%;
-  left: 100%;
   padding: 0.2rem;
 
   font-size: 0.8rem;
@@ -280,7 +271,7 @@ img.table-row-cell-pp {
   background-color: var(--info-background-color);
   border-radius: 0.1rem;
 
-  transform: translate(-25%, -75%);
+  transform: translate(-25%, -50%);
 }
 
 .table-row-buttons {

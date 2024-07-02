@@ -110,6 +110,14 @@ export const updateReport = catchAsync(async (req, res, next) => {
   if (!report)
     return next(new GlobalError(`Report not found with id: ${id}.`, 404));
 
+  if (report.isDeleted)
+    return next(
+      new GlobalError(
+        `Report is deleted, recover the report with id: ${id} first and try again.`,
+        400
+      )
+    );
+
   console.time("UPDATE");
   const transaction = mssql().transaction;
 

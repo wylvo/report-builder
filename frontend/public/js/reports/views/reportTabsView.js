@@ -45,6 +45,7 @@ class ReportTabsView extends TabsView {
         </div>
         <div class="form-meta-data">
           <div class="report-tags">
+            <p class="report-deleted tag">DELETED</p>
             <p class="report-procedural tag">PROCEDURAL</p>
             <p class="report-oncall tag">ON-CALL</p>
           </div>
@@ -381,6 +382,7 @@ class ReportTabsView extends TabsView {
         </div>
         <div class="form-meta-data">
           <div class="report-tags">
+            <p class="report-deleted tag">DELETED</p>
             <p class="report-procedural tag">PROCEDURAL</p>
             <p class="report-oncall tag">ON-CALL</p>
           </div>
