@@ -77,4 +77,14 @@ export default class TableView extends View {
     if (Array.isArray(total)) this._results.textContent = total.length;
     else this._results.textContent = total;
   }
+
+  highlight(tableRowEl) {
+    if (!tableRowEl.classList.contains("highlight"))
+      tableRowEl.classList.add("highlight");
+  }
+
+  unhighlight(tableRowEl) {
+    if (tableRowEl.classList.contains("highlight"))
+      tableRowEl.classList.remove("highlight");
+  }
 }

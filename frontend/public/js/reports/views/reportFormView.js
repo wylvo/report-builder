@@ -209,8 +209,6 @@ export class ReportFormView extends FormView {
     // Details
     textAreas.get("incident-details").value = report.incident.details;
 
-    console.log(selects);
-    console.log(report.assignedTo);
     // Assigned to Signature
     selects.get("assigned-to").value = report.assignedTo;
 

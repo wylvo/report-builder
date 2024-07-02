@@ -3,8 +3,10 @@ import {
   initNumberOfTabs,
   clearTab,
   loadTabWith,
+  loadTab,
   pages,
   rowsPerPage,
+  filterSearch,
   findObjectById,
   findObjectIndexById,
   findTabIndexByObjectId,
@@ -99,7 +101,7 @@ const DB = {
 
   updateUser: async (id, form) => {
     // Update a user object
-    const user = updateUserObject(id, form);
+    const [userFound, user] = await updateUserObject(id, form);
     const tableRowEl = user.tableRowEl;
     delete user.tableRowEl;
 
@@ -110,7 +112,7 @@ const DB = {
 
     user.tableRowEl = tableRowEl;
 
-    return user;
+    return [userFound, user];
   },
 
   deleteUser: async (id) => {
@@ -193,11 +195,19 @@ const createUserObject = function (form) {
 };
 
 // Update existing user.
-const updateUserObject = function (userObjectOrId, form) {
-  const index = findObjectIndexById(state.users, userObjectOrId);
-  const user = state.users[index];
-  const tableRowEl = user.tableRowEl;
-  user.tableRowEl = {};
+const updateUserObject = async (userObjectOrId, form) => {
+  let user, tableRowEl;
+
+  const index = findObjectIndexById(state.users, userObjectOrId, false);
+  const userFound = index !== -1;
+
+  if (userFound) {
+    user = state.users[index];
+    tableRowEl = user.tableRowEl;
+    user.tableRowEl = {};
+  }
+
+  if (!userFound) user = await DB.getUser(userObjectOrId);
 
   delete user.createdAt;
   delete user.updatedAt;
@@ -213,6 +223,7 @@ const updateUserObject = function (userObjectOrId, form) {
   clone.username = form.username?.value.trim();
   clone.initials = form.initials?.value.trim();
   clone.profilePictureURI = form["profile-picture-uri"]?.value.trim();
+  clone.tableRowEl = {};
 
   // Check validity of the clone. If not valid, an error will be thrown here.
   checkUserValidity(DEFAULT_USER_UPDATE, clone);
@@ -227,7 +238,7 @@ const updateUserObject = function (userObjectOrId, form) {
   user.profilePictureURI = clone.profilePictureURI;
   user.tableRowEl = tableRowEl;
 
-  return user;
+  return [userFound, user];
 };
 
 // Check validity of a user object by looking at data types
@@ -324,9 +335,12 @@ export {
   initNumberOfTabs,
   clearTab,
   loadTabWith,
+  loadTab,
   pages,
   rowsPerPage,
+  filterSearch,
   findObjectById,
+  findObjectIndexById,
   findTabIndexByObjectId,
 
   // from this local file -> ./userModel.js

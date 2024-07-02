@@ -6,6 +6,7 @@ import userTabsView from "./views/userTabsView.js";
 import userTableView from "./views/userTableView.js";
 
 import paginationView from "../_views/paginationView.js";
+import searchView from "../_views/searchView.js";
 import notificationsView from "../_views/notificationsView.js";
 
 import ModalFormView from "../_views/modalFormView.js";
@@ -38,8 +39,9 @@ const controlBeforeUnload = function () {
 const controlUnsavedUser = async (controlFunction, handler = undefined, event = undefined) => {
   let isSaveConfirmed = false;
   const currentUserView = userTabsView.tabs.get(model.state.tab);
+  const formHasChanges = currentUserView._changes.length > 0;
 
-  if (currentUserView._changes.length > 0) {
+  if (formHasChanges) {
     if (event) event.preventDefault();
     isSaveConfirmed = await modalView.confirmSave();
   }
@@ -59,7 +61,7 @@ const controlUnsavedUser = async (controlFunction, handler = undefined, event = 
 // prettier-ignore
 const controlUniqueUserPerTab = function (id, event = undefined) {
   for (const [index, tab] of model.state.tabs) {
-    if (tab.data.id && tab.data.id === id) {
+    if (tab.data.id && tab.data.id === Number(id)) {
       const userFormView = userTabsView.tabs.get(index);
       if (!event) userFormView._tab.firstElementChild.click();
       return true;
@@ -99,7 +101,14 @@ const controlCopy = function (inputs = undefined) {
     userTabsView.tabs.forEach((userFormView) => userFormView._btnPaste.disabled = false);
 };
 
+const controlUnhighlightUser = function (tabIndex) {
+  const user = model.state.tabs.get(tabIndex).data;
+  if (user.tableRowEl) userTableView.unhighlight(user.tableRowEl);
+};
+
 const controlNewUser = function () {
+  controlUnhighlightUser(model.state.tab);
+
   model.clearTab(model.state.tab);
   userFormView.newUser((takeSnapshot = true));
   userTabsView.removeLocationHash();
@@ -113,13 +122,107 @@ const controlRenderUser = function () {
     const isPresentInTab = controlUniqueUserPerTab(id);
     if (isPresentInTab) return;
 
-    const user = model.loadTabWith(model.state.users, model.state.tab, id);
-    userFormView.render(user);
-    console.log(model.state);
+    const index = model.findObjectIndexById(model.state.users, id, false);
+    const userFound = index !== -1;
+    let user;
+
+    if (!userFound) return userTabsView.removeLocationHash();
+
+    if (userFound) {
+      controlUnhighlightUser(model.state.tab);
+
+      user = model.loadTab(model.state.users[index], model.state.tab);
+      userFormView.render(user);
+
+      userTableView.highlight(user.tableRowEl);
+    }
   } catch (error) {
     console.error(error);
     controlNewUser();
     notificationsView.error(error.message, 60);
+  }
+};
+
+const controlSearchResults = function () {
+  model.state.search.page = 1;
+
+  const users = model.state.users;
+
+  const query = searchView.query();
+  if (!query) return controlClearSearchResults(query);
+
+  const filterBy = searchView.filterBy();
+  model.filterSearch(users, query, filterBy);
+
+  controlRenderAllUsers();
+  userTableView.updateResultCount(model.state.search.results);
+};
+
+const controlClearSearchResults = function (query) {
+  const isAlreadyEmptyQuery = model.state.search.query === "" || query !== "";
+  if (isAlreadyEmptyQuery) return;
+
+  // Clear the query
+  model.state.search.query = "";
+  model.state.search.results = [];
+  searchView.clearQuery();
+  userTableView.updateResultCount(0);
+
+  return controlRenderAllUsers();
+};
+
+const controlRenderAllUsers = function () {
+  const query = model.state.search.query;
+  const users = query
+    ? {
+        array: model.state.search.results,
+        total: model.state.search.results.length,
+      }
+    : {
+        array: model.state.users,
+        total: model.state.usersTotal,
+      };
+
+  const pageBtns = model.pages(users.total);
+
+  paginationView.renderAll(pageBtns);
+  userTableView.renderAll(users.array);
+  query
+    ? userTableView.updateResultCount(users.total)
+    : userTableView.updateTotalCount(users.total);
+
+  return users.array;
+};
+
+const controlRowsPerPage = async function (rowsPerPage) {
+  model.state.rowsPerPage = rowsPerPage;
+  model.state.search.page = 1;
+
+  try {
+    userTableView.renderTableSpinner();
+
+    await model.DB.getUsers();
+
+    controlRenderAllUsers();
+  } catch (error) {
+    console.error(error);
+    notificationsView.error(error.message);
+  }
+};
+
+const controlPages = async function (page) {
+  if (isNaN(page)) return;
+
+  try {
+    userTableView.renderTableSpinner();
+    model.state.search.page = page;
+
+    await model.DB.getUsers();
+
+    controlRenderAllUsers();
+  } catch (error) {
+    console.error(error);
+    notificationsView.error(error.message);
   }
 };
 
@@ -128,26 +231,25 @@ const controlSaveUser = async function (userId) {
   if (isRequestInProgress) return notificationsView.warning("A request is already in progress.");
 
   const id = userId ? userId : window.location.hash.slice(1);
-  let user;
+  let user, userFound = true;
   try {
     userFormView.renderSpinner(userFormView._btnSubmit);
 
     // Create user
     if (!id) {
       user = await model.DB.createUser(userFormView._form);
-      userFormView.render(user);
       userTableView.render(user);
       model.state.usersTotal++;
       userTableView.updateTotalCount(model.state.usersTotal);
-      notificationsView.success(`User successfully created: [${user.id}]`);
     }
 
     // Update User
     if (id) {
-      user = await model.DB.updateUser(id, userFormView._form);
-      userTableView.update(user);
-      notificationsView.success(`User successfully updated: [${user.id}]`);
+      [userFound, user] = await model.DB.updateUser(id, userFormView._form);
+      if (user.tableRowEl) userTableView.update(user);
     }
+
+    notificationsView.success(`User successfully ${id ? "updated" : "created"}: [${user.id}]`);
 
     // Update form state
     userFormView.clearPasswordFields();
@@ -157,7 +259,8 @@ const controlSaveUser = async function (userId) {
 
     // Update tab state
     userTabsView.render(model.state.tab, user.fullName, user.id);
-    model.loadTabWith(model.state.users, model.state.tab, user.id);
+    if (!userFound) model.loadTab(user, model.state.tab);
+    if (userFound) model.loadTabWith(model.state.users, model.state.tab, user.id);
     
     userFormView.clearSpinner(userFormView._btnSubmit, "success", id ? "update" : "save");
 
@@ -258,49 +361,6 @@ const controlUserStatus = async function (id) {
   }
 };
 
-const controlRenderAllUsers = function () {
-  // const users = model.rowsPerPage(model.state.users);
-  const pageBtns = model.pages(model.state.usersTotal);
-
-  paginationView.renderAll(pageBtns);
-  userTableView.renderAll(model.state.users);
-  userTableView.updateTotalCount(model.state.usersTotal);
-
-  return model.state.users;
-};
-
-const controlRowsPerPage = async function (rowsPerPage) {
-  model.state.rowsPerPage = rowsPerPage;
-  model.state.search.page = 1;
-
-  try {
-    userTableView.renderTableSpinner();
-
-    await model.DB.getUsers();
-
-    controlRenderAllUsers();
-  } catch (error) {
-    console.error(error);
-    notificationsView.error(error.message);
-  }
-};
-
-const controlPages = async function (page) {
-  if (isNaN(page)) return;
-
-  try {
-    userTableView.renderTableSpinner();
-    model.state.search.page = page;
-
-    await model.DB.getUsers();
-
-    controlRenderAllUsers();
-  } catch (error) {
-    console.error(error);
-    notificationsView.error(error.message);
-  }
-};
-
 /*
  *************************************************************
  * INITIALIZE ALL HANDLERS, AND RENDER ALL EXISTING USERS  *
@@ -314,12 +374,12 @@ const init = async function () {
     userTabsView.renderAll(null, model.initNumberOfTabs(5));
     userFormView = userTabsView.tabs.get(model.state.tab);
 
-    // If id in hash render user
-    if (window.location.hash.slice(1)) controlRenderUser();
-
     // Initialize all table rows per page
     model.state.rowsPerPage = paginationView.rowsPerPage();
     controlRenderAllUsers();
+
+    // If id in hash render user
+    if (window.location.hash.slice(1)) controlRenderUser();
 
     // Tab view handlers
     userTabsView.addHandlerClickTab(controlTabs);
@@ -346,6 +406,10 @@ const init = async function () {
     );
     userTableView.addHandlerStatus(controlUserStatus);
     userTableView.addHandlerDelete(controlDeleteUser);
+
+    // Search view handler
+    searchView.addHandlerSearch(controlSearchResults);
+    searchView.addHandlerClearSearch(controlClearSearchResults);
 
     // Pagination view handlers
     paginationView.addHandlerOnChangeRowsPerPage(controlRowsPerPage);

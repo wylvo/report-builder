@@ -25,13 +25,15 @@ class PaginationView extends View {
 
   // prettier-ignore
   _generateHtml(page) {
+    if(page.start) page.start = page.start.toString().escapeHTML();
     if(page.previous) page.previous = page.previous.toString().escapeHTML();
     if(page.current) page.current = page.current.toString().escapeHTML();
     if(page.next) page.next = page.next.toString().escapeHTML();
+    if(page.end) page.end = page.end.toString().escapeHTML();
 
     return `
       <div>
-        <button ${!page.previous ? "disabled" : ""} data-page="${page.previous}" class="table-pagination-btn">
+        <button ${!page.start ? "disabled" : ""} data-page="${page.start}" class="table-pagination-btn">
           <svg class="icons">
             <use href="/img/icons.svg#icon-double-chevron-left"></use>
           </svg>
@@ -47,7 +49,7 @@ class PaginationView extends View {
             <use href="/img/icons.svg#icon-chevron-right"></use>
           </svg>
         </button>
-          <button ${!page.next ? "disabled" : ""} data-page="${page.next}" class="table-pagination-btn">
+          <button ${!page.end ? "disabled" : ""} data-page="${page.end}" class="table-pagination-btn">
           <svg class="icons">
             <use href="/img/icons.svg#icon-double-chevron-right"></use>
           </svg>

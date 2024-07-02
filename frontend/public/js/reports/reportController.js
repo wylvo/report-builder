@@ -61,7 +61,7 @@ const controlUnsavedReport = async (controlFunction, handler = undefined, event 
 // prettier-ignore
 const controlUniqueReportPerTab = function (id, event = undefined) {
   for (const [index, tab] of model.state.tabs) {
-    if (tab.data.id && tab.data.id === id) {
+    if (tab.data.id && tab.data.id === Number(id)) {
       const reportFormView = reportTabsView.tabs.get(index);
       if (!event) reportFormView._tab.firstElementChild.click();
       return true;
@@ -98,7 +98,14 @@ const controlCopy = function (inputs = undefined) {
     reportTabsView.tabs.forEach((reportFormView) => reportFormView._btnPaste.disabled = false);
 };
 
+const controlUnhighlightReport = function (tabIndex) {
+  const report = model.state.tabs.get(tabIndex).data;
+  if (report.tableRowEl) reportTableView.unhighlight(report.tableRowEl);
+};
+
 const controlNewReport = function () {
+  controlUnhighlightReport(model.state.tab);
+
   model.clearTab(model.state.tab);
   reportFormView.newReport((takeSnapshot = true));
   reportTabsView.removeLocationHash();
@@ -112,12 +119,114 @@ const controlRenderReport = function () {
     const isReportPresentInTab = controlUniqueReportPerTab(id);
     if (isReportPresentInTab) return;
 
-    const report = model.loadTabWith(model.state.reports, model.state.tab, id);
-    reportFormView.render(report);
+    const index = model.findObjectIndexById(model.state.reports, id, false);
+    const reportFound = index !== -1;
+    let report;
+
+    if (!reportFound) return reportTabsView.removeLocationHash();
+
+    if (reportFound) {
+      controlUnhighlightReport(model.state.tab);
+
+      report = model.loadTab(model.state.reports[index], model.state.tab);
+      reportFormView.render(report);
+
+      reportTableView.highlight(report.tableRowEl);
+    }
   } catch (error) {
     console.error(error);
     notificationsView.error(error.message, 60);
     controlNewReport();
+  }
+};
+
+const controlSearchResults = function () {
+  model.state.search.page = 1;
+
+  const reports = reportTableView.isDeletedViewActive
+    ? model.state.reportsDeleted
+    : model.state.reports;
+
+  const query = searchView.query();
+  if (!query) return controlClearSearchResults(query);
+
+  const filterBy = searchView.filterBy();
+  model.filterSearch(reports, query, filterBy);
+
+  controlRenderAllReports();
+  reportTableView.updateResultCount(model.state.search.results);
+};
+
+const controlClearSearchResults = function (query) {
+  const isAlreadyEmptyQuery = model.state.search.query === "" || query !== "";
+  if (isAlreadyEmptyQuery) return;
+
+  // Clear the query
+  model.state.search.query = "";
+  model.state.search.results = [];
+  searchView.clearQuery();
+  reportTableView.updateResultCount(0);
+
+  return controlRenderAllReports();
+};
+
+const controlRenderAllReports = function () {
+  const query = model.state.search.query;
+  const reports = query
+    ? {
+        array: model.state.search.results,
+        total: model.state.search.results.length,
+      }
+    : reportTableView.isDeletedViewActive
+    ? {
+        array: model.state.reportsDeleted,
+        total: model.state.reportsDeletedTotal,
+      }
+    : { array: model.state.reports, total: model.state.reportsTotal };
+
+  const pageBtns = model.pages(reports.total);
+
+  paginationView.renderAll(pageBtns);
+  reportTableView.renderAll(reports.array);
+  query
+    ? reportTableView.updateResultCount(reports.total)
+    : reportTableView.updateTotalCount(reports.total);
+
+  return reports.array;
+};
+
+const controlRowsPerPage = async function (rowsPerPage) {
+  model.state.rowsPerPage = rowsPerPage;
+  model.state.search.page = 1;
+
+  try {
+    reportTableView.renderTableSpinner();
+
+    await model.DB.getReports();
+
+    const query = searchView.query();
+    if (query) return controlSearchResults();
+
+    controlRenderAllReports();
+  } catch (error) {
+    console.error(error);
+    notificationsView.error(error.message);
+  }
+};
+
+const controlPages = async function (page) {
+  if (isNaN(page)) return;
+
+  try {
+    reportTableView.renderTableSpinner();
+    model.state.search.page = page;
+
+    await model.DB.getReports();
+
+    controlRenderAllReports();
+  } catch (error) {
+    console.error(error);
+    notificationsView.error(error.message);
   }
 };
 
@@ -126,7 +235,7 @@ const controlSaveReport = async function (reportId) {
   if (isRequestInProgress) return notificationsView.warning("A request is already in progress.");
   
   const id = reportId ? reportId : window.location.hash.slice(1);
-  let report;
+  let report, reportFound = true;
   try {
     reportFormView.renderSpinner(reportFormView._btnSubmit);
 
@@ -136,15 +245,15 @@ const controlSaveReport = async function (reportId) {
       reportTableView.render(report);
       model.state.reportsTotal++;
       reportTableView.updateTotalCount(model.state.reportsTotal);
-      notificationsView.success(`Report successfully created: [${report.id}]`);
     }
 
     // Update report
     if (id) {
-      report = await model.DB.updateReport(id, reportFormView._form);
-      reportTableView.update(report);
-      notificationsView.success(`Report successfully updated: [${report.id}]`);
+      [reportFound, report] = await model.DB.updateReport(id, reportFormView._form);
+      if (report.tableRowEl) reportTableView.update(report);
     }
+
+    notificationsView.success(`Report successfully ${id ? "updated" : "created"}: [${report.id}]`);
 
     // Update form state
     reportFormView.takeSnapshot(reportFormView.newClone());
@@ -153,7 +262,8 @@ const controlSaveReport = async function (reportId) {
 
     // Update tab state
     reportTabsView.render(model.state.tab, report.incident.title, report.id);
-    model.loadTabWith(model.state.reports, model.state.tab, report.id);
+    if (!reportFound) model.loadTab(report, model.state.tab);
+    if (reportFound) model.loadTabWith(model.state.reports, model.state.tab, report.id);
 
     reportFormView.clearSpinner(reportFormView._btnSubmit, "success", id ? "update" : "save");
 
@@ -371,7 +481,6 @@ const controlImportReports = async function (rawJSON) {
 
     // Check report validity of each values inside the non-empty array
     migratedReports.forEach((report, i) => {
-      console.log(report);
       try {
         report.tableRowEl = {};
         model.checkReportValidity(model.DEFAULT_REPORT_IMPORT, report);
@@ -397,96 +506,6 @@ const controlImportReports = async function (rawJSON) {
   }
 };
 
-const controlSearchResults = function () {
-  model.state.search.page = 1;
-
-  const reports = reportTableView.isDeletedViewActive
-    ? model.state.reportsDeleted
-    : model.state.reports;
-
-  const query = searchView.query();
-  if (!query) return controlClearSearchResults(query);
-
-  const filterBy = searchView.filterBy();
-  model.filterSearch(reports, query, filterBy);
-
-  controlRenderAllReports();
-  reportTableView.updateResultCount(model.state.search.results);
-};
-
-const controlClearSearchResults = function (query) {
-  const isAlreadyEmptyQuery = model.state.search.query === "" || query !== "";
-  if (isAlreadyEmptyQuery) return;
-
-  // Clear the query
-  model.state.search.query = "";
-  model.state.search.results = [];
-  searchView.clearQuery();
-  reportTableView.updateResultCount(0);
-
-  return controlRenderAllReports();
-};
-
-const controlRenderAllReports = function () {
-  const query = model.state.search.query;
-  const reports = query
-    ? {
-        array: model.state.search.results,
-        total: model.state.search.results.length,
-      }
-    : reportTableView.isDeletedViewActive
-    ? {
-        array: model.state.reportsDeleted,
-        total: model.state.reportsDeletedTotal,
-      }
-    : { array: model.state.reports, total: model.state.reportsTotal };
-
-  const pageBtns = model.pages(reports.total);
-
-  paginationView.renderAll(pageBtns);
-  reportTableView.renderAll(reports.array);
-  query
-    ? reportTableView.updateResultCount(reports.total)
-    : reportTableView.updateTotalCount(reports.total);
-
-  return reports.array;
-};
-
-const controlRowsPerPage = async function (rowsPerPage) {
-  model.state.rowsPerPage = rowsPerPage;
-  model.state.search.page = 1;
-
-  try {
-    reportTableView.renderTableSpinner();
-
-    await model.DB.getReports();
-
-    const query = searchView.query();
-    if (query) return controlSearchResults();
-
-    controlRenderAllReports();
-  } catch (error) {
-    console.error(error);
-    notificationsView.error(error.message);
-  }
-};
-
-const controlPages = async function (page) {
-  if (isNaN(page)) return;
-
-  try {
-    reportTableView.renderTableSpinner();
-    model.state.search.page = page;
-
-    await model.DB.getReports();
-
-    controlRenderAllReports();
-  } catch (error) {
-    console.error(error);
-    notificationsView.error(error.message);
-  }
-};
-
 /*
  *************************************************************
  * INITIALIZE ALL HANDLERS, AND RENDER ALL EXISTING REPORTS  *
@@ -500,12 +519,12 @@ const init = async function () {
     reportTabsView.renderAll(model.state.formData, model.initNumberOfTabs(5));
     reportFormView = reportTabsView.tabs.get(model.state.tab);
 
-    // If id in hash render report
-    if (window.location.hash.slice(1)) controlRenderReport();
-
     // Initialize all table rows per page
     model.state.rowsPerPage = paginationView.rowsPerPage();
     controlRenderAllReports();
+
+    // If id in hash render report
+    if (window.location.hash.slice(1)) controlRenderReport();
 
     // Tab view handlers
     reportTabsView.addHandlerClickTab(controlTabs);

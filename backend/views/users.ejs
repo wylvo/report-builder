@@ -31,7 +31,33 @@
 
           <!-- TABLE -->
           <div class="container table-ctn">
-            <div class="table-header table-header-users">
+            <div class="table-header">
+              <form class="table-filter">
+                <div>
+                  <label for="table-filter-by">Filter By:</label>
+                  <select
+                    id="table-filter-by"
+                    name="table-filter-by"
+                    class="table-filter-by"
+                  >
+                    <option selected value="fullName">Full name</option>
+                    <option value="email">Email</option>
+                    <option value="username">Username</option>
+                    <option value="role">Role</option>
+                    <option value="status">Status</option>
+                  </select>
+                </div>
+                <div class="table-filter-search-ctn">
+                  <label for="table-filter-search">Filter: </label>
+                  <input
+                    type="search"
+                    name="table-filter-search"
+                    id="table-filter-search"
+                    class="table-filter-search"
+                    placeholder="Search..."
+                  />
+                </div>
+              </form>
               <div class="table-view">
                 <div class="table-meta-data">
                   <p>
@@ -89,10 +115,8 @@
                     name="table-rows-per-page"
                     class="table-rows-per-page"
                   >
-                    <option selected value="2">2</option>
-                    <option selected="10">10</option>
                     <option value="25">25</option>
-                    <option value="50">50</option>
+                    <option selected value="50">50</option>
                     <option value="100">100</option>
                     <option value="200">200</option>
                   </select>

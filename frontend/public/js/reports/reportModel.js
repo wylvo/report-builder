@@ -3,6 +3,7 @@ import {
   initNumberOfTabs,
   clearTab,
   loadTabWith,
+  loadTab,
   pages,
   rowsPerPage,
   filterSearch,
@@ -122,12 +123,9 @@ const DB = {
     return report;
   },
 
-  // NOT USED
   getReport: async (id) => {
     const {
-      data: {
-        data: [report],
-      },
+      data: { data: report },
     } = await api.v1.reports.getReport(id);
 
     return report;
@@ -135,7 +133,7 @@ const DB = {
 
   updateReport: async (id, form) => {
     // Update a report object
-    const report = updateReport(id, form);
+    const [reportFound, report] = await updateReportObject(id, form);
     const tableRowEl = report.tableRowEl;
 
     report.tableRowEl = undefined;
@@ -160,7 +158,7 @@ const DB = {
     report.store = reportUpdated.store;
     report.incident = reportUpdated.incident;
 
-    return report;
+    return [reportFound, report];
   },
 
   hardDeleteReport: async (id, password) => {
@@ -373,11 +371,19 @@ const createReportObject = (report, form) => {
 
 // prettier-ignore
 // Update existing report.
-const updateReport = (reportOrId, form) => {
-  const index = findObjectIndexById(state.reports, reportOrId);
-  const report = state.reports[index];
-  const tableRowEl = report.tableRowEl;
-  report.tableRowEl = {};
+const updateReportObject = async (reportOrId, form) => {
+  let report, tableRowEl;
+  
+  const index = findObjectIndexById(state.reports, reportOrId, false);
+  const reportFound = index !== -1;
+
+  if (reportFound) {
+    report = state.reports[index];
+    tableRowEl = report.tableRowEl;
+    report.tableRowEl = {};
+  }
+
+  if (!reportFound) report = await DB.getReport(reportOrId);
 
   // Create a clone of the report to update
   let clone = structuredClone(report);
@@ -402,7 +408,7 @@ const updateReport = (reportOrId, form) => {
   report.store = clone.store;
   report.incident = clone.incident;
 
-  return report;
+  return [reportFound, report];
 };
 
 export {
@@ -411,6 +417,7 @@ export {
   initNumberOfTabs,
   clearTab,
   loadTabWith,
+  loadTab,
   pages,
   rowsPerPage,
   filterSearch,
@@ -425,6 +432,6 @@ export {
   DB,
   checkReportValidity,
   createReportObject,
-  updateReport,
+  updateReportObject,
   init,
 };

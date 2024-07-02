@@ -70,10 +70,18 @@ export const findObjectById = (array, id, raiseErrorIfNotFound = true) => {
   return object;
 };
 
-// Load report into a tab
+// Load a tab with data (report or user) locally accessible
 export const loadTabWith = function (array, tabIndex, id) {
   const tab = findTab(tabIndex);
   tab.data = findObjectById(array, id);
+  return tab.data;
+};
+
+// Load a tab with data (report or user) directly coming from the DB.
+// This can happen when a set of data is not loaded locally
+export const loadTab = function (data, tabIndex) {
+  const tab = findTab(tabIndex);
+  tab.data = data;
   return tab.data;
 };
 
@@ -189,11 +197,12 @@ export const rowsPerPage = (array, page = state.search.page) => {
 export const pages = (total = state.reportsTotal, page = state.search.page) => {
   state.search.page = page < 1 ? 1 : page;
 
-  // If there are search results, calculate pages on search results, else calculate pages on all reports
-  // const reports = state.search.results.length > 0 ? state.search.results : state.reports;
-
   // Calculate the total number of pages available
   const totalPages = Math.ceil(total / state.rowsPerPage);
+
+  // Start page always = 1 | End page awlays = total pages
+  const start = state.search.page !== 1 ? 1 : null
+  const end = state.search.page !== totalPages ? totalPages : null
 
   // Current page and next page can never be greater than the total of pages
   const currentPage = state.search.page > totalPages ? totalPages : state.search.page;
@@ -203,9 +212,11 @@ export const pages = (total = state.reportsTotal, page = state.search.page) => {
   const previousPage = currentPage - 1 < 1 ? null : currentPage - 1;
 
   return {
+    start,
     previous: previousPage,
     current: currentPage,
     next: nextPage,
+    end
   };
 };
 
