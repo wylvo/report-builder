@@ -43,6 +43,18 @@ export const Stores = {
     return JSON.parse(store);
   },
 
+  // GET SINGLE STORE BY EMAIL
+  async findByEmail(email) {
+    const {
+      output: { store },
+    } = await mssql()
+      .request.input("email", VARCHAR, email)
+      .output("store", NVARCHAR)
+      .execute("api_v1_stores_getByEmail");
+
+    return JSON.parse(store);
+  },
+
   // GET ALL STORES
   async all(pageNumber, rowsPerPage) {
     rowsPerPage =
@@ -83,6 +95,7 @@ export const Stores = {
       .input("zipcode", VARCHAR, body.zipcode)
       .input("country", VARCHAR, body.country)
       .input("phoneNumber", VARCHAR, body.phoneNumber)
+      .input("email", VARCHAR, body.email)
       .input("districtManagerId", INT, districtManagerId)
       .output("store", NVARCHAR)
       .execute("api_v1_stores_create");
@@ -107,6 +120,7 @@ export const Stores = {
       .input("zipcode", VARCHAR, body.zipcode)
       .input("country", VARCHAR, body.country)
       .input("phoneNumber", VARCHAR, body.phoneNumber)
+      .input("email", VARCHAR, body.email)
       .input("districtManagerId", INT, districtManagerId)
       .output("store", NVARCHAR)
       .execute("api_v1_stores_update");

@@ -1,16 +1,22 @@
 import sql from "mssql/msnodesqlv8.js";
 import GlobalError from "../errors/globalError.js";
 
+const dbServer =
+  process.env.DB_PORT !== "" && process.env.DB_SERVER.includes("\\")
+    ? `${process.env.DB_SERVER},${process.env.DB_PORT}`
+    : process.env.DB_SERVER;
+const dbName = process.env.DB_NAME;
+const dbPort = process.env.DB_PORT !== "" ? process.env.DB_PORT : undefined;
+const dbUsername = process.env.DB_USERNAME;
+const dbPassword = process.env.DB_PASSWORD;
+
 const dbConfig = {
   driver: "msnodesqlv8",
-  server:
-    process.env.DB_PORT !== "" && process.env.DB_SERVER.includes("\\")
-      ? `${process.env.DB_SERVER},${process.env.DB_PORT}`
-      : process.env.DB_SERVER,
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT !== "" ? process.env.DB_PORT : undefined,
-  user: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
+  server: dbServer,
+  database: dbName,
+  port: dbPort,
+  user: dbUsername,
+  password: dbPassword,
   trustServerCertificate: true,
   parseJSON: true,
   options: {
@@ -29,7 +35,7 @@ const dbConfig = {
      *  ODBC Driver 17 for SQL Server is tested working well with SQL Server 2019 & 2022 */
     bcConfig.conn_str = bcConfig.conn_str.replace(
       "SQL Server Native Client 11.0",
-      "ODBC Driver 17 for SQL Server"
+      process.env.ODBC_DRIVER
     );
   },
 };
@@ -72,11 +78,6 @@ export const mssql = (existingPool = undefined) => {
     transaction: new sql.Transaction(existingPool ? existingPool : pool),
     request: new sql.Request(existingPool ? existingPool : pool),
   };
-  // if (type === "preparedStatement")
-  //   return new sql.PreparedStatement(existingPool ? existingPool : pool);
-  // if (type === "transaction")
-  //   return new sql.Transaction(existingPool ? existingPool : pool);
-  // return new sql.Request(existingPool ? existingPool : pool);
 };
 
 export const mssqlDataTypes = {

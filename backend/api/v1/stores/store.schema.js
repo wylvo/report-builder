@@ -1,3 +1,5 @@
+import { Stores } from "./store.model.js";
+
 const CREATE = {
   name: {
     optional: true,
@@ -96,6 +98,21 @@ const CREATE = {
       errorMessage: "invalid length, max of 20 characters allowed.",
     },
   },
+  email: {
+    optional: true,
+    isEmail: { errorMessage: "invalid email address.", bail: true },
+    isLength: {
+      options: { max: 254 },
+      errorMessage: "invalid length, max of 254 characters allowed.",
+    },
+    custom: {
+      options: async (email) => {
+        const store = await Stores.findByEmail(email);
+        if (store) throw new Error();
+      },
+      errorMessage: "already in use.",
+    },
+  },
   districtManager: {
     exists: { errorMessage: "required.", bail: true },
     notEmpty: { errorMessage: "can't be empty.", bail: true },
@@ -117,6 +134,22 @@ const UPDATE = {
     isLength: {
       options: { max: 20 },
       errorMessage: "invalid length, max of 20 characters allowed.",
+    },
+  },
+  email: {
+    optional: true,
+    isEmail: { errorMessage: "invalid email address.", bail: true },
+    isLength: {
+      options: { max: 254 },
+      errorMessage: "invalid length, max of 254 characters allowed.",
+    },
+    custom: {
+      options: async (email, { req }) => {
+        const store = await Stores.findByEmail(email);
+        if (store && String(store.number) !== req.params.number)
+          throw new Error();
+      },
+      errorMessage: "already in use.",
     },
   },
 };
