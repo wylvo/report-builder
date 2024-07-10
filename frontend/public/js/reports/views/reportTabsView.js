@@ -145,11 +145,16 @@ class ReportTabsView extends TabsView {
             </button>
           </div>
 
-          <!-- STORE NUMBER, STORE EMPLOYEE, STORE MANAGER -->
+          <!-- STORE NUMBERS -->
           <div class="form-grouping-content">
-            <div class="grid columns-37-37-25 mt-36">
+            <div class="grid mt-36">
               <div class="form-grouping-col gc-span-2-switch">
-                <select 
+                <select
+                  multiple
+                  multiselect-search="true" 
+                  multiselect-select-all="true" 
+                  multiselect-max-items="10"
+                  multiselect-hide-x = "false"                
                   id="store-numbers_${index}" 
                   name="store-numbers" 
                   class="store-numbers" 
@@ -157,9 +162,13 @@ class ReportTabsView extends TabsView {
                 >
                   ${formData.selects.storeNumbers.join("")}
                 </select>
-                <label for="store-numbers_${index}">Number:</label>
+                <label for="store-numbers_${index}">Store Numbers:</label>
               </div>
-              <div class="form-grouping-col">
+            </div>
+
+            <!-- STORE EMPLOYEE, STORE MANAGER -->
+            <div class="grid columns-37-37-25">
+              <div class="form-grouping-col gc-span-2">
                 <input
                   type="text"
                   id="store-employee_${index}"
@@ -171,7 +180,7 @@ class ReportTabsView extends TabsView {
                 <label for="store-employee_${index}">Employee Name:</label>
                 <p class="max-length"><span id="store-employee_${index}-length">0</span>/<span class="max-length-text"></span></p>
               </div>
-              <div class="form-grouping-col self-end">
+              <div class="form-grouping-col gc-3 self-end">
                 <label for="store-manager_${index}">Store Manager</label>
                 <label class="switch">
                   <input
@@ -184,7 +193,7 @@ class ReportTabsView extends TabsView {
               </div>
             </div>
 
-            <!-- STORE DISTRICT MANAGER, DM CONTACTED -->
+            <!-- STORE DISTRICT MANAGERS -->
             <div class="grid">
               <div class="form-grouping-col gc-span-2">
                 <select 
@@ -240,10 +249,15 @@ class ReportTabsView extends TabsView {
               </div>
             </div>
 
-            <!-- INCIDENT TYPE, INCIDENT POS NUMBER, INCIDENT PROCEDURAL  -->
+            <!-- INCIDENT TYPES, INCIDENT POS NUMBER, INCIDENT PROCEDURAL  -->
             <div class="grid columns-37-37-25">
               <div class="form-grouping-col gc-span-2-switch">
                 <select
+                  multiple
+                  multiselect-search="true" 
+                  multiselect-select-all="true" 
+                  multiselect-max-items="3"
+                  multiselect-hide-x = "false"                
                   id="incident-types_${index}"
                   name="incident-types"
                   class="incident-types"
@@ -304,10 +318,15 @@ class ReportTabsView extends TabsView {
               </div>
             </div>
 
-            <!-- TRANSACTION TYPE, TRANSACTION NUMBER, TRANSACTION INCIDENT REPORT -->
+            <!-- TRANSACTION TYPES, TRANSACTION NUMBER, TRANSACTION INCIDENT REPORT -->
             <div class="grid columns-37-37-25 transaction-details">
               <div class="form-grouping-col gc-span-2-switch">
                 <select
+                  multiple
+                  multiselect-search="true" 
+                  multiselect-select-all="true" 
+                  multiselect-max-items="3"
+                  multiselect-hide-x = "false"
                   id="transaction-types_${index}"
                   name="transaction-types"
                   class="transaction-types"

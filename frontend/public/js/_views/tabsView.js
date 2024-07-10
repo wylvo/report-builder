@@ -1,4 +1,5 @@
 import View from "./View.js";
+import { MultiselectDropdown } from "../multiselect-dropdown.js";
 
 export default class TabsView extends View {
   #container = document.querySelector(".tab-form-ctn");
@@ -41,8 +42,7 @@ export default class TabsView extends View {
       Object.keys(formData.selects).forEach((key) => {
         formData.selects[key] = formData.selects[key].map((selectValue) => {
           if (!selectValue) return `<option value="">None</option>`;
-          if (selectValue === "*")
-            return `<option value="${selectValue.escapeHTML()}">All</option>`;
+          if (selectValue === "*") return; // `<option value="${selectValue.escapeHTML()}">All</option>`;
           if (selectValue) {
             if (key === "districtManagers" || key === "users")
               return `<option value="${selectValue.username.escapeHTML()}">${selectValue.fullName.escapeHTML()}</option>`;
@@ -74,8 +74,6 @@ export default class TabsView extends View {
     currentView._tab.firstElementChild.textContent = title;
     currentView._tab.firstElementChild.setAttribute("href", `#${id}`);
   }
-
-  renderFormData(data) {}
 
   // prettier-ignore
   moveLeft(currentTab) {
@@ -119,6 +117,7 @@ export default class TabsView extends View {
   #init() {
     this.#tabButtons = document.querySelectorAll(".tab-btn");
     this.#tabForms = document.querySelectorAll(".tabs-forms > form");
+    MultiselectDropdown();
   }
 
   addHandlerClickTab(handler) {

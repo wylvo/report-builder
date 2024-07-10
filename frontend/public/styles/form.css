@@ -206,6 +206,7 @@ input[type="checkbox"]:disabled + span::before {
   transition: max-height 0.4s linear, opacity 0.4s ease-out;
 
   visibility: visible;
+  overflow: unset;
 }
 
 .form-profile-picture {
@@ -415,4 +416,110 @@ input:checked + .slider:before {
   color: var(--default-on-background);
   fill: var(--default-on-background);
   padding: 0.2rem;
+}
+
+.multiselect-dropdown {
+  display: inline-block;
+  position: relative;
+
+  padding: 0.9rem;
+
+  border-radius: 0.2rem;
+  background-color: var(--fields-background-color);
+
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1.6rem 1.2rem;
+}
+
+.multiselect-dropdown span.optext,
+.multiselect-dropdown span.placeholder {
+  margin-right: 0.4em;
+  margin-bottom: 0.2rem;
+  padding: 0.1rem 0;
+  border-radius: 0.4rem;
+  display: inline-block;
+}
+
+.multiselect-dropdown span.optext {
+  color: #000;
+  background-color: var(--checkboxes-unchecked-background-color);
+  padding: 0.1rem 1rem;
+}
+
+.multiselect-dropdown span.optext .optdel {
+  float: right;
+  margin: 0 -0.6rem 0.1rem 0.5rem;
+  font-size: 0.7em;
+  margin-top: 0.2rem;
+  cursor: pointer;
+  color: #000;
+}
+
+.multiselect-dropdown span.optext .optdel:hover {
+  color: var(--attention-background-color-alt);
+}
+
+.multiselect-dropdown span.placeholder {
+  color: var(--fields-placeholder);
+}
+
+.multiselect-dropdown-list-wrapper {
+  z-index: 100;
+  padding: 0.2rem;
+  border-radius: 0.4rem;
+  border: solid 0.1rem var(--fields-border-color);
+  display: none;
+  margin: -0.1rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--background-primary-color);
+}
+
+.multiselect-dropdown-list-wrapper .multiselect-dropdown-search {
+  margin-bottom: 5px;
+}
+
+.multiselect-dropdown-list {
+  padding: 0.2rem;
+  height: 15rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.multiselect-dropdown-list::-webkit-scrollbar {
+  width: 0.8rem;
+}
+
+.multiselect-dropdown-list::-webkit-scrollbar-thumb {
+  background-color: #bec4ca;
+  border-radius: 0.4rem;
+}
+
+.multiselect-dropdown-list div {
+  padding: 5px;
+}
+
+.multiselect-dropdown-list input {
+  height: 1.15em;
+  width: 1.15em;
+  margin-right: 0.35em;
+}
+
+.multiselect-dropdown-list div.checked {
+}
+
+.multiselect-dropdown-list div:hover {
+  background-color: var(--fields-hover-color);
+}
+
+.multiselect-dropdown span.maxselected {
+  width: 100%;
+}
+
+.multiselect-dropdown-all-selector {
+  border-bottom: solid 0.1rem #999;
 }

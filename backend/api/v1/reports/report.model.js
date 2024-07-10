@@ -140,8 +140,8 @@ export const Reports = {
       .output("count", INT)
       .execute(
         softDeleted
-          ? "api_v1_reports_getCreatedByUserIdSoftDeleted"
-          : "api_v1_reports_getCreatedByUserId"
+          ? "api_v1_reports_getAllSoftDeletedCreatedByUserId"
+          : "api_v1_reports_getAllCreatedByUserId"
       );
 
     const reports = JSON.parse(rawJSON);

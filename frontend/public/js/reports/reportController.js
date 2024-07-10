@@ -1,5 +1,6 @@
 import * as model from "./reportModel.js";
 import api, { isRequestInProgress } from "../api.js";
+import { MultiselectDropdown } from "../multiselect-dropdown.js";
 
 import reportTabsView from "./views/reportTabsView.js";
 import reportTableView from "./views/reportTableView.js";
@@ -523,6 +524,9 @@ const init = async function () {
     reportTabsView.renderAll(model.state.formData, model.initNumberOfTabs(5));
     reportFormView = reportTabsView.tabs.get(model.state.tab);
     reportTableView.loadUsers(model.state.usersFrontend);
+
+    const strNumEl = reportFormView._form.querySelector("#store-numbers_0");
+    console.log(strNumEl);
 
     // Initialize all table rows per page
     model.state.rowsPerPage = paginationView.rowsPerPage();

@@ -67,10 +67,17 @@ export const migrateReport = catchAsync(async (req, res, next) => {
     }
 
     const details = report.incident.details;
-    if (details === "") report.incident.details = "None";
-    if (["mib", "audio", "music"].includes(details.toLowerCase())) {
-      report.incident.types.push("Audio");
+    if (details !== "") {
+      const detailsArray = details.toLowerCase().split(" ");
+      const hasAudioInIncidentDetails = ["mib", "audio", "music"].some((word) =>
+        detailsArray.includes(word)
+      );
+      if (hasAudioInIncidentDetails) {
+        if (!report.incident.types.includes("Audio"))
+          report.incident.types.push("Audio");
+      }
     }
+    if (details === "") report.incident.details = "None";
 
     const isIRCreated = report.incident.transaction.isIRCreated;
     if (typeof isIRCreated !== "undefined") {

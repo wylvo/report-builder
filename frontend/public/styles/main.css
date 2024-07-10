@@ -110,6 +110,7 @@
 .grid {
   display: grid;
   column-gap: 2.4rem;
+  align-items: baseline;
 }
 
 .columns-50-50 {
