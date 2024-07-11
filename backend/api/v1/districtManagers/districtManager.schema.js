@@ -16,8 +16,8 @@ const CREATE = {
     notEmpty: { errorMessage: "can't be empty.", bail: true },
     isString: { errorMessage: "should be a string.", bail: true },
     isLength: {
-      options: { max: 20 },
-      errorMessage: "invalid length, max of 20 characters allowed.",
+      options: { max: 19 },
+      errorMessage: "invalid length, max of 19 characters allowed.",
     },
     toLowerCase: {},
 
@@ -77,8 +77,8 @@ const UPDATE = {
     notEmpty: { errorMessage: "can't be empty.", bail: true },
     isString: { errorMessage: "should be a string.", bail: true },
     isLength: {
-      options: { max: 20 },
-      errorMessage: "invalid length, max of 20 characters allowed.",
+      options: { max: 19 },
+      errorMessage: "invalid length, max of 19 characters allowed.",
     },
     toLowerCase: {},
 

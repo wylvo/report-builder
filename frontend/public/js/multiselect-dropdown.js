@@ -35,7 +35,7 @@ export function MultiselectDropdown(options) {
     var div = newEl("div", {
       class: "multiselect-dropdown",
       style: {
-        width: config.style?.width ?? el.clientWidth + "px",
+        // width: config.style?.width ?? el.clientWidth + "px",
         padding: config.style?.padding ?? "",
       },
     });
@@ -51,7 +51,7 @@ export function MultiselectDropdown(options) {
         config.searchInput?.class ?? "form-control",
       ]),
       style: {
-        width: "100%",
+        // width: "100%",
         display:
           el.attributes["multiselect-search"]?.value === "true"
             ? "block"
@@ -207,7 +207,3 @@ export function MultiselectDropdown(options) {
     });
   });
 }
-
-// window.addEventListener("load", () => {
-//   MultiselectDropdown(window.MultiselectDropdownOptions);
-// });

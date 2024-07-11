@@ -320,7 +320,7 @@ const checkUserValidity = (configObject, user) => {
   const invalidInputLengths = [];
 
   if (user.initials.length > 2) invalidInputLengths.push("initials");
-  if (user.username.length > 20) invalidInputLengths.push("username");
+  if (user.username.length > 19) invalidInputLengths.push("username");
 
   const hasInvalidInputLength = invalidInputLengths.length > 0;
   // prettier-ignore

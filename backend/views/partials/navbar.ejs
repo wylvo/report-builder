@@ -5,6 +5,17 @@
       <use href="/img/icons.svg#icon-menu"></use>
     </svg>
   </div>
+  <div class="user-info-ctn">
+    <p class="role"><%= locals.user.role %></p>
+    <p class="full-name"><%= locals.user.fullName %></p>
+  </div>
+  <div class="profile-picture-ctn">
+    <a href="/account" class="profile">
+      <img alt="User profile picture" <%= locals?.user?.profilePictureURI ?
+      `src=${locals.user.profilePictureURI}` :
+      `src=/img/default_profile_picture.jpg` %> />
+    </a>
+  </div>
   <div class="scroll-btns">
     <button id="theme" class="theme tooltip">
       <svg class="icons fill-on-primary">
@@ -15,9 +26,4 @@
   </div>
   <!-- <input type="checkbox" id="theme-toggle" hidden />
         <label for="theme-toggle" class="theme-toggle"></label> -->
-  <a href="/account" class="profile">
-    <img alt="User profile picture" <%= locals?.user?.profilePictureURI ?
-    `src=${locals.user.profilePictureURI}` :
-    `src=/img/default_profile_picture.jpg` %> />
-  </a>
 </nav>

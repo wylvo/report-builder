@@ -86,7 +86,7 @@ class AccountTabsView extends TabsView {
                   id="username_${index}"
                   name="username"
                   class="username"
-                  maxlength="20"
+                  maxlength="19"
                   placeholder="Your Username"
                 />
                 <label for="username_${index}">Username:</label>

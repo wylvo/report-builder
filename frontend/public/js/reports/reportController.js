@@ -16,7 +16,8 @@ const modalView = new ModalView();
 
 let modalFormView = new ModalFormView(),
   reportFormView,
-  takeSnapshot = false;
+  takeSnapshot = false,
+  savePage = 1;
 
 const controlTabs = function (tabIndex, id = undefined) {
   model.state.tab = tabIndex;
@@ -147,6 +148,7 @@ const controlRenderReport = function () {
 
 const controlSearchResults = function () {
   model.state.search.page = 1;
+  model.state.search.pageDeletedView = 1;
 
   const reports = reportTableView.isDeletedViewActive
     ? model.state.reportsDeleted
@@ -186,10 +188,15 @@ const controlRenderAllReports = function () {
     ? {
         array: model.state.reportsDeleted,
         total: model.state.reportsDeletedTotal,
+        page: model.state.search.pageDeletedView,
       }
-    : { array: model.state.reports, total: model.state.reportsTotal };
+    : {
+        array: model.state.reports,
+        total: model.state.reportsTotal,
+        page: model.state.search.page,
+      };
 
-  const pageBtns = model.pages(reports.total);
+  const pageBtns = model.pages(reports.total, reports.page);
 
   paginationView.renderAll(pageBtns);
   reportTableView.renderAll(reports.array);
@@ -203,11 +210,14 @@ const controlRenderAllReports = function () {
 const controlRowsPerPage = async function (rowsPerPage) {
   model.state.rowsPerPage = rowsPerPage;
   model.state.search.page = 1;
+  model.state.search.pageDeletedView = 1;
 
   try {
     reportTableView.renderTableSpinner();
 
-    await model.DB.getReports();
+    reportTableView.isDeletedViewActive
+      ? await model.DB.getAllSoftDeletedReports()
+      : await model.DB.getReports();
 
     const query = searchView.query();
     if (query) return controlSearchResults();
@@ -224,9 +234,16 @@ const controlPages = async function (page) {
 
   try {
     reportTableView.renderTableSpinner();
-    model.state.search.page = page;
 
-    await model.DB.getReports();
+    if (reportTableView.isDeletedViewActive) {
+      await model.DB.getAllSoftDeletedReports();
+      model.state.search.pageDeletedView = page;
+    }
+
+    if (!reportTableView.isDeletedViewActive) {
+      await model.DB.getReports();
+      model.state.search.page = page;
+    }
 
     controlRenderAllReports();
   } catch (error) {
@@ -525,8 +542,7 @@ const init = async function () {
     reportFormView = reportTabsView.tabs.get(model.state.tab);
     reportTableView.loadUsers(model.state.usersFrontend);
 
-    const strNumEl = reportFormView._form.querySelector("#store-numbers_0");
-    console.log(strNumEl);
+    model.state.search.pageDeletedView = 1;
 
     // Initialize all table rows per page
     model.state.rowsPerPage = paginationView.rowsPerPage();

@@ -18,6 +18,7 @@
 
 .nav a {
   color: var(--on-background-header);
+  display: flex;
 }
 
 .nav .menu-btn {
@@ -36,9 +37,27 @@
   cursor: pointer;
 }
 
-.nav .profile img {
+.nav .user-info-ctn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  align-items: flex-end;
+  font-size: 1.2rem;
+}
+
+.nav .user-info-ctn .role {
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--on-background-header);
+}
+
+.nav .user-info-ctn .full-name {
+  color: var(--on-background-content);
+}
+
+.nav .profile-picture-ctn .profile img {
   width: 3.2rem;
   height: 3.2rem;
   object-fit: cover;
-  border-radius: 50%;
+  border-radius: 6.4rem;
 }

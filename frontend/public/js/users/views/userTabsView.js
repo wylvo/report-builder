@@ -119,7 +119,7 @@ class UserTabsView extends TabsView {
                   id="username_${index}"
                   name="username"
                   class="username"
-                  maxlength="20"
+                  maxlength="19"
                   placeholder="john.doe"
                   required
                 />

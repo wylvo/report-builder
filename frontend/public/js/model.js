@@ -194,18 +194,18 @@ export const rowsPerPage = (array, page = state.search.page) => {
 
 // prettier-ignore
 // Set/Update page numbers (previous page, current page, and next page)
-export const pages = (total = state.reportsTotal, page = state.search.page) => {
-  state.search.page = page < 1 ? 1 : page;
+export const pages = (total = state.reportsTotal, page) => {
+  page = !page || page < 1 ? 1 : page;
 
   // Calculate the total number of pages available
   const totalPages = Math.ceil(total / state.rowsPerPage);
 
   // Start page always = 1 | End page awlays = total pages
-  const start = state.search.page !== 1 ? 1 : null
-  const end = state.search.page !== totalPages ? totalPages : null
+  const start = page !== 1 ? 1 : null
+  const end = page !== totalPages ? totalPages : null
 
   // Current page and next page can never be greater than the total of pages
-  const currentPage = state.search.page > totalPages ? totalPages : state.search.page;
+  const currentPage = page > totalPages ? totalPages : page;
   const nextPage = currentPage + 1 > totalPages ? null : currentPage + 1;
 
   // Previous page can never be less than 1
