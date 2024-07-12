@@ -16,8 +16,7 @@ const modalView = new ModalView();
 
 let modalFormView = new ModalFormView(),
   reportFormView,
-  takeSnapshot = false,
-  savePage = 1;
+  takeSnapshot = false;
 
 const controlTabs = function (tabIndex, id = undefined) {
   model.state.tab = tabIndex;

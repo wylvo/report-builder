@@ -33,7 +33,7 @@ export default (
       "content": {
         "type": "AdaptiveCard",
         "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-        "version": "1.5",
+        "version": "1.4",
         "id": `${id}`,
         "body": [
           {
@@ -353,8 +353,8 @@ export default (
                   }
                 ],
                 "spacing": "None"
-              },
-            ],
+              }
+            ]
           },
           {
             "type": "ColumnSet",
@@ -486,7 +486,7 @@ export default (
                     "label": "Details:",
                     "id": "incident.details",
                     "value": `${incidentDetails}`,
-                    "isMultiline": true,
+                    "isMultiline": true
                   }
                 ],
                 "height": "stretch"
