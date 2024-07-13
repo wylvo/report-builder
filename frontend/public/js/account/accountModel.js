@@ -13,10 +13,13 @@ import * as reportModel from "../reports/reportModel.js";
 
 // 1st function to be ran by ./accountController.js
 const init = async function () {
+  const page = state.search.page;
+  const rowsPerPage = state.rowsPerPage;
+
   await DB.getCurrentUserAccount();
   await Promise.all([
-    reportModel.DB.getAllReportsCreatedByUser(),
-    reportModel.DB.getAllSoftDeletedReportsCreatedByUser(),
+    DB.getAllReportsCreatedByUser(page, rowsPerPage),
+    DB.getAllSoftDeletedReportsCreatedByUser(page, rowsPerPage),
   ]);
   state.version = await api.v1.version.getVersion();
   initThemeInLocalStorage();
@@ -24,6 +27,10 @@ const init = async function () {
 
 // API requests linked to the backend database
 const DB = {
+  getAllReportsCreatedByUser: async (page, rowsPerPage) =>
+    reportModel.DB.getAllReportsCreatedByUser(page, rowsPerPage),
+  getAllSoftDeletedReportsCreatedByUser: async (page, rowsPerPage) =>
+    reportModel.DB.getAllSoftDeletedReportsCreatedByUser(page, rowsPerPage),
   softDeleteReport: async (id) => reportModel.DB.softDeleteReport(id),
   hardDeleteReport: async (id, password) =>
     reportModel.DB.hardDeleteReport(id, password),

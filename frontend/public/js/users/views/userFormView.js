@@ -84,7 +84,7 @@ export class UserFormView extends FormView {
   hasStateChanged(clone, state) {
     this._changes = [];
     clone.forEach((el, i) => {
-      if(el.name === "password" ||
+      if (el.name === "password" ||
         el.name === "password-confirmation" ||
         el.name === "password-expiration" ||
         el.name === "enable-2fa"

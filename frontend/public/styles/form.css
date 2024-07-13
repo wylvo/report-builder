@@ -168,7 +168,6 @@ input[type="checkbox"]:disabled + span::before {
   border: none;
   border-bottom: 0.2rem solid var(--on-background);
 
-  transition: 0.3s;
   cursor: pointer;
 }
 

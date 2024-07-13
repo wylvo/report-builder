@@ -29,9 +29,12 @@ const init = async () => {
     (object) => utils.deepFreeze(object)
   );
 
+  const page = state.search.page;
+  const rowsPerPage = state.rowsPerPage;
+
   await Promise.all([
-    DB.getReports(),
-    DB.getAllSoftDeletedReports(),
+    DB.getAllReports(page, rowsPerPage),
+    DB.getAllSoftDeletedReports(page, rowsPerPage),
     DB.synchonizeFormData(),
     userModel.DB.getUsersFrontend(),
     accountModel.DB.getCurrentUserAccount(),
@@ -42,11 +45,11 @@ const init = async () => {
 
 // API requests linked to the backend database
 const DB = {
-  getReports: async () => {
+  getAllReports: async (page, rowsPerPage) => {
     // API request to get all reports from the database
     const {
       data: { data, total },
-    } = await api.v1.reports.getReports(state.search.page, state.rowsPerPage);
+    } = await api.v1.reports.getAllReports(page, rowsPerPage);
 
     // Add all reports in the model state
     state.reports = data;
@@ -55,14 +58,11 @@ const DB = {
     return data;
   },
 
-  getAllSoftDeletedReports: async () => {
+  getAllSoftDeletedReports: async (page, rowsPerPage) => {
     // API request to get all reports from the database
     const {
       data: { data, total },
-    } = await api.v1.reports.getAllSoftDeletedReports(
-      state.search.page,
-      state.rowsPerPage
-    );
+    } = await api.v1.reports.getAllSoftDeletedReports(page, rowsPerPage);
 
     // Add all reports in the model state
     state.reportsDeleted = data;
@@ -71,14 +71,14 @@ const DB = {
     return data;
   },
 
-  getAllReportsCreatedByUser: async () => {
+  getAllReportsCreatedByUser: async (page, rowsPerPage) => {
     // API request to get all reports from the database
     const {
       data: { data, total },
     } = await api.v1.reports.getAllReportsCreatedByUser(
       state.user.username,
-      state.search.page,
-      state.rowsPerPage
+      page,
+      rowsPerPage
     );
 
     // Add all reports in the model state
@@ -88,14 +88,14 @@ const DB = {
     return data;
   },
 
-  getAllSoftDeletedReportsCreatedByUser: async () => {
+  getAllSoftDeletedReportsCreatedByUser: async (page, rowsPerPage) => {
     // API request to get all reports from the database
     const {
       data: { data, total },
     } = await api.v1.reports.getAllSoftDeletedReportsCreatedByUser(
       state.user.username,
-      state.search.page,
-      state.rowsPerPage
+      page,
+      rowsPerPage
     );
 
     // Add all reports in the model state

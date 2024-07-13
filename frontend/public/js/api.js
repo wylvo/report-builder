@@ -56,7 +56,7 @@ export default {
     reports: {
       url: "/api/v1/reports",
 
-      async getReports(pageNumber = 1, rowsPerPage = 500) {
+      async getAllReports(pageNumber = 1, rowsPerPage = 500) {
         return await fetchJSON(
           `${this.url}?page=${pageNumber}&rows=${rowsPerPage}`
         );

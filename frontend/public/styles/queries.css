@@ -64,7 +64,13 @@
   }
 }
 
-@media (max-width: 116rem) {
+@media (max-width: 104rem) {
+  .table-content {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 88rem) {
   body {
     font-size: 1.4rem;
   }

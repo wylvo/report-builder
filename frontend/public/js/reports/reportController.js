@@ -1,6 +1,5 @@
 import * as model from "./reportModel.js";
 import api, { isRequestInProgress } from "../api.js";
-import { MultiselectDropdown } from "../multiselect-dropdown.js";
 
 import reportTabsView from "./views/reportTabsView.js";
 import reportTableView from "./views/reportTableView.js";
@@ -215,8 +214,14 @@ const controlRowsPerPage = async function (rowsPerPage) {
     reportTableView.renderTableSpinner();
 
     reportTableView.isDeletedViewActive
-      ? await model.DB.getAllSoftDeletedReports()
-      : await model.DB.getReports();
+      ? await model.DB.getAllSoftDeletedReports(
+          model.state.search.pageDeletedView,
+          model.state.rowsPerPage
+        )
+      : await model.DB.getAllReports(
+          model.state.search.page,
+          model.state.rowsPerPage
+        );
 
     const query = searchView.query();
     if (query) return controlSearchResults();
@@ -235,12 +240,12 @@ const controlPages = async function (page) {
     reportTableView.renderTableSpinner();
 
     if (reportTableView.isDeletedViewActive) {
-      await model.DB.getAllSoftDeletedReports();
+      await model.DB.getAllSoftDeletedReports(page, model.state.rowsPerPage);
       model.state.search.pageDeletedView = page;
     }
 
     if (!reportTableView.isDeletedViewActive) {
-      await model.DB.getReports();
+      await model.DB.getAllReports(page, model.state.rowsPerPage);
       model.state.search.page = page;
     }
 
@@ -399,7 +404,7 @@ const controlDeleteReport = async function (id) {
     reportTableView.updateTotalCount(model.state.reportsTotal);
     notificationsView.delete(`Report successfully deleted: ${report.incident.title} [${report.id}]`);
 
-    await model.DB.getAllSoftDeletedReports();
+    await model.DB.getAllSoftDeletedReports(page, model.state.rowsPerPage);
     if(reportTableView.isDeletedViewActive)
       reportTableView.renderAll(model.state.reportsDeleted)
 
@@ -473,7 +478,7 @@ const controlUndoDeleteReport = async function (id) {
       `Deleted report successfully recovered: ${reportDeleted.incident.title} [${reportDeleted.id}]`
     );
 
-    await model.DB.getReports();
+    await model.DB.getAllReports(model.state.search.page, model.state.rowsPerPage);
     if(!reportTableView.isDeletedViewActive)
       reportTableView.renderAll(model.state.reports)
 
@@ -489,7 +494,7 @@ const controlImportReports = async function (rawJSON) {
     return notificationsView.warning("A request is already in progress.");
 
   try {
-    let errors = false;
+    let hasErrors = false;
     const unmigratedReports = JSON.parse(rawJSON);
 
     // Check if raw JSON is an array and is not empty
@@ -506,12 +511,12 @@ const controlImportReports = async function (rawJSON) {
         report.tableRowEl = {};
         model.checkReportValidity(model.DEFAULT_REPORT_IMPORT, report);
       } catch (error) {
-        errors = true;
+        hasErrors = true;
         notificationsView.error(`Report ${i + 1}: ${error.message}`);
       }
     });
 
-    if (errors) return;
+    if (hasErrors) return;
 
     const reportIds = await model.DB.importReports(migratedReports);
 
@@ -599,7 +604,7 @@ const init = async function () {
     console.log(model.state);
   } catch (error) {
     console.error(error);
-    notificationsView.error(error.message);
+    notificationsView.error(error.message, 60);
   }
 };
 

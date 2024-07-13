@@ -57,14 +57,16 @@ const controlRenderAllReports = function () {
     ? {
         array: model.state.reportsDeleted,
         total: model.state.reportsDeletedTotal,
+        page: model.state.search.pageDeletedView,
       }
-    : { array: model.state.reports, total: model.state.reportsTotal };
+    : {
+        array: model.state.reports,
+        total: model.state.reportsTotal,
+        page: model.state.search.page,
+      };
 
-  console.log(reports.total);
+  const pageBtns = model.pages(reports.total, reports.page);
 
-  const pageBtns = model.pages(reports.total);
-
-  console.log(pageBtns);
   paginationView.renderAll(pageBtns);
   reportTableView.renderAll(reports.array);
   query
@@ -77,11 +79,20 @@ const controlRenderAllReports = function () {
 const controlRowsPerPage = async function (rowsPerPage) {
   model.state.rowsPerPage = rowsPerPage;
   model.state.search.page = 1;
+  model.state.search.pageDeletedView = 1;
 
   try {
     reportTableView.renderTableSpinner();
 
-    await model.DB.getReports();
+    reportTableView.isDeletedViewActive
+      ? await model.DB.getAllSoftDeletedReportsCreatedByUser(
+          model.state.search.pageDeletedView,
+          model.state.rowsPerPage
+        )
+      : await model.DB.getAllReportsCreatedByUser(
+          model.state.search.page,
+          model.state.rowsPerPage
+        );
 
     const query = searchView.query();
     if (query) return controlSearchResults();
@@ -98,9 +109,19 @@ const controlPages = async function (page) {
 
   try {
     reportTableView.renderTableSpinner();
-    model.state.search.page = page;
 
-    await model.DB.getReports();
+    if (reportTableView.isDeletedViewActive) {
+      await model.DB.getAllSoftDeletedReportsCreatedByUser(
+        page,
+        model.state.rowsPerPage
+      );
+      model.state.search.pageDeletedView = page;
+    }
+
+    if (!reportTableView.isDeletedViewActive) {
+      await model.DB.getAllReportsCreatedByUser(page, model.state.rowsPerPage);
+      model.state.search.page = page;
+    }
 
     controlRenderAllReports();
   } catch (error) {
@@ -236,12 +257,13 @@ const init = async function () {
     model.state.reportsTotal = model.state.user.reportsTotal || 0;
     model.state.reportsDeleted = model.state.user.reportsDeleted || [];
     model.state.reportsDeletedTotal = model.state.user.reportsDeletedTotal || 0;
+    model.state.search.pageDeletedView = 1;
 
     // Initialize a single tab
     accountTabsView.renderAll(null, model.initNumberOfTabs(1));
     accountFormView = accountTabsView.tabs.get(model.state.tab);
     accountFormView.render(model.state.user);
-    reportTableView.loadUsers(model.state.usersFrontend);
+    reportTableView.loadUsers([model.state.user]); // load local user for accountTableView
 
     // Initialize table & rows per page
     model.state.rowsPerPage = paginationView.rowsPerPage();

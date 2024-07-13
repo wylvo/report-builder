@@ -11,7 +11,6 @@ export class ReportFormView extends FormView {
 
   #btnTeamsState;
 
-  // prettier-ignore
   constructor(tabElement, formElement) {
     super(tabElement, formElement);
 
@@ -21,8 +20,8 @@ export class ReportFormView extends FormView {
     this._storeAccordion = this._accordions.get(this.#STORE);
     this._detailsAccordion = this._accordions.get(this.#DETAILS);
 
-    // Function for all inputs or all accordions
-    this._all = (elements) => elements.get(this.#ALL);
+    // Multiselects (only applicable for ReportFormView)
+    this._multiselects = this.initializeMultiselects();
 
     // Tags
     this._tags = this._form.querySelectorAll(".tag");
@@ -81,13 +80,26 @@ export class ReportFormView extends FormView {
     ]);
   }
 
+  initializeMultiselects() {
+    const multiselects = new Map();
+    this._selects.forEach((element, name) => {
+      if (element.hasAttribute("multiple")) multiselects.set(name, element);
+    });
+    return multiselects;
+  }
+
   // prettier-ignore
   // Compare a cloned version of the form with the current form state. Return list of changes.
   hasStateChanged(clone, state) {
     this._changes = [];
+    console.log(clone);
     clone.forEach((el, i) => {
+      if (el.name === "") return;
       if (el.getAttribute("type") === "checkbox" && el.checked !== state.get(i).checked)
         this._changes.push(el.name);
+      console.log("\n" + i);
+      console.log("ELEMENT:", el.getAttribute("type") === "checkbox" ? el.checked: el.value);
+      console.log("STATE:", state.get(i)?.value);
       if (el.getAttribute("type") !== "checkbox" && el.value !== state.get(i).value)
         this._changes.push(el.name);
     });
@@ -157,6 +169,7 @@ export class ReportFormView extends FormView {
     const fields = this._fields;
     const checkBoxes = this._checkBoxes;
     const selects = this._selects;
+    const multiselects = this._multiselects;
     const textAreas = this._textAreas;
 
     // Phone Call Accordion
@@ -171,7 +184,14 @@ export class ReportFormView extends FormView {
       : (fields.get("phone-number").value = report.call.phone);
 
     // Store Information Accordion
-    selects.get("store-numbers").value = report.store.numbers[0];
+    // Store Numbers
+    report.store.numbers.forEach((storeNumber) => {
+      const storeNumbers = selects.get("store-numbers");
+      const options = [...storeNumbers.options];
+      const index = options.findIndex((option) => option.value === storeNumber);
+
+      storeNumbers.options[index].selected = true;
+    });
     fields.get("store-employee").value = report.store.employee.name;
 
     report.store.employee.isStoreManager &&
@@ -182,8 +202,17 @@ export class ReportFormView extends FormView {
     selects.get("store-dm").value = report.store.districtManagers[0].username;
 
     // Incident Details Accordion
+    // Incident Types
     fields.get("incident-title").value = report.incident.title;
-    selects.get("incident-types").value = report.incident.types[0];
+    report.incident.types.forEach((incidentType) => {
+      const incidentTypes = selects.get("incident-types");
+      const options = [...incidentTypes.options];
+      const index = options.findIndex(
+        (option) => option.value === incidentType
+      );
+
+      incidentTypes.options[index].selected = true;
+    });
     selects.get("incident-pos-number").value = report.incident.pos;
 
     report.incident.isProcedural &&
@@ -201,8 +230,15 @@ export class ReportFormView extends FormView {
       checkBoxes.get("transaction-issue").click();
 
       // Transaction Types
-      selects.get("transaction-types").value =
-        report.incident.transaction.types[0];
+      report.incident.transaction.types.forEach((incidentTransactionType) => {
+        const incidentTransactionTypes = selects.get("transaction-types");
+        const options = [...incidentTransactionTypes.options];
+        const index = options.findIndex(
+          (option) => option.value === incidentTransactionType
+        );
+
+        incidentTransactionTypes.options[index].selected = true;
+      });
 
       // Transaction Number
       fields.get("transaction-number").value =
@@ -225,6 +261,9 @@ export class ReportFormView extends FormView {
     report.isOnCall && !checkBoxes.get("oncall").checked
       ? (checkBoxes.get("oncall").checked = true)
       : (checkBoxes.get("oncall").checked = false);
+
+    // Load multi selections for all multi-selects elements
+    multiselects.forEach((multiselects) => multiselects.loadOptions());
 
     // Update form tags
     this.updateTags(report);
