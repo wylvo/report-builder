@@ -27,7 +27,7 @@ export const state = {
   reports: [],
   reportsTotal: 0,
 
-  // All deleted reports reports
+  // All deleted reports
   reportsDeleted: [],
   reportsDeletedTotal: 0,
 
