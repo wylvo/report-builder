@@ -121,6 +121,7 @@ class UserTabsView extends TabsView {
                   class="username"
                   maxlength="19"
                   placeholder="john.doe"
+                  autocomplete="username"
                   required
                 />
                 <label for="username_${index}">Username:</label>
@@ -187,6 +188,7 @@ class UserTabsView extends TabsView {
                   name="password"
                   class="password"
                   placeholder="Password"
+                  autocomplete="new-password"
                   required
                 />
                 <label for="password_${index}">Password:</label>
@@ -199,6 +201,7 @@ class UserTabsView extends TabsView {
                   name="password-confirmation"
                   class="password-confirmation"
                   placeholder="Confirm Password"
+                  autocomplete="new-password"
                   required
                 />
                 <label for="password-confirmation_${index}">Confirm Password:</label>
