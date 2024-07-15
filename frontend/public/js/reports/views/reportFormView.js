@@ -92,14 +92,10 @@ export class ReportFormView extends FormView {
   // Compare a cloned version of the form with the current form state. Return list of changes.
   hasStateChanged(clone, state) {
     this._changes = [];
-    console.log(clone);
     clone.forEach((el, i) => {
       if (el.name === "") return;
       if (el.getAttribute("type") === "checkbox" && el.checked !== state.get(i).checked)
         this._changes.push(el.name);
-      console.log("\n" + i);
-      console.log("ELEMENT:", el.getAttribute("type") === "checkbox" ? el.checked: el.value);
-      console.log("STATE:", state.get(i)?.value);
       if (el.getAttribute("type") !== "checkbox" && el.value !== state.get(i).value)
         this._changes.push(el.name);
     });
@@ -262,7 +258,7 @@ export class ReportFormView extends FormView {
       ? (checkBoxes.get("oncall").checked = true)
       : (checkBoxes.get("oncall").checked = false);
 
-    // Load multi selections for all multi-selects elements
+    // Load multiselections for all multiselects elements
     multiselects.forEach((multiselects) => multiselects.loadOptions());
 
     // Update form tags
