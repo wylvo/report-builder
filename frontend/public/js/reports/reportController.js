@@ -79,14 +79,30 @@ const controlPaste = function () {
   model.state.clipboard.forEach((clipboardInput, index) => {
     const reportInput = reportFormView._inputs.get("*").get(index);
 
+    // For checkbox elements
     if (reportInput.getAttribute("type") === "checkbox") {
       if (reportInput.checked && !clipboardInput.checked) reportInput.click();
       if (!reportInput.checked && clipboardInput.checked) reportInput.click();
     }
 
-    if (reportInput.getAttribute("type") !== "checkbox")
+    // Check for multiselect elements and paste/set the selected value of each elements
+    if (reportInput.hasAttribute("multiple")) {
+      const reportInputMultiselectOptions = [...reportInput.options];
+      reportInputMultiselectOptions.forEach((option, i) => {
+        const clipboardInputOption = clipboardInput.options[i];
+        const isSameValue = option.value === clipboardInputOption.value;
+        
+        if (isSameValue)
+          option.selected = clipboardInputOption.selected
+      });
+
+    // Everything else that is not a checkbox or a select with a mutiple attribute
+    } else if (reportInput.getAttribute("type") !== "checkbox")
       reportInput.value = clipboardInput.value;
   });
+  // Load multiselections for all multiselects elements
+  reportFormView._multiselects.forEach((multiselects) => multiselects.loadOptions());
+
   notificationsView.success(`Report state pasted into tab ${model.state.tab + 1}`, 5);
   reportFormView._form.onchange();
 };
