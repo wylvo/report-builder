@@ -171,7 +171,6 @@ select {
 
   color: var(--fields-on-background);
   background-color: var(--fields-background-color);
-  transition: all 0.15s;
   border-radius: 0.2rem;
   border: 0.1rem solid transparent;
   order: 2;
