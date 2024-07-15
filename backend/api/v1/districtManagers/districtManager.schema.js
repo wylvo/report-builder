@@ -19,6 +19,11 @@ const CREATE = {
       options: { max: 19 },
       errorMessage: "invalid length, max of 19 characters allowed.",
     },
+    matches: {
+      options: /^[a-zA-Z0-9._-]+$/,
+      errorMessage:
+        "Only letters, numbers, periods, dashes, and underscores are allowed.",
+    },
     toLowerCase: {},
 
     custom: {
@@ -79,6 +84,11 @@ const UPDATE = {
     isLength: {
       options: { max: 19 },
       errorMessage: "invalid length, max of 19 characters allowed.",
+    },
+    matches: {
+      options: /^[a-zA-Z0-9._-]+$/,
+      errorMessage:
+        "Only letters, numbers, periods, dashes, and underscores are allowed.",
     },
     toLowerCase: {},
 

@@ -28,6 +28,8 @@ export default {
         options: { max: 254 },
         errorMessage: "invalid length, max of 254 characters allowed.",
       },
+      toLowerCase: {},
+
       custom: {
         options: async (email) => {
           const user = await Users.findByEmail(email);
@@ -75,6 +77,11 @@ export default {
       isLength: {
         options: { max: 19 },
         errorMessage: "invalid length, max of 19 characters allowed.",
+      },
+      matches: {
+        options: /^[a-zA-Z0-9._-]+$/,
+        errorMessage:
+          "Only letters, numbers, periods, dashes, and underscores are allowed.",
       },
       toLowerCase: {},
 
@@ -140,6 +147,8 @@ export default {
           options: { max: 254 },
           errorMessage: "invalid length, max of 254 characters allowed.",
         },
+        toLowerCase: {},
+
         custom: {
           options: async (email, { req }) => {
             const user = await Users.findByEmail(email);
@@ -159,6 +168,11 @@ export default {
         isLength: {
           options: { max: 19 },
           errorMessage: "invalid length, max of 19 characters allowed.",
+        },
+        matches: {
+          options: /^[a-zA-Z0-9._-]+$/,
+          errorMessage:
+            "Only letters, numbers, periods, dashes, and underscores are allowed.",
         },
         toLowerCase: {},
 

@@ -105,6 +105,8 @@ const CREATE = {
       options: { max: 254 },
       errorMessage: "invalid length, max of 254 characters allowed.",
     },
+    toLowerCase: {},
+
     custom: {
       options: async (email) => {
         const store = await Stores.findByEmail(email);
@@ -143,6 +145,8 @@ const UPDATE = {
       options: { max: 254 },
       errorMessage: "invalid length, max of 254 characters allowed.",
     },
+    toLowerCase: {},
+
     custom: {
       options: async (email, { req }) => {
         const store = await Stores.findByEmail(email);
