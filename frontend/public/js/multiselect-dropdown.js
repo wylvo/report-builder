@@ -92,6 +92,8 @@ export function MultiselectDropdown(options) {
             });
 
           el.dispatchEvent(new Event("change"));
+
+          if (el.disabled) return;
           reportFormView._form.onchange(); // Force change event on the current reportFormView
         });
         ic.addEventListener("click", (ev) => {
@@ -127,6 +129,8 @@ export function MultiselectDropdown(options) {
           op.optEl.selected = !!!op.optEl.selected;
 
           el.dispatchEvent(new Event("change"));
+
+          if (el.disabled) return;
           reportFormView._form.onchange(); // Force change event on the current reportFormView
         });
         ic.addEventListener("click", (ev) => {
@@ -199,6 +203,7 @@ export function MultiselectDropdown(options) {
     });
 
     div.addEventListener("click", () => {
+      if (div.listEl.parentElement.classList.contains("disabled")) return;
       div.listEl.style.display = "block";
       search.focus();
       search.select();
