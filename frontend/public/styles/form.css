@@ -484,6 +484,10 @@ input:checked + .slider:before {
   cursor: not-allowed;
 }
 
+.multiselect-dropdown:hover {
+  background-color: var(--fields-hover-color);
+}
+
 .multiselect-dropdown-list-wrapper .multiselect-dropdown-search {
   margin-bottom: 5px;
 }
