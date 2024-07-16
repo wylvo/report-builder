@@ -94,10 +94,26 @@ export class ReportFormView extends FormView {
     this._changes = [];
     clone.forEach((el, i) => {
       if (el.name === "") return;
-      if (el.getAttribute("type") === "checkbox" && el.checked !== state.get(i).checked)
-        this._changes.push(el.name);
-      if (el.getAttribute("type") !== "checkbox" && el.value !== state.get(i).value)
-        this._changes.push(el.name);
+      
+      if (el.name === state.get(i).name) {
+        if (el.getAttribute("type") === "checkbox" && el.checked !== state.get(i).checked)
+          this._changes.push(el.name);
+
+        if (el.hasAttribute("multiple")) {
+          const multiselectOptions = [...el.options];
+          
+          multiselectOptions.forEach((option, j) => {
+            const stateOption = state.get(i).options[j];
+            const isSameValue = option.value === stateOption.value;
+            const isSelected = option.selected === stateOption.selected;
+
+            if (isSameValue && !isSelected)
+              this._changes.push(el.name);
+          });
+        }
+        else if (el.getAttribute("type") !== "checkbox" && el.value !== state.get(i).value)
+          this._changes.push(el.name);
+      }
     });
 
     if (this._changes.length > 0) {
