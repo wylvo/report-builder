@@ -1,3 +1,5 @@
+import { reportFormView } from "./reports/reportController.js";
+
 export function MultiselectDropdown(options) {
   var config = {
     search: true,
@@ -90,6 +92,7 @@ export function MultiselectDropdown(options) {
             });
 
           el.dispatchEvent(new Event("change"));
+          reportFormView._form.onchange(); // Force change event on the current reportFormView
         });
         ic.addEventListener("click", (ev) => {
           ic.checked = !ic.checked;
@@ -122,7 +125,9 @@ export function MultiselectDropdown(options) {
           op.querySelector("input").checked =
             !op.querySelector("input").checked;
           op.optEl.selected = !!!op.optEl.selected;
+
           el.dispatchEvent(new Event("change"));
+          reportFormView._form.onchange(); // Force change event on the current reportFormView
         });
         ic.addEventListener("click", (ev) => {
           ic.checked = !ic.checked;

@@ -14,8 +14,9 @@ import ModalView from "../_views/modalView.js";
 const modalView = new ModalView();
 
 let modalFormView = new ModalFormView(),
-  reportFormView,
   takeSnapshot = false;
+
+export let reportFormView;
 
 const controlTabs = function (tabIndex, id = undefined) {
   model.state.tab = tabIndex;
