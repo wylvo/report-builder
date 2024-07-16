@@ -478,6 +478,12 @@ input:checked + .slider:before {
   background-color: var(--background-primary-color);
 }
 
+.multiselect-dropdown.disabled {
+  background-color: var(--fields-disabled-background-color);
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
 .multiselect-dropdown-list-wrapper .multiselect-dropdown-search {
   margin-bottom: 5px;
 }
