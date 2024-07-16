@@ -216,4 +216,10 @@ export function MultiselectDropdown(options) {
       }
     });
   });
+
+  document
+    .querySelectorAll("select[disabled]")
+    .forEach((el) =>
+      el.parentElement.lastElementChild.classList.add("disabled")
+    );
 }

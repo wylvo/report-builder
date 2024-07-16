@@ -153,7 +153,6 @@ export class ReportFormView extends FormView {
     this._checkBoxes.get("phone-no-caller-id").checked = false;
     this._fields.get("phone-number").disabled = false;
 
-
     this._transactionIssueSwitch();
     this.updateTextInputsLength();
 
@@ -385,11 +384,17 @@ export class ReportFormView extends FormView {
 
   _transactionIssueSwitch() {
     if (this._transactionIssue) {
+      this._selects
+        .get("transaction-types")
+        .parentElement.lastElementChild.classList.remove("disabled");
       this._selects.get("transaction-types").disabled = false;
       this._selects.get("transaction-types").setAttribute("required", "");
       this._fields.get("transaction-number").disabled = false;
       this._checkBoxes.get("transaction-variance-report").disabled = false;
     } else {
+      this._selects
+        .get("transaction-types")
+        .parentElement.lastElementChild.classList.add("disabled");
       this._selects.get("transaction-types").disabled = true;
       this._fields.get("transaction-number").disabled = true;
       this._selects.get("transaction-types").removeAttribute("required");
