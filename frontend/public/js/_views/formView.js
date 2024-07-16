@@ -85,9 +85,23 @@ export default class FormView extends View {
   #deepSnapshot(clone, state) {
     const cloneSelects = clone.get(this.#SELECTS);
     const stateSelects = state.get(this.#SELECTS);
-    stateSelects.forEach(
-      (stateSelect, i) => (cloneSelects.get(i).selectedIndex = stateSelect.selectedIndex)
-    );
+    stateSelects.forEach((stateSelect, i) => {
+      const cloneSelect = cloneSelects.get(i);
+
+      if (cloneSelect.name === stateSelect.name) {
+        if (cloneSelect.hasAttribute("multiple") && stateSelect.hasAttribute("multiple")) {
+          const cloneOptions = [...cloneSelect.options];
+          
+          cloneOptions.forEach((option, j) => {
+            const stateOption = stateSelect.options[j];
+            const isSameValue = option.value === stateOption.value;
+
+            if (isSameValue)
+              option.selected = stateOption.selected
+          });
+        } else cloneSelect.selectedIndex = stateSelect.selectedIndex;
+      }
+    });
     return clone;
   }
 

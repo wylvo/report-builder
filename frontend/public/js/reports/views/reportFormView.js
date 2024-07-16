@@ -108,7 +108,7 @@ export class ReportFormView extends FormView {
             const isSelected = option.selected === stateOption.selected;
 
             if (isSameValue && !isSelected)
-              this._changes.push(el.name);
+              this._changes.push(`${el.name}-${option.value}`);
           });
         }
         else if (el.getAttribute("type") !== "checkbox" && el.value !== state.get(i).value)
