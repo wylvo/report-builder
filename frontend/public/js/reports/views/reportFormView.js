@@ -10,6 +10,7 @@ export class ReportFormView extends FormView {
   #ALL = "*";
 
   #btnTeamsState;
+  districtManagers;
 
   constructor(tabElement, formElement) {
     super(tabElement, formElement);
@@ -25,6 +26,10 @@ export class ReportFormView extends FormView {
 
     // Tags
     this._tags = this._form.querySelectorAll(".tag");
+
+    // District Managers Container
+    this._districtManagersContainer =
+      this._form.querySelector(".district-managers");
 
     // Buttons
     this._btnPaste = this._form.querySelector(".form-btn.paste");
@@ -139,6 +144,7 @@ export class ReportFormView extends FormView {
 
     this.#defaultState();
     this.clearTags();
+    this.clearDistrictManagers();
 
     this._fields.forEach((field) => (field.value = ""));
     this._form.reset();
@@ -210,7 +216,7 @@ export class ReportFormView extends FormView {
       ? (checkBoxes.get("store-manager").checked = true)
       : (checkBoxes.get("store-manager").checked = false);
 
-    selects.get("store-dm").value = report.store.districtManagers[0].username;
+    // selects.get("store-dm").value = report.store.districtManagers[0].username;
 
     // Incident Details Accordion
     // Incident Types
@@ -279,6 +285,9 @@ export class ReportFormView extends FormView {
     // Update form tags
     this.updateTags(report);
 
+    // Update report district manager tags
+    this.updateDistrictManagers(report);
+
     // Update input length text indicator (only the ones with "maxlength" attribute)
     this.updateTextInputsLength();
 
@@ -337,6 +346,40 @@ export class ReportFormView extends FormView {
   clearTags() {
     const tags = [...this._tags];
     tags.forEach((tag) => tag.classList.add("hidden"));
+  }
+
+  updateDistrictManagers(report) {
+    this._districtManagersContainer.innerHTML = "";
+    const districtManagerHtml = (fullName, profilePictureURI) => `
+      <div class="dm">
+        <img class="dm-profile-picture" alt="District manager profile picture" src="${profilePictureURI.escapeHTML()}" />
+        <p>${fullName.escapeHTML()}</p>
+      </div>
+    `;
+
+    for (const districtManager of report.store.districtManagers) {
+      for (const dM of this.districtManagers) {
+        if (dM.username === districtManager.username) {
+          const districtManagerElement = this.htmlStringToElement(
+            districtManagerHtml(dM.fullName, dM.profilePictureURI)
+          );
+          this._districtManagersContainer.appendChild(districtManagerElement);
+          break;
+        }
+      }
+    }
+  }
+
+  clearDistrictManagers() {
+    this._districtManagersContainer.innerHTML = "";
+    const emtpyElement = this.htmlStringToElement(
+      `<div class="dm hidden">
+        <img class="dm-profile-picture" alt="District manager profile picture" src="/img/default_profile_picture.jpg"/>
+        <p>none</p>
+      </div>
+      `
+    );
+    this._districtManagersContainer.appendChild(emtpyElement);
   }
 
   // prettier-ignore

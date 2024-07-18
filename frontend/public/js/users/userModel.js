@@ -257,9 +257,6 @@ const checkUserValidity = (configObject, user) => {
     const defaultKeys = Object.keys(defaultObject).sort();
     const userKeys = Object.keys(targetObject).sort();
 
-    // console.log("DEFAULT:", defaultKeys);
-    // console.log("USER`:", userKeys);
-
     // If the given number keys inside the default object !== the number keys inside the target object (user)
     if (defaultKeys.length !== userKeys.length) {
 

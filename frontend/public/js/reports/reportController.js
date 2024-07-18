@@ -301,6 +301,7 @@ const controlSaveReport = async function (reportId) {
     // Update form state
     reportFormView.takeSnapshot(reportFormView.newClone());
     reportFormView.updateTags(report);
+    reportFormView.updateDistrictManagers(report);
     reportFormView._btnTeams.disabled = false;
 
     // Update tab state

@@ -48,7 +48,7 @@ class UserTableView extends TableView {
       <tr class="table-row">
         <td data-cell="Picture">
           <div>
-            <img class="table-row-cell-pp" src="${profilePicture}" alt="Profile picture of ${user.fullName}" />
+            <img class="table-row-cell-pp" src="${profilePicture.escapeHTML()}" alt="Profile picture of ${user.fullName}" />
           </div>
         </td>
         <td data-cell="Full Name"><div>${user.fullName}</div></td>

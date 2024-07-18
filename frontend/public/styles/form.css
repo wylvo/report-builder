@@ -56,7 +56,8 @@ input[type="checkbox"]:disabled + span::before {
   font-size: 1.6rem;
 }
 
-.report-tags {
+.report-tags,
+.report-tags-dms {
   display: flex;
   align-items: center;
   gap: 0.8rem;
@@ -64,6 +65,10 @@ input[type="checkbox"]:disabled + span::before {
   font-size: 1.2rem;
   font-weight: 700;
   letter-spacing: 0.05rem;
+}
+
+.report-tags-dms {
+  margin: 0;
 }
 
 .tag {
@@ -84,9 +89,30 @@ input[type="checkbox"]:disabled + span::before {
   background-color: var(--info-background-color);
 }
 
-.report-readonly {
-  color: var(--misc-on-background);
-  background-color: var(--misc-background-color);
+.district-managers {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+}
+
+.dm {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  padding: 0.4rem 0.8rem;
+
+  color: var(--fields-on-background);
+  background-color: var(--fields-hover-color);
+  border-radius: 0.2rem;
+}
+
+.dm-profile-picture {
+  width: 3.2rem;
+  height: 3.2rem;
+  object-fit: cover;
+  border-radius: 6.4rem;
 }
 
 .form {

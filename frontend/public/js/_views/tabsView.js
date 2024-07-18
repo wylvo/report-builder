@@ -40,11 +40,13 @@ export default class TabsView extends View {
     if (formData) {
       console.log(formData);
       Object.keys(formData.selects).forEach((key) => {
+        if (key === "districtManagers") return;
+
         formData.selects[key] = formData.selects[key].map((selectValue) => {
-          if (!selectValue) return `<option value="">None</option>`;
-          if (selectValue === "*") return; // `<option value="${selectValue.escapeHTML()}">All</option>`;
+          if (selectValue === null) return `<option value="">None</option>`;
+          if (selectValue === "*") return;
           if (selectValue) {
-            if (key === "districtManagers" || key === "users")
+            if (key === "users")
               return `<option value="${selectValue.username.escapeHTML()}">${selectValue.fullName.escapeHTML()}</option>`;
             return `<option value="${selectValue.escapeHTML()}">${selectValue.escapeHTML()}</option>`;
           }
@@ -61,6 +63,8 @@ export default class TabsView extends View {
         tabFormContainer.appendChild(formElement);
 
         const currentView = new this.targetView(tabElement, formElement);
+        currentView.districtManagers = formData.selects.districtManagers;
+
         return [tabIndex, currentView];
       })
     );

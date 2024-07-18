@@ -196,19 +196,9 @@ class ReportTabsView extends TabsView {
             <!-- STORE DISTRICT MANAGERS -->
             <div class="grid">
               <div class="form-grouping-col gc-span-2">
-                <select 
-                  id="store-dm_${index}" 
-                  name="store-dm" 
-                  class="store-dm"
-                >
-                  <option value="carolane.brisebois">Carolane Brisebois</option>
-                  <option value="isabelle.hamel">Isabelle Hamel</option>
-                  <option value="david.yon">David Yon</option>
-                  <option value="julian.pedis">Julian Pedis (No more DM)</option>
-                  <option value="louis-philippe.dalpe">Louis-Philippe Dalpe (No more DM)</option>
-                  <option value="">(None)</option>
-                </select>
-                <label for="store-dm_${index}">District Managers:</label>
+                <p>District Managers:</p>
+                <div class="district-managers">
+                </div>
               </div>
             </div>
           </div>
