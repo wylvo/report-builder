@@ -1,5 +1,5 @@
 import path from "path";
-import { readFile, writeFile } from "fs/promises";
+import { readFile } from "fs/promises";
 
 let port = process.env.SERVER_PORT;
 

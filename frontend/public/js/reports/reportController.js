@@ -299,10 +299,8 @@ const controlSaveReport = async function (reportId) {
     notificationsView.success(`Report successfully ${id ? "updated" : "created"}: [${report.id}]`);
 
     // Update form state
+    reportFormView.render(report);
     reportFormView.takeSnapshot(reportFormView.newClone());
-    reportFormView.updateTags(report);
-    reportFormView.updateDistrictManagers(report);
-    reportFormView._btnTeams.disabled = false;
 
     // Update tab state
     reportTabsView.render(model.state.tab, report.incident.title, report.id);
@@ -422,7 +420,7 @@ const controlDeleteReport = async function (id) {
     reportTableView.updateTotalCount(model.state.reportsTotal);
     notificationsView.delete(`Report successfully deleted: ${report.incident.title} [${report.id}]`);
 
-    await model.DB.getAllSoftDeletedReports(page, model.state.rowsPerPage);
+    await model.DB.getAllSoftDeletedReports(model.state.search.page, model.state.rowsPerPage);
     if(reportTableView.isDeletedViewActive)
       reportTableView.renderAll(model.state.reportsDeleted)
 

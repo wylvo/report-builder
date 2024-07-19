@@ -153,9 +153,10 @@ export class UserFormView extends FormView {
     fields.get("initials").value = user.initials;
     fields.get("email").value = user.email;
     fields.get("username").value = user.username;
+    console.log(user.profilePictureURI);
     if (user.profilePictureURI === this.#DEFAULT_PICTURE)
       fields.get("profile-picture-uri").value = "";
-    else fields.get("profile-picture-uri").value = user.profilePictureURI;
+    else fields.get("profile-picture-uri").value = user.profilePictureURI ?? "";
     selects.get("role").value = user.role;
     selects.get("status").value = user.active ? "1" : "0";
 
@@ -169,7 +170,8 @@ export class UserFormView extends FormView {
     this._snapshot = this.takeSnapshot();
 
     // Update form profile picture
-    this._imgProfilePicture.src = user.profilePictureURI ?? "";
+    this._imgProfilePicture.src =
+      user.profilePictureURI ?? this.#DEFAULT_PICTURE;
 
     // Password inputs not required
     this._password.required = false;

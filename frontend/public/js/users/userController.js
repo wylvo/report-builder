@@ -2,6 +2,7 @@ import * as model from "./userModel.js";
 
 import { isRequestInProgress } from "../api.js";
 
+import { MultiselectDropdown } from "../multiselect-dropdown.js";
 import userTabsView from "./views/userTabsView.js";
 import userTableView from "./views/userTableView.js";
 
@@ -253,9 +254,8 @@ const controlSaveUser = async function (userId) {
 
     // Update form state
     userFormView.clearPasswordFields();
+    userFormView.render(user);
     userFormView.takeSnapshot(userFormView.newClone());
-    userFormView.updateTags(user);
-    userFormView._btnResetPassword.disabled = true;
 
     // Update tab state
     userTabsView.render(model.state.tab, user.fullName, user.id);

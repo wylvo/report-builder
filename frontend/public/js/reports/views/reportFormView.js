@@ -352,7 +352,7 @@ export class ReportFormView extends FormView {
     this._districtManagersContainer.innerHTML = "";
     const districtManagerHtml = (fullName, profilePictureURI) => `
       <div class="dm">
-        <img class="dm-profile-picture" alt="District manager profile picture" src="${profilePictureURI.escapeHTML()}" />
+        <img class="dm-profile-picture" alt="District manager profile picture" src="${profilePictureURI}" />
         <p>${fullName.escapeHTML()}</p>
       </div>
     `;
@@ -373,9 +373,9 @@ export class ReportFormView extends FormView {
   clearDistrictManagers() {
     this._districtManagersContainer.innerHTML = "";
     const emtpyElement = this.htmlStringToElement(
-      `<div class="dm hidden">
+      `<div class="dm">
         <img class="dm-profile-picture" alt="District manager profile picture" src="/img/default_profile_picture.jpg"/>
-        <p>none</p>
+        <p>None</p>
       </div>
       `
     );

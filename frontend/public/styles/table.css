@@ -122,6 +122,19 @@ Child Views: reportTableView.js & userTableView.js
   max-height: 192.3rem;
 }
 
+.table-wrapper::-webkit-scrollbar {
+  width: 1.2rem;
+}
+
+.table-wrapper::-webkit-scrollbar:hover {
+  background-color: var(--);
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+  background-color: var(--misc-on-background);
+  border-radius: 0.2rem;
+}
+
 .table-content {
   width: 100%;
   font-size: 1.2rem;

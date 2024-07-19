@@ -25,11 +25,13 @@ const fetchJSON = async (url, method = "GET", jsonData = undefined) => {
           })
         : await fetch(url);
 
+    if (!response.ok) return formatError(response);
+
     let data;
-    if (method === "DELETE" || response.status === 429) data = null;
+
+    if (method === "DELETE") data = null;
     else data = await response.json();
 
-    if (!response.ok) return formatError(data, response);
     return { response, data };
   } catch (error) {
     throw error;
@@ -40,12 +42,14 @@ const fetchJSON = async (url, method = "GET", jsonData = undefined) => {
   }
 };
 
-const formatError = (data, response) => {
-  if (data)
+const formatError = async (response) => {
+  console.log(response);
+  const errorData = await response?.json();
+  if (errorData.message)
     throw new Error(
-      `${data.message} Request failed with status code ${response.status} (${response.statusText}).`
+      `${errorData.message} Request failed with status code ${response.status} (${response.statusText}).`
     );
-  if (!data)
+  if (!errorData)
     throw new Error(
       `Request failed with status code ${response.status} (${response.statusText}).`
     );

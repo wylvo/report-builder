@@ -153,7 +153,7 @@ class ReportTabsView extends TabsView {
                   multiple
                   multiselect-search="true" 
                   multiselect-select-all="true" 
-                  multiselect-max-items="10"
+                  multiselect-max-items="25"
                   multiselect-hide-x = "false"                
                   id="store-numbers_${index}" 
                   name="store-numbers" 
@@ -198,6 +198,10 @@ class ReportTabsView extends TabsView {
               <div class="form-grouping-col gc-span-2">
                 <p>District Managers:</p>
                 <div class="district-managers">
+                  <div class="dm">
+                    <img class="dm-profile-picture" alt="District manager profile picture" src="/img/default_profile_picture.jpg"/>
+                    <p>None</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -239,14 +243,14 @@ class ReportTabsView extends TabsView {
               </div>
             </div>
 
-            <!-- INCIDENT TYPES, INCIDENT POS NUMBER, INCIDENT PROCEDURAL  -->
+            <!-- INCIDENT TYPES, INCIDENT PROCEDURAL  -->
             <div class="grid columns-37-37-25">
-              <div class="form-grouping-col gc-span-2-switch">
+              <div class="form-grouping-col gc-span-2">
                 <select
                   multiple
                   multiselect-search="true" 
                   multiselect-select-all="true" 
-                  multiselect-max-items="3"
+                  multiselect-max-items="5"
                   multiselect-hide-x = "false"                
                   id="incident-types_${index}"
                   name="incident-types"
@@ -257,17 +261,8 @@ class ReportTabsView extends TabsView {
                 </select>
                 <label for="incident-types_${index}">Incident Types:</label>
               </div>
-              <div class="form-grouping-col">
-                <select
-                  id="incident-pos-number_${index}"
-                  name="incident-pos-number"
-                  class="incident-pos-number"
-                >
-                  ${formData.selects.pos.join("")}
-                </select>
-                <label for="incident-pos-number_${index}">POS Number:</label>
-              </div>
-              <div class="form-grouping-col self-end">
+              
+              <div class="form-grouping-col gc-3 self-end">
                 <label for="incident-procedural_${index}">Procedural</label>
                 <label class="switch">
                   <input
@@ -280,9 +275,19 @@ class ReportTabsView extends TabsView {
               </div>
             </div>
 
-            <!-- INCIDENT ERROR CODE, TRRANSACTION ISSUE -->
+            <!-- INCIDENT POS NUMBER, INCIDENT ERROR CODE, TRRANSACTION ISSUE -->
             <div class="grid columns-37-37-25">
-              <div class="form-grouping-col gc-span-2">
+              <div class="form-grouping-col gc-span-2-switch">
+                <select
+                  id="incident-pos-number_${index}"
+                  name="incident-pos-number"
+                  class="incident-pos-number"
+                >
+                  ${formData.selects.pos.join("")}
+                </select>
+                <label for="incident-pos-number_${index}">POS Number:</label>
+              </div>
+              <div class="form-grouping-col">
                 <input
                   type="text"
                   id="incident-error-code_${index}"
@@ -294,7 +299,7 @@ class ReportTabsView extends TabsView {
                 <label for="incident-error-code_${index}">Error Code:</label>
                 <p class="max-length"><span id="incident-error-code_${index}-length">0</span>/<span class="max-length-text"></span></p>
               </div>
-              <div class="form-grouping-col gc-3 self-end">
+              <div class="form-grouping-col self-end">
                 <label for="transaction-issue_${index}">Transaction</label>
                 <label class="switch">
                   <input
@@ -315,7 +320,7 @@ class ReportTabsView extends TabsView {
                   multiple
                   multiselect-search="true" 
                   multiselect-select-all="true" 
-                  multiselect-max-items="3"
+                  multiselect-max-items="5"
                   multiselect-hide-x = "false"
                   id="transaction-types_${index}"
                   name="transaction-types"

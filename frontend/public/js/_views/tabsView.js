@@ -43,7 +43,7 @@ export default class TabsView extends View {
         if (key === "districtManagers") return;
 
         formData.selects[key] = formData.selects[key].map((selectValue) => {
-          if (selectValue === null) return `<option value="">None</option>`;
+          if (selectValue === null) return `<option value="">N/A</option>`;
           if (selectValue === "*") return;
           if (selectValue) {
             if (key === "users")
@@ -63,7 +63,9 @@ export default class TabsView extends View {
         tabFormContainer.appendChild(formElement);
 
         const currentView = new this.targetView(tabElement, formElement);
-        currentView.districtManagers = formData.selects.districtManagers;
+
+        if (this.targetView.name === "ReportFormView")
+          currentView.districtManagers = formData.selects.districtManagers;
 
         return [tabIndex, currentView];
       })
@@ -121,7 +123,7 @@ export default class TabsView extends View {
   #init() {
     this.#tabButtons = document.querySelectorAll(".tab-btn");
     this.#tabForms = document.querySelectorAll(".tabs-forms > form");
-    MultiselectDropdown();
+    if (this.targetView.name === "ReportFormView") MultiselectDropdown();
   }
 
   addHandlerClickTab(handler) {

@@ -110,7 +110,7 @@ class ReportTableView extends TableView {
         <td data-cell="Created By">
           <div>
             <picture class="${isOnCallClass}">
-              <img class="table-row-cell-pp" src="${profilePicture.escapeHTML()}" alt="Profile picture of ${createdBy?.fullName || "N/A"}" />
+              <img class="table-row-cell-pp" src="${profilePicture}" alt="Profile picture of ${createdBy?.fullName || "N/A"}" />
             </picture>
           </div>
         </td>

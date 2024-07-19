@@ -1,6 +1,7 @@
 import * as model from "./accountModel.js";
 import { isRequestInProgress } from "../api.js";
 
+import { MultiselectDropdown } from "../multiselect-dropdown.js";
 import accountTabsView from "./views/accountTabsView.js";
 
 import searchView from "../_views/searchView.js";

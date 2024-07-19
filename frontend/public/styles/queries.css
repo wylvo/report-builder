@@ -1,6 +1,6 @@
 @media (max-width: 156rem) {
   .tab-btn {
-    font-size: 1.6rem;
+    font-size: 1.4rem;
   }
 }
 
@@ -14,7 +14,7 @@
   }
 
   input[class="time"]::-webkit-calendar-picker-indicator {
-    transform: translateX(-650%);
+    transform: translateX(-600%);
   }
 
   .columns-75-25 {
@@ -67,6 +67,11 @@
 @media (max-width: 104rem) {
   .table-content {
     font-size: 1rem;
+  }
+
+  .table-content td:nth-child(3),
+  .table-content th:nth-child(3) {
+    width: 18rem;
   }
 }
 
