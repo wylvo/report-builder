@@ -127,6 +127,56 @@ input[type="checkbox"]:disabled + span::before {
   justify-content: space-between;
 }
 
+.form-header-info {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.form-header-info .report-info {
+  display: flex;
+  border-radius: 0.2rem;
+}
+
+.form-header-info .report-info:hover {
+  background-color: var(--fields-background-color);
+}
+
+.form-header-info .report-info .icons {
+  width: 2.4rem;
+  height: 2.4rem;
+  fill: var(--on-background);
+  color: var(--on-background);
+}
+
+.report-info .info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.report-info .info .user {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.2rem;
+
+  color: var(--fields-on-background);
+  background-color: var(--fields-hover-color);
+}
+
+.report-info .info .user .profile-picture {
+  width: 1.6rem;
+  height: 1.6rem;
+  object-fit: cover;
+  border-radius: 6.4rem;
+}
+
 .form,
 .form-grouping,
 .form-grouping-col {

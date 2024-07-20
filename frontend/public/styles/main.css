@@ -202,29 +202,6 @@
   font-size: inherit;
 }
 
-.scroll-btns {
-  bottom: 1%;
-  left: 8.8rem;
-
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 1.6rem;
-  color: var(--on-primary);
-
-  z-index: 1;
-}
-
-.scroll-btns button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.8rem;
-  width: 3.2rem;
-  height: 3.2rem;
-}
-
 #theme {
   background-color: var(--primary-color);
   opacity: 0.5;
@@ -233,10 +210,6 @@
 
 #theme:hover {
   opacity: 1;
-}
-
-.scroll-btns .tooltip .tooltiptext {
-  width: 6rem;
 }
 
 .tooltip .tooltiptext {
@@ -256,6 +229,10 @@
   transition: opacity 0.3s;
   font-size: 75%;
   z-index: 1;
+}
+
+.tooltip .tooltiptext.auto {
+  width: 125%;
 }
 
 .tooltip .tooltiptext::after {

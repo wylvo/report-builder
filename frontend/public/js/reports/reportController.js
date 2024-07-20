@@ -558,10 +558,13 @@ const init = async function () {
   try {
     await model.init();
 
+    // Initialize list of users
+    reportTabsView.users = model.state.usersFrontend;
+    reportTableView.users = model.state.usersFrontend;
+
     // Initialize all tabs
     reportTabsView.renderAll(model.state.formData, model.initNumberOfTabs(5));
     reportFormView = reportTabsView.tabs.get(model.state.tab);
-    reportTableView.loadUsers(model.state.usersFrontend);
 
     model.state.search.pageDeletedView = 1;
 
@@ -588,6 +591,9 @@ const init = async function () {
       reportFormView.addHandlerNew(controlUnsavedReport, controlNewReport);
       reportFormView.addHandlerSave(controlSaveReport);
       reportFormView.addHandlerSend(controlSendReport);
+
+      // Initialize list of users
+      reportFormView.users = reportTabsView.users;
     });
 
     // Table view handlers

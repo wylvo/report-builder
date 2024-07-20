@@ -61,3 +61,29 @@
   object-fit: cover;
   border-radius: 6.4rem;
 }
+
+.navbar-btns {
+  bottom: 1%;
+  left: 8.8rem;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 1.6rem;
+  color: var(--on-primary);
+
+  z-index: 1;
+}
+
+.navbar-btns button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem;
+  width: 3.2rem;
+  height: 3.2rem;
+}
+.navbar-btns .tooltip .tooltiptext {
+  width: 6rem;
+}

@@ -10,6 +10,8 @@ export class ReportFormView extends FormView {
   #ALL = "*";
 
   #btnTeamsState;
+
+  users;
   districtManagers;
 
   constructor(tabElement, formElement) {
@@ -23,6 +25,9 @@ export class ReportFormView extends FormView {
 
     // Multiselects (only applicable for ReportFormView)
     this._multiselects = this.initializeMultiselects();
+
+    // Report info tooltip
+    this._info = this._form.querySelector(".report-info .tooltiptext");
 
     // Tags
     this._tags = this._form.querySelectorAll(".tag");
@@ -143,6 +148,7 @@ export class ReportFormView extends FormView {
     this._tab.firstElementChild.setAttribute("href", "#");
 
     this.#defaultState();
+    this.clearInfo();
     this.clearTags();
     this.clearDistrictManagers();
 
@@ -282,6 +288,9 @@ export class ReportFormView extends FormView {
     // Load multiselections for all multiselects elements
     multiselects.forEach((multiselects) => multiselects.loadOptions());
 
+    // Update & reveal created by, created at, updated by, updated at
+    this.updateInfo(report);
+
     // Update form tags
     this.updateTags(report);
 
@@ -308,6 +317,40 @@ export class ReportFormView extends FormView {
     this._all(this._accordions).forEach((accordion) =>
       this._expandAccordion(accordion.header, accordion.content)
     );
+  }
+
+  updateInfo(report) {
+    const infoHtml = (type, username, profilePictureURI, timeAgo) => `
+      <div class="info">
+        ${type === "createdBy" ? "Created by:" : "Updated by:"}
+        <span class="user">
+          <img class="profile-picture" src="${profilePictureURI}" alt="Profile picture of ${username.escapeHTML()}" />
+          <span class="username">${username.escapeHTML()}</span>
+        </span>
+        <span class="time">${timeAgo.escapeHTML()}</span>
+      </div>
+    `;
+
+    console.log(this.users);
+    if (!this.users) return;
+
+    const user = this.users.find((user) => user.username === report.createdBy);
+    if (!user) return;
+
+    const timeAgo = this.timeAgo(report.createdAt);
+    const createdByElement = this.htmlStringToElement(
+      infoHtml("createdBy", user.username, user.profilePictureURI, timeAgo)
+    );
+    this._info.appendChild(createdByElement);
+    this._info.parentElement.classList.remove("hidden");
+    this._info.classList.remove("hidden");
+
+    if (report.createdBy !== report.updatedBy) this._form;
+  }
+
+  clearInfo() {
+    this._info.innerHTML = "";
+    this._info.parentElement.classList.add("hidden");
   }
 
   updateTags(report) {
@@ -352,7 +395,7 @@ export class ReportFormView extends FormView {
     this._districtManagersContainer.innerHTML = "";
     const districtManagerHtml = (fullName, profilePictureURI) => `
       <div class="dm">
-        <img class="dm-profile-picture" alt="District manager profile picture" src="${profilePictureURI}" />
+        <img class="dm-profile-picture" alt="District manager profile picture of ${fullName}" src="${profilePictureURI}" />
         <p>${fullName.escapeHTML()}</p>
       </div>
     `;

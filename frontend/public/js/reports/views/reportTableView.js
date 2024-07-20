@@ -5,15 +5,10 @@ class ReportTableView extends TableView {
   #btnAllReports = document.querySelector("#table-reports");
   #btnAllDeletedReports = document.querySelector("#table-delete-reports");
   #tableCellMaxCharacterLength = 30;
-  #users = [];
   isDeletedViewActive = false;
 
   constructor() {
     super();
-  }
-
-  loadUsers(users) {
-    this.#users = users;
   }
 
   _generateEmptyRowHtml() {
@@ -67,13 +62,13 @@ class ReportTableView extends TableView {
       : { class: "", text: "No" };
 
 
-    const createdBy = this.#users.find((user) => user.username === report.createdBy)
+    const createdBy = this.users.find((user) => user.username === report.createdBy)
     const profilePicture = createdBy?.profilePictureURI
       ? createdBy.profilePictureURI
       : DEFAULT_PROFILE_PICTURE;
 
     const isOnCallClass = report.isOnCall ? "on-call" : "";
-    const assignedTo = this.#users.find((user) => user.username === report.assignedTo)
+    const assignedTo = this.users.find((user) => user.username === report.assignedTo)
 
     const storeNumbers =
       this.formatArray(report.store.numbers, this.#tableCellMaxCharacterLength);

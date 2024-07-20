@@ -18,8 +18,15 @@ class ReportTabsView extends TabsView {
     return `
       <form class="form" id="form_${index}" role="tabpanel" tabindex="0" ${hidden}>
         <div class="form-header">
-          <div>
+          <div class="form-header-info">
             <h1>Phone Call Report</h1>
+            <div class="report-info tooltip">
+              <svg class="icons">
+                <use href="/img/icons.svg#icon-info"></use>
+              </svg>
+              <div class="tooltiptext auto">
+              </div>
+            </div>
           </div>
           <div class="form-action-btns">
             <button type="button" class="form-btn copy tooltip" id="form-copy-btn_${index}">
@@ -437,8 +444,6 @@ class ReportTabsView extends TabsView {
       </form>
     `;
   }
-
-  generate;
 
   // Cancel the event and show an alert that the unsaved changes would be lost
   addHandlerBeforeUnload(handler) {

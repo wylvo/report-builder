@@ -61,15 +61,6 @@ export const isTimeCustom = (value) => {
   return false;
 };
 
-// Check if the "incident.transaction" object is empty from a report
-const isTransactionObjectEmpty = (transaction) =>
-  Object.keys(transaction).length === 1 &&
-  transaction.type &&
-  transaction.type.length === 1 &&
-  transaction.type[0] === ""
-    ? true
-    : false;
-
 // Placeholder function to insert data into many to many SQL tables tied to reports
 // Data is escaped to prevent SQL injection
 const insertManyToMany = (array, reportId, mssql, insertFunction) => {

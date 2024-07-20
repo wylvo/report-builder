@@ -1,6 +1,6 @@
 export default class View {
   _appVersion = document.querySelector("#app-version");
-  _clipboard;
+  users;
 
   // https://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery#answer-13510502
   escapeHTML = (String.prototype.escapeHTML = function () {
@@ -19,10 +19,6 @@ export default class View {
       return __entityMap[s];
     });
   });
-
-  // Scroll Top/Bottom Buttons
-  #scrollTop = document.querySelector(".scroll-top-btn");
-  #scrollBottom = document.querySelector(".scroll-bottom-btn");
 
   constructor() {}
 
@@ -132,5 +128,45 @@ export default class View {
         <use href="/img/icons.svg#icon-${status}"></use>
       </svg>
     `;
+  }
+
+  timeAgo(date) {
+    // Get the current date and time
+    const now = new Date();
+
+    // Parse the input date and time
+    const past = new Date(date);
+
+    // Calculate the difference in seconds between the current date and the input date
+    const diffInSeconds = Math.floor((now - past) / 1000);
+
+    // If the difference is less than 30 seconds, return 'Just now'
+    if (diffInSeconds < 30) {
+      return "Just now";
+    }
+
+    // Define the time units and their corresponding number of seconds
+    const units = [
+      { name: "year", seconds: 31536000 },
+      { name: "month", seconds: 2592000 },
+      { name: "week", seconds: 604800 },
+      { name: "day", seconds: 86400 },
+      { name: "hour", seconds: 3600 },
+      { name: "minute", seconds: 60 },
+      { name: "second", seconds: 1 },
+    ];
+
+    // Loop through the units and find the largest applicable unit
+    for (let unit of units) {
+      const interval = Math.floor(diffInSeconds / unit.seconds);
+
+      // If the interval is 1 or more, return the formatted string
+      if (interval >= 1) {
+        return `${interval} ${unit.name}${interval > 1 ? "s" : ""} ago`;
+      }
+    }
+
+    // If no other condition matches, return 'Just now' (This line should not be reached)
+    return "Just now";
   }
 }
