@@ -239,6 +239,12 @@ export class ReportFormView extends FormView {
 
     fields.get("incident-error-code").value = report.incident.error;
 
+    // Incident Has Variance Report
+    report.incident.hasVarianceReport &&
+    !checkBoxes.get("incident-variance-report").checked
+      ? (checkBoxes.get("incident-variance-report").checked = true)
+      : (checkBoxes.get("incident-variance-report").checked = false);
+
     // Transaction Issue
     if (
       !this.isEmptyObject(report.incident.transaction) &&
@@ -260,12 +266,6 @@ export class ReportFormView extends FormView {
       // Transaction Number
       fields.get("transaction-number").value =
         report.incident.transaction.number;
-
-      // Transaction Has Variance Report
-      report.incident.transaction.hasVarianceReport &&
-      !["transaction-variance-report"].checked
-        ? (["transaction-variance-report"].checked = true)
-        : (["transaction-variance-report"].checked = false);
     }
 
     // Details
@@ -433,7 +433,6 @@ export class ReportFormView extends FormView {
       this._selects.get("transaction-types").disabled = false;
       this._selects.get("transaction-types").setAttribute("required", "");
       this._fields.get("transaction-number").disabled = false;
-      this._checkBoxes.get("transaction-variance-report").disabled = false;
     } else {
       this._selects
         .get("transaction-types")
@@ -441,7 +440,6 @@ export class ReportFormView extends FormView {
       this._selects.get("transaction-types").disabled = true;
       this._fields.get("transaction-number").disabled = true;
       this._selects.get("transaction-types").removeAttribute("required");
-      this._checkBoxes.get("transaction-variance-report").disabled = true;
     }
     return (this._transactionIssue = !this._transactionIssue);
   }

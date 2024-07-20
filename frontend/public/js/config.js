@@ -48,12 +48,12 @@ export const DEFAULT_REPORT_CREATE = Object.freeze({
     pos: "string",
     isProcedural: false,
     error: "string",
+    hasVarianceReport: false,
 
     // Can be empty object
     transaction: {
       types: [],
       number: "string",
-      hasVarianceReport: false,
     },
     details: "string",
   },

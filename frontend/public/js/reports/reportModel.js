@@ -359,11 +359,11 @@ const createReportObject = (report, form) => {
       pos: form["incident-pos-number"].value.trim(),
       isProcedural: form["incident-procedural"].checked,
       error: form["incident-error-code"].value.trim(),
+      hasVarianceReport: form["incident-variance-report"].checked,
       transaction: form["transaction-issue"].checked
         ? {
             types: selectedMutliselectOptionToArray(form["transaction-types"].options),
             number: form["transaction-number"].value.trim(),
-            hasVarianceReport: form["transaction-variance-report"].checked,
           }
         : {},
       details: form["incident-details"].value.trim(),

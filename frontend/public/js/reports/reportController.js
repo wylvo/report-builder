@@ -520,6 +520,7 @@ const controlImportReports = async function (rawJSON) {
       );
 
     const migratedReports = await model.DB.migrateReports(unmigratedReports);
+    console.log(migratedReports);
 
     // Check report validity of each values inside the non-empty array
     migratedReports.forEach((report, i) => {

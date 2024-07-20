@@ -64,10 +64,10 @@ export const validateTimestampsAndTransactionObject = catchAsync(async (req, res
       return next(new GlobalError(`Report ${pos} createdAt: can't be greater than updatedAt.`, 400));
 
     if (report.incident.transaction.types) {
-      if(typeof report.incident.transaction.number === "undefined")
+      if (typeof report.incident.transaction.number === "undefined")
         report.incident.transaction.number = null;
-      if(typeof report.incident.transaction.hasVarianceReport === "undefined")
-        report.incident.transaction.hasVarianceReport = false;
+      // if (typeof report.incident.hasVarianceReport === "undefined")
+      //   report.incident.hasVarianceReport = false;
     }
   });
 

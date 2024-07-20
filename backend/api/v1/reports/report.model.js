@@ -239,8 +239,8 @@ export const Reports = {
     reportCreate.input("incidentPos", VARCHAR, body.incident.pos);
     reportCreate.input("incidentIsProcedural", BIT, body.incident.isProcedural);
     reportCreate.input("incidentError", VARCHAR, body.incident.error);
+    reportCreate.input("incidentHasVarianceReport", BIT, body.incident.hasVarianceReport);
     reportCreate.input("incidentTransactionNumber", VARCHAR, body.incident.transaction.number);
-    reportCreate.input("incidentTransactionHasVarianceReport", BIT, body.incident.transaction.hasVarianceReport);
     reportCreate.input("incidentDetails", VARCHAR, body.incident.details);
 
     const { output: { id } } = await reportCreate
@@ -309,8 +309,8 @@ export const Reports = {
     reportUpdate.input("incidentPos", VARCHAR, body.incident.pos);
     reportUpdate.input("incidentIsProcedural", BIT, body.incident.isProcedural);
     reportUpdate.input("incidentError", VARCHAR, body.incident.error);
+    reportUpdate.input("incidentHasVarianceReport", BIT, body.incident.hasVarianceReport);
     reportUpdate.input("incidentTransactionNumber", VARCHAR, body.incident.transaction.number);
-    reportUpdate.input("incidentTransactionHasVarianceReport", BIT, body.incident.transaction.hasVarianceReport);
     reportUpdate.input("incidentDetails", VARCHAR, body.incident.details);
 
     await reportUpdate.execute("api_v1_reports_update");
@@ -432,8 +432,8 @@ export const Reports = {
       reportImport.input("incidentPos", VARCHAR, report.incident.pos);
       reportImport.input("incidentIsProcedural", BIT, report.incident.isProcedural);
       reportImport.input("incidentError", VARCHAR, report.incident.error);
+      reportImport.input("incidentHasVarianceReport", BIT, report.incident.hasVarianceReport);
       reportImport.input("incidentTransactionNumber", VARCHAR, report.incident.transaction.number);
-      reportImport.input("incidentTransactionHasVarianceReport", BIT, report.incident.transaction.hasVarianceReport);
       reportImport.input("incidentDetails", VARCHAR, report.incident.details);
 
       const { output: { id } } =

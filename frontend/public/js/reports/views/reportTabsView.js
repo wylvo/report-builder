@@ -300,13 +300,14 @@ class ReportTabsView extends TabsView {
                 <p class="max-length"><span id="incident-error-code_${index}-length">0</span>/<span class="max-length-text"></span></p>
               </div>
               <div class="form-grouping-col self-end">
-                <label for="transaction-issue_${index}">Transaction</label>
+                <label for="incident-variance-report_${index}"
+                  >Variance Report</label
+                >
                 <label class="switch">
                   <input
                     type="checkbox"
-                    id="transaction-issue_${index}"
-                    name="transaction-issue"
-                    class="transaction-issue"
+                    id="incident-variance-report_${index}"
+                    name="incident-variance-report"
                   />
                   <span class="slider"></span>
                 </label>
@@ -343,14 +344,13 @@ class ReportTabsView extends TabsView {
                 <p class="max-length"><span id="transaction-number_${index}-length">0</span>/<span class="max-length-text"></span></p>
               </div>
               <div class="form-grouping-col self-end">
-                <label for="transaction-variance-report_${index}"
-                  >Variance Report</label
-                >
+                <label for="transaction-issue_${index}">Transaction</label>
                 <label class="switch">
                   <input
                     type="checkbox"
-                    id="transaction-variance-report_${index}"
-                    name="transaction-variance-report"
+                    id="transaction-issue_${index}"
+                    name="transaction-issue"
+                    class="transaction-issue"
                   />
                   <span class="slider"></span>
                 </label>

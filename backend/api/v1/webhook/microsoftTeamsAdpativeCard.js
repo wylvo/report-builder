@@ -3,7 +3,7 @@ export default (
   id,
   report,
   incidentTitle,
-  techProfilePicture,
+  profilePictureURI,
   fullName,
   createdTime,
   callStatusColor,
@@ -20,6 +20,7 @@ export default (
   incidentTypes,
   incidentErrorCode,
   incidentPos,
+  incidentHasVarianceReport,
   isProceduralText,
   incidentTransaction,
   isEmptyObject,
@@ -88,7 +89,7 @@ export default (
                     "type": "Image",
                     "style": "Person",
                     "size": "Medium",
-                    "url": techProfilePicture()
+                    "url": profilePictureURI
                   }
                 ],
                 "width": "auto"
@@ -414,6 +415,10 @@ export default (
                       {
                         "title": "Procedural:",
                         "value": `${isProceduralText}`
+                      },
+                      {
+                        "title": "Var Report:",
+                        "value": `${incidentHasVarianceReport}`
                       }
                     ]
                   }
@@ -439,10 +444,6 @@ export default (
                       {
                         "title": "Txn Types:",
                         "value": `${incidentTransaction.types}`
-                      },
-                      {
-                        "title": "Var Report:",
-                        "value": `${incidentTransaction.hasVarianceReport}`
                       }
                     ]
                   }

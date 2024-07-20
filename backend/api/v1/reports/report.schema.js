@@ -138,10 +138,10 @@ const CREATE = {
    *    "pos": "",
    *    "isProcedural": false,
    *    "error": "",
+   *    "hasVarianceReport": false
    *    "transaction": {
    *      "type": ["Sale"],
    *      "number": "",
-   *      "hasVarianceReport": false
    *    },
    *    "details": "Hello World!"
    *  }
@@ -207,6 +207,13 @@ const CREATE = {
       errorMessage: "invalid length, max of 100 characters allowed.",
     },
   },
+  "incident.hasVarianceReport": {
+    exists: { errorMessage: "required.", bail: true },
+    isBoolean: {
+      options: { strict: true },
+      errorMessage: "should be a boolean (true or false).",
+    },
+  },
   "incident.transaction": {
     exists: { errorMessage: "required.", bail: true },
     isObject: { errorMessage: "has to be an object enclosed by {}." },
@@ -250,17 +257,6 @@ const CREATE = {
     isLength: {
       options: { max: 100 },
       errorMessage: "invalid length, max of 100 characters allowed.",
-    },
-  },
-  "incident.transaction.hasVarianceReport": {
-    exists: {
-      errorMessage: "required.",
-      bail: true,
-      if: (_, { req }) => req.body.incident.transaction.types,
-    },
-    isBoolean: {
-      options: { strict: true },
-      errorMessage: "should be a boolean (true or false).",
     },
   },
   "incident.details": {
@@ -421,6 +417,13 @@ const IMPORT = {
   "*.incident.pos": UPDATE["incident.pos"],
   "*.incident.isProcedural": UPDATE["incident.isProcedural"],
   "*.incident.error": UPDATE["incident.error"],
+  "*.incident.hasVarianceReport": {
+    optional: true,
+    isBoolean: {
+      options: { strict: true },
+      errorMessage: "should be a boolean (true or false).",
+    },
+  },
   "*.incident.transaction": UPDATE["incident.transaction"],
   "*.incident.transaction.types": {
     optional: true,
@@ -439,13 +442,6 @@ const IMPORT = {
     isLength: {
       options: { max: 100 },
       errorMessage: "invalid length, max of 100 characters allowed.",
-    },
-  },
-  "*.incident.transaction.hasVarianceReport": {
-    optional: true,
-    isBoolean: {
-      options: { strict: true },
-      errorMessage: "should be a boolean (true or false).",
     },
   },
   "*.incident.details": UPDATE["incident.details"],

@@ -79,9 +79,11 @@ export const migrateReport = catchAsync(async (req, res, next) => {
     }
     if (details === "") report.incident.details = "None";
 
+    report.incident.hasVarianceReport = false;
+
     const isIRCreated = report.incident.transaction.isIRCreated;
     if (typeof isIRCreated !== "undefined") {
-      report.incident.transaction.hasVarianceReport = isIRCreated;
+      report.incident.hasVarianceReport = isIRCreated;
       delete report.incident.transaction.isIRCreated;
     }
 
