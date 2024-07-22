@@ -64,8 +64,10 @@ export default class TabsView extends View {
 
         const currentView = new this.targetView(tabElement, formElement);
 
-        if (this.targetView.name === "ReportFormView")
+        if (this.targetView.name === "ReportFormView") {
           currentView.districtManagers = formData.selects.districtManagers;
+          currentView.users = this.users;
+        }
 
         return [tabIndex, currentView];
       })

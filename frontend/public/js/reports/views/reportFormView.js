@@ -341,11 +341,17 @@ export class ReportFormView extends FormView {
     const createdByElement = this.htmlStringToElement(
       infoHtml("createdBy", user.username, user.profilePictureURI, timeAgo)
     );
+
     this._info.appendChild(createdByElement);
     this._info.parentElement.classList.remove("hidden");
     this._info.classList.remove("hidden");
 
-    if (report.createdBy !== report.updatedBy) this._form;
+    if (report.createdAt !== report.updatedAt) {
+      const updatedByElement = this.htmlStringToElement(
+        infoHtml("updatedBy", user.username, user.profilePictureURI, timeAgo)
+      );
+      this._info.appendChild(updatedByElement);
+    }
   }
 
   clearInfo() {

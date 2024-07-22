@@ -157,6 +157,10 @@ input[type="checkbox"]:disabled + span::before {
   gap: 0.4rem;
 }
 
+.report-info .info:nth-child(2) {
+  margin-top: 0.4rem;
+}
+
 .report-info .info .user {
   display: flex;
   align-items: center;

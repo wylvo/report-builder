@@ -240,6 +240,7 @@ const controlSaveUser = async function (userId) {
     if (!id) {
       user = await model.DB.createUser(userFormView._form);
       userTableView.render(user);
+      userTableView.highlight(user.tableRowEl);
       model.state.usersTotal++;
       userTableView.updateTotalCount(model.state.usersTotal);
     }

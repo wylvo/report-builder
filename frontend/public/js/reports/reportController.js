@@ -286,6 +286,7 @@ const controlSaveReport = async function (reportId) {
     if (!id) {
       report = await model.DB.createReport(model.state.tab, reportFormView._form);
       reportTableView.render(report);
+      reportTableView.highlight(report.tableRowEl);
       model.state.reportsTotal++;
       reportTableView.updateTotalCount(model.state.reportsTotal);
     }

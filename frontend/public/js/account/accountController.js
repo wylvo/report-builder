@@ -260,11 +260,13 @@ const init = async function () {
     model.state.reportsDeletedTotal = model.state.user.reportsDeletedTotal || 0;
     model.state.search.pageDeletedView = 1;
 
+    // Initialize list of users
+    reportTableView.users = model.state.usersFrontend;
+
     // Initialize a single tab
     accountTabsView.renderAll(null, model.initNumberOfTabs(1));
     accountFormView = accountTabsView.tabs.get(model.state.tab);
     accountFormView.render(model.state.user);
-    reportTableView.loadUsers([model.state.user]); // load local user for accountTableView
 
     // Initialize table & rows per page
     model.state.rowsPerPage = paginationView.rowsPerPage();
