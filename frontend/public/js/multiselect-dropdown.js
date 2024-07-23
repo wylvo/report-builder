@@ -136,7 +136,6 @@ export function MultiselectDropdown(options) {
 
           if (el.disabled) return;
           const reportFormView = reportTabsView.tabs.get(state.tab);
-          console.log(reportFormView);
           reportFormView._form.onchange(); // Force change event on the current reportFormView
         });
         ic.addEventListener("click", (ev) => {

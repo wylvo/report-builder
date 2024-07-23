@@ -44,14 +44,16 @@
   display: none;
 }
 
-.sidebar.active .menu > ul > li > a {
+.sidebar.active .menu > ul > li > a,
+.sidebar.active .menu > ul > li > button {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.sidebar.active .menu > ul > li > a .text {
+.sidebar.active .menu > ul > li > a .text,
+.sidebar.active .menu > ul > li > button .text {
   position: absolute;
   left: 4.8rem;
   top: 50%;
@@ -66,7 +68,8 @@
   /* transition: all 0.3s ease; */
 }
 
-.sidebar.active .menu > ul > li > a .text::after {
+.sidebar.active .menu > ul > li > a .text::after,
+.sidebar.active .menu > ul > li > button .text::after {
   content: "";
   position: absolute;
   left: -0.4rem;
@@ -79,7 +82,8 @@
   z-index: -1;
 }
 
-.sidebar.active .menu > ul > li > a:hover .text {
+.sidebar.active .menu > ul > li > a:hover .text,
+.sidebar.active .menu > ul > li > button:hover .text {
   left: 8rem;
   opacity: 1;
   visibility: visible;
@@ -154,7 +158,8 @@
   margin-bottom: 0.4rem;
 }
 
-.menu ul li a {
+.menu ul li a,
+.menu ul li button {
   display: flex;
   align-items: center;
   gap: 1.6rem;
@@ -166,18 +171,24 @@
   transition: all 0.3s ease;
 }
 
-.menu ul li a .text {
+.menu ul li a .text,
+.menu ul li button .text {
   font-size: 1.2rem;
+  text-wrap: nowrap;
 }
 
 .menu ul li > a:hover,
-.menu ul li.active > a {
+.menu ul li > button:hover,
+.menu ul li.active > a,
+.menu ul li.active > button {
   color: var(--on-background);
   background-color: var(--on-background-low-contrast-alt);
 }
 
 .menu ul li > a:hover .icons,
-.menu ul li.active > a .icons {
+.menu ul li > button:hover .icons,
+.menu ul li.active > a .icons,
+.menu ul li.active > button .icons {
   fill: var(--on-background);
 }
 

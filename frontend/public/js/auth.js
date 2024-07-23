@@ -1,3 +1,5 @@
+import { formatError } from "./api.js";
+
 // JSON Fetch requests
 const fetchJSON = async (url, jsonData = undefined) => {
   try {
@@ -14,13 +16,10 @@ const fetchJSON = async (url, jsonData = undefined) => {
         })
       : await fetch(url);
 
+    if (!response.ok) return formatError(response);
+
     const data = await response.json();
 
-    if (!response.ok) {
-      throw new Error(
-        `${data.message}. Request failed with status code ${response.status} (${response.statusText}).`
-      );
-    }
     return { response, data };
   } catch (error) {
     throw error;

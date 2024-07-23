@@ -18,4 +18,20 @@ const controlSignIn = async function (email, password) {
   }
 };
 
-authView.addHandlerSignIn(controlSignIn);
+const controlSignOut = async function () {
+  try {
+    const { _, data } = await auth.signOut();
+
+    if (data.status === "success") {
+      notificationsView.success("You have successfully signed out.", 3);
+      location.assign("/signin");
+    }
+  } catch (error) {
+    console.error(error);
+    notificationsView.error(error.message);
+  }
+};
+
+if (window.location.pathname.startsWith("/signin"))
+  authView.addHandlerSignIn(controlSignIn);
+else authView.addHandlerSignOut(controlSignOut);

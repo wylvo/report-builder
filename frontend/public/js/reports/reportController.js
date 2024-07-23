@@ -153,6 +153,8 @@ const controlRenderReport = function () {
       reportFormView.render(report);
 
       reportTableView.highlight(report.tableRowEl);
+
+      console.log(report);
     }
   } catch (error) {
     console.error(error);

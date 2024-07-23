@@ -417,13 +417,7 @@ const IMPORT = {
   "*.incident.pos": UPDATE["incident.pos"],
   "*.incident.isProcedural": UPDATE["incident.isProcedural"],
   "*.incident.error": UPDATE["incident.error"],
-  "*.incident.hasVarianceReport": {
-    optional: true,
-    isBoolean: {
-      options: { strict: true },
-      errorMessage: "should be a boolean (true or false).",
-    },
-  },
+  "*.incident.hasVarianceReport": UPDATE["incident.hasVarianceReport"],
   "*.incident.transaction": UPDATE["incident.transaction"],
   "*.incident.transaction.types": {
     optional: true,

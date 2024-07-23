@@ -42,16 +42,32 @@ const fetchJSON = async (url, method = "GET", jsonData = undefined) => {
   }
 };
 
-const formatError = async (response) => {
-  console.log(response);
-  const errorData = await response?.json();
-  if (errorData.message)
+export const formatError = async (response) => {
+  let errorData;
+
+  try {
+    errorData = await response.json();
+  } catch (error) {
+    console.error(error);
     throw new Error(
-      `${errorData.message} Request failed with status code ${response.status} (${response.statusText}).`
+      `Request failed with status code ${response.status} (${response.statusText}).`
     );
+  }
+
   if (!errorData)
     throw new Error(
       `Request failed with status code ${response.status} (${response.statusText}).`
+    );
+
+  if (errorData && errorData.message)
+    throw new Error(
+      `${
+        errorData.message.endsWith(".")
+          ? errorData.message
+          : `${errorData.message}.`
+      } Request failed with status code ${response.status} (${
+        response.statusText
+      }).`
     );
 };
 

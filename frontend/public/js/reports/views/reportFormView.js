@@ -319,6 +319,7 @@ export class ReportFormView extends FormView {
     );
   }
 
+  // prettier-ignore
   updateInfo(report) {
     const infoHtml = (type, username, profilePictureURI, timeAgo) => `
       <div class="info">
@@ -331,15 +332,14 @@ export class ReportFormView extends FormView {
       </div>
     `;
 
-    console.log(this.users);
     if (!this.users) return;
 
     const user = this.users.find((user) => user.username === report.createdBy);
     if (!user) return;
 
-    const timeAgo = this.timeAgo(report.createdAt);
+    const createdTimeAgo = this.timeAgo(report.createdAt);
     const createdByElement = this.htmlStringToElement(
-      infoHtml("createdBy", user.username, user.profilePictureURI, timeAgo)
+      infoHtml("createdBy", user.username, user.profilePictureURI, createdTimeAgo)
     );
 
     this._info.appendChild(createdByElement);
@@ -347,8 +347,9 @@ export class ReportFormView extends FormView {
     this._info.classList.remove("hidden");
 
     if (report.createdAt !== report.updatedAt) {
+      const updatedTimeAgo = this.timeAgo(report.updatedAt);
       const updatedByElement = this.htmlStringToElement(
-        infoHtml("updatedBy", user.username, user.profilePictureURI, timeAgo)
+        infoHtml("updatedBy", user.username, user.profilePictureURI, updatedTimeAgo)
       );
       this._info.appendChild(updatedByElement);
     }
