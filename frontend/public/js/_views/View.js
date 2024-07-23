@@ -169,4 +169,23 @@ export default class View {
     // If no other condition matches, return 'Just now' (This line should not be reached)
     return "Just now";
   }
+
+  getWeekNumber(date) {
+    // Define the first day of the year (Jan 1st) and its weekday
+    const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+    const firstDayWeekday = firstDayOfYear.getDay() || 7; // Handle Monday as 1
+
+    // Calculate day of year, accounting for leap years
+    let dayOfYear = Math.floor(
+      (date - new Date(date.getFullYear(), 0, 1)) / (1000 * 60 * 60 * 24)
+    );
+    if (date.getFullYear() % 4 === 0 && date.getMonth() > 1) {
+      // Adjust for Feb 29th in leap year
+      dayOfYear += 1;
+    }
+
+    // Calculate week number, considering first day of year's weekday
+    const firstDayOfWeek = (firstDayWeekday - 1 + 6) % 7;
+    return Math.ceil((dayOfYear - firstDayOfWeek) / 7) + 1;
+  }
 }
