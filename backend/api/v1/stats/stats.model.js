@@ -7,9 +7,17 @@ import {
   GlobalError,
 } from "../router.js";
 
-const { NVARCHAR, VARCHAR, INT, BIT, DATETIMEOFFSET, DATE, TIME } =
-  mssqlDataTypes;
+const { NVARCHAR } = mssqlDataTypes;
 
 export const Stats = {
-  async all() {},
+  // GET ALL STATS
+  async all() {
+    const {
+      output: { stats },
+    } = await mssql()
+      .request.output("stats", NVARCHAR)
+      .execute("api_v1_stats_getAll");
+
+    return JSON.parse(stats);
+  },
 };
