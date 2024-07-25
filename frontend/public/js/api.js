@@ -206,5 +206,14 @@ export default {
         return await fetchJSON(this.url);
       },
     },
+
+    stats: {
+      url: "/api/v1/stats",
+
+      // Get all stats
+      async getStats() {
+        return await fetchJSON(this.url);
+      },
+    },
   },
 };

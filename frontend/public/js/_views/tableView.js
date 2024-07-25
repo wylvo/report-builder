@@ -1,12 +1,14 @@
 import View from "./View.js";
 
 export default class TableView extends View {
-  _table = document.querySelector("tbody");
   _total = document.querySelector(".table-meta-data .total-count");
   _results = document.querySelector(".table-meta-data .results-count");
 
-  constructor() {
+  constructor(targetTableElement) {
     super();
+    this._table = targetTableElement
+      ? targetTableElement.querySelector("tbody")
+      : document.querySelector("tbody");
   }
 
   #clearTable() {

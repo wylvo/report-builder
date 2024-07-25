@@ -1,3 +1,8 @@
+import * as model from "./dashboardModel.js";
+
+import notificationsView from "../_views/notificationsView.js";
+import dashboardView from "./views/dashboardView.js";
+
 const ctx = document.getElementById("myChart");
 
 new Chart(ctx, {
@@ -24,3 +29,18 @@ new Chart(ctx, {
     },
   },
 });
+
+const init = async function () {
+  try {
+    await model.init();
+
+    dashboardView.renderAll(model.state.stats);
+
+    console.log(model.state);
+  } catch (error) {
+    console.error(error);
+    notificationsView.error(error.message, 60);
+  }
+};
+
+init();
