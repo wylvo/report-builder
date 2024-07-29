@@ -22,8 +22,72 @@ const DB = {
 
     state.stats = data.data;
 
+    state.stats.reportsByWeekdays = calculateWeekdayAverages();
+    state.stats.reportsByMonth = calculateMonthAverages();
+    state.stats.reportsByYear.reverse();
+
     return data;
   },
+};
+
+// Calculate weekday average
+const calculateWeekdayAverages = () => {
+  const reportsByWeekdays = state.stats.reportsByWeekdays;
+
+  const weekdayAverages = [];
+  const lookup = Object.groupBy(
+    reportsByWeekdays,
+    (reports) => reports.weekday
+  );
+
+  Object.values(lookup).forEach((data) => {
+    let totalReports = 0;
+
+    // Calculate sum of reports
+    data.forEach((array) => (totalReports += array.reports));
+
+    // Divide by the number of months and push to weekdayAverages array
+    weekdayAverages.push({
+      weekday: data[0].weekday,
+      average: totalReports / data.length,
+    });
+  });
+
+  weekdayAverages.map((data) => {
+    if (data.weekday == "lundi") data.weekday = "Monday";
+    if (data.weekday == "mardi") data.weekday = "Tuesday";
+    if (data.weekday == "mercredi") data.weekday = "Wednesday";
+    if (data.weekday == "jeudi") data.weekday = "Thursday";
+    if (data.weekday == "vendredi") data.weekday = "Friday";
+    if (data.weekday == "samedi") data.weekday = "Saturday";
+    if (data.weekday == "dimanche") data.weekday = "Sunday";
+  });
+
+  return weekdayAverages;
+};
+
+// Calculate month average
+const calculateMonthAverages = () => {
+  const reportsByMonth = state.stats.reportsByMonth;
+  reportsByMonth.map((data) => (data.month -= 1)); // month numbers begin at 0
+
+  const monthAverages = [];
+  const lookup = Object.groupBy(reportsByMonth, (reports) => reports.month);
+
+  Object.values(lookup).forEach((data) => {
+    let totalReports = 0;
+
+    // Calculate sum of reports
+    data.forEach((array) => (totalReports += array.reports));
+
+    // Divide by the number of months and push to monthAverages array
+    monthAverages.push({
+      month: data[0].month,
+      average: totalReports / data.length,
+    });
+  });
+
+  return monthAverages;
 };
 
 export {

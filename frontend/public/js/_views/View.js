@@ -171,21 +171,43 @@ export default class View {
   }
 
   getWeekNumber(date) {
-    // Define the first day of the year (Jan 1st) and its weekday
-    const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
-    const firstDayWeekday = firstDayOfYear.getDay() || 7; // Handle Monday as 1
+    // Set the first day of the year
+    const startOfYear = new Date(date.getFullYear(), 0, 1);
 
-    // Calculate day of year, accounting for leap years
-    let dayOfYear = Math.floor(
-      (date - new Date(date.getFullYear(), 0, 1)) / (1000 * 60 * 60 * 24)
-    );
-    if (date.getFullYear() % 4 === 0 && date.getMonth() > 1) {
-      // Adjust for Feb 29th in leap year
-      dayOfYear += 1;
-    }
+    // Calculate the day of the year
+    const dayOfYear =
+      Math.floor((date - startOfYear) / (24 * 60 * 60 * 1000)) + 1;
 
-    // Calculate week number, considering first day of year's weekday
-    const firstDayOfWeek = (firstDayWeekday - 1 + 6) % 7;
-    return Math.ceil((dayOfYear - firstDayOfWeek) / 7) + 1;
+    // Calculate the day of the week for the first day of the year (0 for Sunday, 1 for Monday, etc.)
+    const startDay = startOfYear.getDay() || 7;
+
+    // Adjust the day of the year to the start of the week (Monday)
+    const adjustedDayOfYear = dayOfYear + (startDay - 1);
+
+    // Calculate the week number
+    const weekNumber = Math.ceil(adjustedDayOfYear / 7);
+
+    return weekNumber;
+  }
+
+  sortWeekdays(weekdays, key = "weekday") {
+    const weekdayOrder = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ];
+
+    // Create a map for the order of the weekdays
+    const orderMap = weekdayOrder.reduce((map, day, index) => {
+      map[day] = index;
+      return map;
+    }, {});
+
+    // Sort the weekdays array based on the orderMap
+    return weekdays.sort((a, b) => orderMap[a[key]] - orderMap[b[key]]);
   }
 }

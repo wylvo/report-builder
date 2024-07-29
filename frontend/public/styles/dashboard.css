@@ -45,6 +45,10 @@ DASHBOARD - Used in:
   fill: var(--good-on-background);
 }
 .content .insights li:nth-child(4) .icon-ctn .icons {
+  fill: var(--cyan-on-background);
+}
+
+.content .insights li:nth-child(5) .icon-ctn .icons {
   fill: var(--misc-on-background);
 }
 
@@ -61,6 +65,10 @@ DASHBOARD - Used in:
 }
 
 .content .insights li:nth-child(4) .icon-ctn {
+  background: var(--cyan-background-color);
+}
+
+.content .insights li:nth-child(5) .icon-ctn {
   background: var(--misc-background-color);
 }
 
@@ -69,7 +77,7 @@ DASHBOARD - Used in:
   font-weight: 600;
 }
 
-.content .bottom-data {
+.content .analytics-ctn {
   display: flex;
   flex-wrap: wrap;
   gap: 2.4rem;
@@ -77,7 +85,7 @@ DASHBOARD - Used in:
   width: 100%;
 }
 
-.content .bottom-data > div {
+.content .analytics-ctn > div {
   border-radius: 0.4rem;
   background: var(--background-primary-color);
   padding: 2.4rem;
@@ -85,70 +93,77 @@ DASHBOARD - Used in:
   flex-grow: 1;
 }
 
-.content .bottom-data .analytics-grouping {
+.content .analytics-ctn .analytics-grouping {
   display: flex;
   gap: 2.4rem;
   flex-direction: column;
 }
 
-.content .bottom-data .header {
+.content .analytics-ctn .sub-header {
   display: flex;
   align-items: center;
   gap: 1.6rem;
   margin-bottom: 2.4rem;
 }
 
-.content .bottom-data .header h3 {
+.content .analytics-ctn .sub-header h3 {
   margin-right: auto;
   /* font-size: 2.4rem; */
   font-weight: 600;
 }
 
-.content .bottom-data .reports {
+.content .analytics-ctn .sub-header .selection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+}
+
+.content .analytics-ctn .reports {
   flex-grow: 1;
   flex-basis: 50rem;
 }
 
-.content .bottom-data .reports table {
+.content .analytics-ctn .reports table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.content .bottom-data .reports table th {
+.content .analytics-ctn .reports table th {
   padding-bottom: 1.2rem;
   font-size: 1.2rem;
   text-align: left;
   border-bottom: 0.1rem solid var(--on-background-low-contrast);
 }
 
-.content .bottom-data .reports table td {
+.content .analytics-ctn .reports table td {
   padding: 1.6rem 0;
 }
 
-.content .bottom-data .reports table tr td:first-child {
+.content .analytics-ctn .reports table tr td:first-child {
   display: flex;
   align-items: center;
   gap: 1.2rem;
   padding-left: 0.8rem;
 }
 
-.content .bottom-data .reports table td img {
+.content .analytics-ctn .reports table td img {
   width: 3.2rem;
   height: 3.2rem;
   border-radius: 50%;
   object-fit: cover;
 }
 
-.content .bottom-data .reports table tbody tr {
+.content .analytics-ctn .reports table tbody tr {
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.content .bottom-data .reports table tbody tr:hover {
+.content .analytics-ctn .reports table tbody tr:hover {
   background: var(--on-background-low-contrast);
 }
 
-.content .bottom-data .reports table tr td .status {
+.content .analytics-ctn .reports table tr td .status {
   font-size: 1.2rem;
   padding: 0.8rem 1.6rem;
   color: var(--light);
@@ -156,26 +171,27 @@ DASHBOARD - Used in:
   font-weight: 700;
 }
 
-.content .bottom-data .reports table tr td .status.completed {
+.content .analytics-ctn .reports table tr td .status.completed {
   color: var(--good-on-background);
   background: var(--good-background-color);
 }
 
-.content .bottom-data .reports table tr td .status.inprogress {
+.content .analytics-ctn .reports table tr td .status.inprogress {
   color: var(--warning-on-background);
   background: var(--warning-background-color);
 }
 
-.content .bottom-data .analytics {
+.content .analytics-ctn .analytics {
+  position: relative;
   flex-grow: 1;
   flex-basis: 6.4rem;
 }
 
-.content .bottom-data .analytics .list {
+.content .analytics-ctn .analytics .list {
   width: 100%;
 }
 
-.content .bottom-data .analytics li {
+.content .analytics-ctn .analytics li {
   margin-bottom: 1.6rem;
   background: var(--on-background-low-contrast);
   padding: 1.6rem 1.2rem;
@@ -185,41 +201,41 @@ DASHBOARD - Used in:
   justify-content: space-between;
 }
 
-.content .bottom-data .analytics .list li .list-title {
+.content .analytics-ctn .analytics .list li .list-title {
   display: flex;
   align-items: center;
 }
 
-.content .bottom-data .analytics .list li .list-title img {
+.content .analytics-ctn .analytics .list li .list-title img {
   width: 3.2rem;
   height: 3.2rem;
   border-radius: 50%;
   object-fit: cover;
 }
 
-.content .bottom-data .analytics .list li .store-title,
-.content .bottom-data .analytics .list li .reports-container {
+.content .analytics-ctn .analytics .list li .store-title,
+.content .analytics-ctn .analytics .list li .reports-container {
   display: flex;
   align-items: center;
   gap: 0.8rem;
 }
 
-.content .bottom-data .analytics .list li .list-title p {
+.content .analytics-ctn .analytics .list li .list-title p {
   margin-left: 0.8rem;
 }
 
-.content .bottom-data .analytics .list li.user {
+.content .analytics-ctn .analytics .list li.user {
   border-left: 1.2rem solid var(--on-background);
 }
 
-.content .bottom-data .analytics .list li.type {
+.content .analytics-ctn .analytics .list li.type {
   border-left: 1.2rem solid var(--info-on-background);
 }
 
-.content .bottom-data .analytics .list li.store {
+.content .analytics-ctn .analytics .list li.store {
   border-left: 1.2rem solid var(--primary-color);
 }
 
-.content .bottom-data .analytics .list li:last-child {
+.content .analytics-ctn .analytics .list li:last-child {
   margin-bottom: 0;
 }

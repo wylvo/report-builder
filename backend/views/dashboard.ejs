@@ -24,12 +24,23 @@
           <li>
             <div class="icon-ctn">
               <svg class="icons">
+                <use href="/img/icons.svg#icon-calendar-day"></use>
+              </svg>
+            </div>
+            <span class="info">
+              <h3 class="reports-today">-</h3>
+              <p>Calls Today</p>
+            </span>
+          </li>
+          <li>
+            <div class="icon-ctn">
+              <svg class="icons">
                 <use href="/img/icons.svg#icon-calendar-week"></use>
               </svg>
             </div>
             <span class="info">
               <h3 class="reports-by-week">-</h3>
-              <p>Reports This Week</p>
+              <p>Calls This Week</p>
             </span>
           </li>
           <li>
@@ -40,7 +51,7 @@
             </div>
             <span class="info">
               <h3 class="reports-by-month">-</h3>
-              <p>Reports This Month</p>
+              <p>Calls This Month</p>
             </span>
           </li>
           <li>
@@ -51,7 +62,7 @@
             </div>
             <span class="info">
               <h3 class="reports-by-year">-</h3>
-              <p>Reports This Year</p>
+              <p>Calls This Year</p>
             </span>
           </li>
           <li>
@@ -67,10 +78,169 @@
           </li>
         </ul>
 
-        <!-- ANALYTICS 1 -->
-        <div class="bottom-data">
+        <div class="analytics-ctn">
+          <!-- ANALYTICS 1 -->
           <div class="reports">
-            <div class="header">
+            <div class="sub-header">
+              <svg class="icons fill-on-background">
+                <use href="/img/icons.svg#icon-report"></use>
+              </svg>
+              <h3>Recent Activity</h3>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Call Date</th>
+                  <th>Title</th>
+                  <th>Status</th>
+                  <th>Store</th>
+                  <th>Procedural</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <img src="img/profile.jpg" />
+                    <p>William Evora</p>
+                  </td>
+                  <td>20-03-2024</td>
+                  <td>20-03-2024</td>
+                  <td><span class="status completed">Completed</span></td>
+                  <td>101</td>
+                  <td>Yes</td>
+                </tr>
+                <tr>
+                  <td>
+                    <img src="img/profile.jpg" />
+                    <p>William Evora</p>
+                  </td>
+                  <td>19-03-2024</td>
+                  <td>19-03-2024</td>
+                  <td><span class="status inprogress">In Progress</span></td>
+                  <td>211</td>
+                  <td>No</td>
+                </tr>
+                <tr>
+                  <td>
+                    <img src="img/profile.jpg" />
+                    <p>William Evora</p>
+                  </td>
+                  <td>14-03-2024</td>
+                  <td>14-03-2024</td>
+                  <td><span class="status completed">Completed</span></td>
+                  <td>505</td>
+                  <td>No</td>
+                </tr>
+                <tr>
+                  <td>
+                    <img src="img/profile.jpg" />
+                    <p>William Evora</p>
+                  </td>
+                  <td>20-03-2024</td>
+                  <td>20-03-2024</td>
+                  <td><span class="status completed">Completed</span></td>
+                  <td>101</td>
+                  <td>Yes</td>
+                </tr>
+                <tr>
+                  <td>
+                    <img src="img/profile.jpg" />
+                    <p>William Evora</p>
+                  </td>
+                  <td>19-03-2024</td>
+                  <td>19-03-2024</td>
+                  <td><span class="status inprogress">In Progress</span></td>
+                  <td>211</td>
+                  <td>No</td>
+                </tr>
+                <tr>
+                  <td>
+                    <img src="img/profile.jpg" />
+                    <p>William Evora</p>
+                  </td>
+                  <td>14-03-2024</td>
+                  <td>14-03-2024</td>
+                  <td><span class="status completed">Completed</span></td>
+                  <td>505</td>
+                  <td>No</td>
+                </tr>
+                <tr>
+                  <td>
+                    <img src="img/profile.jpg" />
+                    <p>William Evora</p>
+                  </td>
+                  <td>14-03-2024</td>
+                  <td>14-03-2024</td>
+                  <td><span class="status completed">Completed</span></td>
+                  <td>505</td>
+                  <td>No</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- ANALYTICS 2 -->
+          <div class="analytics">
+            <div class="sub-header">
+              <svg class="icons">
+                <use href="/img/icons.svg#icon-group"></use>
+              </svg>
+              <h3>Assigned To Users</h3>
+            </div>
+            <canvas id="assigned-to-users">
+              Your browser does not support the canvas element.
+            </canvas>
+          </div>
+
+          <!-- ANALYTICS 3 -->
+          <div class="analytics">
+            <div class="sub-header">
+              <svg class="icons">
+                <use href="/img/icons.svg#icon-pie-chart"></use>
+              </svg>
+              <div class="pie-chart-select">
+                <select name="pie-chart-select">
+                  <option value="incidentType" selected>Incident Types</option>
+                  <option value="incidentTransactionType">
+                    Incident Transaction Types
+                  </option>
+                  <option value="onCall">On-call</option>
+                  <option value="procedural">Procedural</option>
+                </select>
+              </div>
+            </div>
+            <canvas id="pie-chart">
+              Your browser does not support the canvas element.
+            </canvas>
+          </div>
+        </div>
+
+        <div class="analytics-ctn">
+          <!-- ANALYTICS 1 -->
+          <div class="analytics">
+            <div class="sub-header">
+              <svg class="icons fill-on-background">
+                <use href="/img/icons.svg#icon-calendar-month"></use>
+              </svg>
+              <div class="line-chart-select">
+                <select name="line-chart-select">
+                  <option value="byWeekdayAverage" selected>
+                    Weekday Average
+                  </option>
+                  <option value="byMonthAverage">Month Average</option>
+                  <option value="byYear">By Year</option>
+                </select>
+              </div>
+            </div>
+            <canvas id="line-chart">
+              Your browser does not support the canvas element.
+            </canvas>
+          </div>
+
+          <!-- ANALYTICS 2 -->
+          <div class="reports">
+            <div class="sub-header">
               <svg class="icons">
                 <use href="/img/icons.svg#icon-report"></use>
               </svg>
@@ -168,112 +338,18 @@
               </tbody>
             </table>
           </div>
+        </div>
 
-          <!-- ANALYTICS 2 -->
-          <div class="analytics-grouping">
-            <div class="analytics">
-              <div class="header">
-                <svg class="icons">
-                  <use href="/img/icons.svg#icon-group"></use>
-                </svg>
-                <h3>By Users</h3>
-              </div>
-              <ul class="list">
-                <li class="user">
-                  <div class="list-title">
-                    <img src="img/profile.jpg" />
-                    <p>William Evora</p>
-                  </div>
-                  <div class="reports-container">
-                    <p class="count">145</p>
-                    <svg class="icons">
-                      <use href="/img/icons.svg#icon-report"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="user">
-                  <div class="list-title">
-                    <img src="img/profile.jpg" />
-                    <p>Vasileios Nikitaras</p>
-                  </div>
-                  <div class="reports-container">
-                    <p class="count">135</p>
-                    <svg class="icons">
-                      <use href="/img/icons.svg#icon-report"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="user">
-                  <div class="list-title">
-                    <img src="img/profile.jpg" />
-                    <p>Robert Tam</p>
-                  </div>
-                  <div class="reports-container">
-                    <p class="count">111</p>
-                    <svg class="icons">
-                      <use href="/img/icons.svg#icon-report"></use>
-                    </svg>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="analytics">
-              <div div class="header">
-                <svg class="icons">
-                  <use href="/img/icons.svg#icon-reader"></use>
-                </svg>
-                <h3>By Incident Type</h3>
-              </div>
-              <ul class="list">
-                <li class="type">
-                  <div class="list-title">
-                    <svg class="icons">
-                      <use href="/img/icons.svg#icon-bug"></use>
-                    </svg>
-                    <p>Bugs</p>
-                  </div>
-                  <div class="reports-container">
-                    <p class="count">127</p>
-                    <svg class="icons">
-                      <use href="/img/icons.svg#icon-report"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="type">
-                  <div class="list-title">
-                    <svg class="icons">
-                      <use href="/img/icons.svg#icon-networking"></use>
-                    </svg>
-                    <p>Networking</p>
-                  </div>
-                  <div class="reports-container">
-                    <p class="count">97</p>
-                    <svg class="icons">
-                      <use href="/img/icons.svg#icon-report"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="type">
-                  <div class="list-title">
-                    <svg class="icons">
-                      <use href="/img/icons.svg#icon-software"></use>
-                    </svg>
-                    <p>Software</p>
-                  </div>
-                  <div class="reports-container">
-                    <p class="count">58</p>
-                    <svg class="icons">
-                      <use href="/img/icons.svg#icon-report"></use>
-                    </svg>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <!-- ANALYTICS 3 -->
+        <div class="analytics-ctn">
+          <!-- ANALYTICS 1 -->
           <div class="analytics">
-            <canvas id="myChart"></canvas>
+            <div class="sub-header">
+              <svg class="icons">
+                <use href="/img/icons.svg#icon-storefront"></use>
+              </svg>
+              <h3>By Store Numbers</h3>
+            </div>
+            <canvas id="reports-by-store-numbers"></canvas>
           </div>
         </div>
 
