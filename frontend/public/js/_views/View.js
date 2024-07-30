@@ -189,25 +189,4 @@ export default class View {
 
     return weekNumber;
   }
-
-  sortWeekdays(weekdays, key = "weekday") {
-    const weekdayOrder = [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday",
-    ];
-
-    // Create a map for the order of the weekdays
-    const orderMap = weekdayOrder.reduce((map, day, index) => {
-      map[day] = index;
-      return map;
-    }, {});
-
-    // Sort the weekdays array based on the orderMap
-    return weekdays.sort((a, b) => orderMap[a[key]] - orderMap[b[key]]);
-  }
 }

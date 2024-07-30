@@ -2,6 +2,7 @@ import * as model from "./dashboardModel.js";
 
 import notificationsView from "../_views/notificationsView.js";
 import dashboardView from "./views/dashboardView.js";
+import dashboardReportTableView from "./views/dashboardReportTableView.js";
 
 // prettier-ignore
 const controlPieChartSelect = function (
@@ -45,15 +46,16 @@ const controlLineChartSelect = function (
   const stats = model.state.stats;
 
   if (targetValue === "byWeekdayAverage") {
-    const sortedWeekdays = dashboardView.sortWeekdays(stats.reportsByWeekdays, "weekday");
-    const labels = sortedWeekdays.map((data) => data.weekday);
-    const datasetsData = sortedWeekdays.map((data) => data.average);
+    const weekdayAverages = model.calculateWeekdayAverages();
+    const labels = weekdayAverages.map((data) => data.weekday);
+    const datasetsData = weekdayAverages.map((data) => data.average);
     dashboardView.lineChart(canvasElement, labels, datasetsData);
   }
 
-  if (targetValue === "byMonthAverage") {
-    const labels = stats.reportsByMonth.map((data) => dashboardView.formatMonth(data.month));
-    const datasetsData = stats.reportsByMonth.map((data) => data.average);
+  if (targetValue === "byMonthlyAverage") {
+    const monthAverages = model.calculateMonthAverages();
+    const labels = monthAverages.map((data) => dashboardView.formatMonth(data.month));
+    const datasetsData = monthAverages.map((data) => data.average);
     dashboardView.lineChart(canvasElement, labels, datasetsData);
   }
 
@@ -67,6 +69,8 @@ const controlLineChartSelect = function (
 const init = async function () {
   try {
     await model.init();
+
+    dashboardReportTableView.users = model.state.usersFrontend;
 
     if (!window?.Chart)
       notificationsView.warning(
@@ -83,6 +87,10 @@ const init = async function () {
     controlLineChartSelect(
       dashboardView.lineChartSelectEl.firstElementChild.value,
       dashboardView.lineChartCanvas()
+    );
+
+    dashboardReportTableView.renderAll(
+      model.state.stats.reportsRecentlyCreated.slice(0, 7)
     );
 
     dashboardView.addHandlerPieChartSelectOnChange(controlPieChartSelect);

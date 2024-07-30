@@ -119,51 +119,52 @@ DASHBOARD - Used in:
   gap: 1.2rem;
 }
 
-.content .analytics-ctn .reports {
+.content .analytics-ctn table {
   flex-grow: 1;
   flex-basis: 50rem;
 }
 
-.content .analytics-ctn .reports table {
+.content .analytics-ctn table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.content .analytics-ctn .reports table th {
+.content .analytics-ctn table th {
   padding-bottom: 1.2rem;
   font-size: 1.2rem;
   text-align: left;
   border-bottom: 0.1rem solid var(--on-background-low-contrast);
 }
 
-.content .analytics-ctn .reports table td {
+.content .analytics-ctn table td {
   padding: 1.6rem 0;
 }
 
-.content .analytics-ctn .reports table tr td:first-child {
+.content .analytics-ctn table tr td:first-child,
+.content .analytics-ctn table tr td:nth-child(6) {
   display: flex;
   align-items: center;
   gap: 1.2rem;
   padding-left: 0.8rem;
 }
 
-.content .analytics-ctn .reports table td img {
+.content .analytics-ctn table td img {
   width: 3.2rem;
   height: 3.2rem;
   border-radius: 50%;
   object-fit: cover;
 }
 
-.content .analytics-ctn .reports table tbody tr {
+.content .analytics-ctn table tbody tr {
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.content .analytics-ctn .reports table tbody tr:hover {
+.content .analytics-ctn table tbody tr:hover {
   background: var(--on-background-low-contrast);
 }
 
-.content .analytics-ctn .reports table tr td .status {
+.content .analytics-ctn table tr td .status {
   font-size: 1.2rem;
   padding: 0.8rem 1.6rem;
   color: var(--light);
@@ -171,14 +172,19 @@ DASHBOARD - Used in:
   font-weight: 700;
 }
 
-.content .analytics-ctn .reports table tr td .status.completed {
+.content .analytics-ctn table tr td .status.completed {
   color: var(--good-on-background);
   background: var(--good-background-color);
 }
 
-.content .analytics-ctn .reports table tr td .status.inprogress {
+.content .analytics-ctn table tr td .status.in-progress {
   color: var(--warning-on-background);
   background: var(--warning-background-color);
+}
+
+.content .analytics-ctn table tr td .status.attention {
+  color: var(--attention-on-background);
+  background: var(--attention-background-color);
 }
 
 .content .analytics-ctn .analytics {
@@ -187,55 +193,8 @@ DASHBOARD - Used in:
   flex-basis: 6.4rem;
 }
 
-.content .analytics-ctn .analytics .list {
-  width: 100%;
-}
-
-.content .analytics-ctn .analytics li {
-  margin-bottom: 1.6rem;
-  background: var(--on-background-low-contrast);
-  padding: 1.6rem 1.2rem;
-  border-radius: 0.4rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.content .analytics-ctn .analytics .list li .list-title {
-  display: flex;
-  align-items: center;
-}
-
-.content .analytics-ctn .analytics .list li .list-title img {
-  width: 3.2rem;
-  height: 3.2rem;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.content .analytics-ctn .analytics .list li .store-title,
-.content .analytics-ctn .analytics .list li .reports-container {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-}
-
-.content .analytics-ctn .analytics .list li .list-title p {
-  margin-left: 0.8rem;
-}
-
-.content .analytics-ctn .analytics .list li.user {
-  border-left: 1.2rem solid var(--on-background);
-}
-
-.content .analytics-ctn .analytics .list li.type {
-  border-left: 1.2rem solid var(--info-on-background);
-}
-
-.content .analytics-ctn .analytics .list li.store {
-  border-left: 1.2rem solid var(--primary-color);
-}
-
-.content .analytics-ctn .analytics .list li:last-child {
-  margin-bottom: 0;
+.content .analytics-ctn .analytics.line {
+  position: relative;
+  flex-grow: 1;
+  flex-basis: 32rem;
 }

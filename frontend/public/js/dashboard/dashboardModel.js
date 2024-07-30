@@ -1,6 +1,5 @@
 import { state, initThemeInLocalStorage } from "../model.js";
 import api from "../api.js";
-import utils from "../utils.js";
 
 import * as accountModel from "../account/accountModel.js";
 import * as userModel from "../users/userModel.js";
@@ -22,12 +21,32 @@ const DB = {
 
     state.stats = data.data;
 
-    state.stats.reportsByWeekdays = calculateWeekdayAverages();
-    state.stats.reportsByMonth = calculateMonthAverages();
     state.stats.reportsByYear.reverse();
 
     return data;
   },
+};
+
+// Sort weekdays
+const sortWeekdays = (weekdays, key = "weekday") => {
+  const weekdayOrder = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+
+  // Create a map for the order of the weekdays
+  const orderMap = weekdayOrder.reduce((map, day, index) => {
+    map[day] = index;
+    return map;
+  }, {});
+
+  // Sort the weekdays array based on the orderMap
+  return weekdays.sort((a, b) => orderMap[a[key]] - orderMap[b[key]]);
 };
 
 // Calculate weekday average
@@ -63,6 +82,8 @@ const calculateWeekdayAverages = () => {
     if (data.weekday == "dimanche") data.weekday = "Sunday";
   });
 
+  sortWeekdays(weekdayAverages);
+
   return weekdayAverages;
 };
 
@@ -94,7 +115,9 @@ export {
   // from -> ../model.js
   state,
 
-  // from this local file -> ./ddashboardModel.js
+  // from this local file -> ./dashboardModel.js
   DB,
   init,
+  calculateWeekdayAverages,
+  calculateMonthAverages,
 };

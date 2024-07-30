@@ -44,9 +44,10 @@ class DashboardView extends View {
     this.reportsByStoreNumbersCanvas = document.querySelector("#reports-by-store-numbers");
 
     // All tables
-    this.recentReportsTable = new TableView(document.querySelector(".reports tbody"));
-    console.log(this.recentReportsTable);
-    this.recentActivity = new TableView();
+    this.recentActivityTableEl = document.querySelector(".activity");
+    this.recentActivityTableView = new TableView(this.recentActivityTableEl);
+    this.recentlyCreatedReportsTableEl = document.querySelector(".reports");
+    this.recentlyCreatedReportsTableView = new TableView(this.recentlyCreatedReportsTableEl);
 
     this.pieChartSelectEl = document.querySelector(".pie-chart-select");
     this.lineChartSelectEl = document.querySelector(".line-chart-select");
@@ -169,6 +170,8 @@ class DashboardView extends View {
             data: datasetsData.map((data) =>
               typeof data === "string" ? data.escapeHTML() : data
             ),
+            backgroundColor: "#d7e0f8",
+            borderColor: "rgb(255, 99, 132)",
           },
           {
             label: "Reports",
@@ -176,8 +179,25 @@ class DashboardView extends View {
               typeof data === "string" ? data.escapeHTML() : data
             ),
             type: "bar",
+            backgroundColor: this.borderColor,
+            borderColor: this.backgroundColor,
           },
         ],
+      },
+      options: {
+        aspectRatio: "1",
+        scales: {
+          x: {
+            stacked: true,
+          },
+          y: {
+            stacked: true,
+            grid: {
+              display: true,
+              color: "rgba(255,99,132,0.2)",
+            },
+          },
+        },
       },
     });
   }
@@ -194,6 +214,8 @@ class DashboardView extends View {
             data: datasetsData.map((data) =>
               typeof data === "string" ? data.escapeHTML() : data
             ),
+            backgroundColor: this.backgroundColor,
+            borderColor: this.borderColor,
           },
         ],
       },

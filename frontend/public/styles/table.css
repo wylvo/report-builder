@@ -271,7 +271,8 @@ Child Views: reportTableView.js & userTableView.js
   border-radius: 6.4rem;
 }
 
-.table-row picture.on-call::after {
+.table-row picture.on-call::after,
+tr span.on-call::after {
   position: absolute;
   content: "ON-CALL";
   white-space: nowrap;
@@ -284,7 +285,7 @@ Child Views: reportTableView.js & userTableView.js
   background-color: var(--info-background-color);
   border-radius: 0.1rem;
 
-  transform: translate(-25%, -50%);
+  transform: translate(-25%, -75%);
 }
 
 .table-row-buttons {

@@ -1,20 +1,17 @@
 import TableView from "../../_views/tableView.js";
 import { DEFAULT_PROFILE_PICTURE } from "../../config.js";
 
-class ReportTableView extends TableView {
-  #btnAllReports = document.querySelector("#table-reports");
-  #btnAllDeletedReports = document.querySelector("#table-delete-reports");
+class DashboardActivityTableView extends TableView {
   #tableCellMaxCharacterLength = 30;
-  isDeletedViewActive = false;
 
   constructor() {
-    super();
+    super(document.querySelector(".activity"));
   }
 
   _generateEmptyRowHtml() {
     return `
       <tr class="table-row">
-        <td data-cell="Created By">
+        <td data-cell="TECH">
           <div>N/A</div>
         </td>
         <td data-cell="Call Date">
@@ -133,69 +130,6 @@ class ReportTableView extends TableView {
       </tr>
       `;
   }
-
-  addHandlerClickAllReports(handler, handlerClearSearch) {
-    this.#btnAllReports.addEventListener("click", () => {
-      this.isDeletedViewActive = false;
-      handler();
-      handlerClearSearch();
-      this.#btnAllDeletedReports.removeAttribute("aria-selected");
-      this.#btnAllReports.setAttribute("aria-selected", "true");
-    });
-  }
-
-  addHandlerClickAllDeletedReports(handler, handlerClearSearch) {
-    this.#btnAllDeletedReports.addEventListener("click", () => {
-      this.isDeletedViewActive = true;
-      handler();
-      handlerClearSearch();
-      this.#btnAllReports.removeAttribute("aria-selected");
-      this.#btnAllDeletedReports.setAttribute("aria-selected", "true");
-    });
-  }
-
-  addHandlerUniqueReportPerTab(handlerUnsavedReport, handlerUniqueReport) {
-    document.addEventListener("click", function (e) {
-      if (e.target && e.target.closest(".table-row-link")) {
-        const id = e.target.getAttribute("href").slice(1);
-        const hasReportInTab = handlerUnsavedReport(handlerUniqueReport, id, e);
-        if (!hasReportInTab) e.preventDefault();
-      }
-    });
-  }
-
-  addHandlerSend(handler) {
-    document.addEventListener("click", function (e) {
-      if (e.target && e.target.closest(".teams")) {
-        const parentElement =
-          e.target.closest(".teams").parentElement.parentElement;
-        const id = parentElement.dataset.id;
-        handler(id);
-      }
-    });
-  }
-
-  addHandlerDelete(handler) {
-    document.addEventListener("click", function (e) {
-      if (e.target && e.target.closest(".delete")) {
-        const parentElement =
-          e.target.closest(".delete").parentElement.parentElement;
-        const id = parentElement.dataset.id;
-        handler(id);
-      }
-    });
-  }
-
-  addHandlerUndoDelete(handler) {
-    document.addEventListener("click", function (e) {
-      if (e.target && e.target.closest(".undo")) {
-        const parentElement =
-          e.target.closest(".undo").parentElement.parentElement;
-        const id = parentElement.dataset.id;
-        handler(id);
-      }
-    });
-  }
 }
 
-export default new ReportTableView();
+export default new DashboardActivityTableView();
