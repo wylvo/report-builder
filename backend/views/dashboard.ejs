@@ -17,6 +17,10 @@
           <div class="left">
             <h1>Dashboard</h1>
           </div>
+          <p>
+            <%= new Date().toLocaleDateString("en-US", { weekday: 'long', year:
+            'numeric', month: 'long', day: 'numeric' }) %>
+          </p>
         </div>
 
         <!-- INSIGHTS -->
@@ -29,7 +33,9 @@
             </div>
             <span class="info">
               <h3 class="reports-today">-</h3>
-              <p>Calls Today</p>
+              <select name="reports-today-select">
+                <option value="0" selected>Calls Today</option>
+              </select>
             </span>
           </li>
           <li>
@@ -40,7 +46,9 @@
             </div>
             <span class="info">
               <h3 class="reports-by-week">-</h3>
-              <p>Calls This Week</p>
+              <select name="reports-today-select">
+                <option value="0" selected>Calls This Week</option>
+              </select>
             </span>
           </li>
           <li>
@@ -51,7 +59,9 @@
             </div>
             <span class="info">
               <h3 class="reports-by-month">-</h3>
-              <p>Calls This Month</p>
+              <select name="reports-today-select">
+                <option value="0" selected>Calls This Month</option>
+              </select>
             </span>
           </li>
           <li>
@@ -62,7 +72,9 @@
             </div>
             <span class="info">
               <h3 class="reports-by-year">-</h3>
-              <p>Calls This Year</p>
+              <select name="reports-today-select">
+                <option value="0" selected>Calls This Year</option>
+              </select>
             </span>
           </li>
           <li>

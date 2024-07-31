@@ -75,6 +75,7 @@ DASHBOARD - Used in:
 .content .insights li .info h3 {
   font-size: 2.4rem;
   font-weight: 600;
+  margin-bottom: 0.4rem;
 }
 
 .content .analytics-ctn {
