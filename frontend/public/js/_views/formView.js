@@ -81,7 +81,7 @@ export default class FormView extends View {
   }
 
   // prettier-ignore
-  // Make clone select element equal to state select element. (A default clone does not apply this).
+  // Make clone select elements equal to state select elements. (A default clone does not apply this).
   #deepSnapshot(clone, state) {
     const cloneSelects = clone.get(this.#SELECTS);
     const stateSelects = state.get(this.#SELECTS);

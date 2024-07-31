@@ -72,7 +72,7 @@ DASHBOARD - Used in:
   background: var(--misc-background-color);
 }
 
-.content .insights li .info h3 {
+.content .insights li .insight h3 {
   font-size: 2.4rem;
   font-weight: 600;
   margin-bottom: 0.4rem;

@@ -21,8 +21,6 @@ const DB = {
 
     state.stats = data.data;
 
-    state.stats.reportsByYear.reverse();
-
     return data;
   },
 };
@@ -52,7 +50,6 @@ const sortWeekdays = (weekdays, key = "weekday") => {
 // Calculate weekday average
 const calculateWeekdayAverages = () => {
   const reportsByWeekdays = state.stats.reportsByWeekdays;
-
   const weekdayAverages = [];
   const lookup = Object.groupBy(
     reportsByWeekdays,
@@ -90,8 +87,6 @@ const calculateWeekdayAverages = () => {
 // Calculate month average
 const calculateMonthAverages = () => {
   const reportsByMonth = state.stats.reportsByMonth;
-  reportsByMonth.map((data) => (data.month -= 1)); // month numbers begin at 0
-
   const monthAverages = [];
   const lookup = Object.groupBy(reportsByMonth, (reports) => reports.month);
 

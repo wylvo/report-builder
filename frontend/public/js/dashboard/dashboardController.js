@@ -60,10 +60,32 @@ const controlLineChartSelect = function (
   }
 
   if (targetValue === "byYear") {
-    const labels = stats.reportsByYear.map((data) => `${data.year}`);
-    const datasetsData = stats.reportsByYear.map((data) => data.reports);
+    const statsByYear = stats.reportsByYear.toReversed()
+    const labels = statsByYear.map((data) => `${data.year}`);
+    const datasetsData = statsByYear.map((data) => data.reports);
     dashboardView.lineChart(canvasElement, labels, datasetsData);
   }
+};
+
+const controlWeekSelect = (weekIndex) => {
+  weekIndex = Number(weekIndex);
+
+  if (isNaN(weekIndex)) return;
+  return model.state.stats.reportsByWeek[weekIndex];
+};
+
+const controlMonthSelect = (monthIndex) => {
+  monthIndex = Number(monthIndex);
+
+  if (isNaN(monthIndex)) return;
+  return model.state.stats.reportsByMonth[monthIndex];
+};
+
+const controlYearSelect = (yearIndex) => {
+  yearIndex = Number(yearIndex);
+
+  if (isNaN(yearIndex)) return;
+  return model.state.stats.reportsByYear[yearIndex];
 };
 
 const init = async function () {
@@ -80,12 +102,12 @@ const init = async function () {
     dashboardView.renderAll(model.state.stats);
 
     controlPieChartSelect(
-      dashboardView.pieChartSelectEl.firstElementChild.value,
+      dashboardView.pieChartSelectElement.firstElementChild.value,
       dashboardView.pieChartCanvas()
     );
 
     controlLineChartSelect(
-      dashboardView.lineChartSelectEl.firstElementChild.value,
+      dashboardView.lineChartSelectElement.firstElementChild.value,
       dashboardView.lineChartCanvas()
     );
 
@@ -95,6 +117,9 @@ const init = async function () {
 
     dashboardView.addHandlerPieChartSelectOnChange(controlPieChartSelect);
     dashboardView.addHandlerLineChartSelectOnChange(controlLineChartSelect);
+    dashboardView.addHandlerWeekSelectOnChange(controlWeekSelect);
+    dashboardView.addHandlerMonthSelectOnChange(controlMonthSelect);
+    dashboardView.addHandlerYearSelectOnChange(controlYearSelect);
 
     console.log(model.state);
   } catch (error) {

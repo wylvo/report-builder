@@ -2,9 +2,35 @@ import View from "../../_views/View.js";
 import TableView from "../../_views/tableView.js";
 
 class DashboardView extends View {
+  // Inputs keys
+  #DATE_UNITS = "*";
+
   // prettier-ignore
   constructor() {
     super();
+
+    // Current Date
+    this.date = new Date();
+
+    // Date formatters
+    this.weekdayFormatter = new Intl.DateTimeFormat("en", { weekday: "long" });
+    this.monthFormatter = new Intl.DateTimeFormat("en", { month: "long" });
+
+    // All quick insights
+    this.insightReportsToday = document.querySelector(".insights .reports-today");
+    this.insightReportsCount = document.querySelector(".insights .reports-count");
+    this.dateUnitContainers = document.querySelectorAll(".insight");
+    this.dateUnitSelectElements;
+
+    // All canvas
+    this.assgignedToUsersCanvas = document.querySelector("#assigned-to-users");
+    this.reportsByStoreNumbersCanvas = document.querySelector("#reports-by-store-numbers");
+    this.pieChartCanvas = () => document.querySelector("#pie-chart");
+    this.lineChartCanvas = () => document.querySelector("#line-chart");
+
+    // Charts
+    this.pieChartSelectElement = document.querySelector(".pie-chart-select");
+    this.lineChartSelectElement = document.querySelector(".line-chart-select");
 
     this.backgroundColor = [
       "rgba(255, 99, 132, 0.35)",
@@ -24,47 +50,86 @@ class DashboardView extends View {
       "rgb(153, 102, 255)",
       "rgb(201, 203, 207)",
     ];
+  }
 
-    this.date = new Date();
+  initializeAllDateUnitSelects() {
+    const dateUnitSelectElements = [
+      ...document.querySelectorAll(".date-unit-select"),
+    ];
 
-    this.weekdayFormatter = new Intl.DateTimeFormat("en", { weekday: "long" });
-    this.monthFormatter = new Intl.DateTimeFormat("en", { month: "long" });
+    const keyValue = (array) => array.map((element) => [element.name, element]);
 
-    // All quick insights
-    this.insightReportsToday = document.querySelector(".insights .reports-today");
-    this.insightReportsByWeek = document.querySelector(".insights .reports-by-week");
-    this.insightReportsByMonth = document.querySelector(".insights .reports-by-month");
-    this.insightReportsByYear = document.querySelector(".insights .reports-by-year");
-    this.insightReportsCount = document.querySelector(".insights .reports-count");
+    return new Map(keyValue(dateUnitSelectElements));
+  }
 
-    // All canvas
-    this.assgignedToUsersCanvas = document.querySelector("#assigned-to-users");
-    this.pieChartCanvas = () => document.querySelector("#pie-chart");
-    this.lineChartCanvas = () => document.querySelector("#line-chart");
-    this.reportsByStoreNumbersCanvas = document.querySelector("#reports-by-store-numbers");
+  // prettier-ignore
+  formatMonth(monthNumber) {
+    const months = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
 
-    // All tables
-    this.recentActivityTableEl = document.querySelector(".activity");
-    this.recentActivityTableView = new TableView(this.recentActivityTableEl);
-    this.recentlyCreatedReportsTableEl = document.querySelector(".reports");
-    this.recentlyCreatedReportsTableView = new TableView(this.recentlyCreatedReportsTableEl);
+    return months[monthNumber - 1] || "Invalid month number";
+  }
 
-    this.pieChartSelectEl = document.querySelector(".pie-chart-select");
-    this.lineChartSelectEl = document.querySelector(".line-chart-select");
+  generateDateUnitSelectHtml(className, options) {
+    return `
+      <select class="date-unit-select" name="${className}">
+        ${options.join("")}
+      </select>
+    `;
+  }
+
+  generateDateUnitSelectElement(className, options) {
+    return this.htmlStringToElement(
+      this.generateDateUnitSelectHtml(className, options)
+    );
   }
 
   // prettier-ignore
   renderAll(stats) {
     console.log(stats);
 
-    const date = this.date
-    const weekObject = stats.reportsByWeek.find((obj) => obj.week == this.getWeekNumber(date));
-    const monthObject = stats.reportsByMonth.find((obj) => obj.month == date.getMonth() + 1);
-    const yearObject = stats.reportsByYear.find((obj) => obj.year == date.getFullYear());
+    const date = this.date;
 
-    this.insightReportsByWeek.textContent =`${weekObject?.reports ? weekObject.reports : 0}`.escapeHTML();
-    this.insightReportsByMonth.textContent =`${monthObject?.reports ? monthObject.reports : 0}`.escapeHTML();
-    this.insightReportsByYear.textContent =`${yearObject?.reports ? yearObject.reports : 0}`.escapeHTML();
+    this.dateUnitContainers.forEach((container) => {
+      const className = container.classList[1];
+      let options;
+  
+      if (className === "reports-by-week-select") {
+        options = stats.reportsByWeek.map((data, i) => {
+          let week = `Week Of ${String(data.weekStart)}`.escapeHTML();
+          if (i === 0) (week = `This Week`), (container.firstElementChild.textContent = data.reports);
+          if (i === 1) week = `Last Week`;
+          return `<option value="${i}">Calls ${week}</option>`;
+        });
+      }
+
+      if (className === "reports-by-month-select") {
+        options = stats.reportsByMonth.map((data, i) => {
+          let month = `In ${this.formatMonth(data.month)}, ${data.year}`.escapeHTML();
+          if (i === 0) (month = `This Month`), (container.firstElementChild.textContent = data.reports);
+          if (i === 1) month = `Last Month`;
+          return `<option value="${i}">Calls ${month}</option>`;
+        });
+      }
+
+      if (className === "reports-by-year-select") {
+        options = stats.reportsByYear.map((data, i) => {
+          let year = String(data.year).escapeHTML()
+          if (i === 0) (year = `This Year`), (container.firstElementChild.textContent = data.reports);
+          return `<option value="${i}">Calls In ${year}</option>`;
+        });
+      }
+
+      if (!options) return;
+
+      const dateUnitSelectElement = this.generateDateUnitSelectElement(className, options);
+      container.lastElementChild.replaceWith(dateUnitSelectElement);
+    })
+    
+    this.dateUnitSelectElements = this.initializeAllDateUnitSelects();
+    this.insightReportsToday.textContent = `${stats.reportsToday}`.escapeHTML()
     this.insightReportsCount.textContent = `${stats.reportsCount}`.escapeHTML();
 
     // Assigned to users
@@ -222,17 +287,42 @@ class DashboardView extends View {
     });
   }
 
-  tables() {}
+  addHandlerWeekSelectOnChange(handler) {
+    const byWeek = this.dateUnitSelectElements.get("reports-by-week-select");
+    byWeek.addEventListener("change", (e) => {
+      console.log(e.target.value);
 
-  formatMonth(month) {
-    return this.monthFormatter.format(
-      new Date(this.date.getFullYear(), Number(month), this.date.getDate())
-    );
+      const data = handler(e.target.value);
+      byWeek.previousElementSibling.textContent =
+        `${data.reports}`.escapeHTML();
+    });
+  }
+
+  addHandlerMonthSelectOnChange(handler) {
+    const byMonth = this.dateUnitSelectElements.get("reports-by-month-select");
+    byMonth.addEventListener("change", (e) => {
+      console.log(e.target.value);
+
+      const data = handler(e.target.value);
+      byMonth.previousElementSibling.textContent =
+        `${data.reports}`.escapeHTML();
+    });
+  }
+
+  addHandlerYearSelectOnChange(handler) {
+    const byYear = this.dateUnitSelectElements.get("reports-by-year-select");
+    byYear.addEventListener("change", (e) => {
+      console.log(e.target.value);
+
+      const data = handler(e.target.value);
+      byYear.previousElementSibling.textContent =
+        `${data.reports}`.escapeHTML();
+    });
   }
 
   addHandlerPieChartSelectOnChange(handler) {
-    this.pieChartSelectEl.addEventListener("change", (e) => {
-      const parentEl = this.pieChartSelectEl.parentElement.parentElement;
+    this.pieChartSelectElement.addEventListener("change", (e) => {
+      const parentEl = this.pieChartSelectElement.parentElement.parentElement;
 
       const canvas = document.createElement("canvas");
       canvas.setAttribute("id", "pie-chart");
@@ -245,8 +335,8 @@ class DashboardView extends View {
   }
 
   addHandlerLineChartSelectOnChange(handler) {
-    this.lineChartSelectEl.addEventListener("change", (e) => {
-      const parentEl = this.lineChartSelectEl.parentElement.parentElement;
+    this.lineChartSelectElement.addEventListener("change", (e) => {
+      const parentEl = this.lineChartSelectElement.parentElement.parentElement;
 
       const canvas = document.createElement("canvas");
       canvas.setAttribute("id", "line-chart");
