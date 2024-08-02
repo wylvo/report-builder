@@ -14,6 +14,7 @@ import globalErrorHandler from "./errors/error.controller.js";
 import GlobalError from "./errors/globalError.js";
 import * as auth from "./auth/auth.controller.js";
 import { viewRouter } from "./views/view.router.js";
+import responseInterceptor from "./responseInterceptor/responseInterceptor.js";
 
 const app = express();
 const __dirname = path.resolve();
@@ -50,6 +51,9 @@ app.use(cookieParser());
 
 // Format JSON responses as text with 2 indented spaces
 app.set("json spaces", 2);
+
+// Intercept all request responses for logging purposes
+app.use(responseInterceptor);
 
 app.use("/", viewRouter);
 app.use("/api/v1", routerV1);
