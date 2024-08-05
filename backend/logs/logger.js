@@ -3,7 +3,7 @@ import { randomBytes } from "crypto";
 import winston from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 
-const { combine, timestamp, json, printf } = winston.format;
+const { label, colorize, combine, timestamp, json, printf } = winston.format;
 const timestampFormat = "MMM-DD-YYYY HH:mm:ss";
 
 const appVersion = process.env.npm_package_version;
@@ -32,9 +32,6 @@ export const httpLogger = winston.createLogger({
     })
   ),
   transports: [
-    // log to console
-    new winston.transports.Console(),
-
     // log to file, but rotate daily
     new DailyRotateFile({
       filename: "backend/logs/application-logs-%DATE%.log", // file name includes current date
@@ -44,4 +41,18 @@ export const httpLogger = winston.createLogger({
       maxFiles: "14d", // max files
     }),
   ],
+});
+
+// Logger for CLI outputs
+export const cliLogger = winston.createLogger({
+  format: combine(
+    label({ label: appVersion }),
+    timestamp({ format: timestampFormat }),
+    colorize({ level: true }),
+    printf(
+      ({ level, message, label, timestamp }) =>
+        `[${timestamp}][${level}] (${label}): ${message}`
+    )
+  ),
+  transports: [new winston.transports.Console()],
 });

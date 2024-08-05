@@ -2,6 +2,7 @@ import "dotenv/config";
 
 import config from "./config/app.config.js";
 import * as dbConfig from "./config/db.config.js";
+import { cliLogger, httpLogger } from "./logs/logger.js";
 
 process.on("uncaughtException", (err) => {
   console.error("UNHANDLED EXCEPTION...");
@@ -13,18 +14,25 @@ process.on("uncaughtException", (err) => {
 import app from "./app.js";
 import * as formData from "./api/v1/formData/formData.controller.js";
 
-dbConfig.connectToDB().then(() => formData.updateFormDataConfig());
-
 const server = app.listen(config.port, () =>
-  console.log(
+  cliLogger.error(
     `Server listening on port ${config.port} at: http://localhost:${config.port}`
   )
 );
 
+dbConfig.connectToDB().then(() => formData.updateFormDataConfig());
+
 process.on("unhandledRejection", (err) => {
-  console.error("UNHANDLED REJECTION...");
-  console.error(err.name, err.message);
-  console.error(err.stack);
+  cliLogger.error("Server startup failed!");
+  httpLogger.error({
+    error: {
+      name: "Internal Server Error",
+      statusCode: 500,
+      error: err.name,
+      message: err.message,
+      stack: err.stack,
+    },
+  });
 
   server.close(() => {
     process.exit(1);

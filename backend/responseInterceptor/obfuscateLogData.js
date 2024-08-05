@@ -1,7 +1,6 @@
-const sensitiveKeysList = Object.values({
-  passwordConfirmation: "passwordConfirmation",
-  password: "password",
-});
+import config from "../config/app.config.js";
+
+const sensitiveKeys = Object.values(config.request.sensitiveKeys);
 
 // Used to obfuscate senstitive information from logs, such as passwords
 const obfuscateLogData = (data) => {
@@ -11,8 +10,8 @@ const obfuscateLogData = (data) => {
     const obfuscatedData = {};
 
     for (const key in data) {
-      // replace password with *
-      if (sensitiveKeysList.includes(key)) obfuscatedData[key] = "*****";
+      // Replace sensitive keys (such as passwords) with *
+      if (sensitiveKeys.includes(key)) obfuscatedData[key] = "*****";
       // Recursively redact sensitive keys within nested objects
       else obfuscatedData[key] = obfuscateLogData(data[key]);
     }

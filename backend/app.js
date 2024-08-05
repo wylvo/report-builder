@@ -52,7 +52,7 @@ app.use(cookieParser());
 // Format JSON responses as text with 2 indented spaces
 app.set("json spaces", 2);
 
-// Intercept all request responses for logging purposes
+// Intercept all request & responses for logging purposes
 app.use(responseInterceptor);
 
 app.use("/", viewRouter);

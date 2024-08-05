@@ -35,6 +35,10 @@ const config = {
     import: {
       reportCountLimit: 500, // 1 report is around 3 800 bytes. 3 800 bytes * 500 reports = 1,900,000 bytes or 1.9 MB
     },
+    sensitiveKeys: {
+      passwordConfirmation: "passwordConfirmation",
+      password: "password",
+    },
   },
   validation: {
     selects: {

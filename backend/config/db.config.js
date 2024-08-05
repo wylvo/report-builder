@@ -1,5 +1,7 @@
 import sql from "mssql/msnodesqlv8.js";
+
 import GlobalError from "../errors/globalError.js";
+import { cliLogger } from "../logs/logger.js";
 
 const dbServer =
   process.env.DB_PORT !== "" && process.env.DB_SERVER.includes("\\")
@@ -46,17 +48,17 @@ if (process.env.DB_AUTH_TYPE.toUpperCase() === "WINDOWS")
 export const connectToDB = async () => {
   const pool = await new sql.ConnectionPool(dbConfig).connect();
   if (pool.connected) {
-    console.log("MS SQL Server connection successful!");
-    console.log("Pool max size:", pool.pool.max);
+    cliLogger.info("MS SQL Server connection successful!");
+    cliLogger.info(`Pool max size: ${pool.pool.max}`);
     mssqlPool.push(pool);
 
-    console.time("Pool warmed in");
     await Promise.all(
       Array.from(new Array(pool.pool.max)).map(() =>
         pool.request().query("SELECT 1")
       )
     );
-    console.timeEnd("Pool warmed in");
+
+    cliLogger.info("Pool warmed");
   }
 };
 
