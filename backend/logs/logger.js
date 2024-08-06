@@ -1,10 +1,10 @@
 import { randomBytes } from "crypto";
 
-import winston from "winston";
+import winston, { format } from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 
-const { label, colorize, combine, timestamp, json, printf } = winston.format;
-const timestampFormat = "MMM-DD-YYYY HH:mm:ss";
+const { label, colorize, combine, timestamp, json, printf } = format;
+const timestampFormat = "MMM-DD-YYYY HH:mm:ss.SSS";
 
 const appVersion = process.env.npm_package_version;
 const generateLogId = () => randomBytes(16).toString("hex");
@@ -34,7 +34,7 @@ export const httpLogger = winston.createLogger({
   transports: [
     // log to file, but rotate daily
     new DailyRotateFile({
-      filename: "backend/logs/application-logs-%DATE%.log", // file name includes current date
+      filename: "backend/logs/server-logs-%DATE%.log", // file name includes current date
       datePattern: "MMMM-DD-YYYY",
       zippedArchive: false, // zip logs true/false
       maxSize: "20m", // rotate if file size exceeds 20 MB
@@ -46,12 +46,16 @@ export const httpLogger = winston.createLogger({
 // Logger for CLI outputs
 export const cliLogger = winston.createLogger({
   format: combine(
+    format((info) => {
+      info.level = info.level.toUpperCase();
+      return info;
+    })(),
     label({ label: appVersion }),
     timestamp({ format: timestampFormat }),
     colorize({ level: true }),
     printf(
       ({ level, message, label, timestamp }) =>
-        `[${timestamp}][${level}] (${label}): ${message}`
+        `[${timestamp}][${level}][v${label}]: ${message}`
     )
   ),
   transports: [new winston.transports.Console()],

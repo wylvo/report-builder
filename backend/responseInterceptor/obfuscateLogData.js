@@ -1,4 +1,4 @@
-import config from "../config/app.config.js";
+import config from "../config/server.config.js";
 
 const sensitiveKeys = Object.values(config.request.sensitiveKeys);
 

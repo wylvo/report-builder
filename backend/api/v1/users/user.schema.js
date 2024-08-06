@@ -1,5 +1,5 @@
 import { Users } from "./user.model.js";
-import config from "../../../config/app.config.js";
+import config from "../../../config/server.config.js";
 
 export default {
   // VALIDATION TO CREATE A USER

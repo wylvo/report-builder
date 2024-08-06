@@ -3,9 +3,9 @@ import { checkSchema } from "express-validator";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
+import config from "../config/server.config.js";
 import { Users } from "../api/v1/users/user.model.js";
 import { validateBody } from "../validation/validation.js";
-import config from "../config/app.config.js";
 import catchAsync from "../errors/catchAsync.js";
 import GlobalError from "../errors/globalError.js";
 import { filterUserData } from "../api/v1/users/user.controller.js";

@@ -12,18 +12,22 @@ const responseInterceptor = (req, res, next) => {
   let responseSent = false;
 
   // Override the response method
-  res.send = function (body) {
+  res.send = function (responseBody) {
     if (!responseSent) {
+      
+      const parsedBody = JSON.parse(responseBody);
+
       if (res.statusCode < 400)
-        httpLogger.info("", formatHTTPResponse(req, res, body, requestStartTime));
-      else httpLogger.error(body.message, formatHTTPResponse(req, res, body, requestStartTime));
+        httpLogger.info(parsedBody.status, formatHTTPResponse(req, res, responseBody, requestStartTime));
+      else
+        httpLogger.error(parsedBody.message, formatHTTPResponse(req, res, responseBody, requestStartTime));
       
 
       responseSent = true;
     }
 
     // Call the original response method
-    return originalSend.call(this, body);
+    return originalSend.call(this, responseBody);
   };
 
   // Continue processing the request

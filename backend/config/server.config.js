@@ -1,29 +1,9 @@
-import path from "path";
-import { readFile } from "fs/promises";
-
+// Instanciating Express' Server & Server Port
 let port = process.env.SERVER_PORT;
 
-// Instanciating Express' Server & Server Port
 if (process.env.NODE_ENV === "development") port = 5049;
 
-// Read package.json File
-const pjsonFile = async () =>
-  readFile(new URL("../../package.json", import.meta.url));
-const pjsonVersion = JSON.parse(await pjsonFile()).version;
-
-// Set Local Absolute Paths
-const __dirname = path.resolve();
-
-// Backup file
-const backupFileName = `backup_${port}_v${pjsonVersion}.json`;
-const backupFilePath = path.join(__dirname, `/frontend/${backupFileName}`);
-
 const config = {
-  backup: {
-    file: {
-      path: backupFilePath,
-    },
-  },
   rateLimter: {
     maxNumberOfRequests: 75, // Max number of requests before a client is restricted to make another request
     windowMilliseconds: 30000, // How long before a client is eligible to make another request in milliseconds
@@ -66,7 +46,7 @@ const config = {
     defaultProfilePicture: "/img/default_profile_picture.jpg",
   },
   port,
-  version: pjsonVersion,
+  version: process.env.npm_package_version,
 };
 
 export default config;

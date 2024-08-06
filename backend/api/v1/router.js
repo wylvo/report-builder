@@ -29,7 +29,7 @@ export { httpLogger } from "../../logs/logger.js";
 export { mssql, mssqlDataTypes } from "../../config/db.config.js";
 export { validateBody } from "../../validation/validation.js";
 export { hashPassword } from "../../auth/auth.controller.js";
-export { default as config } from "../../config/app.config.js";
+export { default as config } from "../../config/server.config.js";
 export { default as dateISO8601 } from "../../date/dateISO8601.js";
 export { default as catchAsync } from "../../errors/catchAsync.js";
 export { default as GlobalError } from "../../errors/globalError.js";
