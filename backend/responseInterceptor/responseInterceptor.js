@@ -1,7 +1,7 @@
+import validator from "validator";
 import { httpLogger } from "../logs/logger.js";
 import formatHTTPResponse from "./formatHTTPResponse.js";
 
-// prettier-ignore
 const responseInterceptor = (req, res, next) => {
   // used to calculate time between request and the response
   const requestStartTime = Date.now();
@@ -14,14 +14,19 @@ const responseInterceptor = (req, res, next) => {
   // Override the response method
   res.send = function (responseBody) {
     if (!responseSent) {
-      
-      const parsedBody = JSON.parse(responseBody);
+      let parsedBody;
+      if (validator.isJSON(responseBody)) parsedBody = JSON.parse(responseBody);
 
       if (res.statusCode < 400)
-        httpLogger.info(parsedBody.status, formatHTTPResponse(req, res, responseBody, requestStartTime));
+        httpLogger.info(
+          parsedBody?.status || responseBody,
+          formatHTTPResponse(req, res, responseBody, requestStartTime)
+        );
       else
-        httpLogger.error(parsedBody.message, formatHTTPResponse(req, res, responseBody, requestStartTime));
-      
+        httpLogger.error(
+          parsedBody?.message || responseBody,
+          formatHTTPResponse(req, res, responseBody, requestStartTime)
+        );
 
       responseSent = true;
     }

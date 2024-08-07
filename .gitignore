@@ -6,5 +6,5 @@ backup_5049_v1.1.0-beta.json
 data
 *.sql
 package-lock.json
-backend/logs/*.json
-backend/logs/*.log
+backend/logs/*/*.json
+backend/logs/*/*.log

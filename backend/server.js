@@ -9,25 +9,17 @@ import compression from "compression";
 import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
 
-import { cliLogger, httpLogger } from "./logs/logger.js";
+import {
+  cliLogger,
+  generateLogId,
+  internalServerErrorLog,
+} from "./logs/logger.js";
 
+// prettier-ignore
 process.on("uncaughtException", (err) => {
-  cliLogger.error("Server startup failed!");
-  cliLogger.error(
-    "Uncaught exception. see error logs folder at ./backend/logs/errors for more details"
-  );
-  cliLogger.error(err.stack);
-
-  httpLogger.error("uncaughtException", {
-    error: {
-      name: "Internal Server Error",
-      statusCode: 500,
-      error: err.name,
-      message: err.message,
-      stack: err.stack,
-    },
-  });
-  process.exit(1);
+  const logId = generateLogId();
+  cliLogger.error(`Uncaught exception! See error logs folder for more details [${logId}]`);
+  internalServerErrorLog("Uncaught exception", err, logId);
 });
 
 import config from "./config/server.config.js";
@@ -53,19 +45,6 @@ app.use(express.static(path.join(__dirname, "/frontend/public")));
 // Set security HTTP headers
 // app.use(helmet());
 
-// Development logging
-if (process.env.NODE_ENV === "development") {
-  app.use(morgan("dev"));
-}
-
-// Limit requests to the API
-const limiter = rateLimit({
-  max: config.rateLimter.maxNumberOfRequests,
-  windowMs: config.rateLimter.windowMilliseconds,
-  message: config.rateLimter.message,
-});
-app.use("/api", limiter);
-
 app.use(cors());
 app.use(compression());
 app.use(
@@ -76,8 +55,25 @@ app.use(cookieParser());
 // Format JSON responses as text with 2 indented spaces
 app.set("json spaces", 2);
 
-// Intercept all request & responses for logging purposes
+// Development logging
+if (process.env.NODE_ENV === "development") {
+  app.use(
+    morgan("dev", {
+      stream: { write: (message) => cliLogger.info(message.trim()) },
+    })
+  );
+}
+
+// Intercept all requests & responses for logging purposes
 app.use(responseInterceptor);
+
+// Limit requests to the API
+const limiter = rateLimit({
+  max: config.rateLimter.maxNumberOfRequests,
+  windowMs: config.rateLimter.windowMilliseconds,
+  message: config.rateLimter.message,
+});
+app.use("/api", limiter);
 
 app.use("/", viewRouter);
 app.use("/api/v1", routerV1);
@@ -90,44 +86,34 @@ app.all("*", (req, res, next) => {
 
 app.use(globalErrorHandler);
 
-// Start server
-const server = app.listen(config.port, () => {
-  cliLogger.info(
-    `Server listening on port ${config.port} at: http://localhost:${config.port}`
-  );
+cliLogger.info("Attempting to connect to the database...");
 
-  cliLogger.info("Attempting to connect to the database...");
-
-  // Connect to database then update form data config
-  dbConfig.connectToDB().then(() => {
+// Connect to database then update form data config, finally start the server
+// prettier-ignore
+dbConfig
+  .connectToDB()
+  .then(() => {
     cliLogger.info("Updating form data config...");
-
     formData.updateFormDataConfig();
-
     cliLogger.info("Form data config updated!");
-  });
-});
+    cliLogger.info("Starting server...");
 
+    app.listen(config.port, () => 
+      cliLogger.info(`Server listening on port ${config.port} at: http://localhost:${config.port}`));
+  })
+  .catch((err) => {
+    const logId = generateLogId();
+    cliLogger.error(`${err.name}. See error logs folder for more details [${logId}]`);
+    internalServerErrorLog(err.name, err, logId);
+  });
+
+// prettier-ignore
 process.on("unhandledRejection", (err) => {
-  cliLogger.error("Server startup failed!");
-  cliLogger.error(
-    "Unhandled rejection see error logs folder at ./backend/logs/errors for more details"
-  );
-  cliLogger.error(err.stack);
+  const logId = generateLogId();
+  cliLogger.error(`Unhandled rejection! See error logs folder for more details [${logId}]`);
+  internalServerErrorLog("Unhandled rejection", err, logId);
 
-  httpLogger.error("unhandledRejection", {
-    error: {
-      name: "Internal Server Error",
-      statusCode: 500,
-      error: err.name,
-      message: err.message,
-      stack: err.stack,
-    },
-  });
-
-  server.close(() => {
-    process.exit(1);
-  });
+  process.exit(1);
 });
 
 export default app;

@@ -24,7 +24,7 @@ const handlePayloadTooLargeError = () =>
   new GlobalError("Your request payload is too large.", 413);
 
 const sendErrorDev = (err, req, res) => {
-  console.error("ERROR 💥", err);
+  // console.error("ERROR 💥", err);
 
   // API error
   if (
@@ -50,7 +50,7 @@ const sendErrorDev = (err, req, res) => {
 };
 
 const sendErrorProd = (err, req, res) => {
-  console.error("ERROR 💥", err);
+  // console.error("ERROR 💥", err);
 
   // API error
   if (
@@ -81,7 +81,7 @@ const sendErrorProd = (err, req, res) => {
   // Render error to frontend
   // Trusted error: send message to client
   if (err.isTrusted) {
-    console.error(err);
+    // console.error(err);
     return res.status(err.statusCode).render("error", {
       title: "Something went wrong!",
       statusCode: err.statusCode,

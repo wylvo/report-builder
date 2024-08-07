@@ -23,7 +23,7 @@ export const dbConfig = {
     trustServerCertificate: true,
     parseJSON: true,
     options: {
-      // encrypt: true, // for Azure SQL
+      encrypt: false, // for Azure SQL
       trustedConnection: false, // use Windows authentication
     },
     pool: {
@@ -48,7 +48,9 @@ export const dbConfig = {
     if (pool.connected) {
       mssqlPool.push(pool);
       cliLogger.info("MS SQL Server connection successful!");
-      cliLogger.info(`Connection pool max size: ${pool.pool.max}`);
+      cliLogger.info(
+        `Connection pool max size: ${pool.pool.max}. Warming pool...`
+      );
 
       const startTime = Date.now();
       await Promise.all(
@@ -66,6 +68,10 @@ export const dbConfig = {
 // For Windows authentication to trusted connection to true
 if (process.env.DB_AUTH_TYPE.toUpperCase() === "WINDOWS")
   dbConfig.connection.options.trustedConnection = true;
+
+// For Azure SQL set encrypt to true
+if (process.env.DB_ENV.toUpperCase() === "AZURE")
+  dbConfig.connection.options.encrypt = true;
 
 export const mssqlPool = [];
 
