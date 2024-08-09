@@ -26,6 +26,13 @@ export const getAccount = (_, res) => {
   });
 };
 
+export const getEvents = (_, res) => {
+  res.status(200).render("events", {
+    title: "Events",
+    scriptPath: "/js/events/eventController.js",
+  });
+};
+
 export const getSignInForm = (_, res) => {
   res.status(200).render("auth", {
     title: "Sign In",

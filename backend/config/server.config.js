@@ -5,7 +5,7 @@ if (process.env.NODE_ENV === "development") port = 5049;
 
 const config = {
   rateLimter: {
-    maxNumberOfRequests: 1, // Max number of requests before a client is restricted to make another request
+    maxNumberOfRequests: 75, // Max number of requests before a client is restricted to make another request
     windowMilliseconds: 30000, // How long before a client is eligible to make another request in milliseconds
     message: "Too many request from this IP, please try again later!",
   },

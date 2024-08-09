@@ -9,6 +9,7 @@ router.get("/", auth.protect, views.getDashboard);
 router.get("/reports", auth.protect, views.getReports);
 router.get("/users", auth.protect, views.getUsers);
 router.get("/account", auth.protect, views.getAccount);
+router.get("/events", auth.protect, views.getEvents);
 
 // Render protected template view but without rendering error templates
 router.get("/signin", auth.isLoggedIn, views.getSignInForm);

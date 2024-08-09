@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <%- include('./partials/head.ejs') %>
+  </head>
+  <body>
+    <aside class="sidebar active">
+      <%- include('./partials/sidebar.ejs') %>
+    </aside>
+
+    <%- include('./partials/navbar.ejs') %>
+
+    <main class="main">
+      <div class="content">
+        <div class="header">
+          <div class="left">
+            <h1>Events</h1>
+          </div>
+        </div>
+
+        <section class="section-col">
+          <!-- TABLE -->
+          <div class="container table-ctn activity-log">
+            <div class="tabs-forms"></div>
+
+            <div class="table-header">
+              <form class="table-filter">
+                <div>
+                  <label for="table-filter-by">Filter By:</label>
+                  <select
+                    id="table-filter-by"
+                    name="table-filter-by"
+                    class="table-filter-by"
+                  >
+                    <option selected value="incident.title">Title</option>
+                    <option value="id">ID</option>
+                    <option value="username">Username</option>
+                    <option value="method">Method</option>
+                    <option value="statusCode">Status code</option>
+                    <option value="url">Url</option>
+                  </select>
+                </div>
+                <div class="table-filter-search-ctn">
+                  <label for="table-filter-search">Filter: </label>
+                  <input
+                    type="search"
+                    name="table-filter-search"
+                    id="table-filter-search"
+                    class="table-filter-search"
+                    placeholder="Search..."
+                  />
+                </div>
+              </form>
+              <div class="table-view">
+                <div class="table-meta-data">
+                  <p>
+                    Total Activity Logs:
+                    <strong><span class="total-count">0</span></strong>
+                  </p>
+                  <p>
+                    Total Results :
+                    <strong><span class="results-count">0</span></strong>
+                  </p>
+                </div>
+                <div class="table-pagination"></div>
+              </div>
+            </div>
+            <div class="table-wrapper">
+              <table class="table-content">
+                <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>Username</th>
+                    <th>Method</th>
+                    <th>Status code</th>
+                    <th>Url</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="table-row">
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                      <div class="icons icon-spinner alt">
+                        <svg>
+                          <g class="spinner">
+                            <use href="/img/icons.svg#icon-loader"></use>
+                          </g>
+                        </svg>
+                      </div>
+                    </td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="table-footer">
+              <div class="table-rows">
+                <div>
+                  <label for="table-rows-per-page">Rows per page:</label>
+                  <select
+                    id="table-rows-per-page"
+                    name="table-rows-per-page"
+                    class="table-rows-per-page"
+                  >
+                    <option selected value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="250">250</option>
+                    <option value="500">500</option>
+                  </select>
+                </div>
+              </div>
+              <div class="table-pagination"></div>
+            </div>
+          </div>
+
+          <!-- TABLE -->
+          <div class="container table-ctn authentication-log">
+            <div class="tabs-forms"></div>
+
+            <div class="table-header">
+              <form class="table-filter">
+                <div>
+                  <label for="table-filter-by">Filter By:</label>
+                  <select
+                    id="table-filter-by"
+                    name="table-filter-by"
+                    class="table-filter-by"
+                  >
+                    <option selected value="incident.title">Title</option>
+                    <option value="id">ID</option>
+                    <option value="email">Email</option>
+                    <option value="remoteIp">Remote IP</option>
+                    <option value="userAgent">User-agent</option>
+                    <option value="isSuccessful">Successful</option>
+                  </select>
+                </div>
+                <div class="table-filter-search-ctn">
+                  <label for="table-filter-search">Filter: </label>
+                  <input
+                    type="search"
+                    name="table-filter-search"
+                    id="table-filter-search"
+                    class="table-filter-search"
+                    placeholder="Search..."
+                  />
+                </div>
+              </form>
+              <div class="table-view">
+                <div class="table-meta-data">
+                  <p>
+                    Total Reports:
+                    <strong><span class="total-count">0</span></strong>
+                  </p>
+                  <p>
+                    Total Results :
+                    <strong><span class="results-count">0</span></strong>
+                  </p>
+                </div>
+                <div class="table-pagination"></div>
+              </div>
+            </div>
+            <div class="table-wrapper">
+              <table class="table-content">
+                <thead>
+                  <tr>
+                    <th>Email</th>
+                    <th>Remote IP</th>
+                    <th>User-agent</th>
+                    <th>Successful</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="table-row">
+                    <td></td>
+                    <td></td>
+                    <td>
+                      <div class="icons icon-spinner alt">
+                        <svg>
+                          <g class="spinner">
+                            <use href="/img/icons.svg#icon-loader"></use>
+                          </g>
+                        </svg>
+                      </div>
+                    </td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="table-footer">
+              <div class="table-rows">
+                <div>
+                  <label for="table-rows-per-page">Rows per page:</label>
+                  <select
+                    id="table-rows-per-page"
+                    name="table-rows-per-page"
+                    class="table-rows-per-page"
+                  >
+                    <option selected value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="250">250</option>
+                    <option value="500">500</option>
+                  </select>
+                </div>
+              </div>
+              <div class="table-pagination"></div>
+            </div>
+          </div>
+        </section>
+
+        <%- include('./partials/notifications.ejs') %> <%-
+        include('./partials/modal.ejs') %>
+      </div>
+    </main>
+  </body>
+</html>

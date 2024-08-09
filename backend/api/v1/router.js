@@ -9,6 +9,8 @@ import { formDataRouter } from "./formData/formData.router.js";
 import { storeRouter } from "./stores/store.router.js";
 import { districtManagerRouter } from "./districtManagers/districtManager.router.js";
 import { statsRouter } from "./stats/stats.router.js";
+import { activityLogRouter } from "./activityLog/activityLog.router.js";
+import { authenticationLogRouter } from "./authenticationLog/authenticationLog.router.js";
 
 const router = express.Router();
 
@@ -24,6 +26,8 @@ router.use("/formData", formDataRouter); // - /api/v1/formData
 router.use("/stores", storeRouter); // - /api/v1/stores
 router.use("/districtManagers", districtManagerRouter); // - /api/v1/districtManagers
 router.use("/stats", statsRouter); // - /api/v1/stats
+router.use("/activityLog", activityLogRouter); // - /api/v1/activityLog
+router.use("/authenticationLog", authenticationLogRouter); // - /api/v1/authenticationLog
 
 export { httpLogger } from "../../logs/logger.js";
 export { mssql, mssqlDataTypes } from "../../config/db.config.js";

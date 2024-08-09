@@ -183,7 +183,6 @@ export default {
     version: {
       url: "/api/v1/version",
 
-      // Get app version
       async getVersion() {
         return (model.state.version = (await fetchJSON(this.url)).data.version);
       },
@@ -201,7 +200,6 @@ export default {
     formData: {
       url: "/api/v1/formData",
 
-      // Get Form Data
       async synchonizeFormData() {
         return await fetchJSON(this.url);
       },
@@ -210,9 +208,30 @@ export default {
     stats: {
       url: "/api/v1/stats",
 
-      // Get all stats
       async getStats() {
         return await fetchJSON(this.url);
+      },
+    },
+
+    activityLog: {
+      url: "/api/v1/activityLog",
+
+      // prettier-ignore
+      async getActivityLogs(pageNumber = 1, rowsPerPage = 200) {
+        return await fetchJSON(`${this.url}?page=${pageNumber}&rows=${rowsPerPage}`);
+      },
+
+      // prettier-ignore
+      async getActivityLogsFrontend(pageNumber = 1, rowsPerPage = 200) {
+        return await fetchJSON(`${this.url}/frontend?page=${pageNumber}&rows=${rowsPerPage}`);
+      },
+    },
+    authenticationLog: {
+      url: "/api/v1/authenticationLog",
+
+      // prettier-ignore
+      async getAuthenticationLogs(pageNumber = 1, rowsPerPage = 200) {
+        return await fetchJSON(`${this.url}?page=${pageNumber}&rows=${rowsPerPage}`);
       },
     },
   },
