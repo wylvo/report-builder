@@ -2,6 +2,7 @@ import * as model from "./dashboardModel.js";
 
 import notificationsView from "../_views/notificationsView.js";
 import dashboardView from "./views/dashboardView.js";
+import dashboardActivityTableView from "./views/dashboardActivityTableView.js";
 import dashboardReportTableView from "./views/dashboardReportTableView.js";
 
 // prettier-ignore
@@ -92,6 +93,7 @@ const init = async function () {
   try {
     await model.init();
 
+    dashboardActivityTableView.users = model.state.usersFrontend;
     dashboardReportTableView.users = model.state.usersFrontend;
 
     if (!window?.Chart)
@@ -111,6 +113,7 @@ const init = async function () {
       dashboardView.lineChartCanvas()
     );
 
+    dashboardActivityTableView.renderAll(model.state.stats.recentActivityLog);
     dashboardReportTableView.renderAll(
       model.state.stats.reportsRecentlyCreated.slice(0, 7)
     );

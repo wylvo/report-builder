@@ -14,4 +14,4 @@ router.get("/events", auth.protect, views.getEvents);
 // Render protected template view but without rendering error templates
 router.get("/signin", auth.isLoggedIn, views.getSignInForm);
 
-export { router as viewRouter };
+export default router;

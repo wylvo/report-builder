@@ -18,15 +18,15 @@ import {
 // prettier-ignore
 process.on("uncaughtException", (err) => {
   const logId = generateLogId();
-  cliLogger.error(`Uncaught exception! See error logs folder for more details [${logId}]`);
+  cliLogger.error(`[${logId}] Uncaught exception! ${err.name}: ${err.message}. See error logs folder for more details`);
   internalServerErrorLog("Uncaught exception", err, logId);
 });
 
 import config from "./config/server.config.js";
 import dbConfig from "./config/db.config.js";
-import routerV1 from "./api/v1/router.js";
-import { viewRouter } from "./views/view.router.js";
-import * as auth from "./auth/auth.controller.js";
+import apiV1Router from "./api/v1/router.js";
+import authRouter from "./auth/auth.router.js";
+import viewRouter from "./views/view.router.js";
 import * as formData from "./api/v1/formData/formData.controller.js";
 import globalErrorHandler from "./errors/error.controller.js";
 import GlobalError from "./errors/globalError.js";
@@ -65,7 +65,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 // Intercept all requests & responses for logging purposes
-app.use(responseInterceptor);
+app.use(responseInterceptor.all);
 
 // Limit requests to the API
 const limiter = rateLimit({
@@ -76,9 +76,8 @@ const limiter = rateLimit({
 app.use("/api", limiter);
 
 app.use("/", viewRouter);
-app.use("/api/v1", routerV1);
-app.post("/signin", auth.validateSignIn, auth.signIn);
-app.post("/signout", auth.signOut);
+app.use("/auth", authRouter);
+app.use("/api/v1", apiV1Router);
 
 app.all("*", (req, res, next) => {
   next(new GlobalError(`Can't find ${req.originalUrl} on this server!`, 404));
@@ -110,7 +109,7 @@ dbConfig
 // prettier-ignore
 process.on("unhandledRejection", (err) => {
   const logId = generateLogId();
-  cliLogger.error(`Unhandled rejection! See error logs folder for more details [${logId}]`);
+  cliLogger.error(`[${logId}] Unhandled rejection! ${err.name}: ${err.message}. See error logs folder for more details`);
   internalServerErrorLog("Unhandled rejection", err, logId);
 
   process.exit(1);

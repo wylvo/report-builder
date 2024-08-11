@@ -10,122 +10,43 @@ class DashboardActivityTableView extends TableView {
 
   _generateEmptyRowHtml() {
     return `
-      <tr class="table-row">
-        <td data-cell="TECH">
-          <div>N/A</div>
-        </td>
-        <td data-cell="Call Date">
-          <div>-</div>
-        </td>
-        <td data-cell="Title">
-          <div>-</div>
-        </td>      
-        <td data-cell="Status">
-          <div>-</div>
-        </td>
-        <td data-cell="Assigned To">
-          <div>-</div>
-        </td>        
-        <td data-cell="Store">
-          <div>-</div>
-        </td>
-        <td data-cell="Employee">
-          <div>-</div>
-        </td>
-        <td data-cell="Procedural">
-          <div>-</div>
-        </td>
-        <td data-cell="Type">
-          <div>-</div>
-        </td>
-        <td data-cell="Actions">
-          <div></div>
-        </td>
+      <tr>
+        <td data-cell="User">-</td>
+        <td data-cell="Timestamp">-</td>
+        <td data-cell="Method">-</td>
+        <td data-cell="URL">-</td>
       </tr>
     `;
   }
 
   // prettier-ignore
-  _generatetHtml(report) {
-    const date = new Date(`${report.call.date} ${report.call.time}`).toDateString();
-    const time = report.call.dateTime.split(" ").slice(1, 3).join(" ");
-    const formattedDate = `${date}, ${time}`;
-    const status = {
-      class: report.call.status.includes("In Progress") ? "warning" : "good",
-      text: report.call.status
-    }
-    const isProcedural = report.incident.isProcedural
-      ? { class: `class="attention"`, text: "Yes" }
-      : { class: "", text: "No" };
+  _generatetHtml(activityLog) {
+    const operation =
+      activityLog.method === "DELETE"
+        ? { class: "attention", text: "DELETE" }
+        : activityLog.method === "PUT"
+        ? { class: "warning", text: "UPDATE" }
+        : activityLog.method === "POST"
+        ? { class: "good", text: "CREATE" }
+        : { class: "", text: activityLog.method };
 
-
-    const createdBy = this.users.find((user) => user.username === report.createdBy)
-    const profilePicture = createdBy?.profilePictureURI
-      ? createdBy.profilePictureURI
+    const user = this.users.find((user) => user.username === activityLog.username)
+    const userProfilePicture = user?.profilePictureURI
+      ? user.profilePictureURI
       : DEFAULT_PROFILE_PICTURE;
 
-    const isOnCallClass = report.isOnCall ? "on-call" : "";
-    const assignedTo = this.users.find((user) => user.username === report.assignedTo)
-
-    const storeNumbers =
-      this.formatArray(report.store.numbers, this.#tableCellMaxCharacterLength);
-    const incidentTypes =
-      this.formatArray(report.incident.types, this.#tableCellMaxCharacterLength);
-
-    const buttons = !report.isDeleted 
-      ? `
-        <div>
-          <button ${report.isWebhookSent ? "disabled" : ""} class="btn teams icons">
-            <svg>
-              <use href="/img/icons.svg#icon-ms-teams"></use>
-            </svg>
-          </button>
-          <button class="btn delete icons">
-            <svg>
-              <use href="/img/icons.svg#icon-delete"></use>
-            </svg>
-          </button>
-        </div>
-      `
-      :`
-        <div>
-          <button class="btn undo icons">
-            <svg>
-              <use href="/img/icons.svg#icon-undo"></use>
-            </svg>
-          </button>
-        </div>
-      `;
-
     return `
-      <tr class="table-row">
-        <td data-cell="Created By">
-          <div>
-            <picture class="${isOnCallClass}">
-              <img class="table-row-cell-pp" src="${profilePicture}" alt="Profile picture of ${createdBy?.fullName || "N/A"}" />
-            </picture>
-          </div>
+      <tr>
+        <td data-cell="User">
+          <img class="table-row-cell-pp" src="${userProfilePicture}" alt="Profile picture of ${user?.fullName || "N/A"}" />
+          <p>${user?.fullName}</p>
         </td>
-        <td data-cell="Date"><div>${formattedDate}</div></td>
-        <td data-cell="Title">
-          <div><a class="table-row-link" href="#${report.id}">${report.incident.title}</a></div>
+        <td data-cell="Timestamp"><span>${this.timeAgo(activityLog.createdAt)}</span></td>
+        <td data-cell="Method">
+          <span class="status ${operation.class}">${operation.text}</span>
         </td>
-        <td data-cell="Status">
-          <div><p class="${status.class}">${status.text}</p></div>
-        </td>
-        <td data-cell="Assigned To">
-          <div>
-            ${assignedTo?.fullName || "N/A"}
-          </div>
-        </td>        
-        <td data-cell="Store"><div>${storeNumbers}</div></td>
-        <td data-cell="Employee"><div>${report.store.employee.name}</div></td>
-        <td data-cell="Type"><div>${incidentTypes}</div></td>
-        <td data-cell="Procedural">
-          <div><p ${isProcedural.class}>${isProcedural.text}</p></div>
-        </td>
-        <td data-cell="Actions" data-id="${report.id}" class="table-row-buttons">
-            ${buttons}
+        <td data-cell="URL">
+          <span>${activityLog.url}</span>
         </td>
       </tr>
       `;

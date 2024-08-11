@@ -30,12 +30,17 @@ export const AuthenticationLog = {
   },
 
   // CREATE A NEW AUTHENTICATION LOG ENTRY
-  async create(body) {
-    return await mssql()
-      .request.input("email", VARCHAR, body.email)
-      .input("remoteIp", VARCHAR, body.remoteIp)
-      .input("userAgent", NVARCHAR, body.userAgent)
-      .input("isSuccessful", BIT, body.isSuccessful)
-      .execute("api_v1_authenticatonLog_create");
+  create(req, isSuccessful) {
+    const email = req.body.email;
+    const clientIp =
+      req?.headers["x-forwarded-for"] ?? req?.socket.remoteAddress;
+    const userAgent = req?.headers["user-agent"];
+
+    return mssql()
+      .request.input("email", VARCHAR, email)
+      .input("clientIp", VARCHAR, clientIp)
+      .input("userAgent", NVARCHAR, userAgent)
+      .input("isSuccessful", BIT, isSuccessful)
+      .execute("api_v1_authenticationLog_create");
   },
 };

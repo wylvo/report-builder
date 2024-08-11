@@ -1,6 +1,7 @@
 import express from "express";
 
 import * as auth from "../../auth/auth.controller.js";
+import responseInterceptor from "../../responseInterceptor/responseInterceptor.js";
 import { userRouter } from "./users/user.router.js";
 import { reportRouter } from "./reports/report.router.js";
 import { webhookRouter } from "./webhook/webhook.router.js";
@@ -16,6 +17,9 @@ const router = express.Router();
 
 // Protect all routes after this middleware
 router.use(auth.protect);
+
+// Intercept successful API requests for logging purposes
+router.use(responseInterceptor.api);
 
 // Mount all routes. Each route will handle its own sub routes
 router.use("/users", userRouter); // - /api/v1/users

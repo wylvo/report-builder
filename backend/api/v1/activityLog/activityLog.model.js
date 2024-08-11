@@ -34,12 +34,17 @@ export const ActivityLog = {
   },
 
   // CREATE A NEW ACTIVITY LOG ENTRY
-  async create(body) {
-    return await mssql()
-      .request.input("userId", INT, body.userId)
-      .input("method", VARCHAR, body.method)
-      .input("url", NVARCHAR, body.url)
-      .input("statusCode", INT, body.statusCode)
+  create(req, res) {
+    const userId = req.user.id;
+    const method = req.method;
+    const url = `${req.baseUrl}${req.url}`;
+    const statusCode = res.statusCode;
+
+    return mssql()
+      .request.input("userId", INT, userId)
+      .input("method", VARCHAR, method)
+      .input("url", NVARCHAR, url)
+      .input("statusCode", INT, statusCode)
       .execute("api_v1_activityLog_create");
   },
 };

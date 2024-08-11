@@ -11,13 +11,13 @@ class DashboardReportTableView extends TableView {
   _generateEmptyRowHtml() {
     return `
       <tr>
-        <td>-</td>
-        <td>-</td>
-        <td>-</td>
-        <td>-</td>
-        <td>-</td>
-        <td>-</td>
-        <td>-</td>
+        <td data-cell="Created By">-</td>
+        <td data-cell="Timestamp">-</td>
+        <td data-cell="Date">-</td>
+        <td data-cell="Title">-</td>
+        <td data-cell="Status">-</td>
+        <td data-cell="Assigned To">-</td>
+        <td data-cell="Procedural">-</td>
       </tr>
     `;
   }

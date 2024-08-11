@@ -173,12 +173,14 @@ DASHBOARD - Used in:
   font-weight: 700;
 }
 
-.content .analytics-ctn table tr td .status.completed {
+.content .analytics-ctn table tr td .status.completed,
+.content .analytics-ctn table tr td .status.good {
   color: var(--good-on-background);
   background: var(--good-background-color);
 }
 
-.content .analytics-ctn table tr td .status.in-progress {
+.content .analytics-ctn table tr td .status.in-progress,
+.content .analytics-ctn table tr td .status.warning {
   color: var(--warning-on-background);
   background: var(--warning-background-color);
 }

@@ -29,11 +29,11 @@ const fetchJSON = async (url, jsonData = undefined) => {
 export default {
   // Sign in into the api
   signIn: async function (email, password) {
-    return await fetchJSON("/signin", { email, password });
+    return await fetchJSON("/auth/signin", { email, password });
   },
 
   // Sign out of the api
   signOut: async function () {
-    return await fetchJSON("/signout", {});
+    return await fetchJSON("/auth/signout", {});
   },
 };
