@@ -97,7 +97,7 @@ class DashboardView extends View {
       let options;
   
       if (className === "reports-by-week-select") {
-        options = stats.reportsByWeek.map((data, i) => {
+        options = stats.reportsByWeek?.map((data, i) => {
           let week = `Week Of ${String(data.weekStart)}`.escapeHTML();
           if (i === 0) (week = `This Week`), (container.firstElementChild.textContent = data.reports);
           if (i === 1) week = `Last Week`;
@@ -106,7 +106,7 @@ class DashboardView extends View {
       }
 
       if (className === "reports-by-month-select") {
-        options = stats.reportsByMonth.map((data, i) => {
+        options = stats.reportsByMonth?.map((data, i) => {
           let month = `In ${this.formatMonth(data.month)}, ${data.year}`.escapeHTML();
           if (i === 0) (month = `This Month`), (container.firstElementChild.textContent = data.reports);
           if (i === 1) month = `Last Month`;
@@ -115,7 +115,7 @@ class DashboardView extends View {
       }
 
       if (className === "reports-by-year-select") {
-        options = stats.reportsByYear.map((data, i) => {
+        options = stats.reportsByYear?.map((data, i) => {
           let year = String(data.year).escapeHTML()
           if (i === 0) (year = `This Year`), (container.firstElementChild.textContent = data.reports);
           return `<option value="${i}">Calls In ${year}</option>`;
@@ -137,11 +137,11 @@ class DashboardView extends View {
       this.assgignedToUsersCanvas,
       "bar",
       {
-        labels: stats.reportsAssignedToUsers.map((user) => user.fullName.escapeHTML()),
+        labels: stats.reportsAssignedToUsers?.map((user) => user.fullName.escapeHTML()),
         fill: false,
         datasets: [{
           label: "Reports assgined",
-          data: stats.reportsAssignedToUsers.map((user) => `${user.reports}`.escapeHTML()),
+          data: stats.reportsAssignedToUsers?.map((user) => `${user.reports}`.escapeHTML()),
           borderWidth: 1,
           barThickness: 30,
           backgroundColor: this.backgroundColor,
@@ -167,12 +167,12 @@ class DashboardView extends View {
       this.reportsByStoreNumbersCanvas,
       "bar",
       {
-        labels: stats.reportsByStoreNumbers.map((store) => store.number.escapeHTML()),
+        labels: stats.reportsByStoreNumbers?.map((store) => store.number.escapeHTML()),
         fill: false,
         datasets: [
           {
             label: "Reports",
-            data: stats.reportsByStoreNumbers.map((store) => 
+            data: stats.reportsByStoreNumbers?.map((store) => 
               `${store.reports - (store.reportsOnCall + store.reportsProcedural + store.reportsOnCallAndProcedural)}`.escapeHTML()
             ),
             borderWidth: 1,
@@ -180,19 +180,19 @@ class DashboardView extends View {
           },
           {
             label: "Reports On-call",
-            data: stats.reportsByStoreNumbers.map((store) => `${store.reportsOnCall}`.escapeHTML()),
+            data: stats.reportsByStoreNumbers?.map((store) => `${store.reportsOnCall}`.escapeHTML()),
             borderWidth: 1,
             barThickness: 10,
           },
           {
             label: "Reports Procedural",
-            data: stats.reportsByStoreNumbers.map((store) => `${store.reportsProcedural}`.escapeHTML()),
+            data: stats.reportsByStoreNumbers?.map((store) => `${store.reportsProcedural}`.escapeHTML()),
             borderWidth: 1,
             barThickness: 10,
           },
           {
             label: "Reports On-call & Procedural",
-            data: stats.reportsByStoreNumbers.map((store) => `${store.reportsOnCallAndProcedural}`.escapeHTML()),
+            data: stats.reportsByStoreNumbers?.map((store) => `${store.reportsOnCallAndProcedural}`.escapeHTML()),
             borderWidth: 1,
             barThickness: 10,
           }
@@ -227,12 +227,12 @@ class DashboardView extends View {
     new Chart(canvasElement, {
       type: "line",
       data: {
-        labels: labels.map((label) => label.escapeHTML()),
+        labels: labels?.map((label) => label.escapeHTML()),
         fill: false,
         datasets: [
           {
             label: "Reports",
-            data: datasetsData.map((data) =>
+            data: datasetsData?.map((data) =>
               typeof data === "string" ? data.escapeHTML() : data
             ),
             backgroundColor: "#d7e0f8",
@@ -240,7 +240,7 @@ class DashboardView extends View {
           },
           {
             label: "Reports",
-            data: datasetsData.map((data) =>
+            data: datasetsData?.map((data) =>
               typeof data === "string" ? data.escapeHTML() : data
             ),
             type: "bar",
@@ -272,11 +272,11 @@ class DashboardView extends View {
     new Chart(canvasElement, {
       type: "pie",
       data: {
-        labels: labels.map((label) => label.escapeHTML()),
+        labels: labels?.map((label) => label.escapeHTML()),
         datasets: [
           {
             label: "Reports",
-            data: datasetsData.map((data) =>
+            data: datasetsData?.map((data) =>
               typeof data === "string" ? data.escapeHTML() : data
             ),
             backgroundColor: this.backgroundColor,

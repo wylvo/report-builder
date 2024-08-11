@@ -50,6 +50,8 @@ const sortWeekdays = (weekdays, key = "weekday") => {
 // Calculate weekday average
 const calculateWeekdayAverages = () => {
   const reportsByWeekdays = state.stats.reportsByWeekdays;
+  if (!reportsByWeekdays) return;
+
   const weekdayAverages = [];
   const lookup = Object.groupBy(
     reportsByWeekdays,
@@ -87,6 +89,8 @@ const calculateWeekdayAverages = () => {
 // Calculate month average
 const calculateMonthAverages = () => {
   const reportsByMonth = state.stats.reportsByMonth;
+  if (!reportsByMonth) return;
+
   const monthAverages = [];
   const lookup = Object.groupBy(reportsByMonth, (reports) => reports.month);
 

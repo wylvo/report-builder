@@ -14,12 +14,14 @@ const controlPieChartSelect = function (
   const stats = model.state.stats;
 
   if (targetValue === "incidentType") {
+    if (!stats.reportsByIncidentTypes) return;
     const labels = stats.reportsByIncidentTypes.map((iT) => iT.type);
     const datasetData = stats.reportsByIncidentTypes.map((iT) => iT.reports);
     dashboardView.pieChart(canvasElement, labels, datasetData);
   }
 
   if (targetValue === "incidentTransactionType") {
+    if (!stats.reportsByIncidentTransactionTypes) return;
     const labels = stats.reportsByIncidentTransactionTypes.map((iT) => iT.type);
     const datasetsData = stats.reportsByIncidentTransactionTypes.map((iT) => iT.reports);
     dashboardView.pieChart(canvasElement, labels, datasetsData);
@@ -48,6 +50,7 @@ const controlLineChartSelect = function (
 
   if (targetValue === "byWeekdayAverage") {
     const weekdayAverages = model.calculateWeekdayAverages();
+    if (!weekdayAverages) return;
     const labels = weekdayAverages.map((data) => data.weekday);
     const datasetsData = weekdayAverages.map((data) => data.average);
     dashboardView.lineChart(canvasElement, labels, datasetsData);
@@ -55,6 +58,7 @@ const controlLineChartSelect = function (
 
   if (targetValue === "byMonthlyAverage") {
     const monthAverages = model.calculateMonthAverages();
+    if (!monthAverages) return;
     const labels = monthAverages.map((data) => dashboardView.formatMonth(data.month));
     const datasetsData = monthAverages.map((data) => data.average);
     dashboardView.lineChart(canvasElement, labels, datasetsData);
@@ -62,6 +66,7 @@ const controlLineChartSelect = function (
 
   if (targetValue === "byYear") {
     const statsByYear = stats.reportsByYear.toReversed()
+    if (!statsByYear) return;
     const labels = statsByYear.map((data) => `${data.year}`);
     const datasetsData = statsByYear.map((data) => data.reports);
     dashboardView.lineChart(canvasElement, labels, datasetsData);
@@ -70,6 +75,7 @@ const controlLineChartSelect = function (
 
 const controlWeekSelect = (weekIndex) => {
   weekIndex = Number(weekIndex);
+  console.log(weekIndex);
 
   if (isNaN(weekIndex)) return;
   return model.state.stats.reportsByWeek[weekIndex];
@@ -115,7 +121,7 @@ const init = async function () {
 
     dashboardActivityTableView.renderAll(model.state.stats.recentActivityLog);
     dashboardReportTableView.renderAll(
-      model.state.stats.reportsRecentlyCreated.slice(0, 7)
+      model.state.stats.reportsRecentlyCreated
     );
 
     dashboardView.addHandlerPieChartSelectOnChange(controlPieChartSelect);
