@@ -5,16 +5,19 @@ class ActivityLogTableView extends TableView {
   #tableCellMaxCharacterLength = 30;
 
   constructor() {
-    super();
+    super(document.querySelector(".activity-log"));
   }
 
   _generateEmptyRowHtml() {
     return `
       <tr class="table-row">
+        <td data-cell="User">
+          <div>-</div>
+        </td>
         <td data-cell="Timestamp">
           <div>-</div>
         </td>
-        <td data-cell="Username">
+        <td data-cell="URL">
           <div>-</div>
         </td>
         <td data-cell="Method">
@@ -23,35 +26,51 @@ class ActivityLogTableView extends TableView {
         <td data-cell="Status Code">
           <div>-</div>
         </td>
-        <td data-cell="URL">
-          <div>-</div>
-        </td>
       </tr>
     `;
   }
 
   // prettier-ignore
   _generatetHtml(activityLog) {
-    const fullDate = new Date(activityLog.createdAt).toDateString();
+    const operation =
+      activityLog.method === "DELETE"
+        ? { class: "attention", text: "DELETE" }
+        : activityLog.method === "PUT"
+        ? { class: "warning", text: "UPDATE" }
+        : activityLog.method === "POST"
+        ? { class: "good", text: "CREATE" }
+        : { class: "", text: activityLog.method };
 
-    const username = this.users.find((user) => user.username === activityLog.username)
-    const profilePicture = username?.profilePictureURI
-      ? username.profilePictureURI
+    const statusCodeClass =
+      activityLog.statusCode < 400 ? "good": "attention";
+
+    const user = this.users.find((user) => user.username === activityLog.username)
+    const userProfilePicture = user?.profilePictureURI
+      ? user.profilePictureURI
       : DEFAULT_PROFILE_PICTURE;
 
     return `
       <tr class="table-row">
-        <td data-cell="Timestamp"><div>${fullDate}</div></td>
-        <td data-cell="Username">
+        <td data-cell="User">
           <div>
-            <img class="table-row-cell-pp" src="${profilePicture}" alt="Profile picture of ${username?.fullName || "N/A"}" />
+            <img class="table-row-cell-pp" src="${userProfilePicture}" alt="Profile picture of ${user?.fullName || "N/A"}" />
+            <p>${user?.fullName}</p>
           </div>
         </td>
-        <td data-cell="Method"><div>${activityLog.method}</div></td>
-        <td data-cell="Status Code"><div>${activityLog.statusCode}</div></td>
-        <td data-cell="URL"><div>${activityLog.url}</div></td>
+        <td data-cell="Timestamp">
+          <div>${this.timeAgo(activityLog.createdAt)}</div>
+        </td>
+        <td data-cell="URL">
+          <div>${activityLog.url}</div>
+        </td>        
+        <td data-cell="Method">
+          <div><p class="${operation.class}">${operation.text}</p></div>
+        </td>
+        <td data-cell="Status Code">
+          <div><p class="${statusCodeClass}">${activityLog.statusCode}</p></div>
+        </td>
       </tr>
-    `;
+      `;
   }
 }
 

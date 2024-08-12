@@ -32,9 +32,6 @@ class ReportTableView extends TableView {
         <td data-cell="Store">
           <div>-</div>
         </td>
-        <td data-cell="Employee">
-          <div>-</div>
-        </td>
         <td data-cell="Procedural">
           <div>-</div>
         </td>
@@ -102,11 +99,12 @@ class ReportTableView extends TableView {
 
     return `
       <tr class="table-row">
-        <td data-cell="Created By">
+        <td data-cell="Created By" title="${createdBy?.fullName}">
           <div>
             <picture class="${isOnCallClass}">
               <img class="table-row-cell-pp" src="${profilePicture}" alt="Profile picture of ${createdBy?.fullName || "N/A"}" />
             </picture>
+            <p>${createdBy?.fullName}</p>
           </div>
         </td>
         <td data-cell="Date"><div>${formattedDate}</div></td>
@@ -116,13 +114,12 @@ class ReportTableView extends TableView {
         <td data-cell="Status">
           <div><p class="${status.class}">${status.text}</p></div>
         </td>
-        <td data-cell="Assigned To">
+        <td data-cell="Assigned To" title="${assignedTo?.fullName}">
           <div>
             ${assignedTo?.fullName || "N/A"}
           </div>
         </td>        
         <td data-cell="Store"><div>${storeNumbers}</div></td>
-        <td data-cell="Employee"><div>${report.store.employee.name}</div></td>
         <td data-cell="Type"><div>${incidentTypes}</div></td>
         <td data-cell="Procedural">
           <div><p ${isProcedural.class}>${isProcedural.text}</p></div>

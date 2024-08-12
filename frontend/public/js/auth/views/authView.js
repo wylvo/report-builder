@@ -4,7 +4,8 @@ class AuthView extends View {
   #email = document.querySelector("#email");
   #password = document.querySelector("#password");
   #authForm = document.querySelector("#auth");
-  #signOutBtn = document.querySelector("#sign-out");
+  #signOutSidebarBtn = document.querySelector("#sign-out-sidebar");
+  #signOutNavbarBtn = document.querySelector("#sign-out-navbar");
 
   constructor() {
     super();
@@ -18,7 +19,12 @@ class AuthView extends View {
   }
 
   addHandlerSignOut(handler) {
-    this.#signOutBtn.addEventListener("click", (e) => {
+    this.#signOutSidebarBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      handler();
+    });
+
+    this.#signOutNavbarBtn.addEventListener("click", (e) => {
       e.preventDefault();
       handler();
     });

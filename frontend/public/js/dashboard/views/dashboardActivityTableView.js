@@ -5,7 +5,7 @@ class DashboardActivityTableView extends TableView {
   #tableCellMaxCharacterLength = 30;
 
   constructor() {
-    super(document.querySelector(".activity"));
+    super(document.querySelector(".activity-log"));
   }
 
   _generateEmptyRowHtml() {

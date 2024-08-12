@@ -1,4 +1,4 @@
-import * as model from "./accountModel.js";
+import * as model from "./eventModel.js";
 
 import { MultiselectDropdown } from "../multiselect-dropdown.js";
 
@@ -129,20 +129,15 @@ const init = async function () {
   try {
     await model.init();
 
-    // Initialize user reports
-    model.state.activityLogs = model.state.user.activityLogs || [];
-    model.state.activityLogsTotal = model.state.user.activityLogsTotal || 0;
-    model.state.authenticationLogs = model.state.user.authenticationLogs || [];
-    model.state.authenticationLogsTotal =
-      model.state.user.authenticationLogsTotal || 0;
-    // model.state.search.pageDeletedView = 1;
-
     // Initialize list of users
-    activityLogTableView.users = model.state.usersFrontend;
+    activityLogTableView.users = model.state.users;
+    authenticationLogTableView.users = model.state.users;
 
     // Initialize table & rows per page
     model.state.rowsPerPage = paginationView.rowsPerPage();
-    controlRenderAllReports();
+    activityLogTableView.renderAll(model.state.activityLogs);
+    authenticationLogTableView.renderAll(model.state.authenticationLogs);
+    // controlRenderAllReports();
 
     // Search view handler
     searchView.addHandlerSearch(controlSearchResults);

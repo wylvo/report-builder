@@ -5,7 +5,7 @@ class AuthenticationLogTableView extends TableView {
   #tableCellMaxCharacterLength = 30;
 
   constructor() {
-    super();
+    super(document.querySelector(".authentication-log"));
   }
 
   _generateEmptyRowHtml() {
@@ -17,10 +17,10 @@ class AuthenticationLogTableView extends TableView {
         <td data-cell="Email">
           <div>-</div>
         </td>
-        <td data-cell="Remote IP">
+        <td data-cell="User-agent">
           <div>-</div>
         </td>
-        <td data-cell="User-agent">
+        <td data-cell="Client IP">
           <div>-</div>
         </td>
         <td data-cell="Successful">
@@ -32,14 +32,25 @@ class AuthenticationLogTableView extends TableView {
 
   // prettier-ignore
   _generatetHtml(authenticationLog) {
-    const fullDate = new Date(authenticationLog.createdAt).toDateString();
+    const isSuccessful = authenticationLog.isSuccessful ? { class: "good", text: "Yes"} : { class: "attention", text: "No"}
+
     return `
       <tr class="table-row">
-        <td data-cell="Timestamp"><div>${fullDate}</div></td>
-        <td data-cell="Email"><div>${authenticationLog.email}</div></td>
-        <td data-cell="Remote IP"><div>${authenticationLog.remoteIp}</div></td>
-        <td data-cell="User-agent"><div>${authenticationLog.userAgent}</div></td>
-        <td data-cell="Successful"><div>${authenticationLog.isSuccessful}</div></td>
+        <td data-cell="Timestamp" title="${authenticationLog.createdAt}">
+          <div>${authenticationLog.createdAt} (${this.timeAgo(authenticationLog.createdAt)})</div>
+        </td>
+        <td data-cell="Email" title="${authenticationLog.email}">
+          <div>${authenticationLog.email ?? "N/A"}</div>
+        </td>
+        <td data-cell="User-agent" title="${authenticationLog.userAgent}">
+          <div>${authenticationLog.userAgent}</div>
+        </td>
+        <td data-cell="Client IP" title="${authenticationLog.clientIp}">
+          <div>${authenticationLog.clientIp}</div>
+        </td>
+        <td data-cell="Successful">
+          <div><p class="${isSuccessful.class}">${isSuccessful.text}</p></div>
+        </td>
       </tr>
     `;
   }

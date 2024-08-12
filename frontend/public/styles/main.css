@@ -202,13 +202,15 @@
   font-size: inherit;
 }
 
-#theme {
+#theme,
+#sign-out-navbar {
   background-color: var(--primary-color);
   opacity: 0.5;
   transition: 0.3s;
 }
 
-#theme:hover {
+#theme:hover,
+#sign-out-navbar:hover {
   opacity: 1;
 }
 

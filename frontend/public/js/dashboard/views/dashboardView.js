@@ -19,7 +19,7 @@ class DashboardView extends View {
     // All quick insights
     this.insightReportsToday = document.querySelector(".insights .reports-today");
     this.insightReportsCount = document.querySelector(".insights .reports-count");
-    this.dateUnitContainers = document.querySelectorAll(".insight");
+    this.dateUnitContainers = document.querySelectorAll(".insight.select");
     this.dateUnitSelectElements;
 
     // All canvas
@@ -88,41 +88,35 @@ class DashboardView extends View {
 
   // prettier-ignore
   renderAll(stats) {
-    console.log(stats);
-
-    const date = this.date;
-
     this.dateUnitContainers.forEach((container) => {
       const className = container.classList[1];
       let options;
   
-      if (className === "reports-by-week-select") {
-        options = stats.reportsByWeek?.map((data, i) => {
-          let week = `Week Of ${String(data.weekStart)}`.escapeHTML();
-          if (i === 0) (week = `This Week`), (container.firstElementChild.textContent = data.reports);
-          if (i === 1) week = `Last Week`;
-          return `<option value="${i}">Calls ${week}</option>`;
-        });
+      if (className === "reports-by-week") {
+        if (stats.reportsByWeek)
+          options = stats.reportsByWeek.map((data, i) => {
+            const week = `${String(data.weekStart)}`.escapeHTML();
+            return `<option value="${i}">Calls Week Of ${week}</option>`;
+          });
       }
 
-      if (className === "reports-by-month-select") {
-        options = stats.reportsByMonth?.map((data, i) => {
-          let month = `In ${this.formatMonth(data.month)}, ${data.year}`.escapeHTML();
-          if (i === 0) (month = `This Month`), (container.firstElementChild.textContent = data.reports);
-          if (i === 1) month = `Last Month`;
-          return `<option value="${i}">Calls ${month}</option>`;
-        });
+      if (className === "reports-by-month") {
+        if (stats.reportsByMonth)
+          options = stats.reportsByMonth.map((data, i) => {
+            const monthYear = `${this.formatMonth(data.month)}, ${data.year}`.escapeHTML();
+            return `<option value="${i}">Calls In ${monthYear}</option>`;
+          });
       }
 
-      if (className === "reports-by-year-select") {
-        options = stats.reportsByYear?.map((data, i) => {
-          let year = String(data.year).escapeHTML()
-          if (i === 0) (year = `This Year`), (container.firstElementChild.textContent = data.reports);
-          return `<option value="${i}">Calls In ${year}</option>`;
-        });
+      if (className === "reports-by-year") {
+        if (stats.reportsByYear)
+          options = stats.reportsByYear.map((data, i) => {
+            const year = String(data.year).escapeHTML()
+            return `<option value="${i}">Calls In ${year}</option>`;
+          });
       }
 
-      if (!options) return;
+      if (!options) options = [`<option value="">None</option>`];
 
       const dateUnitSelectElement = this.generateDateUnitSelectElement(className, options);
       container.lastElementChild.replaceWith(dateUnitSelectElement);
@@ -288,7 +282,7 @@ class DashboardView extends View {
   }
 
   addHandlerWeekSelectOnChange(handler) {
-    const byWeek = this.dateUnitSelectElements.get("reports-by-week-select");
+    const byWeek = this.dateUnitSelectElements.get("reports-by-week");
     byWeek.addEventListener("change", (e) => {
       console.log(e.target.value);
 
@@ -299,7 +293,7 @@ class DashboardView extends View {
   }
 
   addHandlerMonthSelectOnChange(handler) {
-    const byMonth = this.dateUnitSelectElements.get("reports-by-month-select");
+    const byMonth = this.dateUnitSelectElements.get("reports-by-month");
     byMonth.addEventListener("change", (e) => {
       console.log(e.target.value);
 
@@ -310,7 +304,7 @@ class DashboardView extends View {
   }
 
   addHandlerYearSelectOnChange(handler) {
-    const byYear = this.dateUnitSelectElements.get("reports-by-year-select");
+    const byYear = this.dateUnitSelectElements.get("reports-by-year");
     byYear.addEventListener("change", (e) => {
       console.log(e.target.value);
 
