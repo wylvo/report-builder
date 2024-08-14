@@ -55,14 +55,12 @@ app.use(cookieParser());
 // Format JSON responses as text with 2 indented spaces
 app.set("json spaces", 2);
 
-// Development logging
-if (process.env.NODE_ENV === "development") {
-  app.use(
-    morgan("dev", {
-      stream: { write: (message) => cliLogger.info(message.trim()) },
-    })
-  );
-}
+// Morgan logging
+app.use(
+  morgan(config.logs.morgan.format, {
+    stream: { write: (message) => cliLogger.info(message.trim()) },
+  })
+);
 
 // Intercept all requests & responses for logging purposes
 app.use(responseInterceptor.all);

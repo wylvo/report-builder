@@ -6,7 +6,8 @@ import DailyRotateFile from "winston-daily-rotate-file";
 import config from "../config/server.config.js";
 
 const { label, colorize, combine, timestamp, json, errors, printf } = format;
-const timestampFormat = "YYYY-MMM-DD HH:mm:ss.SSS";
+
+const timestampFormat = config.logs.winston.timestampFormat;
 
 const appVersion = process.env.npm_package_version;
 export const generateLogId = () => randomBytes(16).toString("hex");
@@ -37,11 +38,11 @@ export const httpLogger = winston.createLogger({
   transports: [
     // log to file, but rotate daily
     new DailyRotateFile({
-      filename: config.logs.http.filename,
-      dirname: config.logs.http.dirname,
-      datePattern: config.logs.http.datePattern,
-      zippedArchive: config.logs.http.zippedArchive,
-      maxSize: config.logs.http.maxSize,
+      filename: config.logs.winston.http.filename,
+      dirname: config.logs.winston.http.dirname,
+      datePattern: config.logs.winston.http.datePattern,
+      zippedArchive: config.logs.winston.http.zippedArchive,
+      maxSize: config.logs.winston.http.maxSize,
     }),
   ],
 });
@@ -53,25 +54,25 @@ export const cliLogger = winston.createLogger({
       info.level = info.level.toUpperCase();
       return info;
     })(),
-    label({ label: appVersion }),
+    label({ label: config.logs.winston.label }),
     timestamp({ format: timestampFormat }),
-    colorize({ level: true }),
+    config.logs.winston.cli.colorize.level ||
+      config.logs.winston.cli.colorize.all
+      ? colorize(config.logs.winston.cli.colorize)
+      : format.uncolorize(),
     errors({ stack: true }),
-    printf(
-      ({ level, message, label, timestamp, ...data }) =>
-        `[${timestamp}][${level}] (${label}): ${message}`
-    )
+    printf(config.logs.winston.cli.format)
   ),
   transports: [
     new winston.transports.Console(),
 
     new DailyRotateFile({
       format: combine(format.uncolorize()),
-      filename: config.logs.general.filename,
-      dirname: config.logs.general.dirname,
-      datePattern: config.logs.general.datePattern,
-      zippedArchive: config.logs.general.zippedArchive,
-      maxSize: config.logs.general.maxSize,
+      filename: config.logs.winston.general.filename,
+      dirname: config.logs.winston.general.dirname,
+      datePattern: config.logs.winston.general.datePattern,
+      zippedArchive: config.logs.winston.general.zippedArchive,
+      maxSize: config.logs.winston.general.maxSize,
     }),
   ],
 });
@@ -104,11 +105,11 @@ export const errorLogger = winston.createLogger({
       level: "error",
       format: combine(format.uncolorize()),
 
-      filename: config.logs.error.filename,
-      dirname: config.logs.error.dirname,
-      datePattern: config.logs.error.datePattern,
-      zippedArchive: config.logs.error.zippedArchive,
-      maxSize: config.logs.error.maxSize,
+      filename: config.logs.winston.error.filename,
+      dirname: config.logs.winston.error.dirname,
+      datePattern: config.logs.winston.error.datePattern,
+      zippedArchive: config.logs.winston.error.zippedArchive,
+      maxSize: config.logs.winston.error.maxSize,
     }),
   ],
 });

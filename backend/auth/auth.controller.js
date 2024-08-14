@@ -127,9 +127,9 @@ export const protect = catchAsync(async (req, res, next) => {
   }
 
   // Clear sensitive data
-  currentUser.password = undefined;
-  currentUser.passwordResetAt = undefined;
-  currentUser.failedAuthenticationAttempts = undefined;
+  delete currentUser.password;
+  delete currentUser.passwordResetAt;
+  delete currentUser.failedAuthenticationAttempts;
 
   // GRANT ACCESS TO PROTECTED ROUTE
   req.user = currentUser;
@@ -159,9 +159,9 @@ export const isLoggedIn = async (req, res, next) => {
       }
 
       // Clear sensitive data
-      currentUser.password = undefined;
-      currentUser.passwordResetAt = undefined;
-      currentUser.failedAuthenticationAttempts = undefined;
+      delete currentUser.password;
+      delete currentUser.passwordResetAt;
+      delete currentUser.failedAuthenticationAttempts;
 
       // THERE IS A LOGGED IN USER
       res.locals.user = currentUser;
