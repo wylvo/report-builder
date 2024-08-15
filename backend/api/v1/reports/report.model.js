@@ -7,6 +7,7 @@ import {
   dateISO8601,
   dateMSSharePoint,
   GlobalError,
+  cliLogger,
 } from "../router.js";
 import reportSchema from "./report.schema.js";
 
@@ -390,8 +391,6 @@ export const Reports = {
 
     let i = 1;
     for (const report of body) {
-      console.log("Report:", i++);
-
       report.version = config.version;
       report.createdAt = dateISO8601(report.createdAt);
       report.updatedAt = dateISO8601(report.updatedAt);
@@ -446,6 +445,7 @@ export const Reports = {
       await reportImport.query(queries.join(" "));
 
       reportsImported.push(id);
+      cliLogger.info(`Report #${i++} - [${id}]`)
     }
     
     return reportsImported;

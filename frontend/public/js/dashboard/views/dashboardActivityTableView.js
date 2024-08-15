@@ -37,15 +37,15 @@ class DashboardActivityTableView extends TableView {
 
     return `
       <tr>
-        <td data-cell="User">
+        <td data-cell="User" title="${user?.fullName}">
           <img class="table-row-cell-pp" src="${userProfilePicture}" alt="Profile picture of ${user?.fullName || "N/A"}" />
           <p>${user?.fullName}</p>
         </td>
-        <td data-cell="Timestamp"><span>${this.timeAgo(activityLog.createdAt)}</span></td>
-        <td data-cell="Method">
+        <td data-cell="Timestamp" title="${activityLog.createdAt}"><span>${this.timeAgo(activityLog.createdAt)}</span></td>
+        <td data-cell="Method" title="${activityLog.method}">
           <span class="status ${operation.class}">${operation.text}</span>
         </td>
-        <td data-cell="URL">
+        <td data-cell="URL" title="${activityLog.url}">
           <span>${activityLog.url}</span>
         </td>
       </tr>

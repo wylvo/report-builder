@@ -439,3 +439,11 @@ p.attention {
   border-radius: 0.2rem;
   font-weight: 700;
 }
+
+p.info {
+  display: inline-block;
+  color: var(--info-on-background);
+  background-color: var(--info-background-color);
+  border-radius: 0.2rem;
+  font-weight: 700;
+}

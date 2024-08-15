@@ -175,7 +175,7 @@ export const isLoggedIn = async (req, res, next) => {
 
 export const restrictTo = (...roles) => {
   return (req, res, next) => {
-    console.log(req.user.role, roles);
+    // console.log(req.user.role, roles);
     if (!roles.includes(req.user.role)) {
       return next(
         new GlobalError(

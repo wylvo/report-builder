@@ -156,18 +156,34 @@ export default class View {
       { name: "second", seconds: 1 },
     ];
 
-    // Loop through the units and find the largest applicable unit
-    for (let unit of units) {
-      const interval = Math.floor(diffInSeconds / unit.seconds);
+    let timeString = "";
 
-      // If the interval is 1 or more, return the formatted string
+    // Calculate years, months, weeks, days, and hours
+    let remainingSeconds = diffInSeconds;
+
+    for (let i = 0; i < units.length; i++) {
+      const unit = units[i];
+      const interval = Math.floor(remainingSeconds / unit.seconds);
+
       if (interval >= 1) {
-        return `${interval} ${unit.name}${interval > 1 ? "s" : ""} ago`;
+        remainingSeconds -= interval * unit.seconds;
+        timeString += `${interval} ${unit.name}${interval > 1 ? "s" : ""} `;
+
+        // Add more precision if needed, e.g., hours after a day, days and hours after a week, etc.
+        if (
+          (unit.name === "day" && remainingSeconds >= 3600) ||
+          (unit.name === "week" && remainingSeconds >= 86400) ||
+          (unit.name === "month" && remainingSeconds >= 604800)
+        ) {
+          continue;
+        } else {
+          break;
+        }
       }
     }
 
-    // If no other condition matches, return 'Just now' (This line should not be reached)
-    return "Just now";
+    // Remove trailing space and add 'ago'
+    return timeString.trim() + " ago";
   }
 
   getWeekNumber(date) {

@@ -51,19 +51,19 @@ class ActivityLogTableView extends TableView {
 
     return `
       <tr class="table-row">
-        <td data-cell="User">
+        <td data-cell="User" title="${user?.fullName}">
           <div>
             <img class="table-row-cell-pp" src="${userProfilePicture}" alt="Profile picture of ${user?.fullName || "N/A"}" />
             <p>${user?.fullName}</p>
           </div>
         </td>
-        <td data-cell="Timestamp">
-          <div>${this.timeAgo(activityLog.createdAt)}</div>
+        <td data-cell="Timestamp" title="${activityLog.createdAt}">
+          <div>${activityLog.createdAt} (${this.timeAgo(activityLog.createdAt)})</div>
         </td>
-        <td data-cell="URL">
+        <td data-cell="URL" title="${activityLog.url}">
           <div>${activityLog.url}</div>
         </td>        
-        <td data-cell="Method">
+        <td data-cell="Method" title="${activityLog.method}">
           <div><p class="${operation.class}">${operation.text}</p></div>
         </td>
         <td data-cell="Status Code">

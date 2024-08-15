@@ -51,11 +51,10 @@ const responseInterceptorAPI = (req, res, next) => {
   // Override the response method
   res.send = function (responseBody) {
     if (!responseSent) {
-      if (res.statusCode < 400) {
-        if (req?.method === "GET") return originalSend.call(this, responseBody);
+      if (req.method === "GET") return originalSend.call(this, responseBody);
 
-        ActivityLog.create(req, res);
-      }
+      ActivityLog.create(req, res);
+
       responseSent = true;
     }
 
@@ -78,10 +77,11 @@ const responseInterceptorAuth = (req, res, next) => {
     if (!responseSent) {
       let isSuccessful = true;
 
-      if (req.url.includes("/signin")) {
-        if (res.statusCode < 400) AuthenticationLog.create(req, isSuccessful);
-        else AuthenticationLog.create(req, !isSuccessful);
-      }
+      if (!req.url.includes("/signin"))
+        return originalSend.call(this, responseBody);
+
+      if (res.statusCode < 400) AuthenticationLog.create(req, isSuccessful);
+      else AuthenticationLog.create(req, !isSuccessful);
 
       responseSent = true;
     }

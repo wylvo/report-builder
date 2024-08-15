@@ -9,7 +9,13 @@ import {
   isValidUsername,
 } from "./report.model.js";
 
-import { mssql, validateBody, catchAsync, GlobalError } from "../router.js";
+import {
+  mssql,
+  validateBody,
+  catchAsync,
+  GlobalError,
+  cliLogger,
+} from "../router.js";
 import { Users } from "../users/user.model.js";
 import { Super } from "../super/super.model.js";
 
@@ -51,7 +57,7 @@ export const validateCreate = validateBody(
 );
 
 export const createReport = catchAsync(async (req, res, next) => {
-  console.time("CREATE");
+  const startTime = Date.now();
   const transaction = mssql().transaction;
 
   try {
@@ -64,7 +70,9 @@ export const createReport = catchAsync(async (req, res, next) => {
     );
     await transaction.commit();
 
-    console.timeEnd("CREATE");
+    const elapsedTime = (Date.now() - startTime) / 1000;
+    cliLogger.info(`CREATE in: ${elapsedTime}s`);
+
     res.status(201).json({
       status: "success",
       data: report,
@@ -118,7 +126,7 @@ export const updateReport = catchAsync(async (req, res, next) => {
       )
     );
 
-  console.time("UPDATE");
+  const startTime = Date.now();
   const transaction = mssql().transaction;
 
   try {
@@ -131,7 +139,9 @@ export const updateReport = catchAsync(async (req, res, next) => {
 
     await transaction.commit();
 
-    console.timeEnd("UPDATE");
+    const elapsedTime = (Date.now() - startTime) / 1000;
+    cliLogger.info(`CREATE in: ${elapsedTime}s`);
+
     res.status(201).json({
       status: "success",
       data: reportUpdated,

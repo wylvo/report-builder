@@ -12,7 +12,7 @@ class DashboardReportTableView extends TableView {
     return `
       <tr>
         <td data-cell="Created By">-</td>
-        <td data-cell="Timestamp">-</td>
+        <td data-cell="Created">-</td>
         <td data-cell="Date">-</td>
         <td data-cell="Title">-</td>
         <td data-cell="Status">-</td>
@@ -53,7 +53,7 @@ class DashboardReportTableView extends TableView {
           <img class="table-row-cell-pp" src="${profilePictureCreatedBy}" alt="Profile picture of ${createdBy?.fullName || "N/A"}" />
           <p>${createdBy?.fullName}</p>
         </td>
-        <td data-cell="Timestamp">${this.timeAgo(report.createdAt)}</td>
+        <td data-cell="Created">${this.timeAgo(report.createdAt)}</td>
         <td data-cell="Date"><span class="${isOnCallClass}">${formattedDate}</span></td>
         <td data-cell="Title">
           <a class="table-row-link" href="/reports#${report.id}">${report.incident.title}</a>

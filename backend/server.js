@@ -67,9 +67,9 @@ app.use(responseInterceptor.all);
 
 // Limit requests to the API
 const limiter = rateLimit({
-  max: config.rateLimter.maxNumberOfRequests,
-  windowMs: config.rateLimter.windowMilliseconds,
-  message: config.rateLimter.message,
+  max: config.rateLimiter.maxNumberOfRequests,
+  windowMs: config.rateLimiter.windowMilliseconds,
+  message: config.rateLimiter.message,
 });
 app.use("/api", limiter);
 
@@ -100,7 +100,7 @@ dbConfig
   })
   .catch((err) => {
     const logId = generateLogId();
-    cliLogger.error(`${err.name}. See error logs folder for more details [${logId}]`);
+    cliLogger.error(`[${logId}] ${err.name}: ${err.message}. See error logs folder for more details`);
     internalServerErrorLog(err.name, err, logId);
   });
 

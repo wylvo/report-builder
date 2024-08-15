@@ -115,7 +115,7 @@ export const validateUsernamesAndFilterDuplicates = catchAsync(async (req, res, 
 });
 
 export const importReports = catchAsync(async (req, res, next) => {
-  console.time("IMPORT");
+  const startTime = Date.now();
   const transaction = mssql().transaction;
 
   try {
@@ -123,7 +123,9 @@ export const importReports = catchAsync(async (req, res, next) => {
     const reports = await Reports.import(req.body, transaction);
     await transaction.commit();
 
-    console.timeEnd("IMPORT");
+    const elapsedTime = (Date.now() - startTime) / 1000;
+    cliLogger.info(`IMPORT in: ${elapsedTime}s`);
+
     res.status(201).json({
       status: "success",
       results: reports.length,

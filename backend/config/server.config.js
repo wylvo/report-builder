@@ -1,10 +1,10 @@
 const config = {
   port: process.env.SERVER_PORT, // Server Port
   version: process.env.npm_package_version, // App version
-  rateLimter: {
+  rateLimiter: {
     maxNumberOfRequests: 50, // Max number of requests before a client is restricted to make another request
     windowMilliseconds: 60000, // How long before a client is eligible to make another request in milliseconds
-    message: "Too many request from this IP, please try again later!",
+    message: "Too many request from this IP, please try again later!", // error message when rate limit is reached
   },
   logs: {
     morgan: {
