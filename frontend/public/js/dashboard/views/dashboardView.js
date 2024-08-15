@@ -2,9 +2,6 @@ import View from "../../_views/View.js";
 import TableView from "../../_views/tableView.js";
 
 class DashboardView extends View {
-  // Inputs keys
-  #DATE_UNITS = "*";
-
   // prettier-ignore
   constructor() {
     super();
@@ -19,7 +16,7 @@ class DashboardView extends View {
     // All quick insights
     this.insightReportsToday = document.querySelector(".insights .reports-today");
     this.insightReportsCount = document.querySelector(".insights .reports-count");
-    this.dateUnitContainers = document.querySelectorAll(".insight.select");
+    this.dateUnitSelectContainers = document.querySelectorAll(".insight.select");
     this.dateUnitSelectElements;
 
     // All canvas
@@ -88,7 +85,7 @@ class DashboardView extends View {
 
   // prettier-ignore
   renderAll(stats) {
-    this.dateUnitContainers.forEach((container) => {
+    this.dateUnitSelectContainers.forEach((container) => {
       const className = container.classList[1];
       let options;
   

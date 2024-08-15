@@ -1,29 +1,74 @@
 import * as model from "./eventModel.js";
 
-import { MultiselectDropdown } from "../multiselect-dropdown.js";
-
-import searchView from "../_views/searchView.js";
-import paginationView from "../_views/paginationView.js";
 import activityLogTableView from "./views/activityLogTableView.js";
+import activityLogPaginationView from "./views/activityLogPaginationView.js";
+import activityLogSearchView, {
+  ActivityLogSearchView,
+} from "./views/activityLogSearchView.js";
 import authenticationLogTableView from "./views/authenticationLogTableView.js";
-
-import reportTableView from "../reports/views/reportTableView.js";
+import authenticationLogPaginationView from "./views/authenticationLogPaginationView.js";
+import authenticationLogSearchView, {
+  AuthenticationLogSearchView,
+} from "./views/authenticationLogSearchView.js";
 import notificationsView from "../_views/notificationsView.js";
 
-const controlSearchResults = function (logs) {
+const controlView = function (targetView) {
+  let logs,
+    logsTotal,
+    tableView,
+    searchView,
+    paginationView,
+    rowsPerPage,
+    page,
+    getFunction;
+
+  if (targetView instanceof ActivityLogSearchView) {
+    logs = model.state.activityLogs;
+    logsTotal = model.state.activityLogsTotal;
+    tableView = activityLogTableView;
+    searchView = activityLogSearchView;
+    paginationView = activityLogPaginationView;
+    rowsPerPage = model.state.rowsPerPage;
+    page = model.state.search.page;
+    getFunction = model.DB.getActivityLogs;
+  } else if (targetView instanceof AuthenticationLogSearchView) {
+    logs = model.state.authenticationLogs;
+    logsTotal = model.state.authenticationLogsTotal;
+    tableView = authenticationLogTableView;
+    searchView = authenticationLogSearchView;
+    paginationView = authenticationLogPaginationView;
+    rowsPerPage = model.state.rowsPerPageAuthenticationLogs;
+    page = model.state.search.pageAuthenticationLogs;
+    getFunction = model.DB.getAuthenticationLogs;
+  }
+
+  return {
+    logs: { array: logs, total: logsTotal, rowsPerPage, page },
+    tableView,
+    searchView,
+    paginationView,
+    getFunction,
+  };
+};
+
+const controlSearchResults = function (targetView) {
+  const { logs, tableView, searchView } = controlView(targetView);
+
   model.state.search.page = 1;
 
   const query = searchView.query();
-  if (!query) return controlClearSearchResults();
+  if (!query) return controlClearSearchResults(targetView, query);
 
   const filterBy = searchView.filterBy();
-  model.filterSearch(logs, query, filterBy);
+  model.filterSearch(logs.array, query, filterBy);
 
-  controlRenderAllReports();
-  reportTableView.updateTotalCount(model.state.search.results);
+  controlRenderAllLogs(targetView);
+  tableView.updateTotalCount(model.state.search.results);
 };
 
-const controlClearSearchResults = function (query) {
+const controlClearSearchResults = function (targetView, query) {
+  const { tableView, searchView } = controlView(targetView);
+
   const isAlreadyEmptyQuery = model.state.search.query === "" || query !== "";
   if (isAlreadyEmptyQuery) return;
 
@@ -31,89 +76,69 @@ const controlClearSearchResults = function (query) {
   model.state.search.query = "";
   model.state.search.results = [];
   searchView.clearQuery();
-  reportTableView.updateResultCount(0);
+  tableView.updateResultCount(0);
 
-  return controlRenderAllReports();
+  return controlRenderAllLogs(targetView);
 };
 
-const controlRenderAllReports = function () {
+const controlRenderAllLogs = function (targetView) {
+  const { logs, tableView, paginationView } = controlView(targetView);
+
   const query = model.state.search.query;
-  const reports = query
+  const queryLogs = query
     ? {
         array: model.state.search.results,
         total: model.state.search.results.length,
       }
-    : reportTableView.isDeletedViewActive
-    ? {
-        array: model.state.reportsDeleted,
-        total: model.state.reportsDeletedTotal,
-        page: model.state.search.pageDeletedView,
-      }
-    : {
-        array: model.state.reports,
-        total: model.state.reportsTotal,
-        page: model.state.search.page,
-      };
-
-  const pageBtns = model.pages(reports.total, reports.page);
+    : logs;
+  const pageBtns = model.pages(queryLogs.total, queryLogs.page);
 
   paginationView.renderAll(pageBtns);
-  reportTableView.renderAll(reports.array);
+  tableView.renderAll(queryLogs.array);
   query
-    ? reportTableView.updateResultCount(reports.total)
-    : reportTableView.updateTotalCount(reports.total);
+    ? tableView.updateResultCount(queryLogs.total)
+    : tableView.updateTotalCount(queryLogs.total);
 
-  return reports.array;
+  return queryLogs.array;
 };
 
-const controlRowsPerPage = async function (rowsPerPage) {
+const controlRowsPerPage = async function (rowsPerPage, targetView) {
+  const { logs, tableView, searchView, getFunction } = controlView(targetView);
+
   model.state.rowsPerPage = rowsPerPage;
+  model.state.rowsPerPageAuthenticationLogs = rowsPerPage;
   model.state.search.page = 1;
-  model.state.search.pageDeletedView = 1;
+  model.state.search.pageAuthenticationLogs = 1;
 
   try {
-    reportTableView.renderTableSpinner();
+    tableView.renderTableSpinner();
 
-    reportTableView.isDeletedViewActive
-      ? await model.DB.getAllSoftDeletedReportsCreatedByUser(
-          model.state.search.pageDeletedView,
-          model.state.rowsPerPage
-        )
-      : await model.DB.getAllReportsCreatedByUser(
-          model.state.search.page,
-          model.state.rowsPerPage
-        );
+    getFunction(logs.page, logs.rowsPerPage);
 
     const query = searchView.query();
-    if (query) return controlSearchResults();
+    if (query) return controlSearchResults(targetView);
 
-    controlRenderAllReports();
+    controlRenderAllLogs(targetView);
   } catch (error) {
     console.error(error);
     notificationsView.error(error.message);
   }
 };
 
-const controlPages = async function (page) {
+const controlPages = async function (page, targetView) {
+  const { logs, tableView, getFunction } = controlView(targetView);
   if (isNaN(page)) return;
 
   try {
-    reportTableView.renderTableSpinner();
+    tableView.renderTableSpinner();
 
-    if (reportTableView.isDeletedViewActive) {
-      await model.DB.getAllSoftDeletedReportsCreatedByUser(
-        page,
-        model.state.rowsPerPage
-      );
-      model.state.search.pageDeletedView = page;
-    }
+    await getFunction(page, logs.rowsPerPage);
 
-    if (!reportTableView.isDeletedViewActive) {
-      await model.DB.getAllReportsCreatedByUser(page, model.state.rowsPerPage);
+    if (targetView instanceof ActivityLogSearchView)
       model.state.search.page = page;
-    }
+    else model.state.search.pageAuthenticationLogs = page;
 
-    controlRenderAllReports();
+    controlRenderAllLogs(targetView);
   } catch (error) {
     console.error(error);
     notificationsView.error(error.message);
@@ -133,19 +158,30 @@ const init = async function () {
     activityLogTableView.users = model.state.users;
     authenticationLogTableView.users = model.state.users;
 
+    model.state.search.pageAuthenticationLogs = 1;
+
     // Initialize table & rows per page
-    model.state.rowsPerPage = paginationView.rowsPerPage();
+    model.state.rowsPerPage = 50; // paginationView.rowsPerPage();
+    model.state.rowsPerPageAuthenticationLogs = 50;
     activityLogTableView.renderAll(model.state.activityLogs);
     authenticationLogTableView.renderAll(model.state.authenticationLogs);
-    // controlRenderAllReports();
+    // controlRenderAllLogs();
 
     // Search view handler
-    searchView.addHandlerSearch(controlSearchResults);
-    searchView.addHandlerClearSearch(controlClearSearchResults);
+    activityLogSearchView.addHandlerSearch(controlSearchResults);
+    activityLogSearchView.addHandlerClearSearch(controlClearSearchResults);
+    authenticationLogSearchView.addHandlerSearch(controlSearchResults);
+    authenticationLogSearchView.addHandlerClearSearch(
+      controlClearSearchResults
+    );
 
     // Pagination view handlers
-    paginationView.addHandlerOnChangeRowsPerPage(controlRowsPerPage);
-    paginationView.addHandlerClickPage(controlPages);
+    activityLogPaginationView.addHandlerOnChangeRowsPerPage(controlRowsPerPage);
+    activityLogPaginationView.addHandlerClickPage(controlPages);
+    authenticationLogPaginationView.addHandlerOnChangeRowsPerPage(
+      controlRowsPerPage
+    );
+    authenticationLogPaginationView.addHandlerClickPage(controlPages);
 
     console.log(model.state);
   } catch (error) {

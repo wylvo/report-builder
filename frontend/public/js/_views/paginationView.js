@@ -1,24 +1,23 @@
 import View from "./View.js";
 
-class PaginationView extends View {
-  #rowsPerPageSelect = document.querySelector(".table-rows-per-page");
-  #rowsPerPage = +document.querySelector(".table-rows-per-page").value;
-
-  #paginationElements = Array.from(
-    document.querySelectorAll(".table-pagination")
-  );
-
-  constructor() {
+export class PaginationView extends View {
+  // prettier-ignore
+  constructor(targetTableElement) {
     super();
+    
+    this._targetTableElement = targetTableElement;
+    this._rowsPerPageSelect = document.querySelector(".table-rows-per-page");
+    this._rowsPerPage = +document.querySelector(".table-rows-per-page").value;
+    this._paginationElements = Array.from(document.querySelectorAll(".table-pagination"));
   }
 
   rowsPerPage() {
-    return this.#rowsPerPage;
+    return this._rowsPerPage;
   }
 
   renderAll(pages) {
-    this.#clearPagination();
-    this.#paginationElements.forEach((element) => {
+    this._clearPagination();
+    this._paginationElements.forEach((element) => {
       element.appendChild(this.htmlStringToElement(this._generateHtml(pages)));
     });
   }
@@ -58,14 +57,14 @@ class PaginationView extends View {
     `;
   }
 
-  #clearPagination() {
-    this.#paginationElements.forEach((element) => {
+  _clearPagination() {
+    this._paginationElements.forEach((element) => {
       element.innerHTML = "";
     });
   }
 
   addHandlerClickPage(handler) {
-    this.#paginationElements.forEach((element) => {
+    this._paginationElements.forEach((element) => {
       element.addEventListener("click", function (e) {
         const btn = e.target.closest(".table-pagination-btn");
         if (!btn) return;
@@ -77,7 +76,7 @@ class PaginationView extends View {
   }
 
   addHandlerOnChangeRowsPerPage(handler) {
-    this.#rowsPerPageSelect.addEventListener("change", (e) => {
+    this._rowsPerPageSelect.addEventListener("change", (e) => {
       const rows = +e.target.value;
       handler(rows);
     });

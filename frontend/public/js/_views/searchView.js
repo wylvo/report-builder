@@ -1,41 +1,42 @@
-class SearchView {
-  #form = document.querySelector(".table-filter");
-  #inputFilterSearch = document.querySelector(".table-filter-search");
-  #filterBy = document.querySelector(".table-filter-by");
+export class SearchView {
+  constructor(targetTableElement) {
+    this._targetTableElement = targetTableElement;
+    this._form = document.querySelector(".table-filter");
+    this._inputFilterSearch = document.querySelector(".table-filter-search");
+    this._filterBy = document.querySelector(".table-filter-by");
 
-  constructor() {
     this.#addHandlerOnChangeFilterBy();
   }
 
   query() {
-    return this.#inputFilterSearch.value;
+    return this._inputFilterSearch.value;
   }
 
   filterBy() {
-    return this.#filterBy.value;
+    return this._filterBy.value;
   }
 
   clearQuery() {
-    return (this.#inputFilterSearch.value = "");
+    return (this._inputFilterSearch.value = "");
   }
 
   #addHandlerOnChangeFilterBy() {
-    this.#filterBy.addEventListener("change", () => {
+    this._filterBy.addEventListener("change", () => {
       this.clearQuery();
     });
   }
 
   addHandlerClearSearch(handler) {
-    this.#form.addEventListener("input", (e) => {
+    this._form.addEventListener("input", (e) => {
       if (e.target.value === "") {
-        this.#form.requestSubmit();
+        this._form.requestSubmit();
         handler();
       }
     });
   }
 
   addHandlerSearch(handler) {
-    this.#form.addEventListener("submit", function (e) {
+    this._form.addEventListener("submit", function (e) {
       e.preventDefault();
       handler();
     });

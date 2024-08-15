@@ -25,7 +25,7 @@ const controlSearchResults = function () {
     : model.state.reports;
 
   const query = searchView.query();
-  if (!query) return controlClearSearchResults();
+  if (!query) return controlClearSearchResults(query);
 
   const filterBy = searchView.filterBy();
   model.filterSearch(reports, query, filterBy);

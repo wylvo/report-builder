@@ -3,7 +3,7 @@ export default class View {
   users;
 
   // https://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery#answer-13510502
-  escapeHTML = (String.prototype.escapeHTML = function () {
+  #escapeHTML = (String.prototype.escapeHTML = function () {
     const __entityMap = {
       "&": "&amp;",
       "<": "&lt;",

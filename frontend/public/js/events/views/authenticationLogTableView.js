@@ -1,9 +1,6 @@
 import TableView from "../../_views/tableView.js";
-import { DEFAULT_PROFILE_PICTURE } from "../../config.js";
 
 class AuthenticationLogTableView extends TableView {
-  #tableCellMaxCharacterLength = 30;
-
   constructor() {
     super(document.querySelector(".authentication-log"));
   }
