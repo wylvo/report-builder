@@ -6,6 +6,14 @@ class DashboardReportTableView extends TableView {
 
   constructor() {
     super(document.querySelector(".reports"));
+
+    this._table = this.targetTableElement.querySelector("tbody");
+    this._total = this.targetTableElement.querySelector(
+      ".table-meta-data .total-count"
+    );
+    this._results = this.targetTableElement.querySelector(
+      ".table-meta-data .results-count"
+    );
   }
 
   _generateEmptyRowHtml() {

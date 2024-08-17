@@ -4,9 +4,9 @@ const { VARCHAR, NVARCHAR, INT } = mssqlDataTypes;
 
 export const ActivityLog = {
   // GET ALL ACTIVITY LOGS
-  async all(pageNumber = 1, rowsPerPage = 200, frontend = false) {
+  async all(pageNumber = 1, rowsPerPage = 500, frontend = false) {
     rowsPerPage =
-      rowsPerPage <= 0 || rowsPerPage > 200 ? (rowsPerPage = 200) : rowsPerPage;
+      rowsPerPage <= 0 || rowsPerPage > 500 ? (rowsPerPage = 500) : rowsPerPage;
     pageNumber = pageNumber <= 0 ? (pageNumber = 1) : pageNumber;
 
     const {

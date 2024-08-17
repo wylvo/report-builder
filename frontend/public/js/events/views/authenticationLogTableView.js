@@ -1,8 +1,16 @@
 import TableView from "../../_views/tableView.js";
 
-class AuthenticationLogTableView extends TableView {
+export class AuthenticationLogTableView extends TableView {
   constructor() {
     super(document.querySelector(".authentication-log"));
+
+    this._table = this.targetTableElement.querySelector("tbody");
+    this._total = this.targetTableElement.querySelector(
+      ".table-meta-data .total-count"
+    );
+    this._results = this.targetTableElement.querySelector(
+      ".table-meta-data .results-count"
+    );
   }
 
   _generateEmptyRowHtml() {

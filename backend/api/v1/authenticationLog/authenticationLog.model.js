@@ -4,9 +4,9 @@ const { VARCHAR, NVARCHAR, INT, BIT } = mssqlDataTypes;
 
 export const AuthenticationLog = {
   // GET ALL AUTHENTICATION LOGS
-  async all(pageNumber = 1, rowsPerPage = 200) {
+  async all(pageNumber = 1, rowsPerPage = 500) {
     rowsPerPage =
-      rowsPerPage <= 0 || rowsPerPage > 200 ? (rowsPerPage = 200) : rowsPerPage;
+      rowsPerPage <= 0 || rowsPerPage > 500 ? (rowsPerPage = 500) : rowsPerPage;
     pageNumber = pageNumber <= 0 ? (pageNumber = 1) : pageNumber;
 
     const {

@@ -4,7 +4,7 @@ export class ActivityLogSearchView extends SearchView {
   // prettier-ignore
   constructor() {
     super(document.querySelector(".activity-log"));
-    
+
     this._form = this._targetTableElement.querySelector(".table-filter");
     this._inputFilterSearch = this._targetTableElement.querySelector(".table-filter-search");
     this._filterBy = this._targetTableElement.querySelector(".table-filter-by");

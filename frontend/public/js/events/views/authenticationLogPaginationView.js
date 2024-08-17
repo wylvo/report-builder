@@ -23,12 +23,12 @@ export class AuthenticationLogPaginationView extends PaginationView {
 
   addHandlerClickPage(handler) {
     this._paginationElements.forEach((element) => {
-      element.addEventListener("click", function (e) {
+      element.addEventListener("click", (e) => {
         const btn = e.target.closest(".table-pagination-btn");
         if (!btn) return;
 
         const page = +btn.dataset.page;
-        handler(page);
+        handler(page, this);
       });
     });
   }
@@ -36,7 +36,7 @@ export class AuthenticationLogPaginationView extends PaginationView {
   addHandlerOnChangeRowsPerPage(handler) {
     this._rowsPerPageSelect.addEventListener("change", (e) => {
       const rows = +e.target.value;
-      handler(rows);
+      handler(rows, this);
     });
   }
 }

@@ -1,58 +1,70 @@
 import * as model from "./eventModel.js";
 
-import activityLogTableView from "./views/activityLogTableView.js";
-import activityLogPaginationView from "./views/activityLogPaginationView.js";
+import activityLogTableView, {
+  ActivityLogTableView,
+} from "./views/activityLogTableView.js";
+
+import activityLogPaginationView, {
+  ActivityLogPaginationView,
+} from "./views/activityLogPaginationView.js";
+
 import activityLogSearchView, {
   ActivityLogSearchView,
 } from "./views/activityLogSearchView.js";
-import authenticationLogTableView from "./views/authenticationLogTableView.js";
-import authenticationLogPaginationView from "./views/authenticationLogPaginationView.js";
+
+import authenticationLogTableView, {
+  AuthenticationLogTableView,
+} from "./views/authenticationLogTableView.js";
+
+import authenticationLogPaginationView, {
+  AuthenticationLogPaginationView,
+} from "./views/authenticationLogPaginationView.js";
+
 import authenticationLogSearchView, {
   AuthenticationLogSearchView,
 } from "./views/authenticationLogSearchView.js";
+
 import notificationsView from "../_views/notificationsView.js";
 
 const controlView = function (targetView) {
-  let logs,
-    logsTotal,
-    tableView,
-    searchView,
-    paginationView,
-    rowsPerPage,
-    page,
-    getFunction;
-
-  if (targetView instanceof ActivityLogSearchView) {
-    logs = model.state.activityLogs;
-    logsTotal = model.state.activityLogsTotal;
-    tableView = activityLogTableView;
-    searchView = activityLogSearchView;
-    paginationView = activityLogPaginationView;
-    rowsPerPage = model.state.rowsPerPage;
-    page = model.state.search.page;
-    getFunction = model.DB.getActivityLogs;
-  } else if (targetView instanceof AuthenticationLogSearchView) {
-    logs = model.state.authenticationLogs;
-    logsTotal = model.state.authenticationLogsTotal;
-    tableView = authenticationLogTableView;
-    searchView = authenticationLogSearchView;
-    paginationView = authenticationLogPaginationView;
-    rowsPerPage = model.state.rowsPerPageAuthenticationLogs;
-    page = model.state.search.pageAuthenticationLogs;
-    getFunction = model.DB.getAuthenticationLogs;
+  if (
+    targetView instanceof ActivityLogTableView ||
+    targetView instanceof ActivityLogPaginationView ||
+    targetView instanceof ActivityLogSearchView
+  ) {
+    return {
+      logs: {
+        array: model.state.activityLogs,
+        total: model.state.activityLogsTotal,
+        rowsPerPage: model.state.rowsPerPage,
+        page: model.state.search.page,
+      },
+      tableView: activityLogTableView,
+      searchView: activityLogSearchView,
+      paginationView: activityLogPaginationView,
+    };
+  } else if (
+    targetView instanceof AuthenticationLogTableView ||
+    targetView instanceof AuthenticationLogPaginationView ||
+    targetView instanceof AuthenticationLogSearchView
+  ) {
+    return {
+      logs: {
+        array: model.state.authenticationLogs,
+        total: model.state.authenticationLogsTotal,
+        rowsPerPage: model.state.rowsPerPageAuthenticationLogs,
+        page: model.state.search.pageAuthenticationLogs,
+      },
+      tableView: authenticationLogTableView,
+      searchView: authenticationLogSearchView,
+      paginationView: authenticationLogPaginationView,
+    };
   }
-
-  return {
-    logs: { array: logs, total: logsTotal, rowsPerPage, page },
-    tableView,
-    searchView,
-    paginationView,
-    getFunction,
-  };
 };
 
 const controlSearchResults = function (targetView) {
   const { logs, tableView, searchView } = controlView(targetView);
+  if (model.state.search.results) model.state.search.results = [];
 
   model.state.search.page = 1;
 
@@ -83,6 +95,7 @@ const controlClearSearchResults = function (targetView, query) {
 
 const controlRenderAllLogs = function (targetView) {
   const { logs, tableView, paginationView } = controlView(targetView);
+  console.log(logs);
 
   const query = model.state.search.query;
   const queryLogs = query
@@ -103,7 +116,7 @@ const controlRenderAllLogs = function (targetView) {
 };
 
 const controlRowsPerPage = async function (rowsPerPage, targetView) {
-  const { logs, tableView, searchView, getFunction } = controlView(targetView);
+  const { tableView, searchView } = controlView(targetView);
 
   model.state.rowsPerPage = rowsPerPage;
   model.state.rowsPerPageAuthenticationLogs = rowsPerPage;
@@ -113,7 +126,15 @@ const controlRowsPerPage = async function (rowsPerPage, targetView) {
   try {
     tableView.renderTableSpinner();
 
-    getFunction(logs.page, logs.rowsPerPage);
+    targetView instanceof ActivityLogPaginationView
+      ? await model.DB.getActivityLogs(
+          model.state.search.page,
+          model.state.rowsPerPage
+        )
+      : await model.DB.getAuthenticationLogs(
+          model.state.search.pageAuthenticationLogs,
+          model.state.rowsPerPageAuthenticationLogs
+        );
 
     const query = searchView.query();
     if (query) return controlSearchResults(targetView);
@@ -126,17 +147,24 @@ const controlRowsPerPage = async function (rowsPerPage, targetView) {
 };
 
 const controlPages = async function (page, targetView) {
-  const { logs, tableView, getFunction } = controlView(targetView);
+  const { tableView } = controlView(targetView);
   if (isNaN(page)) return;
 
   try {
     tableView.renderTableSpinner();
 
-    await getFunction(page, logs.rowsPerPage);
-
-    if (targetView instanceof ActivityLogSearchView)
+    if (targetView instanceof ActivityLogPaginationView) {
+      await model.DB.getActivityLogs(page, model.state.rowsPerPage);
       model.state.search.page = page;
-    else model.state.search.pageAuthenticationLogs = page;
+    }
+
+    if (targetView instanceof AuthenticationLogPaginationView) {
+      await model.DB.getAuthenticationLogs(
+        page,
+        model.state.rowsPerPageAuthenticationLogs
+      );
+      model.state.search.pageAuthenticationLogs = page;
+    }
 
     controlRenderAllLogs(targetView);
   } catch (error) {
@@ -161,11 +189,11 @@ const init = async function () {
     model.state.search.pageAuthenticationLogs = 1;
 
     // Initialize table & rows per page
-    model.state.rowsPerPage = 50; // paginationView.rowsPerPage();
-    model.state.rowsPerPageAuthenticationLogs = 50;
-    activityLogTableView.renderAll(model.state.activityLogs);
-    authenticationLogTableView.renderAll(model.state.authenticationLogs);
-    // controlRenderAllLogs();
+    model.state.rowsPerPage = 5; // paginationView.rowsPerPage();
+    model.state.rowsPerPageAuthenticationLogs = 5;
+
+    controlRenderAllLogs(activityLogTableView);
+    controlRenderAllLogs(authenticationLogTableView);
 
     // Search view handler
     activityLogSearchView.addHandlerSearch(controlSearchResults);

@@ -217,12 +217,12 @@ export default {
       url: "/api/v1/activityLog",
 
       // prettier-ignore
-      async getActivityLogs(pageNumber = 1, rowsPerPage = 200) {
+      async getActivityLogs(pageNumber = 1, rowsPerPage = 500) {
         return await fetchJSON(`${this.url}?page=${pageNumber}&rows=${rowsPerPage}`);
       },
 
       // prettier-ignore
-      async getActivityLogsFrontend(pageNumber = 1, rowsPerPage = 200) {
+      async getActivityLogsFrontend(pageNumber = 1, rowsPerPage = 500) {
         return await fetchJSON(`${this.url}/frontend?page=${pageNumber}&rows=${rowsPerPage}`);
       },
     },
@@ -230,7 +230,7 @@ export default {
       url: "/api/v1/authenticationLog",
 
       // prettier-ignore
-      async getAuthenticationLogs(pageNumber = 1, rowsPerPage = 200) {
+      async getAuthenticationLogs(pageNumber = 1, rowsPerPage = 500) {
         return await fetchJSON(`${this.url}?page=${pageNumber}&rows=${rowsPerPage}`);
       },
     },
