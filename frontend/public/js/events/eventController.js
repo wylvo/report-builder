@@ -174,9 +174,9 @@ const controlPages = async function (page, targetView) {
 };
 
 /*
- *************************************************************
- * INITIALIZE ALL HANDLERS, AND RENDER ALL EXISTING REPORTS  *
- *************************************************************
+ *********************************************************
+ * INITIALIZE ALL HANDLERS, AND RENDER ALL EXISTING LOGS *
+ *********************************************************
  */
 const init = async function () {
   try {
@@ -189,8 +189,8 @@ const init = async function () {
     model.state.search.pageAuthenticationLogs = 1;
 
     // Initialize table & rows per page
-    model.state.rowsPerPage = 5; // paginationView.rowsPerPage();
-    model.state.rowsPerPageAuthenticationLogs = 5;
+    model.state.rowsPerPage = 50; // paginationView.rowsPerPage();
+    model.state.rowsPerPageAuthenticationLogs = 50;
 
     controlRenderAllLogs(activityLogTableView);
     controlRenderAllLogs(authenticationLogTableView);
