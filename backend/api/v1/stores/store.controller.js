@@ -84,6 +84,15 @@ export const validateHardDelete = validateBody(
 );
 
 export const deleteStore = catchAsync(async (req, res, next) => {
+  // EXTRA check if user is not an admin return an error
+  if (req.user.role !== "Admin")
+    return next(
+      new GlobalError(
+        "You do not have permission to perform this operation.",
+        403
+      )
+    );
+
   const number = req.params.number;
 
   const store = await Stores.findByNumber(number);
@@ -93,12 +102,11 @@ export const deleteStore = catchAsync(async (req, res, next) => {
       new GlobalError(`Store not found with number: ${number}.`, 404)
     );
 
-  // EXTRA check if user is not an admin return an error
-  if (req.user.role !== "Admin")
+  if (store.reports > 0)
     return next(
       new GlobalError(
-        "You do not have permission to perform this operation.",
-        403
+        `Unable to delete store number: ${number}. Found ${store.reports} reports related to this store.`,
+        401
       )
     );
 

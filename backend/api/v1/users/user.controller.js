@@ -119,6 +119,26 @@ export const deleteUser = catchAsync(async (req, res, next) => {
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
 
+  const data = await Users.reportRelationshipsByUserId(user.id);
+
+  console.log(data);
+
+  if (user.username !== data.username)
+    return next(
+      new GlobalError(
+        `Username fetched does not match with user id: ${id}.`,
+        401
+      )
+    );
+
+  if (data.reports > 0)
+    return next(
+      new GlobalError(
+        `Unable to delete user id: ${id}. Found ${data.reports} reports related to this user.`,
+        401
+      )
+    );
+
   await Users.delete(user);
 
   res.status(204).json({

@@ -87,6 +87,15 @@ export const validateHardDelete = validateBody(
 );
 
 export const deleteDistrictManager = catchAsync(async (req, res, next) => {
+  // EXTRA check if user is not an admin return an error
+  if (req.user.role !== "Admin")
+    return next(
+      new GlobalError(
+        "You do not have permission to perform this operation.",
+        403
+      )
+    );
+
   const id = req.params.id;
 
   const districtManager = await DistrictManagers.findById(id);
@@ -96,12 +105,11 @@ export const deleteDistrictManager = catchAsync(async (req, res, next) => {
       new GlobalError(`District manager not found with id: ${id}.`, 404)
     );
 
-  // EXTRA check if user is not an admin return an error
-  if (req.user.role !== "Admin")
+  if (districtManager.storeNumbers && districtManager.storeNumbers.length > 0)
     return next(
       new GlobalError(
-        "You do not have permission to perform this operation.",
-        403
+        `Unable to delete district manager with id: ${id}. Found ${districtManager.storeNumbers.length} stores assigned to this district manager.`,
+        401
       )
     );
 
