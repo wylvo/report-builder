@@ -65,6 +65,15 @@ export const signIn = catchAsync(async (req, res, next) => {
 
   const user = await Users.findByEmail(email);
 
+  // Check if user is active
+  if (!user.active)
+    return next(
+      new GlobalError(
+        "You account has been deactivated. Please contact your administrator.",
+        401
+      )
+    );
+
   // Check if user exists && provided password is valid
   if (!user || !(await comparePasswords(password, user.password)))
     return next(new GlobalError("Incorrect email or password", 401));
@@ -118,6 +127,15 @@ export const protect = catchAsync(async (req, res, next) => {
       )
     );
   }
+
+  // Check if user is active
+  if (!currentUser.active)
+    return next(
+      new GlobalError(
+        "You account has been deactivated. Please contact your administrator.",
+        401
+      )
+    );
 
   // Check if user changed password after the token was issued
   if (hasResetPassword(currentUser, decoded.iat)) {

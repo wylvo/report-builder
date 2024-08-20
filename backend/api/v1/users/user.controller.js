@@ -127,7 +127,7 @@ export const deleteUser = catchAsync(async (req, res, next) => {
     return next(
       new GlobalError(
         `Username fetched does not match with user id: ${id}.`,
-        401
+        400
       )
     );
 
@@ -135,7 +135,7 @@ export const deleteUser = catchAsync(async (req, res, next) => {
     return next(
       new GlobalError(
         `Unable to delete user id: ${id}. Found ${data.reports} reports related to this user.`,
-        401
+        400
       )
     );
 

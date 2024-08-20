@@ -90,7 +90,7 @@ export const Users = {
     const {
       output: { reports },
     } = await mssql()
-      .request.input("id", INT, id)
+      .request.input("userId", INT, id)
       .output("reports", NVARCHAR)
       .execute("api_v1_users_getReportRelationshipsByUserId");
 

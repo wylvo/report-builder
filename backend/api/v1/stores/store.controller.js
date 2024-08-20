@@ -106,7 +106,7 @@ export const deleteStore = catchAsync(async (req, res, next) => {
     return next(
       new GlobalError(
         `Unable to delete store number: ${number}. Found ${store.reports} reports related to this store.`,
-        401
+        400
       )
     );
 

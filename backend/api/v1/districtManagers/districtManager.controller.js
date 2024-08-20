@@ -109,7 +109,7 @@ export const deleteDistrictManager = catchAsync(async (req, res, next) => {
     return next(
       new GlobalError(
         `Unable to delete district manager with id: ${id}. Found ${districtManager.storeNumbers.length} stores assigned to this district manager.`,
-        401
+        400
       )
     );
 

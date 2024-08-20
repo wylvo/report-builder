@@ -29,7 +29,7 @@ const sendErrorDev = (err, req, res) => {
   // API error
   if (
     req.originalUrl.startsWith("/api") ||
-    req.originalUrl.startsWith("/signin")
+    req.originalUrl.startsWith("/auth/signin")
   ) {
     // Trusted error: send message to client
     return res.status(err.statusCode).json({
@@ -55,7 +55,7 @@ const sendErrorProd = (err, req, res) => {
   // API error
   if (
     req.originalUrl.startsWith("/api") ||
-    req.originalUrl.startsWith("/signin")
+    req.originalUrl.startsWith("/auth/signin")
   ) {
     // Trusted error: send message to client
     if (err.isTrusted) {
