@@ -172,6 +172,24 @@ export const getMe = (req, res, next) => {
   next();
 };
 
+export const getUserReportRelationshipsByUserId = async (req, res, next) => {
+  const id = req.params.id;
+
+  const user = await Users.findById(id);
+
+  if (!user)
+    return next(new GlobalError(`User not found with id: ${id}.`, 404));
+
+  const userReportRelationships = await Users.reportRelationshipsByUserId(
+    user.id
+  );
+
+  res.status(200).json({
+    status: "success",
+    data: userReportRelationships,
+  });
+};
+
 export {
   resetUserPassword,
   validateResetPassword,

@@ -22,6 +22,7 @@ import {
   validateBody,
   catchAsync,
   GlobalError,
+  cliLogger,
 } from "../../router.js";
 
 // prettier-ignore

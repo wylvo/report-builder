@@ -85,6 +85,18 @@ export const Users = {
     return JSON.parse(user);
   },
 
+  // GET USER REPORT RELATIONSHIPS BY USER ID
+  async reportRelationshipsByUserId(id) {
+    const {
+      output: { reports },
+    } = await mssql()
+      .request.input("id", INT, id)
+      .output("reports", NVARCHAR)
+      .execute("api_v1_users_getReportRelationshipsByUserId");
+
+    return JSON.parse(reports);
+  },
+
   // GET ALL USERS
   async all(pageNumber = 1, rowsPerPage = 200, frontend = false) {
     rowsPerPage =

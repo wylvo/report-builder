@@ -37,6 +37,8 @@ router
 router.put("/:id/enable", user.enableUser);
 router.put("/:id/disable", user.disableUser);
 
+router.get("/reportRelationships/:id", user.getUserReportRelationshipsByUserId);
+
 // Handle password resets in separate module
 router.use("/:id/resetPassword", user.getUserId, resetPasswordRouter);
 

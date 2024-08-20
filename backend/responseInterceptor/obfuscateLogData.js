@@ -1,6 +1,6 @@
 import config from "../config/server.config.js";
 
-const sensitiveKeys = Object.values(config.request.sensitiveKeys);
+const sensitiveKeys = Object.values(config.logs.sensitiveKeys);
 
 // Used to obfuscate senstitive information from logs, such as passwords
 const obfuscateLogData = (data) => {

@@ -41,17 +41,17 @@ const config = {
         maxSize: "20m",
       },
     },
+    // object key values to obfuscate in the request body
+    sensitiveKeys: {
+      passwordConfirmation: "passwordConfirmation",
+      password: "password",
+    },
   },
   request: {
     byteLimit: "2mb",
     type: "*/*",
     import: {
       reportCountLimit: 500, // 1 report is around 3 800 bytes. 3 800 bytes * 500 reports = 1,900,000 bytes or 1.9 MB
-    },
-    // object key values to obfuscate in the request body
-    sensitiveKeys: {
-      passwordConfirmation: "passwordConfirmation",
-      password: "password",
     },
   },
   validation: {
@@ -75,9 +75,6 @@ const config = {
     microsoftTeams: {
       url: process.env.MS_TEAMS_WEBHOOK_URL,
     },
-  },
-  misc: {
-    defaultProfilePicture: "/img/default_profile_picture.jpg",
   },
 };
 
