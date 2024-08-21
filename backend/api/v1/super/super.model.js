@@ -12,10 +12,11 @@ export const Super = {
     resetSuperPassword: superSchema.resetSuperPassword,
   },
 
+  // RESET EXISTING SUPER PASSWORD
   async resetSuperPassword(userId, newPassword) {
     await mssql()
       .request.input("userId", INT, userId)
-      .input("password", VARCHAR, await hashPassword(newPassword))
+      .input("hash", VARCHAR, await hashPassword(newPassword))
       .execute("api_v1_super_update_superPassword");
   },
 
@@ -28,7 +29,7 @@ export const Super = {
     } = await request
       .input("userId", INT, userId)
       .output("hash", VARCHAR)
-      .execute("api_v1_super_getPassword");
+      .execute("api_v1_super_getSuperPassword");
 
     return password;
   },

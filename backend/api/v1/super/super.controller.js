@@ -1,12 +1,7 @@
 import bcrypt from "bcrypt";
 import { checkSchema } from "express-validator";
 
-import {
-  validateBody,
-  catchAsync,
-  GlobalError,
-  hashPassword,
-} from "../router.js";
+import { validateBody, catchAsync, GlobalError } from "../router.js";
 import { Super } from "./super.model.js";
 
 export const validateResetSuperPassword = validateBody(
@@ -30,7 +25,7 @@ export const resetSuperPassword = catchAsync(async (req, res, next) => {
 
   delete req.body.currentPassword;
 
-  Super.resetSuperPassword(req.user.id, req.body.newPassword);
+  await Super.resetSuperPassword(req.user.id, req.body.newPassword);
 
   delete req.body.newPassword;
 

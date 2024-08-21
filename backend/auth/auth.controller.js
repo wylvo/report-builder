@@ -62,10 +62,15 @@ export const validateSignIn = validateBody(checkSchema, Users.schema.signIn);
 export const signIn = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
-  const user = await Users.findByEmail(email);
+  let user = await Users.findByEmail(email);
+  console.log(user);
 
-  // Check if user is active
-  if (!user.active)
+  // Disable user if it has more than 5 consecutive failed authentication attempts
+  if (user && user.failedAuthenticationAttempts > 5)
+    user = await Users.disable(user);
+
+  // Check if user is active, and no more than 5 consecutive failed authentication attempts
+  if (user && !user.active)
     return next(
       new GlobalError(
         "You account has been deactivated. Please contact your administrator.",
@@ -74,10 +79,16 @@ export const signIn = catchAsync(async (req, res, next) => {
     );
 
   // Check if user exists && provided password is valid
-  if (!user || !(await comparePasswords(password, user.password)))
+  if (!user || !(await comparePasswords(password, user.password))) {
+    Users.incrementFailedAuthenticationAttempt(user.id);
     return next(new GlobalError("Incorrect email or password", 401));
+  }
 
-  // If everything is ok, send the token to client
+  // If everything is ok, reset user failed authentication attempts if more than 1
+  if (user.failedAuthenticationAttempts > 0)
+    Users.resetFailedAuthenticationAttempt(user);
+
+  // Send the token to the client
   createJWT(user, res, 200);
 });
 

@@ -199,10 +199,25 @@ export const Users = {
     return JSON.parse(userUpdated);
   },
 
+  // RESET A USER PASSWORD
   async resetPassword(userId, newPassword) {
-    await mssql()
+    return mssql()
       .request.input("userId", INT, userId)
       .input("password", VARCHAR, await hashPassword(newPassword))
       .execute("api_v1_users_update_password");
+  },
+
+  // INCREMENT A USER FAILED AUTHENTICATION ATTEMPT
+  async incrementFailedAuthenticationAttempt(user) {
+    await mssql()
+      .request.input("userId", INT, user.id)
+      .execute("api_v1_users_increment_failedAuthenticationAttempts");
+  },
+
+  // RESET A USER FAILED AUTHENTICATION ATTEMPT
+  async resetFailedAuthenticationAttempt(user) {
+    await mssql()
+      .request.input("userId", INT, user.id)
+      .execute("api_v1_users_reset_failedAuthenticationAttempts");
   },
 };
