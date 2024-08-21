@@ -21,9 +21,8 @@ const comparePasswords = (password, hash) => {
 const hasResetPassword = function (user, JWTTimestamp) {
   if (user.passwordResetAt) {
     const d = new Date(user.passwordResetAt);
-    const tz = 4;
     const changedTimestamp = parseInt(
-      new Date(d.setHours(d.getHours() + tz)).getTime() / 1000,
+      new Date(d.setHours(d.getHours())).getTime() / 1000,
       10
     );
     return JWTTimestamp < changedTimestamp;

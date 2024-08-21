@@ -1,9 +1,7 @@
-import bcrypt from "bcrypt";
 import { checkSchema } from "express-validator";
 
 import { validateBody, catchAsync, GlobalError } from "../router.js";
 import { DistrictManagers } from "./districtManager.model.js";
-import { Super } from "../super/super.model.js";
 
 export const getAllDistrictManagers = catchAsync(async (req, res, next) => {
   const { page, rows } = req.query;
@@ -19,7 +17,7 @@ export const getAllDistrictManagers = catchAsync(async (req, res, next) => {
 
 export const validateCreate = validateBody(
   checkSchema,
-  DistrictManagers.validation.create
+  DistrictManagers.schema.create
 );
 
 export const createDistrictManager = catchAsync(async (req, res, next) => {
@@ -49,7 +47,7 @@ export const getDistrictManager = catchAsync(async (req, res, next) => {
 
 export const validateUpdate = validateBody(
   checkSchema,
-  DistrictManagers.validation.update
+  DistrictManagers.schema.update
 );
 
 export const updateDistrictManager = catchAsync(async (req, res, next) => {
@@ -81,11 +79,6 @@ export const updateDistrictManager = catchAsync(async (req, res, next) => {
   });
 });
 
-export const validateHardDelete = validateBody(
-  checkSchema,
-  DistrictManagers.validation.hardDelete
-);
-
 export const deleteDistrictManager = catchAsync(async (req, res, next) => {
   // EXTRA check if user is not an admin return an error
   if (req.user.role !== "Admin")
@@ -110,17 +103,6 @@ export const deleteDistrictManager = catchAsync(async (req, res, next) => {
       new GlobalError(
         `Unable to delete district manager with id: ${id}. Found ${districtManager.storeNumbers.length} stores assigned to this district manager.`,
         400
-      )
-    );
-
-  const password = await Super.getSuperPassword(req.user.id);
-
-  // For additional security, require for a password
-  if (!(await bcrypt.compare(req.body.password, password)))
-    return next(
-      new GlobalError(
-        "You do not have permission to perform this operation. Please contact your administrator.",
-        403
       )
     );
 

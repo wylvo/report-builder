@@ -2,14 +2,7 @@ import { checkSchema } from "express-validator";
 
 import { Users } from "../user.model.js";
 import { filterUserData } from "../user.controller.js";
-import {
-  mssql,
-  mssqlDataTypes,
-  hashPassword,
-  catchAsync,
-  GlobalError,
-  validateBody,
-} from "../../router.js";
+import { catchAsync, GlobalError, validateBody } from "../../router.js";
 
 export const validateResetPassword = validateBody(
   checkSchema,
@@ -18,17 +11,18 @@ export const validateResetPassword = validateBody(
 
 export const resetUserPassword = catchAsync(async (req, res, next) => {
   const id = req.userId;
-  req.userId = undefined;
-  req.body.passwordConfirmation = undefined;
+
+  delete req.userId;
+  delete req.body.passwordConfirmation;
 
   const user = await Users.findById(id);
 
   if (!user)
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
 
-  await Users.resetPassword(req.body, user);
+  await Users.resetPassword(user.id, req.body.password);
 
-  req.body.password = undefined;
+  delete req.body.password;
 
   res.status(201).json({
     status: "success",

@@ -9,7 +9,7 @@ const router = express.Router();
  * /api/v1/districtManagers      (GET & POST)
  * /api/v1/districtManagers/:id  (GET, PUT & DELETE)
  */
-// router.use(auth.restrictTo("Admin"));
+router.use(auth.restrictTo("Admin"));
 
 router
   .route("/")
@@ -20,9 +20,6 @@ router
   .route("/:id")
   .get(districtManager.getDistrictManager)
   .put(districtManager.validateUpdate, districtManager.updateDistrictManager)
-  .delete(
-    districtManager.validateHardDelete,
-    districtManager.deleteDistrictManager
-  );
+  .delete(districtManager.deleteDistrictManager);
 
 export { router as districtManagerRouter };

@@ -12,6 +12,7 @@ import { districtManagerRouter } from "./districtManagers/districtManager.router
 import { statsRouter } from "./stats/stats.router.js";
 import { activityLogRouter } from "./activityLog/activityLog.router.js";
 import { authenticationLogRouter } from "./authenticationLog/authenticationLog.router.js";
+import { superRouter } from "./super/super.router.js";
 
 const router = express.Router();
 
@@ -32,6 +33,7 @@ router.use("/districtManagers", districtManagerRouter); // - /api/v1/districtMan
 router.use("/stats", statsRouter); // - /api/v1/stats
 router.use("/activityLog", activityLogRouter); // - /api/v1/activityLog
 router.use("/authenticationLog", authenticationLogRouter); // - /api/v1/authenticationLog
+router.use("/super", superRouter); // - /api/v1/super
 
 export { httpLogger } from "../../logs/logger.js";
 export { mssql, mssqlDataTypes } from "../../config/db.config.js";

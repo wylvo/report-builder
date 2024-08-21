@@ -1,9 +1,7 @@
-import bcrypt from "bcrypt";
 import { ExpressValidator } from "express-validator";
 
 import { validateBody, catchAsync, GlobalError } from "../router.js";
 import { Stores, isValidDistrictManagerUsername } from "./store.model.js";
-import { Super } from "../super/super.model.js";
 
 const { checkSchema } = new ExpressValidator({
   isValidDistrictManagerUsername,
@@ -21,10 +19,7 @@ export const getAllStores = catchAsync(async (req, res, next) => {
   });
 });
 
-export const validateCreate = validateBody(
-  checkSchema,
-  Stores.validation.create
-);
+export const validateCreate = validateBody(checkSchema, Stores.schema.create);
 
 export const createStore = catchAsync(async (req, res, next) => {
   const store = await Stores.create(req.body, req.districtManagerId);
@@ -51,10 +46,7 @@ export const getStore = catchAsync(async (req, res, next) => {
   });
 });
 
-export const validateUpdate = validateBody(
-  checkSchema,
-  Stores.validation.update
-);
+export const validateUpdate = validateBody(checkSchema, Stores.schema.update);
 
 export const updateStore = catchAsync(async (req, res, next) => {
   const number = req.params.number;
@@ -77,11 +69,6 @@ export const updateStore = catchAsync(async (req, res, next) => {
     data: storeUpdated,
   });
 });
-
-export const validateHardDelete = validateBody(
-  checkSchema,
-  Stores.validation.hardDelete
-);
 
 export const deleteStore = catchAsync(async (req, res, next) => {
   // EXTRA check if user is not an admin return an error
@@ -107,17 +94,6 @@ export const deleteStore = catchAsync(async (req, res, next) => {
       new GlobalError(
         `Unable to delete store number: ${number}. Found ${store.reports} reports related to this store.`,
         400
-      )
-    );
-
-  const password = await Super.getSuperPassword(req.user.id);
-
-  // For additional security, require for a password
-  if (!(await bcrypt.compare(req.body.password, password)))
-    return next(
-      new GlobalError(
-        "You do not have permission to perform this operation. Please contact your administrator.",
-        403
       )
     );
 

@@ -90,7 +90,7 @@ export const Reports = {
    * HARD DELETING A REPORT   /api/v1/reports/:id     (DELETE)
    * IMPORTING REPORTS        /api/v1/reports/import  (POST)
    **/
-  validation: {
+  schema: {
     create: reportSchema.create,
     update: reportSchema.update,
     hardDelete: reportSchema.hardDelete,

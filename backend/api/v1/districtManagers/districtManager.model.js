@@ -35,12 +35,10 @@ export const DistrictManagers = {
    * MIDDLEWARE VALIDATION BEFORE:
    * CREATING A DISTRICT MANAGER    /api/v1/districtManagers      (POST)
    * UPDATING A DISTRICT MANAGER    /api/v1/districtManagers/:id  (PUT)
-   * DELETING A DISTRICT MANAGER    /api/v1/districtManagers/:id  (DELETE)
    **/
-  validation: {
+  schema: {
     create: districtManagerSchema.create,
     update: districtManagerSchema.update,
-    hardDelete: districtManagerSchema.hardDelete,
   },
 
   // GET SINGLE DISTRICT MANAGER BY ID

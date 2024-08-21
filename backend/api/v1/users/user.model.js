@@ -199,16 +199,10 @@ export const Users = {
     return JSON.parse(userUpdated);
   },
 
-  async resetPassword(body, user) {
-    // Set new password
-    user.password = await hashPassword(body.password);
-    body = undefined;
-
-    const {
-      output: { user: userUpdated },
-    } = await mssql()
-      .request.input("userId", INT, user.id)
-      .input("password", VARCHAR, user.password)
+  async resetPassword(userId, newPassword) {
+    await mssql()
+      .request.input("userId", INT, userId)
+      .input("password", VARCHAR, await hashPassword(newPassword))
       .execute("api_v1_users_update_password");
   },
 };

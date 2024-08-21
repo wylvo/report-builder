@@ -41,7 +41,7 @@ export const validateBodyIsArray = catchAsync(async (req, res, next) => {
 
 export const validateImport = validateBody(
   checkSchema,
-  Reports.validation.import,
+  Reports.schema.import,
   false
 );
 

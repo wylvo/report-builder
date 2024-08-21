@@ -51,10 +51,7 @@ export const getAllSoftDeletedReports = catchAsync(async (req, res, next) => {
   });
 });
 
-export const validateCreate = validateBody(
-  checkSchema,
-  Reports.validation.create
-);
+export const validateCreate = validateBody(checkSchema, Reports.schema.create);
 
 export const createReport = catchAsync(async (req, res, next) => {
   const startTime = Date.now();
@@ -97,10 +94,7 @@ export const getReport = catchAsync(async (req, res, next) => {
   });
 });
 
-export const validateUpdate = validateBody(
-  checkSchema,
-  Reports.validation.update
-);
+export const validateUpdate = validateBody(checkSchema, Reports.schema.update);
 
 export const updateReport = catchAsync(async (req, res, next) => {
   const id = req.params.id;
@@ -154,7 +148,7 @@ export const updateReport = catchAsync(async (req, res, next) => {
 
 export const validateHardDelete = validateBody(
   checkSchema,
-  Reports.validation.hardDelete
+  Reports.schema.hardDelete
 );
 
 export const deleteReport = catchAsync(async (req, res, next) => {
@@ -181,7 +175,7 @@ export const deleteReport = catchAsync(async (req, res, next) => {
     const password = await Super.getSuperPassword(req.user.id, transaction);
 
     // For additional security, require for a password
-    if (!(await bcrypt.compare(req.body.password, password)))
+    if (password && !(await bcrypt.compare(req.body.password, password)))
       return next(
         new GlobalError(
           "You do not have permission to perform this operation. Please contact your administrator.",

@@ -1,7 +1,6 @@
 import { checkSchema } from "express-validator";
 
 import { Users } from "./user.model.js";
-import { Reports } from "../reports/report.model.js";
 import { validateBody, catchAsync, GlobalError } from "../router.js";
 
 export const filterObject = (obj, ...allowedFields) => {
@@ -120,8 +119,6 @@ export const deleteUser = catchAsync(async (req, res, next) => {
     return next(new GlobalError(`User not found with id: ${id}.`, 404));
 
   const data = await Users.reportRelationshipsByUserId(user.id);
-
-  console.log(data);
 
   if (user.username !== data.username)
     return next(

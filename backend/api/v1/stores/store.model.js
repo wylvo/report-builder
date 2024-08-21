@@ -11,12 +11,10 @@ export const Stores = {
    * MIDDLEWARE VALIDATION BEFORE:
    * CREATING A STORE     /api/v1/stores          (POST)
    * UPDATING A STORE     /api/v1/stores/:number  (PUT)
-   * DELETING A STORE     /api/v1/stores/:number  (DELETE)
    **/
-  validation: {
+  schema: {
     create: storeSchema.create,
     update: storeSchema.update,
-    hardDelete: storeSchema.hardDelete,
   },
 
   // GET SINGLE STORE BY ID

@@ -108,17 +108,7 @@ const UPDATE = {
   },
 };
 
-// VALIDATION TO HARD DELETE A DISTRICT MANAGER
-const HARD_DELETE = {
-  password: {
-    exists: { errorMessage: "required.", bail: true },
-    notEmpty: { errorMessage: "can't be empty.", bail: true },
-    isString: { errorMessage: "should be a string" },
-  },
-};
-
 export default {
   create: { ...CREATE },
   update: { ...UPDATE },
-  hardDelete: { ...HARD_DELETE },
 };

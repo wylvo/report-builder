@@ -9,7 +9,7 @@ const router = express.Router();
  * /api/v1/stores      (GET & POST)
  * /api/v1/stores/:number  (GET, PUT & DELETE)
  */
-// router.use(auth.restrictTo("Admin"));
+router.use(auth.restrictTo("Admin"));
 
 router
   .route("/")
@@ -20,6 +20,6 @@ router
   .route("/:number")
   .get(store.getStore)
   .put(store.validateUpdate, store.updateStore)
-  .delete(store.validateHardDelete, store.deleteStore);
+  .delete(store.deleteStore);
 
 export { router as storeRouter };

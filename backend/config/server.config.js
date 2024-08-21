@@ -45,6 +45,9 @@ const config = {
     sensitiveKeys: {
       passwordConfirmation: "passwordConfirmation",
       password: "password",
+      currentPassword: "currentPassword",
+      newPassword: "newPassword",
+      newPasswordConfirmation: "newPasswordConfirmation",
     },
   },
   request: {

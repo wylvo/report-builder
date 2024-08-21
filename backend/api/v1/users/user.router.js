@@ -14,7 +14,7 @@ router.get("/account", user.getMe, user.getUser);
 router.get("/frontend", user.getAllUsersFrontend);
 
 // Restrict the following routes to admin role after this middleware
-// router.use(auth.restrictTo("Admin"));
+router.use(auth.restrictTo("Admin"));
 
 /** ROUTES restricted to "Admin" role
  * /api/v1/users                    (GET & POST)

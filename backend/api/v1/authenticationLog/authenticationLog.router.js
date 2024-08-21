@@ -7,9 +7,8 @@ const router = express.Router();
 
 /** ROUTES restricted to "Admin" role
  * /api/v1/authenticationLog      (GET)
- * /api/v1/authenticationLog/:id  (GET)
  */
-// router.use(auth.restrictTo("Admin"));
+router.use(auth.restrictTo("Admin"));
 
 router.get("/", authenticationLog.getAllAuthenticationLogs);
 

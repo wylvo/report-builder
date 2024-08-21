@@ -4,7 +4,7 @@ import * as formData from "./formData.controller.js";
 
 const router = express.Router();
 
-/** ROUTE
+/** ROUTE unrestricted
  * /api/v1/formData (GET)
  */
 router.get("/", formData.synchonizeFormData);
