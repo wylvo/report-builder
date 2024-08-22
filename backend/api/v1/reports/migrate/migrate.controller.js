@@ -72,9 +72,16 @@ export const migrateReport = catchAsync(async (req, res, next) => {
       const hasAudioInIncidentDetails = ["mib", "audio", "music"].some((word) =>
         detailsArray.includes(word)
       );
+      const hasPrinterInIncidentDetails = ["printer", "xerox", "epson"].some(
+        (word) => detailsArray.includes(word)
+      );
       if (hasAudioInIncidentDetails) {
         if (!report.incident.types.includes("Audio"))
           report.incident.types.push("Audio");
+      }
+      if (hasPrinterInIncidentDetails) {
+        if (!report.incident.types.includes("Printer"))
+          report.incident.types.push("Printer");
       }
     }
     if (details === "") report.incident.details = "None";

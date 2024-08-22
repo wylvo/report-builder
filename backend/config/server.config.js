@@ -54,7 +54,7 @@ const config = {
     byteLimit: "2mb",
     type: "*/*",
     import: {
-      reportCountLimit: 500, // 1 report is around 3 800 bytes. 3 800 bytes * 500 reports = 1,900,000 bytes or 1.9 MB
+      reportCountLimit: 700, // 1 report is around 3 800 bytes. 3 800 bytes * 500 reports = 1,900,000 bytes or 1.9 MB
     },
   },
   validation: {
@@ -66,6 +66,11 @@ const config = {
       incidentTypes: [],
       incidentTransactionTypes: [],
       users: [],
+    },
+    onCall: {
+      startTime: { hours: 8, minutes: 30 },
+      endTime: { hours: 17, minutes: 30 },
+      excludeWeekends: true,
     },
     defaultProfilePicture: "/img/default_profile_picture.jpg",
   },

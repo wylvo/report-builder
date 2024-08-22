@@ -23,7 +23,7 @@ export const isValidUsername = async (value, { req }) => {
   return true;
 };
 
-// Custom validation to check if new username does not exists in DB
+// Custom validation to check if a new username does not exists in DB
 export const isValidNewUsername = async (value, { req }) => {
   const user = await Users.findByUsername(value);
 
@@ -177,12 +177,15 @@ export const Users = {
 
   // ENABLE A USER
   async enable(user) {
-    const {
+    let {
       output: { user: userUpdated },
     } = await mssql()
       .request.input("userId", INT, user.id)
       .output("user", NVARCHAR)
       .execute("api_v1_users_enable");
+
+    if (user.failedAuthenticationAttempts > 0)
+      userUpdated = await this.resetFailedAuthenticationAttempt(user, false);
 
     return JSON.parse(userUpdated);
   },
@@ -209,15 +212,25 @@ export const Users = {
 
   // INCREMENT A USER FAILED AUTHENTICATION ATTEMPT
   async incrementFailedAuthenticationAttempt(user) {
-    await mssql()
+    const {
+      output: { user: userUpdated },
+    } = await mssql()
       .request.input("userId", INT, user.id)
+      .output("user", NVARCHAR)
       .execute("api_v1_users_increment_failedAuthenticationAttempts");
+
+    return JSON.parse(userUpdated);
   },
 
   // RESET A USER FAILED AUTHENTICATION ATTEMPT
-  async resetFailedAuthenticationAttempt(user) {
-    await mssql()
+  async resetFailedAuthenticationAttempt(user, parseJSON = true) {
+    const {
+      output: { user: userUpdated },
+    } = await mssql()
       .request.input("userId", INT, user.id)
+      .output("user", NVARCHAR)
       .execute("api_v1_users_reset_failedAuthenticationAttempts");
+
+    return parseJSON ? JSON.parse(userUpdated) : userUpdated;
   },
 };

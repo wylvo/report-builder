@@ -120,6 +120,14 @@ export const updateReport = catchAsync(async (req, res, next) => {
       )
     );
 
+  if (req.user.role === "User" && req.user.username !== report.createdBy)
+    return next(
+      new GlobalError(
+        `This report belongs to ${report.createdBy}. You are not allowed to make changes on this report.`,
+        403
+      )
+    );
+
   const startTime = Date.now();
   const transaction = mssql().transaction;
 
@@ -212,6 +220,14 @@ export const softDeleteReport = async (req, res, next) => {
       )
     );
 
+  if (req.user.role === "User" && req.user.username !== report.createdBy)
+    return next(
+      new GlobalError(
+        `This report belongs to ${report.createdBy}. You are not allowed to make changes on this report.`,
+        403
+      )
+    );
+
   const reportUpdated = await Reports.softDelete(report);
 
   res.status(200).json({
@@ -231,6 +247,14 @@ export const undoSoftDeleteReport = async (req, res, next) => {
   if (report.isDeleted === false)
     return next(
       new GlobalError(`Report is not marked as deleted with id: ${id}.`, 400)
+    );
+
+  if (req.user.role === "User" && req.user.username !== report.createdBy)
+    return next(
+      new GlobalError(
+        `This report belongs to ${report.createdBy}. You are not allowed to make changes on this report.`,
+        403
+      )
     );
 
   const reportUpdated = await Reports.undoSoftDelete(report);

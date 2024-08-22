@@ -63,30 +63,32 @@ export const signIn = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
   let user = await Users.findByEmail(email);
-  console.log(user);
 
-  // Disable user if it has more than 5 consecutive failed authentication attempts
-  if (user && user.failedAuthenticationAttempts > 5)
-    user = await Users.disable(user);
+  // Check if user exists
+  if (!user) return next(new GlobalError("Incorrect email or password", 401));
 
-  // Check if user is active, and no more than 5 consecutive failed authentication attempts
-  if (user && !user.active)
+  // Check if user is inactive
+  if (user.active === false)
     return next(
       new GlobalError(
-        "You account has been deactivated. Please contact your administrator.",
+        "Your account has been deactivated. Please contact your administrator.",
         401
       )
     );
 
-  // Check if user exists && provided password is valid
-  if (!user || !(await comparePasswords(password, user.password))) {
-    Users.incrementFailedAuthenticationAttempt(user.id);
+  // Check if provided password is valid
+  if (!(await comparePasswords(password, user.password))) {
+    user = await Users.incrementFailedAuthenticationAttempt(user);
+
+    // Disable user if it has more than 5 consecutive failed authentication attempts
+    if (user.failedAuthenticationAttempts >= 5) user = Users.disable(user);
+
     return next(new GlobalError("Incorrect email or password", 401));
   }
 
   // If everything is ok, reset user failed authentication attempts if more than 1
   if (user.failedAuthenticationAttempts > 0)
-    Users.resetFailedAuthenticationAttempt(user);
+    user = await Users.resetFailedAuthenticationAttempt(user);
 
   // Send the token to the client
   createJWT(user, res, 200);
