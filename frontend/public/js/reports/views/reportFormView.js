@@ -36,6 +36,9 @@ export class ReportFormView extends FormView {
     this._districtManagersContainer =
       this._form.querySelector(".district-managers");
 
+    // On-call time range form data
+    this.onCallTimeRange = {};
+
     // Buttons
     this._btnPaste = this._form.querySelector(".form-btn.paste");
     this._btnCopy = this._form.querySelector(".form-btn.copy");
@@ -61,7 +64,6 @@ export class ReportFormView extends FormView {
 
   // Initialize default handlers & expand accordions
   #init() {
-    this.newReport(true);
     this._expandAllAccordions();
     this._addHandlerTimestampNow();
     this._addHandlerCollapseExpandOrAccordion();
@@ -165,12 +167,20 @@ export class ReportFormView extends FormView {
     this._checkBoxes.get("phone-no-caller-id").checked = false;
     this._fields.get("phone-number").disabled = false;
 
+    this._selects.get("assigned-to").value = this.currentUser?.username;
+
+    if (this.isCurrentTimeOnCall())
+      this._checkBoxes.get("oncall").checked = true;
+
     this._transactionIssueSwitch();
     this.updateTextInputsLength();
 
     if(takeSnapshot) this._snapshot = this.takeSnapshot();
+
     this._btnTeams.disabled = true;
     this.#btnTeamsState = this._btnTeams.disabled;
+    this._btnSubmit.classList.remove("hidden");
+    this._btnTeams.classList.remove("hidden");
   }
 
   render(report) {
@@ -183,6 +193,14 @@ export class ReportFormView extends FormView {
     if (!report.isDeleted) {
       this._btnSubmit.classList.remove("hidden");
       this._btnTeams.classList.remove("hidden");
+    }
+
+    if (
+      this.currentUser?.username &&
+      this.currentUser.username !== report.createdBy
+    ) {
+      this._btnSubmit.classList.add("hidden");
+      this._btnTeams.classList.add("hidden");
     }
 
     this._tab.firstElementChild.textContent = report.incident.title;
@@ -336,15 +354,18 @@ export class ReportFormView extends FormView {
       </div>
     `;
 
+    const formatTimeAgo = (timeAgo) => {
+      const [timeNumber1, timeUnit1, timeNumber2, timeUnit2] = timeAgo.split(" ");
+      return [timeNumber1, timeUnit1, timeNumber2, timeUnit2, "ago"].join(" ");
+    }
+
     if (!this.users) return;
 
     const user = this.users.find((user) => user.username === report.createdBy);
     if (!user) return;
 
     const createdTimeAgo = this.timeAgo(report.createdAt);
-    const createdByElement = this.htmlStringToElement(
-      infoHtml("createdBy", user.username, user.profilePictureURI, createdTimeAgo)
-    );
+    const createdByElement = this.htmlStringToElement(infoHtml("createdBy", user.username, user.profilePictureURI, formatTimeAgo(createdTimeAgo)));
 
     this._info.appendChild(createdByElement);
     this._info.parentElement.classList.remove("hidden");
@@ -352,9 +373,7 @@ export class ReportFormView extends FormView {
 
     if (report.createdAt !== report.updatedAt) {
       const updatedTimeAgo = this.timeAgo(report.updatedAt);
-      const updatedByElement = this.htmlStringToElement(
-        infoHtml("updatedBy", user.username, user.profilePictureURI, updatedTimeAgo)
-      );
+      const updatedByElement = this.htmlStringToElement(infoHtml("updatedBy", user.username, user.profilePictureURI, formatTimeAgo(updatedTimeAgo)));
       this._info.appendChild(updatedByElement);
     }
   }
@@ -434,6 +453,34 @@ export class ReportFormView extends FormView {
       `
     );
     this._districtManagersContainer.appendChild(emtpyElement);
+  }
+
+  isCurrentTimeOnCall(date = undefined) {
+    date = !date ? (date = new Date(Date.now())) : date;
+    console.log(date);
+
+    const dayOfWeek = date.getDay();
+    const currentHours = date.getHours();
+    const currentMinutes = date.getMinutes();
+    const excludeWeekends = this.onCallTimeRange.excludeWeekends;
+
+    // Exclude weekends (0 = Sunday, 6 = Saturday)
+    if (excludeWeekends && (dayOfWeek === 0 || dayOfWeek === 6)) {
+      return true; // Entire weekend is considered on-call
+    }
+
+    const onCallStartTimeHours = this.onCallTimeRange.startTime.hours;
+    const onCallStartTimeMinutes = this.onCallTimeRange.startTime.minutes;
+    const onCallEndTimeHours = this.onCallTimeRange.endTime.hours;
+    const onCallEndTimeMinutes = this.onCallTimeRange.endTime.minutes;
+
+    // Convert times to minutes since midnight
+    const currentTime = currentHours * 60 + currentMinutes;
+    const startTime = onCallStartTimeHours * 60 + onCallStartTimeMinutes;
+    const endTime = onCallEndTimeHours * 60 + onCallEndTimeMinutes;
+
+    // Check if the time is outside the range
+    return currentTime < startTime || currentTime > endTime;
   }
 
   // prettier-ignore

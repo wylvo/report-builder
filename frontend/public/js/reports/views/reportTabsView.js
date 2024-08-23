@@ -13,7 +13,7 @@ class ReportTabsView extends TabsView {
     `;
   }
 
-  _generateFormHtml(formData, index) {
+  _generateFormHtml(formDataSelects, index) {
     const hidden = index !== 0 ? "hidden" : "";
     return `
       <form class="form" id="form_${index}" role="tabpanel" tabindex="0" ${hidden}>
@@ -101,7 +101,7 @@ class ReportTabsView extends TabsView {
                   class="status" 
                   required
                 >
-                  ${formData.selects.statuses.join("")}
+                  ${formDataSelects.statuses.join("")}
                 </select>
                 <label for="status_${index}">Status:</label>
               </div>
@@ -167,7 +167,7 @@ class ReportTabsView extends TabsView {
                   class="store-numbers" 
                   required
                 >
-                  ${formData.selects.storeNumbers.join("")}
+                  ${formDataSelects.storeNumbers.join("")}
                 </select>
                 <label for="store-numbers_${index}">Store Numbers:</label>
               </div>
@@ -264,7 +264,7 @@ class ReportTabsView extends TabsView {
                   class="incident-types"
                   required
                 >
-                  ${formData.selects.incidentTypes.join("")}
+                  ${formDataSelects.incidentTypes.join("")}
                 </select>
                 <label for="incident-types_${index}">Incident Types:</label>
               </div>
@@ -290,7 +290,7 @@ class ReportTabsView extends TabsView {
                   name="incident-pos-number"
                   class="incident-pos-number"
                 >
-                  ${formData.selects.pos.join("")}
+                  ${formDataSelects.pos.join("")}
                 </select>
                 <label for="incident-pos-number_${index}">POS Number:</label>
               </div>
@@ -334,7 +334,7 @@ class ReportTabsView extends TabsView {
                   name="transaction-types"
                   class="transaction-types"
                 >
-                  ${formData.selects.incidentTransactionTypes.join("")}
+                  ${formDataSelects.incidentTransactionTypes.join("")}
                 </select>
                 <label for="transaction-types_${index}">Transaction Types:</label>
               </div>
@@ -387,7 +387,7 @@ class ReportTabsView extends TabsView {
                   class="assigned-to"
                   required
                 >
-                  ${formData.selects.users.join("")}
+                  ${formDataSelects.users.join("")}
                 </select>
                 <label for="assigned-to_${index}">Assigned To:</label>
               </div>

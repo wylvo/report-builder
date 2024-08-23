@@ -67,7 +67,7 @@ const config = {
       incidentTransactionTypes: [],
       users: [],
     },
-    onCall: {
+    onCallTimeRange: {
       startTime: { hours: 8, minutes: 30 },
       endTime: { hours: 17, minutes: 30 },
       excludeWeekends: true,

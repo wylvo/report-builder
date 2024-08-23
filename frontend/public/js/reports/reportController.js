@@ -124,7 +124,7 @@ const controlNewReport = function () {
   controlUnhighlightReport(model.state.tab);
 
   model.clearTab(model.state.tab);
-  reportFormView.newReport((takeSnapshot = true));
+  reportFormView.newReport((takeSnapshot = true), model.state.user);
   reportTabsView.removeLocationHash();
 };
 
@@ -153,8 +153,6 @@ const controlRenderReport = function () {
       reportFormView.render(report);
 
       reportTableView.highlight(report.tableRowEl);
-
-      console.log(report);
     }
   } catch (error) {
     console.error(error);
@@ -563,10 +561,14 @@ const init = async function () {
 
     // Initialize list of users
     reportTabsView.users = model.state.usersFrontend;
+    reportTabsView.stores = model.state.stores;
     reportTableView.users = model.state.usersFrontend;
 
     // Initialize all tabs
-    reportTabsView.renderAll(model.state.formData, model.initNumberOfTabs(5));
+    reportTabsView.renderAll(
+      model.state.formData.selects,
+      model.initNumberOfTabs(5)
+    );
     reportFormView = reportTabsView.tabs.get(model.state.tab);
 
     model.state.search.pageDeletedView = 1;
@@ -574,9 +576,6 @@ const init = async function () {
     // Initialize all table rows per page
     model.state.rowsPerPage = paginationView.rowsPerPage();
     controlRenderAllReports();
-
-    // If id in hash render report
-    if (window.location.hash.slice(1)) controlRenderReport();
 
     // Tab view handlers
     reportTabsView.addHandlerClickTab(controlTabs);
@@ -589,15 +588,22 @@ const init = async function () {
 
     // Report view handlers per tabs
     reportTabsView.tabs.forEach((reportFormView) => {
+      // Initialize list of users, current user, and set new report
+      reportFormView.users = reportTabsView.users;
+      reportFormView.currentUser = model.state.user;
+      reportFormView.onCallTimeRange = model.state.formData.onCallTimeRange;
+
+      reportFormView.newReport(true);
+
       reportFormView.addHandlerPaste(controlPaste);
       reportFormView.addHandlerCopy(controlCopy);
       reportFormView.addHandlerNew(controlUnsavedReport, controlNewReport);
       reportFormView.addHandlerSave(controlSaveReport);
       reportFormView.addHandlerSend(controlSendReport);
-
-      // Initialize list of users
-      reportFormView.users = reportTabsView.users;
     });
+
+    // If id in hash render report
+    if (window.location.hash.slice(1)) controlRenderReport();
 
     // Table view handlers
     reportTableView.addHandlerClickAllDeletedReports(

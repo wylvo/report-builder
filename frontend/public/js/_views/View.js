@@ -1,6 +1,8 @@
 export default class View {
   _appVersion = document.querySelector("#app-version");
-  users;
+  users = [];
+  stores = [];
+  currentUser;
 
   // https://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery#answer-13510502
   #escapeHTML = (String.prototype.escapeHTML = function () {

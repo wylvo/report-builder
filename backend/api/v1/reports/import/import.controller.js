@@ -46,22 +46,24 @@ export const validateImport = validateBody(
   false
 );
 
-// prettier-ignore
 const isOnCall = (date) => {
   const dayOfWeek = date.getDay();
   const currentHours = date.getHours();
   const currentMinutes = date.getMinutes();
-  const excludeWeekends = config.validation.onCall.excludeWeekends
+  const excludeWeekends = config.validation.onCallTimeRange.excludeWeekends;
 
   // Exclude weekends (0 = Sunday, 6 = Saturday)
   if (excludeWeekends && (dayOfWeek === 0 || dayOfWeek === 6)) {
     return true; // Entire weekend is considered on-call
   }
 
-  const onCallStartTimeHours = config.validation.onCall.startTime.hours
-  const onCallStartTimeMinutes = config.validation.onCall.startTime.minutes
-  const onCallEndTimeHours = config.validation.onCall.endTime.hours
-  const onCallEndTimeMinutes = config.validation.onCall.endTime.minutes
+  const onCallStartTimeHours =
+    config.validation.onCallTimeRange.startTime.hours;
+  const onCallStartTimeMinutes =
+    config.validation.onCallTimeRange.startTime.minutes;
+  const onCallEndTimeHours = config.validation.onCallTimeRange.endTime.hours;
+  const onCallEndTimeMinutes =
+    config.validation.onCallTimeRange.endTime.minutes;
 
   // Convert times to minutes since midnight
   const currentTime = currentHours * 60 + currentMinutes;
@@ -70,7 +72,7 @@ const isOnCall = (date) => {
 
   // Check if the time is outside the range
   return currentTime < startTime || currentTime > endTime;
-}
+};
 
 // Custom validation to check if createdAt and updatedAt have proper time constraints
 // prettier-ignore

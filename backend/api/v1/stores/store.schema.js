@@ -156,6 +156,16 @@ const UPDATE = {
       errorMessage: "already in use.",
     },
   },
+  districtManager: {
+    optional: true,
+    notEmpty: { errorMessage: "can't be empty.", bail: true },
+    isString: { errorMessage: "should be a string." },
+    isLength: {
+      options: { max: 19 },
+      errorMessage: "invalid length, max of 19 characters allowed.",
+    },
+    isValidDistrictManagerUsername: {},
+  },
 };
 
 export default {

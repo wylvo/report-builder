@@ -32,22 +32,35 @@ export default class TabsView extends View {
     return this.htmlStringToElement(this._generateFormHtml(index));
   }
 
-  renderAll(formData, numberOfTabs = [0, 1, 2, 3, 4]) {
+  renderAll(formDataSelects, numberOfTabs = [0, 1, 2, 3, 4]) {
     this.#clearTabs();
     const tabsList = document.querySelector(".tab-list");
     const tabFormContainer = document.querySelector(".tabs-forms");
 
-    if (formData) {
-      console.log(formData);
-      Object.keys(formData.selects).forEach((key) => {
+    if (formDataSelects) {
+      // console.log(formDataSelects);
+      Object.keys(formDataSelects).forEach((key) => {
         if (key === "districtManagers") return;
 
-        formData.selects[key] = formData.selects[key].map((selectValue) => {
+        formDataSelects[key] = formDataSelects[key].map((selectValue) => {
           if (selectValue === null) return `<option value="">N/A</option>`;
           if (selectValue === "*") return;
           if (selectValue) {
             if (key === "users")
               return `<option value="${selectValue.username.escapeHTML()}">${selectValue.fullName.escapeHTML()}</option>`;
+
+            if (key === "storeNumbers") {
+              const store = this.stores.find(
+                (store) => store.number === selectValue
+              );
+              const formattedStore = store.name
+                ? `${selectValue.escapeHTML()} - ${store.name.escapeHTML()}`
+                : selectValue.escapeHTML();
+
+              const storeState = store.active === false ? "(Inactive)" : "";
+
+              return `<option value="${selectValue.escapeHTML()}">${formattedStore} ${storeState}</option>`;
+            }
             return `<option value="${selectValue.escapeHTML()}">${selectValue.escapeHTML()}</option>`;
           }
         });
@@ -57,7 +70,7 @@ export default class TabsView extends View {
     this.tabs = new Map(
       numberOfTabs.map((_, tabIndex) => {
         const tabElement = this.generateTabElement(tabIndex);
-        const formElement = this.generateFormElement(formData, tabIndex);
+        const formElement = this.generateFormElement(formDataSelects, tabIndex);
 
         tabsList.appendChild(tabElement);
         tabFormContainer.appendChild(formElement);
@@ -65,7 +78,7 @@ export default class TabsView extends View {
         const currentView = new this.targetView(tabElement, formElement);
 
         if (this.targetView.name === "ReportFormView") {
-          currentView.districtManagers = formData.selects.districtManagers;
+          currentView.districtManagers = formDataSelects.districtManagers;
           currentView.users = this.users;
         }
 

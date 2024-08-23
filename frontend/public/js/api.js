@@ -234,5 +234,14 @@ export default {
         return await fetchJSON(`${this.url}?page=${pageNumber}&rows=${rowsPerPage}`);
       },
     },
+
+    stores: {
+      url: "/api/v1/stores",
+
+      // prettier-ignore
+      async getAllStores(pageNumber = 1, rowsPerPage = 200) {
+        return await fetchJSON(`${this.url}?page=${pageNumber}&rows=${rowsPerPage}`);
+      },
+    },
   },
 };

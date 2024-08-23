@@ -1,5 +1,3 @@
-import api from "./api.js";
-
 export const state = {
   version: null,
   theme: localStorage.getItem("theme") || "light",
@@ -31,6 +29,9 @@ export const state = {
   reportsDeleted: [],
   reportsDeletedTotal: 0,
 
+  // Stores
+  stores: [],
+
   rowsPerPage: 50,
   search: {
     query: "",
@@ -48,6 +49,8 @@ export const state = {
       incidentTransactionTypes: [],
       users: [],
     },
+
+    onCallTimeRange: {},
   },
 };
 

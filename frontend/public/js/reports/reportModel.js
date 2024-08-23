@@ -36,6 +36,7 @@ const init = async () => {
     DB.getAllReports(page, rowsPerPage),
     DB.getAllSoftDeletedReports(page, rowsPerPage),
     DB.synchonizeFormData(),
+    DB.getAllStores(),
     userModel.DB.getUsersFrontend(),
     accountModel.DB.getCurrentUserAccount(),
   ]);
@@ -126,6 +127,7 @@ const DB = {
   },
 
   getReport: async (id) => {
+    // API request to get a single report from the database
     const {
       data: { data: report },
     } = await api.v1.reports.getReport(id);
@@ -213,6 +215,7 @@ const DB = {
   },
 
   importReports: async (reports) => {
+    // API request to import reports to the database
     const {
       data: { data },
     } = await api.v1.reports.import().importReports(reports);
@@ -221,6 +224,7 @@ const DB = {
   },
 
   migrateReports: async (reports) => {
+    // API request to migrate reports
     const {
       data: { data },
     } = await api.v1.reports.migrate().migrateReports(reports);
@@ -229,11 +233,20 @@ const DB = {
   },
 
   synchonizeFormData: async () => {
+    // API request to synchronize form data to get the latest data validation constraint
     const {
       data: { data },
     } = await api.v1.formData.synchonizeFormData();
 
-    state.formData.selects = data.selects;
+    state.formData = data;
+  },
+
+  getAllStores: async (page = 1, rowsPerPage = 200) => {
+    const {
+      data: { data },
+    } = await api.v1.stores.getAllStores(page, rowsPerPage);
+
+    state.stores = data;
   },
 };
 
@@ -347,7 +360,7 @@ const createReportObject = (report, form) => {
       status: form["status"].value.trim(),
     },
     store: {
-      numbers: selectedMutliselectOptionToArray(form["store-numbers"].options),
+      numbers: selectedMultiselectOptionsToArray(form["store-numbers"].options),
       employee: {
         name: form["store-employee"].value.trim(),
         isStoreManager: form["store-manager"].checked,
@@ -355,14 +368,14 @@ const createReportObject = (report, form) => {
     },
     incident: {
       title: form["incident-title"].value.trim(),
-      types: selectedMutliselectOptionToArray(form["incident-types"].options),
+      types: selectedMultiselectOptionsToArray(form["incident-types"].options),
       pos: form["incident-pos-number"].value.trim(),
       isProcedural: form["incident-procedural"].checked,
       error: form["incident-error-code"].value.trim(),
       hasVarianceReport: form["incident-variance-report"].checked,
       transaction: form["transaction-issue"].checked
         ? {
-            types: selectedMutliselectOptionToArray(form["transaction-types"].options),
+            types: selectedMultiselectOptionsToArray(form["transaction-types"].options),
             number: form["transaction-number"].value.trim(),
           }
         : {},
@@ -372,7 +385,7 @@ const createReportObject = (report, form) => {
 };
 
 // prettier-ignore
-// Update existing report.
+// Update an existing report
 const updateReportObject = async (reportOrId, form) => {
   let report, tableRowEl;
   
@@ -385,6 +398,7 @@ const updateReportObject = async (reportOrId, form) => {
     report.tableRowEl = {};
   }
 
+  // If the report is not found in the local memory, try to fetch it from the database
   if (!reportFound) report = await DB.getReport(reportOrId);
 
   // Create a clone of the report to update
@@ -413,7 +427,8 @@ const updateReportObject = async (reportOrId, form) => {
   return [reportFound, report];
 };
 
-const selectedMutliselectOptionToArray = (
+// Find all selected options in a multisect element and return each option's value
+const selectedMultiselectOptionsToArray = (
   options = new HTMLOptionsCollection()
 ) => {
   return [...options]
