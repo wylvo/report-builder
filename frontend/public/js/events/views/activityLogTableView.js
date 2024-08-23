@@ -14,6 +14,35 @@ export class ActivityLogTableView extends TableView {
     );
   }
 
+  #clearTable() {
+    this._table.innerHTML = "";
+  }
+
+  renderTableSpinner() {
+    this.#clearTable();
+
+    const html = `
+      <tr class="table-row">
+        <td></td>
+        <td></td>
+        <td>
+          <div class="icons icon-spinner alt">
+            <svg>
+              <g class="spinner">
+                <use href="/img/icons.svg#icon-loader"></use>
+              </g>
+            </svg>
+          </div>
+        </td>
+        <td></td>
+        <td></td>
+      </tr>
+    `;
+
+    const element = this.htmlStringToElement(html);
+    this._table.appendChild(element);
+  }
+
   _generateEmptyRowHtml() {
     return `
       <tr class="table-row">

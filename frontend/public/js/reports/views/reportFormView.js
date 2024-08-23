@@ -171,7 +171,6 @@ export class ReportFormView extends FormView {
     if(takeSnapshot) this._snapshot = this.takeSnapshot();
     this._btnTeams.disabled = true;
     this.#btnTeamsState = this._btnTeams.disabled;
-
   }
 
   render(report) {
@@ -195,10 +194,11 @@ export class ReportFormView extends FormView {
     const multiselects = this._multiselects;
     const textAreas = this._textAreas;
 
-    // Phone Call Accordion
+    // Phone Call Date & Time
     fields.get("date").value = report.call.date;
     fields.get("time").value = report.call.time;
 
+    // Phone Call Status
     selects.get("status").value = report.call.status;
 
     report.call.phone.includes("No Caller ID") &&
@@ -206,7 +206,6 @@ export class ReportFormView extends FormView {
       ? checkBoxes.get("phone-no-caller-id").click()
       : (fields.get("phone-number").value = report.call.phone);
 
-    // Store Information Accordion
     // Store Numbers
     report.store.numbers.forEach((storeNumber) => {
       const storeNumbers = selects.get("store-numbers");
@@ -215,16 +214,16 @@ export class ReportFormView extends FormView {
 
       storeNumbers.options[index].selected = true;
     });
+
+    // Store Employee Name
     fields.get("store-employee").value = report.store.employee.name;
 
+    // Store Employee Store Manager Checkbox
     report.store.employee.isStoreManager &&
     !checkBoxes.get("store-manager").checked
       ? (checkBoxes.get("store-manager").checked = true)
       : (checkBoxes.get("store-manager").checked = false);
 
-    // selects.get("store-dm").value = report.store.districtManagers[0].username;
-
-    // Incident Details Accordion
     // Incident Types
     fields.get("incident-title").value = report.incident.title;
     report.incident.types.forEach((incidentType) => {
@@ -236,29 +235,33 @@ export class ReportFormView extends FormView {
 
       incidentTypes.options[index].selected = true;
     });
+
+    // Incident POS Number
     selects.get("incident-pos-number").value = report.incident.pos;
 
+    // Incident Procedural Checkbox
     report.incident.isProcedural &&
     !checkBoxes.get("incident-procedural").checked
       ? (checkBoxes.get("incident-procedural").checked = true)
       : (checkBoxes.get("incident-procedural").checked = false);
 
+    // Incident Error Code
     fields.get("incident-error-code").value = report.incident.error;
 
-    // Incident Has Variance Report
+    // Incident Variance Report Checkbox
     report.incident.hasVarianceReport &&
     !checkBoxes.get("incident-variance-report").checked
       ? (checkBoxes.get("incident-variance-report").checked = true)
       : (checkBoxes.get("incident-variance-report").checked = false);
 
-    // Transaction Issue
+    // Incident Transaction Issue
     if (
       !this.isEmptyObject(report.incident.transaction) &&
       !checkBoxes.get("transaction-issue").checked
     ) {
       checkBoxes.get("transaction-issue").click();
 
-      // Transaction Types
+      // Incident Transaction Types
       report.incident.transaction.types.forEach((incidentTransactionType) => {
         const incidentTransactionTypes = selects.get("transaction-types");
         const options = [...incidentTransactionTypes.options];
@@ -269,18 +272,18 @@ export class ReportFormView extends FormView {
         incidentTransactionTypes.options[index].selected = true;
       });
 
-      // Transaction Number
+      // Incident Transaction Number
       fields.get("transaction-number").value =
         report.incident.transaction.number;
     }
 
-    // Details
+    // Incident Details
     textAreas.get("incident-details").value = report.incident.details;
 
-    // Assigned to Signature
+    // Assigned To Signature
     selects.get("assigned-to").value = report.assignedTo;
 
-    // On-Call
+    // On-Call Checkbox
     report.isOnCall && !checkBoxes.get("oncall").checked
       ? (checkBoxes.get("oncall").checked = true)
       : (checkBoxes.get("oncall").checked = false);
@@ -314,6 +317,7 @@ export class ReportFormView extends FormView {
     else this._btnTeams.disabled = false;
     this.#btnTeamsState = this._btnTeams.disabled;
 
+    // Expand accordions
     this._all(this._accordions).forEach((accordion) =>
       this._expandAccordion(accordion.header, accordion.content)
     );
@@ -402,7 +406,7 @@ export class ReportFormView extends FormView {
     this._districtManagersContainer.innerHTML = "";
     const districtManagerHtml = (fullName, profilePictureURI) => `
       <div class="dm">
-        <img class="dm-profile-picture" alt="District manager profile picture of ${fullName}" src="${profilePictureURI}" />
+        <img class="dm-profile-picture" alt="District manager profile picture of ${fullName.escapeHTML()}" src="${profilePictureURI}" />
         <p>${fullName.escapeHTML()}</p>
       </div>
     `;
