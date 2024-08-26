@@ -38,7 +38,7 @@ export const dbConfig = {
       // ODBC Driver 17 for SQL Server is tested working well with SQL Server 2019 & 2022
       bcConfig.conn_str = bcConfig.conn_str.replace(
         "SQL Server Native Client 11.0",
-        process.env.ODBC_DRIVER
+        process.env.DB_ODBC_DRIVER
       );
     },
   },
