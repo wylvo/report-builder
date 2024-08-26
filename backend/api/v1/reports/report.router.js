@@ -35,6 +35,7 @@ router.get(
  * /api/v1/reports/:id                              (PUT)
  * /api/v1/reports/:id/softDelete                   (PUT)
  * /api/v1/reports/:id/undoSoftDelete               (PUT)
+ * /api/v1/reports/:id/transferTo/:username         (PUT)
  */
 router.use(auth.restrictTo("Admin", "User"));
 
@@ -52,6 +53,7 @@ router.put(
 );
 router.put("/:id/softDelete", report.softDeleteReport);
 router.put("/:id/softDeleteUndo", report.undoSoftDeleteReport);
+router.put("/:id/transferTo/:username", report.transferReportOwnershipToUser);
 
 /** ROUTE restricted to "Admin" role
  * /api/v1/reports/:id  (DELETE)

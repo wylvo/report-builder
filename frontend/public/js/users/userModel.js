@@ -171,15 +171,6 @@ const DB = {
 
 // prettier-ignore
 const createUserObject = function (form) {
-  const username = form.email.value.trim().split("@")[0];
-  let initials = null;
-
-  if (username.includes(".")) {
-    const firstName = username.split(".")[0];
-    const lastName = username.split(".")[1];
-    initials = `${firstName[0]}${lastName[0]}`.toUpperCase();
-  }
-
   return {
     role: form.role?.value.trim(),
     active: form.status?.value.trim() === "1" ? true : false,

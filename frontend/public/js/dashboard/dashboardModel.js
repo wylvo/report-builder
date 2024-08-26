@@ -16,6 +16,7 @@ const init = async () => {
 };
 
 const DB = {
+  // API request to to get the latest statistics from the database
   getStats: async () => {
     const { data } = await api.v1.stats.getStats();
 

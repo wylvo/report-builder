@@ -171,6 +171,22 @@ export const Reports = {
     return reportUpdated;
   },
 
+  // TRANSFER SINGLE REPORT OWNERSHIP TO ANOTHER USER
+  async transferReportOwnershipTo(userId, updatedByUserId, report) {
+    const {
+      output: { report: rawJSON },
+    } = await mssql()
+      .request.input("transferToUserId", INT, userId)
+      .input("updatedByUserId", INT, updatedByUserId)
+      .input("id", INT, report.id)
+      .output("report", NVARCHAR)
+      .execute("api_v1_reports_transferReportOwnershipToUserId");
+
+    const reportUpdated = JSON.parse(rawJSON);
+
+    return reportUpdated;
+  },
+
   // GET ALL REPORTS, OR GET ALL SOFT DELETED REPORTS
   async all(pageNumber = 1, rowsPerPage = 500, softDeleted = false) {
     rowsPerPage =

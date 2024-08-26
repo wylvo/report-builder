@@ -161,6 +161,7 @@
 
   .form-btn.paste,
   .form-btn.copy,
+  .form-btn.transfer,
   .form-btn.new,
   .form-btn.now {
     padding: 1rem;

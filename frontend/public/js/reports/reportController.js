@@ -37,7 +37,7 @@ const controlBeforeUnload = function () {
 };
 
 // prettier-ignore
-const controlUnsavedReport = async (controlFunction, handler = undefined, event = undefined) => {
+const controlUnsavedReport = async function (controlFunction, handler = undefined, event = undefined) {
   let isSaveConfirmed = false;
   const currentReportView = reportTabsView.tabs.get(model.state.tab);
   const formHasChanges = currentReportView._changes.length > 0;
@@ -73,6 +73,37 @@ const controlUniqueReportPerTab = function (id, event = undefined) {
     controlRenderReport();
   }
   return false;
+};
+
+const controlTransfer = async function (id, username) {
+  if (isRequestInProgress)
+    return notificationsView.warning("A request is already in progress.");
+
+  try {
+    console.log(id, username);
+
+    const [reportFound, report] = await model.DB.transferReportOwnershipToUser(
+      id,
+      username
+    );
+
+    if (reportFound) {
+      reportFormView.clearInfo();
+      reportFormView.updateInfo(report);
+    }
+
+    const user = model.state.usersFrontend.find(
+      (user) => user.username === username
+    );
+
+    notificationsView.import(
+      `Report with id ${id} successfully transfered to: ${user.fullName}`
+    );
+    modalView.closeModal();
+  } catch (error) {
+    console.error(error);
+    notificationsView.error(error.message, 60);
+  }
 };
 
 // prettier-ignore
@@ -593,7 +624,14 @@ const init = async function () {
       reportFormView.currentUser = model.state.user;
       reportFormView.onCallTimeRange = model.state.formData.onCallTimeRange;
 
+      // New report, take snapshot
       reportFormView.newReport(true);
+
+      modalFormView.addHandlerClickTransferReport(
+        controlTransfer,
+        reportFormView,
+        model.state.formData.selects.users
+      );
 
       reportFormView.addHandlerPaste(controlPaste);
       reportFormView.addHandlerCopy(controlCopy);

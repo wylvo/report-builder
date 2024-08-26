@@ -69,12 +69,6 @@ export default class ModalView extends NotificationsView {
         this._modalElement,
         this.clear.bind(this, resolve, this.#timeout)
       );
-
-      // this.#timeout = setTimeout(() => {
-      //   this.closeModal(this.#timeout);
-      //   resolve(false);
-      // }, timeoutSeconds * 1000);
-      // clearTimeout(this.#timeout);
     });
   }
 
@@ -227,6 +221,23 @@ export default class ModalView extends NotificationsView {
 
     const modalFormView = new ModalFormView(this._modalElement);
     const newModalElement = modalFormView.importReportsForm();
+    this._modalElement = newModalElement;
+
+    if (!this.#modalContainer.firstChild)
+      this.#modalContainer.appendChild(this._modalElement);
+
+    this._modalElement.querySelector(".modal-btn.cancel").focus();
+    this.#overlay.classList.remove("hidden");
+
+    return this.#resolvePromise();
+  }
+
+  confirmTransferTo(users) {
+    if (this.#modalContainer.firstChild) return;
+    this.#isTrusted = true;
+
+    const modalFormView = new ModalFormView(this._modalElement);
+    const newModalElement = modalFormView.transferReportForm(users);
     this._modalElement = newModalElement;
 
     if (!this.#modalContainer.firstChild)

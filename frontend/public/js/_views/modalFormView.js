@@ -15,6 +15,8 @@ export default class ModalFormView extends ModalView {
   }
 
   #reports = () => this._modalElement.querySelector(".import-reports").value;
+  #transferToUser = () =>
+    this._modalElement.querySelector(".transfer-to-user").value;
   #clearReports() {
     this._modalElement.querySelector(".import-reports").value = "";
   }
@@ -114,6 +116,40 @@ export default class ModalFormView extends ModalView {
     return this.render(formHtml, headerText, replaceElement);
   }
 
+  transferReportForm(users) {
+    const replaceElement = false;
+    const headerText = "Transfer Report Ownership";
+    const formHtml = `
+      <form class="form" id="form-modal">
+        <!-- REPORTS RAW JSON -->
+        <div class="form-grouping-col">
+          <select
+            id="transfer-to-user"
+            name="transfer-to-user"
+            class="transfer-to-user"
+            required
+          >
+            ${users.join("")}
+          </select>
+          <label for="transfer-to-user">Transfer ownership of this report to:</label>
+        </div>
+
+        <!-- CALL TO ACTION BUTTON -->
+        <div class="modal-btns">
+          <button
+            type="submit"
+            id="modal-btn-transfer"
+            class="modal-btn transfer info"
+          >
+            <p>Transfer Report</p>
+          </button>
+          <button type="button" class="modal-btn cancel">No, Cancel</button>
+        </div>
+      </form>
+    `;
+    return this.render(formHtml, headerText, replaceElement);
+  }
+
   addHandlerConfirmPassword(id, handler) {
     this._modalElement
       .querySelector("#form-modal")
@@ -123,7 +159,7 @@ export default class ModalFormView extends ModalView {
           this._modalElement.querySelector(".modal-btn.error");
         this.renderSpinner(hardDeleteBtn);
 
-        // function controlHardDeleteReport in ./report.controller.js
+        // function controlHardDeleteReport in ./reports/reportController.js
         await handler(id, this.#password());
 
         this.#clearPassword();
@@ -143,10 +179,34 @@ export default class ModalFormView extends ModalView {
             this._modalElement.querySelector(".modal-btn.import");
           this.renderSpinner(importBtn);
 
-          // function controlImportReports in ./report.controller.js
+          // function controlImportReports in ./reports/reportController.js
           await handler(this.#reports());
 
           this.clearSpinner(importBtn, null, "import");
+        });
+    });
+  }
+
+  addHandlerClickTransferReport(handler, reportFormView, users) {
+    reportFormView._btnTransfer.addEventListener("click", (e) => {
+      this.confirmTransferTo.call(this, users);
+
+      this._modalElement
+        .querySelector("#form-modal")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const transferBtn = this._modalElement.querySelector(
+            ".modal-btn.transfer"
+          );
+          this.renderSpinner(transferBtn);
+
+          // function controlTransfer in ./reports/reportController.js
+          await handler(
+            reportFormView._form.dataset.id,
+            this.#transferToUser()
+          );
+
+          this.clearSpinner(transferBtn, null, "import");
         });
     });
   }

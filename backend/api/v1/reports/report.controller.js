@@ -315,6 +315,52 @@ export const getAllSoftDeletedReportsCreatedByUser = catchAsync(
   }
 );
 
+export const transferReportOwnershipToUser = catchAsync(
+  async (req, res, next) => {
+    const { id, username } = req.params;
+
+    const [report, user] = await Promise.all([
+      Reports.findById(id),
+      Users.findByUsername(username),
+    ]);
+
+    if (!report)
+      return next(new GlobalError(`Report not found with id: ${id}.`, 404));
+
+    if (!user)
+      return next(
+        new GlobalError(`User not found with username: ${username}.`, 404)
+      );
+
+    if (req.user.role === "User" && req.user.username !== report.createdBy)
+      return next(
+        new GlobalError(
+          `This report belongs to ${report.createdBy}. You are not allowed to make changes on this report.`,
+          403
+        )
+      );
+
+    if (req.user.username === user.username)
+      return next(
+        new GlobalError(
+          `You can't transfer reports you own to yourself. This report already belongs to you.`,
+          400
+        )
+      );
+
+    const reportUpdated = await Reports.transferReportOwnershipTo(
+      user.id,
+      req.user.id,
+      report
+    );
+
+    res.status(200).json({
+      status: "success",
+      data: reportUpdated,
+    });
+  }
+);
+
 export { migrateReport } from "./migrate/migrate.controller.js";
 export {
   validateBodyIsArray,

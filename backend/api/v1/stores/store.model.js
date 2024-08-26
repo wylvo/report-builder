@@ -56,7 +56,7 @@ export const Stores = {
   // GET ALL STORES
   async all(pageNumber, rowsPerPage) {
     rowsPerPage =
-      rowsPerPage <= 0 || rowsPerPage > 200 ? (rowsPerPage = 200) : rowsPerPage;
+      rowsPerPage <= 0 || rowsPerPage > 500 ? (rowsPerPage = 500) : rowsPerPage;
     pageNumber = pageNumber <= 0 ? (pageNumber = 1) : pageNumber;
 
     const {

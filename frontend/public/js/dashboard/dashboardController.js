@@ -95,6 +95,11 @@ const controlYearSelect = (yearIndex) => {
   return model.state.stats.reportsByYear[yearIndex];
 };
 
+/*
+ **********************************************************
+ * INITIALIZE ALL HANDLERS, AND RENDER ALL EXISTING STATS *
+ **********************************************************
+ */
 const init = async function () {
   try {
     await model.init();

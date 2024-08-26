@@ -29,12 +29,17 @@ const init = async function () {
 const DB = {
   getAllReportsCreatedByUser: async (page, rowsPerPage) =>
     reportModel.DB.getAllReportsCreatedByUser(page, rowsPerPage),
+
   getAllSoftDeletedReportsCreatedByUser: async (page, rowsPerPage) =>
     reportModel.DB.getAllSoftDeletedReportsCreatedByUser(page, rowsPerPage),
+
   softDeleteReport: async (id) => reportModel.DB.softDeleteReport(id),
+
   hardDeleteReport: async (id, password) =>
     reportModel.DB.hardDeleteReport(id, password),
+
   undoSoftDeleteReport: async (id) => reportModel.DB.undoSoftDeleteReport(id),
+
   getCurrentUserAccount: async () => {
     // API request to get the current signed in user account from the database
     const {

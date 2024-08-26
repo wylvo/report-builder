@@ -71,32 +71,23 @@ export const formatError = async (response) => {
     );
 };
 
+// prettier-ignore
 export default {
   v1: {
     reports: {
       url: "/api/v1/reports",
 
       async getAllReports(pageNumber = 1, rowsPerPage = 500) {
-        return await fetchJSON(
-          `${this.url}?page=${pageNumber}&rows=${rowsPerPage}`
-        );
+        return await fetchJSON(`${this.url}?page=${pageNumber}&rows=${rowsPerPage}`);
       },
       async getAllSoftDeletedReports(pageNumber = 1, rowsPerPage = 500) {
-        return await fetchJSON(
-          `${this.url}/softDeleted?page=${pageNumber}&rows=${rowsPerPage}`
-        );
+        return await fetchJSON(`${this.url}/softDeleted?page=${pageNumber}&rows=${rowsPerPage}`);
       },
-      // prettier-ignore
       async getAllReportsCreatedByUser(username, pageNumber = 1, rowsPerPage = 500) {
-        return await fetchJSON(
-          `${this.url}/createdBy/${username}?page=${pageNumber}&rows=${rowsPerPage}`
-        );
+        return await fetchJSON(`${this.url}/createdBy/${username}?page=${pageNumber}&rows=${rowsPerPage}`);
       },
-      // prettier-ignore
       async getAllSoftDeletedReportsCreatedByUser(username, pageNumber = 1, rowsPerPage = 500) {
-        return await fetchJSON(
-          `${this.url}/softDeleted/createdBy/${username}?page=${pageNumber}&rows=${rowsPerPage}`
-        );
+        return await fetchJSON(`${this.url}/softDeleted/createdBy/${username}?page=${pageNumber}&rows=${rowsPerPage}`);
       },
       async createReport(report) {
         return await fetchJSON(this.url, "POST", report);
@@ -115,6 +106,9 @@ export default {
       },
       async undoSoftDeleteReport(id) {
         return await fetchJSON(`${this.url}/${id}/softDeleteUndo`, "PUT", {});
+      },
+      async transferReportOwnershipToUser(id, username) {
+        return await fetchJSON(`${this.url}/${id}/transferTo/${username}`, "PUT", {});
       },
 
       import() {
@@ -148,14 +142,10 @@ export default {
         });
       },
       async getUsers(pageNumber = 1, rowsPerPage = 200) {
-        return await fetchJSON(
-          `${this.url}?page=${pageNumber}&rows=${rowsPerPage}`
-        );
+        return await fetchJSON(`${this.url}?page=${pageNumber}&rows=${rowsPerPage}`);
       },
       async getUsersFrontend(pageNumber = 1, rowsPerPage = 200) {
-        return await fetchJSON(
-          `${this.url}/frontend?page=${pageNumber}&rows=${rowsPerPage}`
-        );
+        return await fetchJSON(`${this.url}/frontend?page=${pageNumber}&rows=${rowsPerPage}`);
       },
       async createUser(user) {
         return await fetchJSON(this.url, "POST", user);
@@ -191,7 +181,6 @@ export default {
     webhook: {
       url: "/api/v1/webhook",
 
-      // Send report to Microsoft Teams Incoming Webhook
       async sendReportToIncomingWebhook(id) {
         return await fetchJSON(`${this.url}/${id}`, "POST", {});
       },
@@ -216,12 +205,10 @@ export default {
     activityLog: {
       url: "/api/v1/activityLog",
 
-      // prettier-ignore
       async getActivityLogs(pageNumber = 1, rowsPerPage = 500) {
         return await fetchJSON(`${this.url}?page=${pageNumber}&rows=${rowsPerPage}`);
       },
 
-      // prettier-ignore
       async getActivityLogsFrontend(pageNumber = 1, rowsPerPage = 500) {
         return await fetchJSON(`${this.url}/frontend?page=${pageNumber}&rows=${rowsPerPage}`);
       },
@@ -229,7 +216,6 @@ export default {
     authenticationLog: {
       url: "/api/v1/authenticationLog",
 
-      // prettier-ignore
       async getAuthenticationLogs(pageNumber = 1, rowsPerPage = 500) {
         return await fetchJSON(`${this.url}?page=${pageNumber}&rows=${rowsPerPage}`);
       },
@@ -238,8 +224,7 @@ export default {
     stores: {
       url: "/api/v1/stores",
 
-      // prettier-ignore
-      async getAllStores(pageNumber = 1, rowsPerPage = 200) {
+      async getAllStores(pageNumber = 1, rowsPerPage = 500) {
         return await fetchJSON(`${this.url}?page=${pageNumber}&rows=${rowsPerPage}`);
       },
     },

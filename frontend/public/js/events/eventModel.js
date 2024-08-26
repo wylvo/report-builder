@@ -71,7 +71,7 @@ export {
   rowsPerPage,
   filterSearch,
 
-  // from this local file -> ./accountModel.js
+  // from this local file -> ./eventModel.js
   DB,
   init,
 };

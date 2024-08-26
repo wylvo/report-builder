@@ -110,8 +110,6 @@ const DB = {
     // Create a report object
     const reportObject = createReportObject(tabReport, form);
 
-    console.log(reportObject);
-
     // Check validity of the report object
     checkReportValidity(DEFAULT_REPORT_CREATE, reportObject);
 
@@ -233,7 +231,7 @@ const DB = {
   },
 
   synchonizeFormData: async () => {
-    // API request to synchronize form data to get the latest data validation constraint
+    // API request to synchronize form data to get the latest data validation constraints
     const {
       data: { data },
     } = await api.v1.formData.synchonizeFormData();
@@ -241,12 +239,36 @@ const DB = {
     state.formData = data;
   },
 
-  getAllStores: async (page = 1, rowsPerPage = 200) => {
+  getAllStores: async (page = 1, rowsPerPage = 500) => {
+    // API request to get all the stores from the database
     const {
       data: { data },
     } = await api.v1.stores.getAllStores(page, rowsPerPage);
 
     state.stores = data;
+  },
+
+  transferReportOwnershipToUser: async (id, username) => {
+    let report;
+
+    // Find & check if report is in the state object
+    const index = findObjectIndexById(state.reports, id, false);
+    const reportFound = index !== -1;
+
+    if (reportFound) report = state.reports[index];
+
+    // API request to transfer ownership of a report to another user
+    const {
+      data: { data: reportUpdated },
+    } = await api.v1.reports.transferReportOwnershipToUser(id, username);
+
+    if (report) {
+      report.updatedAt = reportUpdated.updatedAt;
+      report.createdBy = reportUpdated.createdBy;
+      report.updatedBy = reportUpdated.updatedBy;
+    }
+
+    return [reportFound, report];
   },
 };
 

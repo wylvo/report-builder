@@ -367,12 +367,6 @@ input:checked + .slider:before {
   transform: translateX(268%) translateY(22.5%);
 }
 
-.form-action-btns button:first-child,
-.form-action-btns button:nth-child(2),
-.form-action-btns button:last-child {
-  margin-top: 0.4rem;
-}
-
 .form-action-btns {
   display: flex;
   align-items: center;

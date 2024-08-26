@@ -42,6 +42,7 @@ export class ReportFormView extends FormView {
     // Buttons
     this._btnPaste = this._form.querySelector(".form-btn.paste");
     this._btnCopy = this._form.querySelector(".form-btn.copy");
+    this._btnTransfer = this._form.querySelector(".form-btn.transfer");
     this._btnNew = this._form.querySelector(".form-btn.new");
     this._btnNow = this._form.querySelector(".form-btn.now");
     this._btnSubmit = this._form.querySelector(".form-btn.submit");
@@ -148,6 +149,7 @@ export class ReportFormView extends FormView {
   newReport(takeSnapshot = false) {
     this._tab.firstElementChild.textContent = "[Empty]";
     this._tab.firstElementChild.setAttribute("href", "#");
+    this._form.removeAttribute("data-id");
 
     this.#defaultState();
     this.clearInfo();
@@ -157,6 +159,7 @@ export class ReportFormView extends FormView {
     this._fields.forEach((field) => (field.value = ""));
     this._form.reset();
 
+    this._btnTransfer.classList.add("hidden");
     this._btnSubmit.disabled = true;
     this._btnSubmit.children[1].textContent = "Create Report";
     this._btnSubmit.firstElementChild.firstElementChild.setAttribute("href", "/img/icons.svg#icon-save");
@@ -187,10 +190,12 @@ export class ReportFormView extends FormView {
     this.newReport();
 
     if (report.isDeleted) {
+      this._btnTransfer.classList.add("hidden");
       this._btnSubmit.classList.add("hidden");
       this._btnTeams.classList.add("hidden");
     }
     if (!report.isDeleted) {
+      this._btnTransfer.classList.remove("hidden");
       this._btnSubmit.classList.remove("hidden");
       this._btnTeams.classList.remove("hidden");
     }
@@ -199,12 +204,14 @@ export class ReportFormView extends FormView {
       this.currentUser?.username &&
       this.currentUser.username !== report.createdBy
     ) {
+      this._btnTransfer.classList.add("hidden");
       this._btnSubmit.classList.add("hidden");
       this._btnTeams.classList.add("hidden");
     }
 
     this._tab.firstElementChild.textContent = report.incident.title;
     this._tab.firstElementChild.setAttribute("href", `#${report.id}`);
+    this._form.setAttribute("data-id", report.id);
 
     const fields = this._fields;
     const checkBoxes = this._checkBoxes;
@@ -356,24 +363,34 @@ export class ReportFormView extends FormView {
 
     const formatTimeAgo = (timeAgo) => {
       const [timeNumber1, timeUnit1, timeNumber2, timeUnit2] = timeAgo.split(" ");
-      return [timeNumber1, timeUnit1, timeNumber2, timeUnit2, "ago"].join(" ");
+      
+      return timeAgo.split(" ").length > 3
+        ? [timeNumber1, timeUnit1, timeNumber2, timeUnit2, "ago"].join(" ")
+        : [timeNumber1, timeUnit1, timeNumber2].join(" ");
     }
 
     if (!this.users) return;
 
-    const user = this.users.find((user) => user.username === report.createdBy);
-    if (!user) return;
+    const userCreatedBy = this.users.find((user) => user.username === report.createdBy);
+    if (!userCreatedBy) return;
 
     const createdTimeAgo = this.timeAgo(report.createdAt);
-    const createdByElement = this.htmlStringToElement(infoHtml("createdBy", user.username, user.profilePictureURI, formatTimeAgo(createdTimeAgo)));
+    const createdByElement = this.htmlStringToElement(
+      infoHtml("createdBy", userCreatedBy.username, userCreatedBy.profilePictureURI, formatTimeAgo(createdTimeAgo))
+    );
 
     this._info.appendChild(createdByElement);
     this._info.parentElement.classList.remove("hidden");
     this._info.classList.remove("hidden");
 
     if (report.createdAt !== report.updatedAt) {
+      const userUpdatedBy = this.users.find((user) => user.username === report.updatedBy);
+      if (!userUpdatedBy) return;
+
       const updatedTimeAgo = this.timeAgo(report.updatedAt);
-      const updatedByElement = this.htmlStringToElement(infoHtml("updatedBy", user.username, user.profilePictureURI, formatTimeAgo(updatedTimeAgo)));
+      const updatedByElement = this.htmlStringToElement(
+        infoHtml("updatedBy", userUpdatedBy.username, userUpdatedBy.profilePictureURI, formatTimeAgo(updatedTimeAgo))
+      );
       this._info.appendChild(updatedByElement);
     }
   }
@@ -457,7 +474,6 @@ export class ReportFormView extends FormView {
 
   isCurrentTimeOnCall(date = undefined) {
     date = !date ? (date = new Date(Date.now())) : date;
-    console.log(date);
 
     const dayOfWeek = date.getDay();
     const currentHours = date.getHours();

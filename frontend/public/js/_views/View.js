@@ -110,6 +110,7 @@ export default class View {
       inactive: `<svg><use href="/img/icons.svg#icon-disable"></use></svg>`,
       hardDelete: `<p>Hard Delete Report</p>`,
       import: `<p>Import Reports</p>`,
+      transfer: `<p>Transfer Report</p>`,
       table: ``
     };
 

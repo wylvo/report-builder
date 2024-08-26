@@ -20,7 +20,7 @@ class ReportTabsView extends TabsView {
         <div class="form-header">
           <div class="form-header-info">
             <h1>Phone Call Report</h1>
-            <div class="report-info tooltip">
+            <div class="hidden report-info tooltip">
               <svg class="icons">
                 <use href="/img/icons.svg#icon-info"></use>
               </svg>
@@ -29,6 +29,12 @@ class ReportTabsView extends TabsView {
             </div>
           </div>
           <div class="form-action-btns">
+            <button type="button" class="hidden form-btn transfer tooltip" id="form-transfer-btn_${index}">
+              <svg class="icons">
+                <use href="/img/icons.svg#icon-transfer"></use>
+              </svg>
+              <span class="tooltiptext">Transfer Report</span>
+            </button>          
             <button type="button" class="form-btn copy tooltip" id="form-copy-btn_${index}">
               <svg class="icons">
                 <use href="/img/icons.svg#icon-copy"></use>
