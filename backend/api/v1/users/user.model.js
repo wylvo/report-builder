@@ -97,6 +97,19 @@ export const Users = {
     return JSON.parse(reports);
   },
 
+  // TRANSFER ALL USER REPORT RELATIONSHIPS TO ANOTHER USER
+  async transferAllReportRelationshipsTo(fromUser, toUser) {
+    const {
+      output: { reports },
+    } = await mssql()
+      .request.input("fromUserId", INT, fromUser.id)
+      .input("toUserId", INT, toUser.id)
+      // .output("reports", NVARCHAR)
+      .execute("api_v1_users_transferAllReportRelationshipsToUserId");
+
+    return JSON.parse(reports);
+  },
+
   // GET ALL USERS
   async all(pageNumber = 1, rowsPerPage = 200, frontend = false) {
     rowsPerPage =

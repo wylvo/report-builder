@@ -144,7 +144,7 @@ export const deleteUser = catchAsync(async (req, res, next) => {
   });
 });
 
-export const enableUser = async (req, res, next) => {
+export const enableUser = catchAsync(async (req, res, next) => {
   const id = req.params.id;
 
   const user = await Users.findById(id);
@@ -161,9 +161,9 @@ export const enableUser = async (req, res, next) => {
     status: "success",
     data: filterUserData(userUpdated),
   });
-};
+});
 
-export const disableUser = async (req, res, next) => {
+export const disableUser = catchAsync(async (req, res, next) => {
   const id = req.params.id;
 
   const user = await Users.findById(id);
@@ -182,30 +182,58 @@ export const disableUser = async (req, res, next) => {
     status: "success",
     data: filterUserData(userUpdated),
   });
-};
+});
 
 export const getMe = (req, res, next) => {
   req.params.id = req.user.id;
   next();
 };
 
-export const getUserReportRelationshipsByUserId = async (req, res, next) => {
-  const id = req.params.id;
+export const getUserReportRelationshipsByUserId = catchAsync(
+  async (req, res, next) => {
+    const id = req.params.id;
 
-  const user = await Users.findById(id);
+    const user = await Users.findById(id);
 
-  if (!user)
-    return next(new GlobalError(`User not found with id: ${id}.`, 404));
+    if (!user)
+      return next(new GlobalError(`User not found with id: ${id}.`, 404));
 
-  const userReportRelationships = await Users.reportRelationshipsByUserId(
-    user.id
-  );
+    const userReportRelationships = await Users.reportRelationshipsByUserId(
+      user.id
+    );
 
-  res.status(200).json({
-    status: "success",
-    data: userReportRelationships,
-  });
-};
+    res.status(200).json({
+      status: "success",
+      data: userReportRelationships,
+    });
+  }
+);
+
+export const transferAllReportRelationshipsToUser = catchAsync(
+  async (req, res, next) => {
+    const { fromUserId, toUserId } = req.params;
+
+    const [fromUser, toUser] = await Promise.all([
+      Users.findById(fromUserId),
+      Users.findById(toUserId),
+    ]);
+
+    if (!fromUser || !toUser)
+      return next(
+        new GlobalError(
+          `User not found with id: ${!fromUser ? fromUserId : toUserId}.`,
+          404
+        )
+      );
+
+    await Users.transferAllReportRelationshipsTo(fromUser, toUser);
+
+    res.status(200).json({
+      status: "success",
+      // data: userReportRelationships,
+    });
+  }
+);
 
 export {
   resetUserPassword,
