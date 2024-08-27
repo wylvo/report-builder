@@ -29,10 +29,31 @@ export const filterUserData = (obj) => {
   return obj;
 };
 
-export const getUserId = (req, res, next) => {
-  req.userId = req.params.id;
+export const validateUsername = catchAsync(async (req, res, next) => {
+  const username = req.params.username;
+  const raiseError = false;
+  const user = await Users.isUsername(username, raiseError);
+
+  if (!user)
+    return next(
+      new GlobalError(`User not found with username: ${username}.`, 404)
+    );
+
+  req.userFetched = user;
+
   next();
-};
+});
+
+export const getAccount = catchAsync(async (req, res, next) => {
+  const currentUserId = req.user.id;
+
+  const user = await Users.findById(currentUserId);
+
+  res.status(200).json({
+    status: "success",
+    data: filterUserData(user),
+  });
+});
 
 export const getAllUsersFrontend = catchAsync(async (req, res, next) => {
   const { page, rows } = req.query;
@@ -71,36 +92,18 @@ export const createUser = catchAsync(async (req, res, next) => {
 });
 
 export const getUser = catchAsync(async (req, res, next) => {
-  const id = req.params.id;
-
-  const user = await Users.findById(id);
-
-  if (!user)
-    return next(new GlobalError(`User not found with id: ${id}.`, 404));
+  const user = req.userFetched; // from validateUsername()
 
   res.status(200).json({
     status: "success",
-    data: filterUserData(user /*, reports, reportsDeleted*/),
+    data: filterUserData(user),
   });
 });
 
 export const validateUpdate = validateBody(checkSchema, Users.schema.update);
 
 export const updateUser = catchAsync(async (req, res, next) => {
-  const id = req.params.id;
-
-  if (Number(id) !== req.body.id)
-    return next(
-      new GlobalError(
-        `Request body id value does match with the request parameter id value.`,
-        400
-      )
-    );
-
-  const user = await Users.findById(id);
-
-  if (!user)
-    return next(new GlobalError(`User not found with id: ${id}.`, 404));
+  const user = req.userFetched; // from validateUsername()
 
   const userUpdated = await Users.update(req.body, user);
 
@@ -111,27 +114,15 @@ export const updateUser = catchAsync(async (req, res, next) => {
 });
 
 export const deleteUser = catchAsync(async (req, res, next) => {
-  const id = req.params.id;
-
-  const user = await Users.findById(id);
-
-  if (!user)
-    return next(new GlobalError(`User not found with id: ${id}.`, 404));
-
+  const user = req.userFetched; // from validateUsername()
   const data = await Users.reportRelationshipsByUserId(user.id);
-
-  if (user.username !== data.username)
-    return next(
-      new GlobalError(
-        `Username fetched does not match with user id: ${id}.`,
-        400
-      )
-    );
 
   if (data.reports > 0)
     return next(
       new GlobalError(
-        `Unable to delete user id: ${id}. Found ${data.reports} reports related to this user.`,
+        `Unable to delete user: ${user.username}. Found ${data.reports} ${
+          data.reports > 1 ? "reports" : "report"
+        } related to this user.`,
         400
       )
     );
@@ -145,15 +136,12 @@ export const deleteUser = catchAsync(async (req, res, next) => {
 });
 
 export const enableUser = catchAsync(async (req, res, next) => {
-  const id = req.params.id;
+  const user = req.userFetched; // from validateUsername()
 
-  const user = await Users.findById(id);
-
-  if (!user)
-    return next(new GlobalError(`User not found with id: ${id}.`, 404));
-
-  if (user.active === true)
-    return next(new GlobalError(`User is already active with id: ${id}.`, 400));
+  if (user.active)
+    return next(
+      new GlobalError(`User: ${user.username} is already active.`, 400)
+    );
 
   const userUpdated = await Users.enable(user);
 
@@ -164,16 +152,11 @@ export const enableUser = catchAsync(async (req, res, next) => {
 });
 
 export const disableUser = catchAsync(async (req, res, next) => {
-  const id = req.params.id;
+  const user = req.userFetched; // from validateUsername()
 
-  const user = await Users.findById(id);
-
-  if (!user)
-    return next(new GlobalError(`User not found with id: ${id}.`, 404));
-
-  if (user.active === false)
+  if (!user.active)
     return next(
-      new GlobalError(`User is already inactive with id: ${id}.`, 400)
+      new GlobalError(`User: ${user.username} is already inactive.`, 400)
     );
 
   const userUpdated = await Users.disable(user);
@@ -184,19 +167,9 @@ export const disableUser = catchAsync(async (req, res, next) => {
   });
 });
 
-export const getMe = (req, res, next) => {
-  req.params.id = req.user.id;
-  next();
-};
-
-export const getUserReportRelationshipsByUserId = catchAsync(
+export const getUserReportRelationshipsByUser = catchAsync(
   async (req, res, next) => {
-    const id = req.params.id;
-
-    const user = await Users.findById(id);
-
-    if (!user)
-      return next(new GlobalError(`User not found with id: ${id}.`, 404));
+    const user = req.userFetched; // from validateUsername()
 
     const userReportRelationships = await Users.reportRelationshipsByUserId(
       user.id
@@ -211,26 +184,26 @@ export const getUserReportRelationshipsByUserId = catchAsync(
 
 export const transferAllReportRelationshipsToUser = catchAsync(
   async (req, res, next) => {
-    const { fromUserId, toUserId } = req.params;
+    const fromUser = req.userFetched; // from validateUsername()
 
-    const [fromUser, toUser] = await Promise.all([
-      Users.findById(fromUserId),
-      Users.findById(toUserId),
-    ]);
+    if (fromUser.username === req.params.toUsername)
+      return next(new GlobalError(`Usernames must be different.`, 400));
 
-    if (!fromUser || !toUser)
+    const toUser = await Users.findByUsername(req.params.toUsername);
+
+    if (!toUser)
       return next(
         new GlobalError(
-          `User not found with id: ${!fromUser ? fromUserId : toUserId}.`,
+          `User not found with username: ${req.params.toUsername}.`,
           404
         )
       );
 
-    await Users.transferAllReportRelationshipsTo(fromUser, toUser);
+    const user = await Users.transferAllReportRelationshipsTo(fromUser, toUser);
 
     res.status(200).json({
       status: "success",
-      // data: userReportRelationships,
+      data: user,
     });
   }
 );

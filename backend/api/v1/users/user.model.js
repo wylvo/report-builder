@@ -37,17 +37,19 @@ export const isValidNewUsername = async (value, { req }) => {
 export const Users = {
   /**
    * MIDDLEWARE VALIDATION BEFORE:
-   * SIGNING IN A USER          /signin                         (POST)
    * CREATING A USER            /api/v1/users                   (POST)
    * UPDATING A USER            /api/v1/users/:id               (PUT)
    * RESETTING A USER PASSWORD  /api/v1/users/:id/resetPassword (POST)
+   * SIGNING IN A USER          /signin                         (POST)
    **/
   schema: {
-    signIn: userValidationSchema.signIn,
     create: userValidationSchema.create,
-    update: userValidationSchema.update(),
-    resetPassword: userValidationSchema.resetPassword(),
+    update: userValidationSchema.update,
+    resetPassword: userValidationSchema.resetPassword,
+    signIn: userValidationSchema.signIn,
   },
+
+  isUsername,
 
   // GET SINGLE USER BY ID
   async findById(id) {
@@ -100,14 +102,14 @@ export const Users = {
   // TRANSFER ALL USER REPORT RELATIONSHIPS TO ANOTHER USER
   async transferAllReportRelationshipsTo(fromUser, toUser) {
     const {
-      output: { reports },
+      output: { user },
     } = await mssql()
       .request.input("fromUserId", INT, fromUser.id)
       .input("toUserId", INT, toUser.id)
-      // .output("reports", NVARCHAR)
+      .output("user", NVARCHAR)
       .execute("api_v1_users_transferAllReportRelationshipsToUserId");
 
-    return JSON.parse(reports);
+    return JSON.parse(user);
   },
 
   // GET ALL USERS

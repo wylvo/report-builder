@@ -10,14 +10,14 @@ import ValidationError, {
 // prettier-ignore
 export const validateBody = (checkSchema, schemaToApply, doCheckExact = true, errorType = "mapped") =>
   catchAsync(async (req, res, next) => {
-    doCheckExact
-    ? await checkExact(checkSchema(schemaToApply, ["body"]), {
+    if (doCheckExact)
+      await checkExact(checkSchema(schemaToApply, ["body"]), {
         message: (fields) => {
           const [field] = fields;
           return `Unknown field '${field.path}' in request ${field.location} with value '${field.value}'.`;
         },
       }).run(req)
-    : await checkSchema(schemaToApply, ["body"]).run(req);
+    else await checkSchema(schemaToApply, ["body"]).run(req);
     
     const result = errorValidationResult(req);
     const errors = errorType !== "mapped" ? result.array() : result.mapped();

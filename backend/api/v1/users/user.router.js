@@ -7,44 +7,50 @@ import * as auth from "../../../auth/auth.controller.js";
 const router = express.Router();
 
 /** ROUTE unrestricted
- * /api/v1/users/me       (GET)
+ * /api/v1/users/account  (GET)
  * /api/v1/users/frontend (GET)
  */
-router.get("/account", user.getMe, user.getUser);
+router.get("/account", user.getAccount);
 router.get("/frontend", user.getAllUsersFrontend);
 
 // Restrict the following routes to admin role after this middleware
 router.use(auth.restrictTo("Admin"));
 
 /** ROUTES restricted to "Admin" role
- * /api/v1/users                                      (GET & POST)
- * /api/v1/users/:id                                  (GET, PUT & DELETE)
- * /api/v1/users/:id/enable                           (PUT)
- * /api/v1/users/:id/disable                          (PUT)
- * /api/v1/users/:id/resetPassword                    (POST)
- * /api/v1/users/:id/transferAllReportRelationshipsTo (POST)
+ * /api/v1/users                          (GET & POST)
+ * /api/v1/users/:username                (GET, PUT & DELETE)
+ * /api/v1/users/:username/enable         (PUT)
+ * /api/v1/users/:username/disable        (PUT)
+ * /api/v1/users/:username/resetPassword  (POST)
+ * /api/v1/users/:fromUsername/transferAllReportRelationshipsTo/:username (POST)
  */
 
 router
   .route("/")
   .get(user.getAllUsers)
   .post(user.validateCreate, user.createUser);
+
+router.use("/:username", user.validateUsername);
+
 router
-  .route("/:id")
+  .route("/:username")
   .get(user.getUser)
   .put(user.validateUpdate, user.updateUser)
   .delete(user.deleteUser);
 
-router.put("/:id/enable", user.enableUser);
-router.put("/:id/disable", user.disableUser);
+router.put("/:username/enable", user.enableUser);
+router.put("/:username/disable", user.disableUser);
 
-router.get("/:id/reportRelationships", user.getUserReportRelationshipsByUserId);
+router.get(
+  "/:username/reportRelationships",
+  user.getUserReportRelationshipsByUser
+);
 router.put(
-  "/:fromUserId/transferAllReportRelationshipsTo/:toUserId",
+  "/:username/transferAllReportRelationshipsTo/:toUsername",
   user.transferAllReportRelationshipsToUser
 );
 
 // Handle password resets in separate module
-router.use("/:id/resetPassword", user.getUserId, resetPasswordRouter);
+router.use("/:username/resetPassword", resetPasswordRouter);
 
 export { router as userRouter };

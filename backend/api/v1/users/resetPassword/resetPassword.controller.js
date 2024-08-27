@@ -10,15 +10,9 @@ export const validateResetPassword = validateBody(
 );
 
 export const resetUserPassword = catchAsync(async (req, res, next) => {
-  const id = req.userId;
+  const user = req.userFetched; // from validateUsername()
 
-  delete req.userId;
   delete req.body.passwordConfirmation;
-
-  const user = await Users.findById(id);
-
-  if (!user)
-    return next(new GlobalError(`User not found with id: ${id}.`, 404));
 
   await Users.resetPassword(user.id, req.body.password);
 
