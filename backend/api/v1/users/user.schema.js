@@ -158,6 +158,30 @@ const RESET_PASSWORD = {
   passwordConfirmation: CREATE.passwordConfirmation,
 };
 
+// VALIDATION TO TRANSFER ALL REPORT RELATIONSHIPS FROM A USER TO ANOTHER USER
+const TRANSFER_ALL_REPORT_RELATIONSHIPS = {
+  fromUsername: {
+    ...CREATE.username,
+    custom: {
+      options: async (username, { req }) => {
+        const user = await Users.findByUsername(username);
+        if (!user) throw new Error(`user '${username}' not found.`);
+        return (req.fromUser = user);
+      },
+    },
+  },
+  toUsername: {
+    ...CREATE.username,
+    custom: {
+      options: async (username, { req }) => {
+        const user = await Users.findByUsername(username);
+        if (!user) throw new Error(`user '${username}' not found.`);
+        return (req.toUser = user);
+      },
+    },
+  },
+};
+
 // VALIDATION TO SIGN IN WITH A USER
 const SIGN_IN = {
   email: {
@@ -176,4 +200,5 @@ export default {
   update: { ...UPDATE },
   resetPassword: { ...RESET_PASSWORD },
   signIn: { ...SIGN_IN },
+  transferAllReportRelationships: { ...TRANSFER_ALL_REPORT_RELATIONSHIPS },
 };

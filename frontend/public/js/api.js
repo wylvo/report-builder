@@ -168,6 +168,9 @@ export default {
       async getCurrentUserAccount() {
         return await fetchJSON(`${this.url}/account`);
       },
+      async transferAllReportRelationshipsToUser(fromTo) {
+        return await fetchJSON(`${this.url}/transferAllReportRelationships`, "POST", fromTo);
+      }
     },
 
     version: {

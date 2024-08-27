@@ -182,24 +182,22 @@ export const getUserReportRelationshipsByUser = catchAsync(
   }
 );
 
+export const validateTransferAllReportRelationshipsToUser = validateBody(
+  checkSchema,
+  Users.schema.transferAllReportRelationships
+);
+
 export const transferAllReportRelationshipsToUser = catchAsync(
   async (req, res, next) => {
-    const fromUser = req.userFetched; // from validateUsername()
+    const { fromUsername, toUsername } = req.body;
 
-    if (fromUser.username === req.params.toUsername)
+    if (fromUsername === toUsername)
       return next(new GlobalError(`Usernames must be different.`, 400));
 
-    const toUser = await Users.findByUsername(req.params.toUsername);
-
-    if (!toUser)
-      return next(
-        new GlobalError(
-          `User not found with username: ${req.params.toUsername}.`,
-          404
-        )
-      );
-
-    const user = await Users.transferAllReportRelationshipsTo(fromUser, toUser);
+    const user = await Users.transferAllReportRelationshipsTo(
+      req.fromUser,
+      req.toUser
+    );
 
     res.status(200).json({
       status: "success",

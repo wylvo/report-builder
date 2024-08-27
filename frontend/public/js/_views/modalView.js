@@ -232,12 +232,15 @@ export default class ModalView extends NotificationsView {
     return this.#resolvePromise();
   }
 
-  confirmTransferTo(users) {
+  confirmTransferTo(users, isAllRelationships) {
     if (this.#modalContainer.firstChild) return;
     this.#isTrusted = true;
 
     const modalFormView = new ModalFormView(this._modalElement);
-    const newModalElement = modalFormView.transferReportForm(users);
+    const newModalElement = modalFormView.transferReportForm(
+      users,
+      isAllRelationships
+    );
     this._modalElement = newModalElement;
 
     if (!this.#modalContainer.firstChild)

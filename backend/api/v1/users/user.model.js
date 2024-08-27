@@ -47,6 +47,8 @@ export const Users = {
     update: userValidationSchema.update,
     resetPassword: userValidationSchema.resetPassword,
     signIn: userValidationSchema.signIn,
+    transferAllReportRelationships:
+      userValidationSchema.transferAllReportRelationships,
   },
 
   isUsername,

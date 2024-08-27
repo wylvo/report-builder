@@ -15,7 +15,8 @@ import ModalView from "../_views/modalView.js";
 
 const modalView = new ModalView();
 
-let userFormView,
+let modalFormView = new ModalFormView(),
+  userFormView,
   takeSnapshot = false;
 
 const controlTabs = function (tabIndex, id = undefined) {
@@ -90,6 +91,32 @@ const controlPaste = function () {
   });
   notificationsView.success(`User state pasted into tab ${model.state.tab + 1}`, 5);
   userFormView._form.onchange();
+};
+
+const controlTransfer = async function (toUsername) {
+  if (isRequestInProgress)
+    return notificationsView.warning("A request is already in progress.");
+
+  try {
+    const tabIndex = model.state.tab;
+    const fromUsername = model.state.tabs.get(tabIndex).data.username;
+    console.log(fromUsername, toUsername);
+
+    const userToUpdate = await model.DB.transferAllReportRelationshipsToUser(
+      fromUsername,
+      toUsername
+    );
+
+    if (userToUpdate) userFormView.updateInfo(userToUpdate);
+
+    notificationsView.success(
+      `All report relationships successfully transfered to user: ${toUsername}`
+    );
+    modalView.closeModal();
+  } catch (error) {
+    console.error(error);
+    notificationsView.error(error.message, 60);
+  }
 };
 
 // prettier-ignore
@@ -371,8 +398,21 @@ const init = async function () {
   try {
     await model.init();
 
+    // Initialize list of users
+    userTabsView.users = model.state.users;
+
+    // Custom form data validation
+    model.state.formData.selects.users = model.state.users.map((user) => {
+      return { id: user.id, fullName: user.fullName, username: user.username };
+    });
+
     // Initialize all tabs
-    userTabsView.renderAll(null, model.initNumberOfTabs(5));
+    userTabsView.renderAll(
+      model.state.formData.selects,
+      model.initNumberOfTabs(5)
+    );
+
+    console.log(model.state.formData.selects);
     userFormView = userTabsView.tabs.get(model.state.tab);
 
     // Initialize all table rows per page
@@ -393,6 +433,15 @@ const init = async function () {
 
     // User view handlers per tabs
     userTabsView.tabs.forEach((userFormView) => {
+      // Initialize list of users, current user, and set new report
+      userFormView.users = userTabsView.users;
+
+      modalFormView.addHandlerClickTransferAllReportRelationships(
+        controlTransfer,
+        userFormView,
+        model.state.formData.selects.users
+      );
+
       userFormView.addHandlerPaste(controlPaste);
       userFormView.addHandlerCopy(controlCopy);
       userFormView.addHandlerNew(controlUnsavedUser, controlNewUser);

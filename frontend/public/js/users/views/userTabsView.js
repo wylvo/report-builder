@@ -13,7 +13,7 @@ class UserTabsView extends TabsView {
     `;
   }
 
-  _generateFormHtml(index) {
+  _generateFormHtml(_, index) {
     const hidden = index !== 0 ? "hidden" : "";
     return `
       <form class="form" id="form_${index}" role="tabpanel" tabindex="0" ${hidden}>
@@ -22,6 +22,12 @@ class UserTabsView extends TabsView {
             <h1>User Profile Card</h1>
           </div>
           <div class="form-action-btns">
+            <button type="button" class="hidden form-btn transfer tooltip" id="form-transfer-btn_${index}">
+              <svg class="icons">
+                <use href="/img/icons.svg#icon-transfer-all"></use>
+              </svg>
+              <span class="tooltiptext">Transfer All Report Relationships</span>
+            </button>
             <button type="button" class="form-btn copy tooltip" id="form-copy-btn_${index}">
               <svg class="icons">
                 <use href="/img/icons.svg#icon-copy"></use>

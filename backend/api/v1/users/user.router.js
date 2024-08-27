@@ -17,18 +17,24 @@ router.get("/frontend", user.getAllUsersFrontend);
 router.use(auth.restrictTo("Admin"));
 
 /** ROUTES restricted to "Admin" role
- * /api/v1/users                          (GET & POST)
- * /api/v1/users/:username                (GET, PUT & DELETE)
- * /api/v1/users/:username/enable         (PUT)
- * /api/v1/users/:username/disable        (PUT)
- * /api/v1/users/:username/resetPassword  (POST)
- * /api/v1/users/:fromUsername/transferAllReportRelationshipsTo/:username (POST)
+ * /api/v1/users                                  (GET & POST)
+ * /api/v1/users/transferAllReportRelationships   (POST)
+ * /api/v1/users/:username                        (GET, PUT & DELETE)
+ * /api/v1/users/:username/enable                 (PUT)
+ * /api/v1/users/:username/disable                (PUT)
+ * /api/v1/users/:username/resetPassword          (POST)
  */
 
 router
   .route("/")
   .get(user.getAllUsers)
   .post(user.validateCreate, user.createUser);
+
+router.post(
+  "/transferAllReportRelationships",
+  user.validateTransferAllReportRelationshipsToUser,
+  user.transferAllReportRelationshipsToUser
+);
 
 router.use("/:username", user.validateUsername);
 
@@ -44,10 +50,6 @@ router.put("/:username/disable", user.disableUser);
 router.get(
   "/:username/reportRelationships",
   user.getUserReportRelationshipsByUser
-);
-router.put(
-  "/:username/transferAllReportRelationshipsTo/:toUsername",
-  user.transferAllReportRelationshipsToUser
 );
 
 // Handle password resets in separate module

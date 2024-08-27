@@ -116,9 +116,11 @@ export default class ModalFormView extends ModalView {
     return this.render(formHtml, headerText, replaceElement);
   }
 
-  transferReportForm(users) {
+  transferReportForm(users, isAllRelationships = false) {
     const replaceElement = false;
-    const headerText = "Transfer Report Ownership";
+    const headerText = isAllRelationships
+      ? "Transfer All Report Relationships"
+      : "Transfer Report Ownership";
     const formHtml = `
       <form class="form" id="form-modal">
         <!-- REPORTS RAW JSON -->
@@ -131,7 +133,11 @@ export default class ModalFormView extends ModalView {
           >
             ${users.join("")}
           </select>
-          <label for="transfer-to-user">Transfer ownership of this report to:</label>
+          <label for="transfer-to-user">${
+            isAllRelationships
+              ? "Transfer all report relationships"
+              : "Transfer ownership of this report"
+          } to:</label>
         </div>
 
         <!-- CALL TO ACTION BUTTON -->
@@ -141,12 +147,17 @@ export default class ModalFormView extends ModalView {
             id="modal-btn-transfer"
             class="modal-btn transfer info"
           >
-            <p>Transfer Report</p>
+            <p>${
+              isAllRelationships
+                ? "Transfer All Report Relationships"
+                : "Transfer Report"
+            }</p>
           </button>
           <button type="button" class="modal-btn cancel">No, Cancel</button>
         </div>
       </form>
     `;
+
     return this.render(formHtml, headerText, replaceElement);
   }
 
@@ -205,6 +216,29 @@ export default class ModalFormView extends ModalView {
             reportFormView._form.dataset.id,
             this.#transferToUser()
           );
+
+          this.clearSpinner(transferBtn, null, "import");
+        });
+    });
+  }
+
+  // prettier-ignore
+  addHandlerClickTransferAllReportRelationships(handler, userFormView, users) {
+    userFormView._btnTransferAll.addEventListener("click", (e) => {
+      const isAllRelationships = true;
+      this.confirmTransferTo.call(this, users, isAllRelationships);
+
+      this._modalElement
+        .querySelector("#form-modal")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const transferBtn = this._modalElement.querySelector(
+            ".modal-btn.transfer"
+          );
+          this.renderSpinner(transferBtn);
+
+          // function controlTransfer in ./reports/reportController.js
+          await handler(this.#transferToUser());
 
           this.clearSpinner(transferBtn, null, "import");
         });

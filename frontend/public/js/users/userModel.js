@@ -155,6 +155,24 @@ const DB = {
     return userObject;
   },
 
+  transferAllReportRelationshipsToUser: async (
+    fromUsername,
+    toUsername,
+    toUser
+  ) => {
+    // API request to transfer all reports relationships from a user to another user
+    const {
+      data: { data: user },
+    } = await api.v1.users.transferAllReportRelationshipsToUser({
+      fromUsername,
+      toUsername,
+    });
+
+    // if (toUser) toUser.reportsRelated = user.reportsRelated;
+
+    return toUser;
+  },
+
   // prettier-ignore
   resetUserPassword: async (id, form) => {
     const password = form.password?.value.trim();

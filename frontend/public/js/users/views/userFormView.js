@@ -30,6 +30,7 @@ export class UserFormView extends FormView {
     this._passwordConfirmation = this._fields.get("password-confirmation");
 
     // Buttons
+    this._btnTransferAll = this._form.querySelector(".form-btn.transfer");
     this._btnPaste = this._form.querySelector(".form-btn.paste");
     this._btnCopy = this._form.querySelector(".form-btn.copy");
     this._btnNew = this._form.querySelector(".form-btn.new");
@@ -113,6 +114,9 @@ export class UserFormView extends FormView {
   newUser(takeSnapshot = false) {
     this._tab.firstElementChild.textContent = "[Empty]";
     this._tab.firstElementChild.setAttribute("href", "#");
+    this._form.removeAttribute("data-id");
+
+    this._btnTransferAll.classList.add("hidden");
 
     this.#defaultState();
     this.clearTags();
@@ -144,6 +148,9 @@ export class UserFormView extends FormView {
 
     this._tab.firstElementChild.textContent = user.fullName;
     this._tab.firstElementChild.setAttribute("href", `#${user.id}`);
+    this._form.setAttribute("data-id", user.id);
+
+    this._btnTransferAll.classList.remove("hidden");
 
     const fields = this._fields;
     const checkBoxes = this._checkBoxes;
@@ -153,10 +160,11 @@ export class UserFormView extends FormView {
     fields.get("initials").value = user.initials;
     fields.get("email").value = user.email;
     fields.get("username").value = user.username;
-    console.log(user.profilePictureURI);
+
     if (user.profilePictureURI === this.#DEFAULT_PICTURE)
       fields.get("profile-picture-uri").value = "";
     else fields.get("profile-picture-uri").value = user.profilePictureURI ?? "";
+
     selects.get("role").value = user.role;
     selects.get("status").value = user.active ? "1" : "0";
 
