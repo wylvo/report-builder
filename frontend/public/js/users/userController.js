@@ -110,7 +110,7 @@ const controlTransfer = async function (toUsername) {
     if (userToUpdate) userFormView.updateInfo(userToUpdate);
 
     notificationsView.success(
-      `All report relationships successfully transfered to user: ${toUsername}`
+      `All report relationships of user: ${fromUsername} successfully transfered to user: ${toUsername}`
     );
     modalView.closeModal();
   } catch (error) {
