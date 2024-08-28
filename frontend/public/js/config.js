@@ -14,13 +14,13 @@ export const DEFAULT_USER_CREATE = Object.freeze({
 });
 
 export const DEFAULT_USER_UPDATE = Object.freeze({
-  id: 0,
   role: "string",
   active: false,
   email: "string",
   fullName: "string",
   username: "string",
   initials: "string", // Can be "null"
+  reportsRelated: 0,
   profilePictureURI: "string", // Can be "null"
   tableRowEl: {},
 });

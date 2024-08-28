@@ -54,7 +54,7 @@ class UserTableView extends TableView {
         </td>
         <td data-cell="Username"><div>${user.username}</div></td>
         <td data-cell="Email">
-          <div><a class="table-row-link" href="#${user.id}">${user.email}</a></div>
+          <div><a class="table-row-link" href="#${user.username}">${user.email ? user.email : "N/A"}</a></div>
         </td>
         <td data-cell="Role"><div>${user.role}</div></td>
         <td data-cell="Status">
@@ -63,7 +63,7 @@ class UserTableView extends TableView {
         <td data-cell="Reports Related">
           <div>${user.reportsRelated}</div>
         </td>
-        <td data-cell="Actions" data-id="${user.id}" class="table-row-buttons">
+        <td data-cell="Actions" data-id="${user.id}"  data-username="${user.username}" class="table-row-buttons">
           <div>
             <button class="btn status ${status.btnClassAndIcon}-user icons">
               <svg>
@@ -84,8 +84,12 @@ class UserTableView extends TableView {
   addHandlerUniqueUserPerTab(handlerUnsavedReport, handlerUniqueReport) {
     document.addEventListener("click", function (e) {
       if (e.target && e.target.closest(".table-row-link")) {
-        const id = e.target.getAttribute("href").slice(1);
-        const hasReportInTab = handlerUnsavedReport(handlerUniqueReport, id, e);
+        const username = e.target.getAttribute("href").slice(1);
+        const hasReportInTab = handlerUnsavedReport(
+          handlerUniqueReport,
+          username,
+          e
+        );
         if (!hasReportInTab) e.preventDefault();
       }
     });
@@ -96,8 +100,8 @@ class UserTableView extends TableView {
       if (e.target && e.target.closest(".delete")) {
         const parentElement =
           e.target.closest(".delete").parentElement.parentElement;
-        const id = parentElement.dataset.id;
-        handler(id);
+        const username = parentElement.dataset.username;
+        handler(username);
       }
     });
   }
@@ -110,8 +114,8 @@ class UserTableView extends TableView {
           (e.target.closest(".disable-user") || e.target.closest(".enable-user"))
             .parentElement
             .parentElement;
-        const id = parentElement.dataset.id;
-        handler(id);
+        const username = parentElement.dataset.username;
+        handler(username);
       }
     });
   }

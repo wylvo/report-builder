@@ -19,11 +19,13 @@ let modalFormView = new ModalFormView(),
   userFormView,
   takeSnapshot = false;
 
-const controlTabs = function (tabIndex, id = undefined) {
+const controlTabs = function (tabIndex, username = undefined) {
   model.state.tab = tabIndex;
   userFormView = userTabsView.tabs.get(model.state.tab);
-  const userId = id ? id : model.state.tabs.get(tabIndex).data.id;
-  userTabsView.updateLocationHash(userId);
+  const userUsername = username
+    ? username
+    : model.state.tabs.get(tabIndex).data.username;
+  userTabsView.updateLocationHash(userUsername);
 };
 
 const controlBeforeUnload = function () {
@@ -48,8 +50,8 @@ const controlUnsavedUser = async (controlFunction, handler = undefined, event = 
     isSaveConfirmed = await modalView.confirmSave();
   }
   if (isSaveConfirmed) {
-    const id = window.location.hash.slice(1);
-    if (currentUserView._changes.length > 0) return controlSaveUser(id);
+    const username = window.location.hash.slice(1);
+    if (currentUserView._changes.length > 0) return controlSaveUser(username);
   }
 
   if (typeof handler === "function") {
@@ -61,16 +63,16 @@ const controlUnsavedUser = async (controlFunction, handler = undefined, event = 
 };
 
 // prettier-ignore
-const controlUniqueUserPerTab = function (id, event = undefined) {
+const controlUniqueUserPerTab = function (username, event = undefined) {
   for (const [index, tab] of model.state.tabs) {
-    if (tab.data.id && tab.data.id === Number(id)) {
+    if (tab.data.username && tab.data.username === username) {
       const userFormView = userTabsView.tabs.get(index);
       if (!event) userFormView._tab.firstElementChild.click();
       return true;
     }
   }
   if (event) {
-    controlTabs(model.state.tab, id);
+    controlTabs(model.state.tab, username);
     controlRenderUser();
   }
   return false;
@@ -147,13 +149,13 @@ const controlNewUser = function () {
 
 const controlRenderUser = function () {
   try {
-    const id = window.location.hash.slice(1);
-    if (!id) return controlNewUser();
+    const username = window.location.hash.slice(1);
+    if (!username) return controlNewUser();
 
-    const isPresentInTab = controlUniqueUserPerTab(id);
+    const isPresentInTab = controlUniqueUserPerTab(username);
     if (isPresentInTab) return;
 
-    const index = model.findObjectIndexById(model.state.users, id, false);
+    const index = model.findUserObjectIndexByUsername(username);
     const userFound = index !== -1;
     let user;
 
@@ -258,16 +260,16 @@ const controlPages = async function (page) {
 };
 
 // prettier-ignore
-const controlSaveUser = async function (userId) {
+const controlSaveUser = async function (userUsername) {
   if (isRequestInProgress) return notificationsView.warning("A request is already in progress.");
 
-  const id = userId ? userId : window.location.hash.slice(1);
+  const username = userUsername ? userUsername : window.location.hash.slice(1);
   let user, userFound = true;
   try {
     userFormView.renderSpinner(userFormView._btnSubmit);
 
     // Create user
-    if (!id) {
+    if (!username) {
       user = await model.DB.createUser(userFormView._form);
       userTableView.render(user);
       userTableView.highlight(user.tableRowEl);
@@ -276,12 +278,12 @@ const controlSaveUser = async function (userId) {
     }
 
     // Update User
-    if (id) {
-      [userFound, user] = await model.DB.updateUser(id, userFormView._form);
+    if (username) {
+      [userFound, user] = await model.DB.updateUser(username, userFormView._form);
       if (user.tableRowEl) userTableView.update(user);
     }
 
-    notificationsView.success(`User successfully ${id ? "updated" : "created"}: [${user.id}]`);
+    notificationsView.success(`User successfully ${username ? "updated" : "created"}: [${user.username}]`);
 
     // Update form state
     userFormView.clearPasswordFields();
@@ -293,26 +295,26 @@ const controlSaveUser = async function (userId) {
     if (!userFound) model.loadTab(user, model.state.tab);
     if (userFound) model.loadTabWith(model.state.users, model.state.tab, user.id);
     
-    userFormView.clearSpinner(userFormView._btnSubmit, "success", id ? "update" : "save");
+    userFormView.clearSpinner(userFormView._btnSubmit, "success", username ? "update" : "save");
 
   } catch (error) {
     console.error(error);
     notificationsView.error(error.message, 60);
-    userFormView.clearSpinner(userFormView._btnSubmit, "error", id ? "update" : "save");
+    userFormView.clearSpinner(userFormView._btnSubmit, "error", username ? "update" : "save");
   }
 };
 
 // prettier-ignore
-const controlResetUserPassword = async (userId) => {
+const controlResetUserPassword = async (userUsername) => {
   if (isRequestInProgress) return notificationsView.warning("A request is already in progress.");
 
   try {
-    const id = userId ? userId : window.location.hash.slice(1);
+    const username = userUsername ? userUsername : window.location.hash.slice(1);
 
-    if (id) {
+    if (username) {
       userFormView.renderSpinner(userFormView._btnResetPassword);
 
-      const user = await model.DB.resetUserPassword(id, userFormView._form);
+      const user = await model.DB.resetUserPassword(username, userFormView._form);
       
       notificationsView.success(`User password successfully reset: ${user.email}`);
       userFormView.clearPasswordFields();
@@ -328,24 +330,24 @@ const controlResetUserPassword = async (userId) => {
 };
 
 // prettier-ignore
-const controlDeleteUser = async function (id) {
+const controlDeleteUser = async function (username) {
   if (isRequestInProgress) return notificationsView.warning("A request is already in progress.");
 
   let userTableRowDeleteBtn;
 
   try {    
-    const user = model.findObjectById(model.state.users, id);
-    const hasIdInHash = id === window.location.hash.slice(1)
+    const user = model.findUserObjectByUsername(username);
+    const hasUsernameInHash = username === window.location.hash.slice(1)
     userTableRowDeleteBtn = user.tableRowEl.querySelector(".delete");
   
     let isDeleteConfirmed = true;
     isDeleteConfirmed = await modalView.confirmDelete(user);
     if(!isDeleteConfirmed) return;
 
-    // Remove id if in hash
-    if (hasIdInHash) userTabsView.removeLocationHash();
+    // Remove username if in hash
+    if (hasUsernameInHash) userTabsView.removeLocationHash();
   
-    const tabIndex = model.findTabIndexByObjectId(id);
+    const tabIndex = model.findTabIndexByUsername(username);
     const tabFound = tabIndex !== -1;
     if (tabFound) {
       model.clearTab(tabIndex)
@@ -354,7 +356,7 @@ const controlDeleteUser = async function (id) {
 
     userTableView.renderSpinner(userTableRowDeleteBtn);
   
-    await model.DB.deleteUser(id);
+    await model.DB.deleteUser(username);
 
     model.state.usersTotal--;
     userTableView.updateTotalCount(model.state.usersTotal);
@@ -368,18 +370,18 @@ const controlDeleteUser = async function (id) {
 };
 
 // prettier-ignore
-const controlUserStatus = async function (id) {
+const controlUserStatus = async function (username) {
   if (isRequestInProgress) return notificationsView.warning("A request is already in progress.");
 
   let userTableRowStatusBtn;
-  let user = model.findObjectById(model.state.users, id);
+  let user = model.findUserObjectByUsername(username);
     
   try {
     userTableRowStatusBtn = user.tableRowEl.querySelector(".status");
 
     userTableView.renderSpinner(userTableRowStatusBtn);
-    if (user.active) user = await model.DB.disableUser(id, user);
-    else user = await model.DB.enableUser(id, user);
+    if (user.active) user = await model.DB.disableUser(username, user);
+    else user = await model.DB.enableUser(username, user);
 
     const statusMsg = user.active ? "activated" : "inactivated"
     notificationsView.success(`User successfully ${statusMsg}: ${user.email} [${user.id}]`, 3);
@@ -406,8 +408,13 @@ const init = async function () {
 
     // Custom form data validation
     model.state.formData.selects.users = model.state.users.map((user) => {
-      return { id: user.id, fullName: user.fullName, username: user.username };
+      return {
+        id: user.id,
+        fullName: user.fullName,
+        username: user.username,
+      };
     });
+    // .filter((user) => user.id !== model.state.user.id);
 
     // Initialize all tabs
     userTabsView.renderAll(
@@ -415,14 +422,13 @@ const init = async function () {
       model.initNumberOfTabs(5)
     );
 
-    console.log(model.state.formData.selects);
     userFormView = userTabsView.tabs.get(model.state.tab);
 
     // Initialize all table rows per page
     model.state.rowsPerPage = paginationView.rowsPerPage();
     controlRenderAllUsers();
 
-    // If id in hash render user
+    // If username in hash render user
     if (window.location.hash.slice(1)) controlRenderUser();
 
     // Tab view handlers

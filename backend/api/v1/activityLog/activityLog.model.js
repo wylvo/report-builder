@@ -35,13 +35,15 @@ export const ActivityLog = {
 
   // CREATE A NEW ACTIVITY LOG ENTRY
   create(req, res) {
-    const userId = req.user.id;
+    const userUsername = req.user.username;
+    const userRole = req.user.role;
     const method = req.method;
     const url = `${req.baseUrl}${req.url}`;
     const statusCode = res.statusCode;
 
     return mssql()
-      .request.input("userId", INT, userId)
+      .request.input("username", VARCHAR, userUsername)
+      .input("role", VARCHAR, userRole)
       .input("method", VARCHAR, method)
       .input("url", NVARCHAR, url)
       .input("statusCode", INT, statusCode)

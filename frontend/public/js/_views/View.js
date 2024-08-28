@@ -73,11 +73,13 @@ export default class View {
     return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
   }
 
-  updateLocationHash(id = undefined) {
-    history.replaceState(null, null, `#${id ? id : ""}`);
+  // Update hash value in url
+  updateLocationHash(value = undefined) {
+    history.replaceState(null, null, `#${value ? value : ""}`);
   }
 
   // prettier-ignore
+  // Remove hash value in url
   removeLocationHash() {
     if(window.location.hash) history.pushState("", document.title, window.location.pathname + window.location.search);
   }

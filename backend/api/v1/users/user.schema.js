@@ -24,8 +24,8 @@ const CREATE = {
     exists: { errorMessage: "required.", bail: true },
     isEmail: { errorMessage: "invalid email address.", bail: true },
     isLength: {
-      options: { max: 254 },
-      errorMessage: "invalid length, max of 254 characters allowed.",
+      options: { max: 255 },
+      errorMessage: "invalid length, max of 255 characters allowed.",
     },
     toLowerCase: {},
 

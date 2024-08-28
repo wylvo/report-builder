@@ -7,9 +7,6 @@ import {
   pages,
   rowsPerPage,
   filterSearch,
-  findObjectById,
-  findObjectIndexById,
-  findTabIndexByObjectId,
   initThemeInLocalStorage,
 } from "../model.js";
 import {
@@ -91,36 +88,43 @@ const DB = {
     return user;
   },
 
-  getUser: async (id) => {
+  getUser: async (username) => {
     const {
       data: { data: user },
-    } = await api.v1.users.getUser(id);
+    } = await api.v1.users.getUser(username);
 
     return user;
   },
 
-  updateUser: async (id, form) => {
+  updateUser: async (username, form) => {
     // Update a user object
-    const [userFound, user] = await updateUserObject(id, form);
+    const [userFound, user] = await updateUserObject(username, form);
+    const id = user.id;
+    const reportsRelated = user.reportsRelated;
     const tableRowEl = user.tableRowEl;
+
+    delete user.id;
+    delete user.reportsRelated;
     delete user.tableRowEl;
 
     if (!user.profilePictureURI) delete user.profilePictureURI;
 
     // API request to update a user from the database
-    await api.v1.users.updateUser(id, user);
+    await api.v1.users.updateUser(username, user);
 
+    user.id = id;
+    user.reportsRelated = reportsRelated;
     user.tableRowEl = tableRowEl;
 
     return [userFound, user];
   },
 
-  deleteUser: async (id) => {
+  deleteUser: async (username) => {
     // API request to delete a user from the database
-    const { response } = await api.v1.users.deleteUser(id);
+    const { response } = await api.v1.users.deleteUser(username);
 
     // Find & check if user is in the state object
-    const index = findObjectIndexById(state.users, id, false);
+    const index = findUserObjectIndexByUsername(username);
 
     // If found, remove the row element and user object
     if (index !== -1) {
@@ -131,11 +135,11 @@ const DB = {
     return response;
   },
 
-  enableUser: async (id, userObject) => {
+  enableUser: async (username, userObject) => {
     // API request to enable a user from the database
     const {
       data: { data: user },
-    } = await api.v1.users.enableUser(id);
+    } = await api.v1.users.enableUser(username);
 
     // Update the status in the user object
     userObject.active = user.active;
@@ -143,11 +147,11 @@ const DB = {
     return userObject;
   },
 
-  disableUser: async (id, userObject) => {
+  disableUser: async (username, userObject) => {
     // API request to disable a user from the database
     const {
       data: { data: user },
-    } = await api.v1.users.disableUser(id);
+    } = await api.v1.users.disableUser(username);
 
     // Update the status in the user object
     userObject.active = user.active;
@@ -180,17 +184,53 @@ const DB = {
   },
 
   // prettier-ignore
-  resetUserPassword: async (id, form) => {
+  resetUserPassword: async (username, form) => {
     const password = form.password?.value.trim();
     const passwordConfirmation = form["password-confirmation"]?.value.trim();
 
     // API request to reset the password of an existing user from the database
     const {
       data: { data: user },
-    } = await api.v1.users.resetUserPassword(id, password, passwordConfirmation);
+    } = await api.v1.users.resetUserPassword(username, password, passwordConfirmation);
 
     return user;
   },
+};
+
+// Find user object by username
+const findUserObjectByUsername = (username, raiseErrorIfNotFound = false) => {
+  const object = state.users.find((object) => object.username === username);
+  if (typeof object === "undefined" && raiseErrorIfNotFound)
+    throw new TypeError(`Invalid id "${id}". Data object is undefined.`);
+  return object;
+};
+
+// Find user object index by username
+const findUserObjectIndexByUsername = (
+  usernameOrUserObject,
+  raiseErrorIfNotFound = false
+) => {
+  const index = state.users.findIndex(
+    (object) =>
+      object.username ===
+      (typeof usernameOrUserObject === "object"
+        ? usernameOrUserObject.username
+        : usernameOrUserObject)
+  );
+  if (index === -1 && raiseErrorIfNotFound)
+    throw new TypeError(
+      `Invalid username. Object index is undefined in provided users array.`
+    );
+  return index;
+};
+
+// Find tab index by ID
+const findTabIndexByUsername = (username) => {
+  let activeTabIndex = -1;
+  state.tabs.forEach((tab, index) => {
+    if (tab.data.username === username) activeTabIndex = index;
+  });
+  return activeTabIndex;
 };
 
 // prettier-ignore
@@ -209,25 +249,26 @@ const createUserObject = function (form) {
   };
 };
 
-// Update existing user.
-const updateUserObject = async (userObjectOrId, form) => {
-  let user, tableRowEl, reportsRelated;
+// Update existing user
+const updateUserObject = async (usernameOrUserObject, form) => {
+  let user, id, tableRowEl, reportsRelated;
 
-  const index = findObjectIndexById(state.users, userObjectOrId, false);
+  const index = findUserObjectIndexByUsername(usernameOrUserObject);
   const userFound = index !== -1;
 
   if (userFound) {
     user = state.users[index];
+    id = user.id;
     tableRowEl = user.tableRowEl;
     reportsRelated = user.reportsRelated;
     user.tableRowEl = {};
   }
 
-  if (!userFound) user = await DB.getUser(userObjectOrId);
+  if (!userFound) user = await DB.getUser(usernameOrUserObject);
 
+  delete user.id;
   delete user.createdAt;
   delete user.updatedAt;
-  delete user.reportsRelated;
 
   // Create a clone of the user object to update
   let clone = structuredClone(user);
@@ -246,13 +287,14 @@ const updateUserObject = async (userObjectOrId, form) => {
   checkUserValidity(DEFAULT_USER_UPDATE, clone);
 
   // Update the user
+  user.id = id;
   user.role = clone.role;
   user.active = clone.active;
   user.email = clone.email;
   user.fullName = clone.fullName;
   user.username = clone.username;
   user.initials = clone.initials;
-  user.reportsRelated = reportsRelated;
+  user.reportsRelated = clone.reportsRelated;
   user.profilePictureURI = clone.profilePictureURI;
   user.tableRowEl = tableRowEl;
 
@@ -354,14 +396,11 @@ export {
   pages,
   rowsPerPage,
   filterSearch,
-  findObjectById,
-  findObjectIndexById,
-  findTabIndexByObjectId,
+  findUserObjectByUsername,
+  findUserObjectIndexByUsername,
+  findTabIndexByUsername,
 
   // from this local file -> ./userModel.js
   DB,
-  createUserObject,
-  updateUserObject,
-  checkUserValidity,
   init,
 };
