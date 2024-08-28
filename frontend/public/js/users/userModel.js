@@ -156,9 +156,9 @@ const DB = {
   },
 
   transferAllReportRelationshipsToUser: async (
+    fromUser,
     fromUsername,
-    toUsername,
-    toUser
+    toUsername
   ) => {
     // API request to transfer all reports relationships from a user to another user
     const {
@@ -168,9 +168,15 @@ const DB = {
       toUsername,
     });
 
-    // if (toUser) toUser.reportsRelated = user.reportsRelated;
+    if (fromUser) fromUser.reportsRelated = 0;
 
-    return toUser;
+    const index = state.users.findIndex((object) => object.id === user.id);
+    const userFound = index !== -1;
+    const toUser = state.users[index];
+
+    if (userFound) toUser.reportsRelated = user.reportsRelated;
+
+    return [userFound, toUser];
   },
 
   // prettier-ignore
@@ -205,7 +211,7 @@ const createUserObject = function (form) {
 
 // Update existing user.
 const updateUserObject = async (userObjectOrId, form) => {
-  let user, tableRowEl;
+  let user, tableRowEl, reportsRelated;
 
   const index = findObjectIndexById(state.users, userObjectOrId, false);
   const userFound = index !== -1;
@@ -213,6 +219,7 @@ const updateUserObject = async (userObjectOrId, form) => {
   if (userFound) {
     user = state.users[index];
     tableRowEl = user.tableRowEl;
+    reportsRelated = user.reportsRelated;
     user.tableRowEl = {};
   }
 
@@ -244,6 +251,7 @@ const updateUserObject = async (userObjectOrId, form) => {
   user.fullName = clone.fullName;
   user.username = clone.username;
   user.initials = clone.initials;
+  user.reportsRelated = reportsRelated;
   user.profilePictureURI = clone.profilePictureURI;
   user.tableRowEl = tableRowEl;
 

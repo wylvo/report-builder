@@ -21,10 +21,11 @@ export const filterUserData = (obj) => {
     "role",
     "active",
     "email",
-    "profilePictureURI",
     "fullName",
     "username",
-    "initials"
+    "initials",
+    "reportsRelated",
+    "profilePictureURI"
   );
   return obj;
 };
@@ -201,7 +202,7 @@ export const transferAllReportRelationshipsToUser = catchAsync(
 
     res.status(200).json({
       status: "success",
-      data: user,
+      data: filterUserData(user),
     });
   }
 );

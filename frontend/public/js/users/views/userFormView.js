@@ -114,7 +114,6 @@ export class UserFormView extends FormView {
   newUser(takeSnapshot = false) {
     this._tab.firstElementChild.textContent = "[Empty]";
     this._tab.firstElementChild.setAttribute("href", "#");
-    this._form.removeAttribute("data-id");
 
     this._btnTransferAll.classList.add("hidden");
 
@@ -148,9 +147,9 @@ export class UserFormView extends FormView {
 
     this._tab.firstElementChild.textContent = user.fullName;
     this._tab.firstElementChild.setAttribute("href", `#${user.id}`);
-    this._form.setAttribute("data-id", user.id);
 
-    this._btnTransferAll.classList.remove("hidden");
+    if (user.reportsRelated > 0)
+      this._btnTransferAll.classList.remove("hidden");
 
     const fields = this._fields;
     const checkBoxes = this._checkBoxes;

@@ -237,7 +237,7 @@ export default class ModalFormView extends ModalView {
           );
           this.renderSpinner(transferBtn);
 
-          // function controlTransfer in ./reports/reportController.js
+          // function controlTransferAll in ./users/userController.js
           await handler(this.#transferToUser());
 
           this.clearSpinner(transferBtn, null, "import");

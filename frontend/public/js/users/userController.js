@@ -93,21 +93,24 @@ const controlPaste = function () {
   userFormView._form.onchange();
 };
 
-const controlTransfer = async function (toUsername) {
+const controlTransferAll = async function (toUsername) {
   if (isRequestInProgress)
     return notificationsView.warning("A request is already in progress.");
 
   try {
     const tabIndex = model.state.tab;
-    const fromUsername = model.state.tabs.get(tabIndex).data.username;
-    console.log(fromUsername, toUsername);
+    const fromUser = model.state.tabs.get(tabIndex).data;
+    const fromUsername = fromUser.username;
 
-    const userToUpdate = await model.DB.transferAllReportRelationshipsToUser(
-      fromUsername,
-      toUsername
-    );
+    const [userFound, toUser] =
+      await model.DB.transferAllReportRelationshipsToUser(
+        fromUser,
+        fromUsername,
+        toUsername
+      );
 
-    if (userToUpdate) userFormView.updateInfo(userToUpdate);
+    if (fromUser.tableRowEl) userTableView.update(fromUser);
+    if (userFound && toUser.tableRowEl) userTableView.update(toUser);
 
     notificationsView.success(
       `All report relationships of user: ${fromUsername} successfully transfered to user: ${toUsername}`
@@ -437,7 +440,7 @@ const init = async function () {
       userFormView.users = userTabsView.users;
 
       modalFormView.addHandlerClickTransferAllReportRelationships(
-        controlTransfer,
+        controlTransferAll,
         userFormView,
         model.state.formData.selects.users
       );
