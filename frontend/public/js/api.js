@@ -135,8 +135,8 @@ export default {
     users: {
       url: "/api/v1/users",
 
-      async resetUserPassword(id, password, passwordConfirmation) {
-        return await fetchJSON(`${this.url}/${id}/resetPassword`, "POST", {
+      async resetUserPassword(username, password, passwordConfirmation) {
+        return await fetchJSON(`${this.url}/${username}/resetPassword`, "POST", {
           password,
           passwordConfirmation,
         });
@@ -150,20 +150,20 @@ export default {
       async createUser(user) {
         return await fetchJSON(this.url, "POST", user);
       },
-      async getUser(id) {
-        return await fetchJSON(`${this.url}/${id}`);
+      async getUser(username) {
+        return await fetchJSON(`${this.url}/${username}`);
       },
-      async updateUser(id, user) {
-        return await fetchJSON(`${this.url}/${id}`, "PUT", user);
+      async updateUser(username, user) {
+        return await fetchJSON(`${this.url}/${username}`, "PUT", user);
       },
-      async deleteUser(id) {
-        return await fetchJSON(`${this.url}/${id}`, "DELETE", {});
+      async deleteUser(username) {
+        return await fetchJSON(`${this.url}/${username}`, "DELETE", {});
       },
-      async enableUser(id) {
-        return await fetchJSON(`${this.url}/${id}/enable`, "PUT", {});
+      async enableUser(username) {
+        return await fetchJSON(`${this.url}/${username}/enable`, "PUT", {});
       },
-      async disableUser(id) {
-        return await fetchJSON(`${this.url}/${id}/disable`, "PUT", {});
+      async disableUser(username) {
+        return await fetchJSON(`${this.url}/${username}/disable`, "PUT", {});
       },
       async getCurrentUserAccount() {
         return await fetchJSON(`${this.url}/account`);

@@ -227,6 +227,7 @@ const updateUserObject = async (userObjectOrId, form) => {
 
   delete user.createdAt;
   delete user.updatedAt;
+  delete user.reportsRelated;
 
   // Create a clone of the user object to update
   let clone = structuredClone(user);
