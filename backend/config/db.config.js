@@ -47,7 +47,7 @@ export const dbConfig = {
     const pool = await new sql.ConnectionPool(this.connection).connect();
     if (pool.connected) {
       mssqlPool.push(pool);
-      cliLogger.info("MS SQL Server connection successful!");
+      cliLogger.info(`MS SQL Server connection successful to: ${dbServer}`);
       cliLogger.info(
         `Connection pool max size: ${pool.pool.max}. Warming pool...`
       );
