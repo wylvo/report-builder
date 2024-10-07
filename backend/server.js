@@ -94,9 +94,13 @@ dbConfig
     formData.updateFormDataConfig();
     cliLogger.info("Form data config updated!");
     cliLogger.info("Starting server...");
+    cliLogger.info(`Server port: ${config.port}`);
 
-    app.listen(config.port, () => 
-      cliLogger.info(`Server listening on port ${config.port} at: http://localhost:${config.port}`));
+    let port;
+    if (process.env.IISNode.toUpperCase() === "TRUE") port = process.env.PORT
+    else port = process.env.SERVER_PORT;
+
+    app.listen(port, () => cliLogger.info(`Server listening on port ${config.port} at: http://localhost:${config.port}`));
   })
   .catch((err) => {
     const logId = generateLogId();

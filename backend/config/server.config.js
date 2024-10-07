@@ -1,9 +1,6 @@
 const config = {
   // Server Port. Set to process.env.PORT if using iisnode
-  port:
-    process.env.IISNode.toUpperCase() === "TRUE"
-      ? process.env.PORT
-      : process.env.SERVER_PORT,
+  port: process.env.SERVER_PORT,
   version: process.env.npm_package_version, // App version
   rateLimiter: {
     maxNumberOfRequests: 50, // Max number of requests before a client is restricted to make another request
