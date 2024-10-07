@@ -70,7 +70,10 @@ if (process.env.DB_AUTH_TYPE.toUpperCase() === "WINDOWS")
   dbConfig.connection.options.trustedConnection = true;
 
 // For Azure SQL set encrypt to true
-if (process.env.DB_ENV.toUpperCase() === "AZURE")
+if (
+  process.env.DB_AZURE.toUpperCase() === "TRUE" ||
+  process.env.DB_AZURE.toUpperCase() === "1"
+)
   dbConfig.connection.options.encrypt = true;
 
 export const mssqlPool = [];
